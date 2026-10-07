@@ -8,31 +8,149 @@
     <style>
         :root {
             --ifce-green: #2d8647;
-            --ifce-red: #d9534f;
+            --ifce-dark: #121814;
+            --ifce-card-bg: #18221b;
+            --ifce-card-border: #283a2e;
+            --ifce-accent-green: #00e676;
+            --ifce-text-muted: #a0b3a6;
         }
-        body { background-color: #f4f6f9; }
-        .navbar-ifce { background-color: var(--ifce-green); }
-        .btn-ifce { background-color: var(--ifce-green); color: white; }
-        .btn-ifce:hover { background-color: #236b37; color: white; }
-        .card-custom { border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+
+        body {
+            background-color: var(--ifce-dark);
+            background-image: 
+                radial-gradient(circle at 50% 20%, #1e2922 0%, #0d120f 80%),
+                radial-gradient(rgba(45, 134, 71, 0.08) 1px, transparent 0);
+            background-size: 100% 100%, 30px 30px;
+            color: #ffffff;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+        }
+
+        /* NAVBAR HEADER */
+        .navbar-ifce {
+            background-color: rgba(24, 34, 27, 0.95);
+            border-bottom: 1px solid var(--ifce-card-border);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand-chem {
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .navbar-brand-chem span {
+            color: var(--ifce-accent-green);
+        }
+
+        /* CARDS CUSTOMIZADOS */
+        .card-custom {
+            background-color: var(--ifce-card-bg);
+            border: 1px solid var(--ifce-card-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            color: #ffffff;
+            transition: border-color 0.3s;
+        }
+
+        .card-custom:hover {
+            border-color: #385241;
+        }
+
+        .card-title-chem {
+            font-weight: 800;
+            color: var(--ifce-accent-green);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* INPUTS E FORMULÁRIOS */
+        .form-label {
+            color: var(--ifce-text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-control, .form-select {
+            background-color: #0d120f;
+            border: 1px solid var(--ifce-card-border);
+            color: #ffffff;
+            border-radius: 10px;
+            padding: 10px 14px;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: #0d120f;
+            border-color: var(--ifce-accent-green);
+            color: #ffffff;
+            box-shadow: 0 0 8px rgba(0, 230, 118, 0.2);
+        }
+
+        .form-control::placeholder {
+            color: #586e60;
+        }
+
+        /* BOTÕES */
+        .btn-ifce {
+            background: linear-gradient(135deg, #2d8647, #1b522b);
+            border: 1px solid var(--ifce-accent-green);
+            color: #ffffff;
+            font-weight: 700;
+            border-radius: 10px;
+            padding: 10px 20px;
+            box-shadow: 0 4px 15px rgba(45, 134, 71, 0.3);
+            transition: all 0.2s;
+        }
+
+        .btn-ifce:hover {
+            background: linear-gradient(135deg, #349952, #236b37);
+            color: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        /* LISTAS E ITENS */
+        .list-group-item {
+            background-color: #121a14;
+            border: 1px solid var(--ifce-card-border);
+            color: #ffffff;
+            border-radius: 10px !important;
+            margin-bottom: 8px;
+        }
+
+        .text-muted-custom {
+            color: var(--ifce-text-muted) !important;
+        }
+
         #painel-admin { display: none; }
     </style>
 </head>
 <body>
 
     <!-- Navbar -->
-    <nav class="navbar navbar-dark navbar-ifce mb-4">
+    <nav class="navbar navbar-dark navbar-ifce mb-4 sticky-top">
         <div class="container d-flex justify-content-between align-items-center">
-            <span class="navbar-brand fw-bold m-0">Painel Administrativo - Grêmio IFCE</span>
-            <button id="btn-logout-admin" onclick="fazerLogoutAdmin()" class="btn btn-outline-light btn-sm d-none">Sair do Admin</button>
+            <span class="navbar-brand-chem">🧪 IFCE | <span>PAINEL ADMIN</span></span>
+            <button id="btn-logout-admin" onclick="fazerLogoutAdmin()" class="btn btn-outline-danger btn-sm d-none fw-bold" style="border-radius: 8px;">Sair do Admin</button>
         </div>
     </nav>
 
     <!-- TELA DE LOGIN DO ADMIN -->
-    <div class="container" id="tela-login-admin" style="max-width: 400px; margin-top: 40px;">
+    <div class="container" id="tela-login-admin" style="max-width: 400px; margin-top: 60px;">
         <div class="card card-custom p-4">
-            <h4 class="fw-bold text-center mb-3" style="color: var(--ifce-green);">Login Administrativo</h4>
-            <div id="login-erro" class="alert alert-danger d-none p-2 small text-center"></div>
+            <div class="text-center mb-3">
+                <span style="font-size: 3rem;">🔬</span>
+                <h4 class="fw-bold mt-2" style="color: var(--ifce-accent-green);">Acesso Restrito</h4>
+                <p class="small text-muted-custom">Gestão do Grêmio Estudantil IFCE</p>
+            </div>
+            <div id="login-erro" class="alert alert-danger d-none p-2 small text-center" style="border-radius: 8px;"></div>
             <div>
                 <div class="mb-3">
                     <label class="form-label fw-bold">E-mail Admin</label>
@@ -40,43 +158,43 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Senha</label>
-                    <input type="password" id="admin-senha" class="form-control" placeholder="******">
+                    <input type="password" id="admin-senha" class="form-control" placeholder="**">
                 </div>
-                <button onclick="fazerLoginAdmin()" class="btn btn-ifce w-100 fw-bold">Entrar no Painel</button>
+                <button onclick="fazerLoginAdmin()" class="btn btn-ifce w-100 mt-2">Entrar no Painel</button>
             </div>
         </div>
     </div>
 
     <!-- PAINEL PRINCIPAL DO ADMIN -->
-    <div class="container pb-5" id="painel-admin" style="max-width: 800px;">
+    <div class="container pb-5" id="painel-admin" style="max-width: 850px;">
 
         <!-- ALERTA GLOBAL DE SUCESSO -->
-        <div id="alerta-sucesso" class="alert alert-success d-none fw-bold text-center card-custom mb-4" role="alert"></div>
+        <div id="alerta-sucesso" class="alert alert-success d-none fw-bold text-center card-custom mb-4" role="alert" style="border-color: var(--ifce-accent-green); background: rgba(0, 230, 118, 0.1); color: var(--ifce-accent-green);"></div>
 
         <!-- PUBLICAR MURAL DE AVISOS -->
         <div class="card card-custom p-4 mb-4">
-            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">📢 Mural de Avisos</h5>
+            <h5 class="card-title-chem mb-3">📢 Mural de Avisos</h5>
             <div class="mb-3">
                 <label class="form-label fw-bold">Título do Aviso</label>
-                <input type="text" id="aviso-titulo" class="form-control" placeholder="Ex: Reunião do Grêmio">
+                <input type="text" id="aviso-titulo" class="form-control" placeholder="Ex: Reunião Geral do Grêmio">
             </div>
             <div class="mb-3">
                 <label class="form-label fw-bold">Mensagem</label>
                 <textarea id="aviso-mensagem" class="form-control" rows="2" placeholder="Digite o recado para os alunos..."></textarea>
             </div>
-            <button onclick="publicarAviso()" class="btn btn-ifce fw-bold">Publicar Aviso</button>
+            <button onclick="publicarAviso()" class="btn btn-ifce">Publicar Aviso</button>
 
-            <hr class="my-4">
+            <hr style="border-color: var(--ifce-card-border);" class="my-4">
 
-            <h6 class="fw-bold mb-3">Avisos Publicados</h6>
+            <h6 class="fw-bold mb-3 text-white">Avisos Publicados</h6>
             <div id="lista-avisos-admin">
-                <p class="text-muted small">Carregando avisos...</p>
+                <p class="text-muted-custom small">Carregando avisos...</p>
             </div>
         </div>
 
         <!-- CRIAR NOVA ENQUETE -->
         <div class="card card-custom p-4 mb-4">
-            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">📊 Criar Nova Enquete</h5>
+            <h5 class="card-title-chem mb-3">📊 Criar Nova Enquete</h5>
             <div class="mb-3">
                 <label class="form-label fw-bold">Pergunta / Título da Enquete</label>
                 <input type="text" id="enquete-titulo" class="form-control" placeholder="Ex: Qual tema do próximo evento?">
@@ -92,104 +210,112 @@
                     <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
                 </div>
             </div>
-            <div class="d-flex gap-2 mt-2">
-                <button onclick="adicionarCampoOpcao()" class="btn btn-outline-secondary btn-sm">+ Adicionar Opção</button>
-                <button onclick="criarEnquete()" class="btn btn-ifce fw-bold ms-auto">Criar Enquete</button>
+            <div class="d-flex gap-2 mt-3">
+                <button onclick="adicionarCampoOpcao()" class="btn btn-outline-light btn-sm" style="border-radius: 8px;">+ Adicionar Opção</button>
+                <button onclick="criarEnquete()" class="btn btn-ifce ms-auto">Criar Enquete</button>
             </div>
         </div>
 
         <!-- CADASTRAR ALUNO -->
         <div class="card card-custom p-4 mb-4">
-            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">👤 Cadastrar Aluno</h5>
+            <h5 class="card-title-chem mb-3">👤 Cadastrar Aluno</h5>
             <div class="row g-3">
                 <div class="col-md-6">
+                    <label class="form-label fw-bold">Nome Completo</label>
                     <input type="text" id="cad-nome" class="form-control" placeholder="Nome do Aluno">
                 </div>
                 <div class="col-md-6">
-                    <input type="email" id="cad-email" class="form-control" placeholder="E-mail (ex: aluno@aluno.ifce.edu.br)">
+                    <label class="form-label fw-bold">E-mail Institucional</label>
+                    <input type="email" id="cad-email" class="form-control" placeholder="aluno@aluno.ifce.edu.br">
                 </div>
                 <div class="col-md-12">
-                    <input type="password" id="cad-senha" class="form-control" placeholder="Senha do aluno">
+                    <label class="form-label fw-bold">Senha do Aluno</label>
+                    <input type="password" id="cad-senha" class="form-control" placeholder="**">
                 </div>
-                <div class="col-12">
-                    <button onclick="cadastrarAluno()" class="btn btn-ifce fw-bold w-100">Cadastrar Aluno</button>
+                <div class="col-12 mt-3">
+                    <button onclick="cadastrarAluno()" class="btn btn-ifce w-100">Cadastrar Aluno</button>
                 </div>
             </div>
         </div>
 
         <!-- PAUTAS E REIVINDICAÇÕES (ADMIN) -->
         <div class="card card-custom p-4 mb-4">
-            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">✊ Pautas e Reivindicações Apoiadas</h5>
-            <p class="text-muted small mb-3">Pautas criadas pelos alunos para encaminhar à Direção do IFCE.</p>
+            <h5 class="card-title-chem mb-2">✊ Pautas e Reivindicações Apoiadas</h5>
+            <p class="text-muted-custom small mb-3">Pautas criadas pelos alunos para encaminhar à Direção do IFCE.</p>
             <div id="lista-pautas-admin">
-                <p class="text-muted small">Carregando pautas...</p>
+                <p class="text-muted-custom small">Carregando pautas...</p>
             </div>
         </div>
 
         <!-- EMPRÉSTIMO DE MATERIAIS (ADMIN) -->
         <div class="card card-custom p-4 mb-4">
-            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">🎲 Gerenciar Materiais do Grêmio</h5>
+            <h5 class="card-title-chem mb-3">🎲 Gerenciar Materiais do Grêmio</h5>
             <div class="row g-2 mb-3">
                 <div class="col-md-8">
-                    <input type="text" id="mat-nome" class="form-control" placeholder="Nome do Material (Ex: Bola de Futsal, Xadrez)">
+                    <label class="form-label fw-bold">Material</label>
+                    <input type="text" id="mat-nome" class="form-control" placeholder="Ex: Bola de Futsal, Xadrez">
                 </div>
                 <div class="col-md-4">
-                    <input type="text" id="mat-qtd" class="form-control" placeholder="Qtd / Identificador">
+                    <label class="form-label fw-bold">Qtd / Identificador</label>
+                    <input type="text" id="mat-qtd" class="form-control" placeholder="Ex: 1 un">
                 </div>
             </div>
-            <button onclick="cadastrarMaterial()" class="btn btn-ifce fw-bold">Cadastrar Material</button>
+            <button onclick="cadastrarMaterial()" class="btn btn-ifce">Cadastrar Material</button>
 
-            <hr class="my-4">
-            <h6 class="fw-bold mb-3">Materiais Cadastrados</h6>
+            <hr style="border-color: var(--ifce-card-border);" class="my-4">
+            <h6 class="fw-bold mb-3 text-white">Materiais Cadastrados</h6>
             <div id="lista-materiais-admin">
-                <p class="text-muted small">Carregando materiais...</p>
+                <p class="text-muted-custom small">Carregando materiais...</p>
             </div>
         </div>
 
         <!-- CRIAR EVENTO / TORNEIO (ADMIN) -->
         <div class="card card-custom p-4 mb-4">
-            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">📅 Criar Evento ou Torneio</h5>
+            <h5 class="card-title-chem mb-3">📅 Criar Evento ou Torneio</h5>
             <div class="row g-2 mb-3">
                 <div class="col-md-8">
-                    <input type="text" id="evento-titulo" class="form-control" placeholder="Título (Ex: Interclasses de Futsal)">
+                    <label class="form-label fw-bold">Título do Evento</label>
+                    <input type="text" id="evento-titulo" class="form-control" placeholder="Ex: Interclasses de Futsal">
                 </div>
                 <div class="col-md-4">
-                    <input type="text" id="evento-data" class="form-control" placeholder="Data/Hora (Ex: 15/10 - 14h)">
+                    <label class="form-label fw-bold">Data / Hora</label>
+                    <input type="text" id="evento-data" class="form-control" placeholder="Ex: 15/10 - 14h">
                 </div>
                 <div class="col-12 mt-2">
+                    <label class="form-label fw-bold">Descrição</label>
                     <textarea id="evento-descricao" class="form-control" rows="2" placeholder="Descrição e regras do evento..."></textarea>
                 </div>
             </div>
-            <button onclick="criarEvento()" class="btn btn-ifce fw-bold">Publicar Evento</button>
+            <button onclick="criarEvento()" class="btn btn-ifce">Publicar Evento</button>
 
-            <hr class="my-4">
-            <h6 class="fw-bold mb-3">Eventos Programados</h6>
+            <hr style="border-color: var(--ifce-card-border);" class="my-4">
+            <h6 class="fw-bold mb-3 text-white">Eventos Programados</h6>
             <div id="lista-eventos-admin">
-                <p class="text-muted small">Carregando eventos...</p>
+                <p class="text-muted-custom small">Carregando eventos...</p>
             </div>
         </div>
 
         <!-- ENQUETES ATIVAS E ENCERRADAS -->
         <div class="card card-custom p-4 mb-4">
-            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">📈 Enquetes Ativas e Encerradas</h5>
+            <h5 class="card-title-chem mb-3">📈 Enquetes Ativas e Encerradas</h5>
             <div id="lista-enquetes-admin">
-                <p class="text-muted small">Carregando enquetes...</p>
+                <p class="text-muted-custom small">Carregando enquetes...</p>
             </div>
         </div>
 
         <!-- ALUNOS CADASTRADOS -->
         <div class="card card-custom p-4 mb-4">
-            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">🎓 Alunos Cadastrados</h5>
+            <h5 class="card-title-chem mb-3">🎓 Alunos Cadastrados</h5>
             <div id="lista-alunos-admin">
-                <p class="text-muted small">Carregando alunos...</p>
+                <p class="text-muted-custom small">Carregando alunos...</p>
             </div>
         </div>
 
         <!-- SUGESTÕES DOS ALUNOS -->
         <div class="card card-custom p-4 mb-4">
-            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">💡 Sugestões dos Alunos</h5>
+            <h5 class="card-title-chem mb-3">💡 Sugestões dos Alunos</h5>
             <div id="lista-sugestoes-admin">
-                <p class="text-muted small">Carregando sugestões...</p>
+                <p class="text-muted-custom small">Carregando sugestões...</p>
             </div>
         </div>
 
@@ -363,7 +489,7 @@
             db.collection('mural').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-avisos-admin');
                 if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted small mb-0">Nenhum aviso publicado no momento.</p>';
+                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum aviso publicado no momento.</p>';
                     return;
                 }
 
@@ -379,11 +505,11 @@
                     html += `
                         <div class="list-group-item d-flex justify-content-between align-items-start">
                             <div>
-                                <h6 class="fw-bold mb-1 text-success">${aviso.titulo}</h6>
-                                <p class="mb-1 small text-dark">${aviso.mensagem}</p>
-                                ${dataHora ? `<span class="badge bg-light text-muted border">${dataHora}</span>` : ''}
+                                <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${aviso.titulo}</h6>
+                                <p class="mb-1 small text-white">${aviso.mensagem}</p>
+                                ${dataHora ? <span class="badge bg-dark text-muted-custom border border-secondary">${dataHora}</span> : ''}
                             </div>
-                            <button onclick="excluirAviso('${doc.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                            <button onclick="excluirAviso('${doc.id}')" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Excluir</button>
                         </div>
                     `;
                 });
@@ -427,7 +553,7 @@
             db.collection('alunos').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-alunos-admin');
                 if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted small mb-0">Nenhum aluno cadastrado.</p>';
+                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum aluno cadastrado.</p>';
                     return;
                 }
                 let html = '<ul class="list-group">';
@@ -439,8 +565,8 @@
                     html += `
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
-                                <strong style="font-size: 14px;">${aluno.nome}</strong><br>
-                                <small class="text-muted">${aluno.email}</small>
+                                <strong style="font-size: 14px;" class="text-white">${aluno.nome}</strong><br>
+                                <small class="text-muted-custom">${aluno.email}</small>
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge ${statusBg}">${statusTxt}</span>
@@ -462,7 +588,7 @@
         }
 
         function excluirAluno(email) {
-            if (confirm(`Excluir o aluno ${email}?`)) {
+            if (confirm(Excluir o aluno ${email}?)) {
                 db.collection('alunos').doc(email).delete();
             }
         }
@@ -472,7 +598,7 @@
             db.collection('enquetes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-enquetes-admin');
                 if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted small mb-0">Nenhuma enquete cadastrada.</p>';
+                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma enquete cadastrada.</p>';
                     return;
                 }
                 let html = '';
@@ -483,9 +609,9 @@
                     const totalVotos = enquete.opcoes ? enquete.opcoes.reduce((acc, op) => acc + (op.votos || 0), 0) : votosAlunos.length;
 
                     html += `
-                        <div class="border rounded p-3 mb-3 bg-white">
+                        <div class="border rounded p-3 mb-3" style="background-color: #121a14; border-color: var(--ifce-card-border) !important;">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="fw-bold m-0 text-success">${enquete.titulo}</h6>
+                                <h6 class="fw-bold m-0" style="color: var(--ifce-accent-green);">${enquete.titulo}</h6>
                                 <span class="badge ${enquete.ativa ? 'bg-success' : 'bg-secondary'}">${enquete.ativa ? 'Ativa' : 'Encerrada'}</span>
                             </div>
                             <ul class="list-group mb-2">
@@ -493,7 +619,7 @@
                     if (enquete.opcoes) {
                         enquete.opcoes.forEach(op => {
                             const pct = totalVotos > 0 ? Math.round((op.votos / totalVotos) * 100) : 0;
-                            html += `<li class="list-group-item d-flex justify-content-between small py-1">
+                            html += `<li class="list-group-item d-flex justify-content-between small py-1 bg-dark text-white border-secondary">
                                 <span>${op.texto}</span>
                                 <strong>${op.votos} votos (${pct}%)</strong>
                             </li>`;
@@ -528,7 +654,7 @@
             db.collection('sugestoes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-sugestoes-admin');
                 if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted small mb-0">Nenhuma sugestão enviada.</p>';
+                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma sugestão enviada.</p>';
                     return;
                 }
                 let html = '<div class="list-group">';
@@ -543,11 +669,11 @@
                     html += `
                         <div class="list-group-item d-flex justify-content-between align-items-start">
                             <div>
-                                <strong style="font-size: 13px;" class="text-success">${sug.nome || 'Aluno'} (${sug.email || 'Sem e-mail'})</strong>
-                                <p class="m-0 text-dark small mt-1">${sug.texto}</p>
-                                ${dataHora ? `<small class="text-muted mt-1 d-block" style="font-size: 11px;">📅 ${dataHora}</small>` : ''}
+                                <strong style="font-size: 13px;" style="color: var(--ifce-accent-green);">${sug.nome || 'Aluno'} (${sug.email || 'Sem e-mail'})</strong>
+                                <p class="m-0 text-white small mt-1">${sug.texto}</p>
+                                ${dataHora ? <small class="text-muted-custom mt-1 d-block" style="font-size: 11px;">📅 ${dataHora}</small> : ''}
                             </div>
-                            <button onclick="excluirSugestao('${doc.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Apagar</button>
+                            <button onclick="excluirSugestao('${doc.id}')" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Apagar</button>
                         </div>
                     `;
                 });
@@ -567,7 +693,7 @@
             db.collection('reivindicacoes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-pautas-admin');
                 if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted small mb-0">Nenhuma pauta cadastrada pelos alunos.</p>';
+                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma pauta cadastrada pelos alunos.</p>';
                     return;
                 }
                 let html = '<div class="list-group">';
@@ -577,11 +703,11 @@
                     html += `
                         <div class="list-group-item d-flex justify-content-between align-items-start">
                             <div>
-                                <h6 class="fw-bold mb-1 text-success">${pauta.titulo} <span class="badge bg-primary">👍 ${apoios} Apoios</span></h6>
-                                <p class="mb-1 small text-dark">${pauta.descricao}</p>
-                                <small class="text-muted" style="font-size: 11px;">Criado por: ${pauta.autor || 'Aluno'}</small>
+                                <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${pauta.titulo} <span class="badge bg-primary">👍 ${apoios} Apoios</span></h6>
+                                <p class="mb-1 small text-white">${pauta.descricao}</p>
+                                <small class="text-muted-custom" style="font-size: 11px;">Criado por: ${pauta.autor || 'Aluno'}</small>
                             </div>
-                            <button onclick="excluirPauta('${doc.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                            <button onclick="excluirPauta('${doc.id}')" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Excluir</button>
                         </div>
                     `;
                 });
@@ -623,7 +749,7 @@
             db.collection('materiais').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-materiais-admin');
                 if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted small mb-0">Nenhum material cadastrado.</p>';
+                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum material cadastrado.</p>';
                     return;
                 }
                 let html = '<ul class="list-group">';
@@ -633,12 +759,12 @@
                     html += `
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
-                                <strong class="text-dark">${mat.nome}</strong> (${mat.qtd}) 
+                                <strong class="text-white">${mat.nome}</strong> (${mat.qtd}) 
                                 <span class="badge ${disponivel ? 'bg-success' : 'bg-warning text-dark'}">${mat.status}</span><br>
-                                ${!disponivel ? `<small class="text-muted">Com: ${mat.emprestadoPara}</small>` : ''}
+                                ${!disponivel ? <small class="text-muted-custom">Com: ${mat.emprestadoPara}</small> : ''}
                             </div>
                             <div class="d-flex gap-1">
-                                ${!disponivel ? `<button onclick="devolverMaterial('${doc.id}')" class="btn btn-outline-success btn-sm py-0" style="font-size: 11px;">Devolvido</button>` : ''}
+                                ${!disponivel ? <button onclick="devolverMaterial('${doc.id}')" class="btn btn-outline-success btn-sm py-0" style="font-size: 11px;">Devolvido</button> : ''}
                                 <button onclick="excluirMaterial('${doc.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
                             </div>
                         </li>
@@ -691,7 +817,7 @@
             db.collection('eventos').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-eventos-admin');
                 if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted small mb-0">Nenhum evento cadastrado.</p>';
+                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum evento cadastrado.</p>';
                     return;
                 }
                 let html = '<div class="list-group">';
@@ -701,11 +827,11 @@
                     html += `
                         <div class="list-group-item d-flex justify-content-between align-items-start">
                             <div>
-                                <h6 class="fw-bold mb-1 text-success">${ev.titulo} <span class="badge bg-info text-dark">📅 ${ev.data}</span></h6>
-                                <p class="mb-1 small text-dark">${ev.descricao}</p>
-                                <small class="text-muted fw-bold">Inscritos (${inscritos.length}): ${inscritos.join(', ') || 'Nenhum inscrito ainda'}</small>
+                                <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${ev.titulo} <span class="badge bg-info text-dark">📅 ${ev.data}</span></h6>
+                                <p class="mb-1 small text-white">${ev.descricao}</p>
+                                <small class="text-muted-custom fw-bold">Inscritos (${inscritos.length}): ${inscritos.join(', ') || 'Nenhum inscrito ainda'}</small>
                             </div>
-                            <button onclick="excluirEvento('${doc.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                            <button onclick="excluirEvento('${doc.id}')" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Excluir</button>
                         </div>
                     `;
                 });
@@ -721,4 +847,4 @@
         }
     </script>
 </body>
-</html>
+</html>            
