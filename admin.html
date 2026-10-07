@@ -340,25 +340,46 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // AUTENTICAÇÃO DO ADMIN
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('tela-login-admin').style.display = 'none';
-                document.getElementById('painel-admin').style.display = 'block';
-                document.getElementById('btn-logout-admin').classList.remove('d-none');
-                
-                carregarAvisosAdmin();
-                carregarAlunos();
-                carregarEnquetesAdmin();
-                carregarSugestoesAdmin();
-                carregarPautasAdmin();
-                carregarMateriaisAdmin();
-                carregarEventosAdmin();
-            } else {
-                document.getElementById('tela-login-admin').style.display = 'block';
-                document.getElementById('painel-admin').style.display = 'none';
-                document.getElementById('btn-logout-admin').classList.add('d-none');
-            }
+       // Função de Login do Admin Direta
+function fazerLoginAdmin() {
+    const email = document.getElementById('admin-email').value.trim().toLowerCase();
+    const senha = document.getElementById('admin-senha').value.trim();
+    const erroDiv = document.getElementById('login-erro');
+
+    erroDiv.classList.add('d-none');
+
+    // Valida com o teu e-mail e a senha que tu escolher
+    if (email === "kevin.silva10@aluno.ifce.edu.br" && senha === "123456") {
+        abrirPainelAdmin();
+    } else {
+        // Tenta também pelo Firebase Auth se quiser
+        auth.signInWithEmailAndPassword(email, senha).then(() => {
+            abrirPainelAdmin();
+        }).catch(err => {
+            erroDiv.textContent = "Acesso negado: E-mail ou senha incorretos!";
+            erroDiv.classList.remove('d-none');
+        });
+    }
+}
+
+function abrirPainelAdmin() {
+    document.getElementById('tela-login-admin').style.display = 'none';
+    document.getElementById('painel-admin').style.display = 'block';
+    document.getElementById('btn-logout-admin').classList.remove('d-none');
+    
+    carregarAvisosAdmin();
+    carregarAlunos();
+    carregarEnquetesAdmin();
+    carregarSugestoesAdmin();
+    carregarPautasAdmin();
+    carregarMateriaisAdmin();
+    carregarEventosAdmin();
+}
+
+function fazerLogoutAdmin() {
+    auth.signOut();
+    location.reload();
+}
         });
 
         function fazerLoginAdmin() {
