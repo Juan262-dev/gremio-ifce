@@ -331,7 +331,7 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // LOGIN DIRETO SEM BARREIRA
+        // LOGIN RESTRITO EXCLUSIVAMENTE AO FIREBASE AUTHENTICATION
         function fazerLoginAdmin() {
             const email = document.getElementById('admin-email').value.trim().toLowerCase();
             const senha = document.getElementById('admin-senha').value.trim();
@@ -339,21 +339,21 @@
 
             erroDiv.classList.add('d-none');
 
-            // Aceita o login direto
-            if (email === "kevin.silva10@aluno.ifce.edu.br" && senha === "123456") {
-                abrirPainelAdmin();
-            } else if (email !== "" && senha !== "") {
-                // Tenta pelo Firebase Auth para garantia
-                auth.signInWithEmailAndPassword(email, senha).then(() => {
-                    abrirPainelAdmin();
-                }).catch(err => {
-                    // Se falhar o auth mas os campos tiverem preenchidos, libera do mesmo jeito pra não travar tu
-                    abrirPainelAdmin();
-                });
-            } else {
-                erroDiv.textContent = "Digite e-mail e senha!";
+            if (!email || !senha) {
+                erroDiv.textContent = "Digite o e-mail e a senha!";
                 erroDiv.classList.remove('d-none');
+                return;
             }
+
+            auth.signInWithEmailAndPassword(email, senha)
+                .then((userCredential) => {
+                    abrirPainelAdmin();
+                })
+                .catch((error) => {
+                    console.error("Erro de login:", error.code);
+                    erroDiv.textContent = "Acesso negado: E-mail não cadastrado ou senha incorreta!";
+                    erroDiv.classList.remove('d-none');
+                });
         }
 
         function abrirPainelAdmin() {
@@ -371,7 +371,9 @@
         }
 
         function fazerLogoutAdmin() {
-            location.reload();
+            auth.signOut().then(() => {
+                location.reload();
+            });
         }
 
         function mostrarAlertaSucesso(msg) {
@@ -650,7 +652,7 @@
                     html += `
                         <div class="list-group-item d-flex justify-content-between align-items-start">
                             <div>
-                                <strong style="font-size: 13px;" style="color: var(--ifce-accent-green);">${sug.nome || 'Aluno'} (${sug.email || 'Sem e-mail'})</strong>
+                                <strong style="font-size: 13px; color: var(--ifce-accent-green);">${sug.nome || 'Aluno'} (${sug.email || 'Sem e-mail'})</strong>
                                 <p class="m-0 text-white small mt-1">${sug.texto}</p>
                                 ${dataHora ? `<small class="text-muted-custom mt-1 d-block" style="font-size: 11px;">📅 ${dataHora}</small>` : ''}
                             </div>
