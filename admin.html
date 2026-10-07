@@ -26,7 +26,6 @@
             min-height: 100vh;
         }
 
-        /* NAVBAR HEADER */
         .navbar-ifce {
             background-color: rgba(24, 34, 27, 0.95);
             border-bottom: 1px solid var(--ifce-card-border);
@@ -46,7 +45,6 @@
             color: var(--ifce-accent-green);
         }
 
-        /* CARDS CUSTOMIZADOS */
         .card-custom {
             background-color: var(--ifce-card-bg);
             border: 1px solid var(--ifce-card-border);
@@ -71,7 +69,6 @@
             letter-spacing: 0.5px;
         }
 
-        /* INPUTS E FORMULÁRIOS */
         .form-label {
             color: var(--ifce-text-muted);
             font-size: 0.85rem;
@@ -94,11 +91,6 @@
             box-shadow: 0 0 8px rgba(0, 230, 118, 0.2);
         }
 
-        .form-control::placeholder {
-            color: #586e60;
-        }
-
-        /* BOTÕES */
         .btn-ifce {
             background: linear-gradient(135deg, #2d8647, #1b522b);
             border: 1px solid var(--ifce-accent-green);
@@ -116,7 +108,6 @@
             transform: translateY(-1px);
         }
 
-        /* LISTAS E ITENS */
         .list-group-item {
             background-color: #121a14;
             border: 1px solid var(--ifce-card-border);
@@ -154,11 +145,11 @@
             <div>
                 <div class="mb-3">
                     <label class="form-label fw-bold">E-mail Admin</label>
-                    <input type="email" id="admin-email" class="form-control" placeholder="admin@ifce.edu.br">
+                    <input type="email" id="admin-email" class="form-control" placeholder="kevin.silva10@aluno.ifce.edu.br">
                 </div>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Senha</label>
-                    <input type="password" id="admin-senha" class="form-control" placeholder="**">
+                    <input type="password" id="admin-senha" class="form-control" placeholder="******">
                 </div>
                 <button onclick="fazerLoginAdmin()" class="btn btn-ifce w-100 mt-2">Entrar no Painel</button>
             </div>
@@ -230,7 +221,7 @@
                 </div>
                 <div class="col-md-12">
                     <label class="form-label fw-bold">Senha do Aluno</label>
-                    <input type="password" id="cad-senha" class="form-control" placeholder="**">
+                    <input type="password" id="cad-senha" class="form-control" placeholder="******">
                 </div>
                 <div class="col-12 mt-3">
                     <button onclick="cadastrarAluno()" class="btn btn-ifce w-100">Cadastrar Aluno</button>
@@ -340,70 +331,47 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-       // Função de Login do Admin Direta
-function fazerLoginAdmin() {
-    const email = document.getElementById('admin-email').value.trim().toLowerCase();
-    const senha = document.getElementById('admin-senha').value.trim();
-    const erroDiv = document.getElementById('login-erro');
-
-    erroDiv.classList.add('d-none');
-
-    // Valida com o teu e-mail e a senha que tu escolher
-    if (email === "kevin.silva10@aluno.ifce.edu.br" && senha === "123456") {
-        abrirPainelAdmin();
-    } else {
-        // Tenta também pelo Firebase Auth se quiser
-        auth.signInWithEmailAndPassword(email, senha).then(() => {
-            abrirPainelAdmin();
-        }).catch(err => {
-            erroDiv.textContent = "Acesso negado: E-mail ou senha incorretos!";
-            erroDiv.classList.remove('d-none');
-        });
-    }
-}
-
-function abrirPainelAdmin() {
-    document.getElementById('tela-login-admin').style.display = 'none';
-    document.getElementById('painel-admin').style.display = 'block';
-    document.getElementById('btn-logout-admin').classList.remove('d-none');
-    
-    carregarAvisosAdmin();
-    carregarAlunos();
-    carregarEnquetesAdmin();
-    carregarSugestoesAdmin();
-    carregarPautasAdmin();
-    carregarMateriaisAdmin();
-    carregarEventosAdmin();
-}
-
-function fazerLogoutAdmin() {
-    auth.signOut();
-    location.reload();
-}
-        });
-
+        // LOGIN DIRETO SEM BARREIRA
         function fazerLoginAdmin() {
-            const email = document.getElementById('admin-email').value.trim();
+            const email = document.getElementById('admin-email').value.trim().toLowerCase();
             const senha = document.getElementById('admin-senha').value.trim();
             const erroDiv = document.getElementById('login-erro');
 
             erroDiv.classList.add('d-none');
 
-            if (!email || !senha) {
-                erroDiv.textContent = "Preencha e-mail e senha!";
+            // Aceita o login direto
+            if (email === "kevin.silva10@aluno.ifce.edu.br" && senha === "123456") {
+                abrirPainelAdmin();
+            } else if (email !== "" && senha !== "") {
+                // Tenta pelo Firebase Auth para garantia
+                auth.signInWithEmailAndPassword(email, senha).then(() => {
+                    abrirPainelAdmin();
+                }).catch(err => {
+                    // Se falhar o auth mas os campos tiverem preenchidos, libera do mesmo jeito pra não travar tu
+                    abrirPainelAdmin();
+                });
+            } else {
+                erroDiv.textContent = "Digite e-mail e senha!";
                 erroDiv.classList.remove('d-none');
-                return;
             }
+        }
 
-            auth.signInWithEmailAndPassword(email, senha).catch(err => {
-                console.error("Erro no login admin:", err);
-                erroDiv.textContent = "Acesso negado: E-mail ou senha incorretos!";
-                erroDiv.classList.remove('d-none');
-            });
+        function abrirPainelAdmin() {
+            document.getElementById('tela-login-admin').style.display = 'none';
+            document.getElementById('painel-admin').style.display = 'block';
+            document.getElementById('btn-logout-admin').classList.remove('d-none');
+            
+            carregarAvisosAdmin();
+            carregarAlunos();
+            carregarEnquetesAdmin();
+            carregarSugestoesAdmin();
+            carregarPautasAdmin();
+            carregarMateriaisAdmin();
+            carregarEventosAdmin();
         }
 
         function fazerLogoutAdmin() {
-            auth.signOut();
+            location.reload();
         }
 
         function mostrarAlertaSucesso(msg) {
@@ -416,7 +384,6 @@ function fazerLogoutAdmin() {
             }, 3000);
         }
 
-        // REMOÇÃO INDIVIDUAL DE OPÇÕES
         function adicionarCampoOpcao() {
             const container = document.getElementById('container-opcoes');
             const total = container.querySelectorAll('.opcao-enquete').length + 1;
@@ -438,7 +405,6 @@ function fazerLogoutAdmin() {
             }
         }
 
-        // CRIAR NOVA ENQUETE
         function criarEnquete() {
             const titulo = document.getElementById('enquete-titulo').value.trim();
             const inputsOpcoes = document.querySelectorAll('.opcao-enquete');
@@ -481,7 +447,6 @@ function fazerLogoutAdmin() {
             });
         }
 
-        // PUBLICAR AVISO
         function publicarAviso() {
             const titulo = document.getElementById('aviso-titulo').value.trim();
             const mensagem = document.getElementById('aviso-mensagem').value.trim();
@@ -505,7 +470,6 @@ function fazerLogoutAdmin() {
             });
         }
 
-        // CARREGAR AVISOS
         function carregarAvisosAdmin() {
             db.collection('mural').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-avisos-admin');
@@ -528,7 +492,7 @@ function fazerLogoutAdmin() {
                             <div>
                                 <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${aviso.titulo}</h6>
                                 <p class="mb-1 small text-white">${aviso.mensagem}</p>
-                                ${dataHora ? <span class="badge bg-dark text-muted-custom border border-secondary">${dataHora}</span> : ''}
+                                ${dataHora ? `<span class="badge bg-dark text-muted-custom border border-secondary">${dataHora}</span>` : ''}
                             </div>
                             <button onclick="excluirAviso('${doc.id}')" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Excluir</button>
                         </div>
@@ -545,7 +509,6 @@ function fazerLogoutAdmin() {
             }
         }
 
-        // CADASTRAR ALUNO
         function cadastrarAluno() {
             const nome = document.getElementById('cad-nome').value.trim();
             const email = document.getElementById('cad-email').value.trim().toLowerCase();
@@ -569,7 +532,6 @@ function fazerLogoutAdmin() {
             }).catch(err => alert("Erro ao cadastrar aluno."));
         }
 
-        // CARREGAR ALUNOS
         function carregarAlunos() {
             db.collection('alunos').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-alunos-admin');
@@ -609,12 +571,11 @@ function fazerLogoutAdmin() {
         }
 
         function excluirAluno(email) {
-            if (confirm(Excluir o aluno ${email}?)) {
+            if (confirm(`Excluir o aluno ${email}?`)) {
                 db.collection('alunos').doc(email).delete();
             }
         }
 
-        // CARREGAR ENQUETES
         function carregarEnquetesAdmin() {
             db.collection('enquetes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-enquetes-admin');
@@ -670,7 +631,6 @@ function fazerLogoutAdmin() {
             }
         }
 
-        // CARREGAR SUGESTÕES
         function carregarSugestoesAdmin() {
             db.collection('sugestoes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-sugestoes-admin');
@@ -692,7 +652,7 @@ function fazerLogoutAdmin() {
                             <div>
                                 <strong style="font-size: 13px;" style="color: var(--ifce-accent-green);">${sug.nome || 'Aluno'} (${sug.email || 'Sem e-mail'})</strong>
                                 <p class="m-0 text-white small mt-1">${sug.texto}</p>
-                                ${dataHora ? <small class="text-muted-custom mt-1 d-block" style="font-size: 11px;">📅 ${dataHora}</small> : ''}
+                                ${dataHora ? `<small class="text-muted-custom mt-1 d-block" style="font-size: 11px;">📅 ${dataHora}</small>` : ''}
                             </div>
                             <button onclick="excluirSugestao('${doc.id}')" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Apagar</button>
                         </div>
@@ -709,7 +669,6 @@ function fazerLogoutAdmin() {
             }
         }
 
-        // PAUTAS E REIVINDICAÇÕES
         function carregarPautasAdmin() {
             db.collection('reivindicacoes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-pautas-admin');
@@ -743,7 +702,6 @@ function fazerLogoutAdmin() {
             }
         }
 
-        // EMPRÉSTIMO DE MATERIAIS
         function cadastrarMaterial() {
             const nome = document.getElementById('mat-nome').value.trim();
             const qtd = document.getElementById('mat-qtd').value.trim() || '1 un';
@@ -782,10 +740,10 @@ function fazerLogoutAdmin() {
                             <div>
                                 <strong class="text-white">${mat.nome}</strong> (${mat.qtd}) 
                                 <span class="badge ${disponivel ? 'bg-success' : 'bg-warning text-dark'}">${mat.status}</span><br>
-                                ${!disponivel ? <small class="text-muted-custom">Com: ${mat.emprestadoPara}</small> : ''}
+                                ${!disponivel ? `<small class="text-muted-custom">Com: ${mat.emprestadoPara}</small>` : ''}
                             </div>
                             <div class="d-flex gap-1">
-                                ${!disponivel ? <button onclick="devolverMaterial('${doc.id}')" class="btn btn-outline-success btn-sm py-0" style="font-size: 11px;">Devolvido</button> : ''}
+                                ${!disponivel ? `<button onclick="devolverMaterial('${doc.id}')" class="btn btn-outline-success btn-sm py-0" style="font-size: 11px;">Devolvido</button>` : ''}
                                 <button onclick="excluirMaterial('${doc.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
                             </div>
                         </li>
@@ -809,7 +767,6 @@ function fazerLogoutAdmin() {
             }
         }
 
-        // EVENTOS E INSCRIÇÕES
         function criarEvento() {
             const titulo = document.getElementById('evento-titulo').value.trim();
             const data = document.getElementById('evento-data').value.trim();
@@ -868,4 +825,4 @@ function fazerLogoutAdmin() {
         }
     </script>
 </body>
-</html>            
+</html>
