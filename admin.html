@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Admin - Grêmio IFCE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --ifce-green: #2d8647;
+            --ifce-red: #d9534f;
+        }
+        body { background-color: #f4f6f9; }
+        .navbar-ifce { background-color: var(--ifce-green); }
+        .btn-ifce { background-color: var(--ifce-green); color: white; }
+        .btn-ifce:hover { background-color: #236b37; color: white; }
+        .card-custom { border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        #painel-admin { display: none; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark navbar-ifce mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <span class="navbar-brand fw-bold m-0">Painel Administrativo - Grêmio IFCE</span>
+            <button id="btn-logout-admin" onclick="fazerLogoutAdmin()" class="btn btn-outline-light btn-sm d-none">Sair do Admin</button>
+        </div>
+    </nav>
+
+    <!-- TELA DE LOGIN DO ADMIN -->
+    <div class="container" id="tela-login-admin" style="max-width: 400px; margin-top: 40px;">
+        <div class="card card-custom p-4">
+            <h4 class="fw-bold text-center mb-3" style="color: var(--ifce-green);">Login Administrativo</h4>
+            <div id="login-erro" class="alert alert-danger d-none p-2 small text-center"></div>
+            <div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">E-mail Admin</label>
+                    <input type="email" id="admin-email" class="form-control" placeholder="admin@ifce.edu.br">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Senha</label>
+                    <input type="password" id="admin-senha" class="form-control" placeholder="******">
+                </div>
+                <button onclick="fazerLoginAdmin()" class="btn btn-ifce w-100 fw-bold">Entrar no Painel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAINEL PRINCIPAL DO ADMIN -->
+    <div class="container pb-5" id="painel-admin" style="max-width: 800px;">
+
+        <!-- ALERTA GLOBAL DE SUCESSO -->
+        <div id="alerta-sucesso" class="alert alert-success d-none fw-bold text-center card-custom mb-4" role="alert"></div>
+
+        <!-- PUBLICAR MURAL DE AVISOS -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">📢 Mural de Avisos</h5>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Título do Aviso</label>
+                <input type="text" id="aviso-titulo" class="form-control" placeholder="Ex: Reunião do Grêmio">
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Mensagem</label>
+                <textarea id="aviso-mensagem" class="form-control" rows="2" placeholder="Digite o recado para os alunos..."></textarea>
+            </div>
+            <button onclick="publicarAviso()" class="btn btn-ifce fw-bold">Publicar Aviso</button>
+
+            <hr class="my-4">
+
+            <h6 class="fw-bold mb-3">Avisos Publicados</h6>
+            <div id="lista-avisos-admin">
+                <p class="text-muted small">Carregando avisos...</p>
+            </div>
+        </div>
+
+        <!-- CRIAR NOVA ENQUETE -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">📊 Criar Nova Enquete</h5>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Pergunta / Título da Enquete</label>
+                <input type="text" id="enquete-titulo" class="form-control" placeholder="Ex: Qual tema do próximo evento?">
+            </div>
+            <label class="form-label fw-bold">Opções de Voto</label>
+            <div id="container-opcoes">
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control opcao-enquete" placeholder="Opção 1">
+                    <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
+                </div>
+                <div class="input-group mb-2">
+                    <input type="text" class="form-control opcao-enquete" placeholder="Opção 2">
+                    <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-2">
+                <button onclick="adicionarCampoOpcao()" class="btn btn-outline-secondary btn-sm">+ Adicionar Opção</button>
+                <button onclick="criarEnquete()" class="btn btn-ifce fw-bold ms-auto">Criar Enquete</button>
+            </div>
+        </div>
+
+        <!-- CADASTRAR ALUNO -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">👤 Cadastrar Aluno</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <input type="text" id="cad-nome" class="form-control" placeholder="Nome do Aluno">
+                </div>
+                <div class="col-md-6">
+                    <input type="email" id="cad-email" class="form-control" placeholder="E-mail (ex: aluno@aluno.ifce.edu.br)">
+                </div>
+                <div class="col-md-12">
+                    <input type="password" id="cad-senha" class="form-control" placeholder="Senha do aluno">
+                </div>
+                <div class="col-12">
+                    <button onclick="cadastrarAluno()" class="btn btn-ifce fw-bold w-100">Cadastrar Aluno</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAUTAS E REIVINDICAÇÕES (ADMIN) -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">✊ Pautas e Reivindicações Apoiadas</h5>
+            <p class="text-muted small mb-3">Pautas criadas pelos alunos para encaminhar à Direção do IFCE.</p>
+            <div id="lista-pautas-admin">
+                <p class="text-muted small">Carregando pautas...</p>
+            </div>
+        </div>
+
+        <!-- EMPRÉSTIMO DE MATERIAIS (ADMIN) -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">🎲 Gerenciar Materiais do Grêmio</h5>
+            <div class="row g-2 mb-3">
+                <div class="col-md-8">
+                    <input type="text" id="mat-nome" class="form-control" placeholder="Nome do Material (Ex: Bola de Futsal, Xadrez)">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="mat-qtd" class="form-control" placeholder="Qtd / Identificador">
+                </div>
+            </div>
+            <button onclick="cadastrarMaterial()" class="btn btn-ifce fw-bold">Cadastrar Material</button>
+
+            <hr class="my-4">
+            <h6 class="fw-bold mb-3">Materiais Cadastrados</h6>
+            <div id="lista-materiais-admin">
+                <p class="text-muted small">Carregando materiais...</p>
+            </div>
+        </div>
+
+        <!-- CRIAR EVENTO / TORNEIO (ADMIN) -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">📅 Criar Evento ou Torneio</h5>
+            <div class="row g-2 mb-3">
+                <div class="col-md-8">
+                    <input type="text" id="evento-titulo" class="form-control" placeholder="Título (Ex: Interclasses de Futsal)">
+                </div>
+                <div class="col-md-4">
+                    <input type="text" id="evento-data" class="form-control" placeholder="Data/Hora (Ex: 15/10 - 14h)">
+                </div>
+                <div class="col-12 mt-2">
+                    <textarea id="evento-descricao" class="form-control" rows="2" placeholder="Descrição e regras do evento..."></textarea>
+                </div>
+            </div>
+            <button onclick="criarEvento()" class="btn btn-ifce fw-bold">Publicar Evento</button>
+
+            <hr class="my-4">
+            <h6 class="fw-bold mb-3">Eventos Programados</h6>
+            <div id="lista-eventos-admin">
+                <p class="text-muted small">Carregando eventos...</p>
+            </div>
+        </div>
+
+        <!-- ENQUETES ATIVAS E ENCERRADAS -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">📈 Enquetes Ativas e Encerradas</h5>
+            <div id="lista-enquetes-admin">
+                <p class="text-muted small">Carregando enquetes...</p>
+            </div>
+        </div>
+
+        <!-- ALUNOS CADASTRADOS -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">🎓 Alunos Cadastrados</h5>
+            <div id="lista-alunos-admin">
+                <p class="text-muted small">Carregando alunos...</p>
+            </div>
+        </div>
+
+        <!-- SUGESTÕES DOS ALUNOS -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">💡 Sugestões dos Alunos</h5>
+            <div id="lista-sugestoes-admin">
+                <p class="text-muted small">Carregando sugestões...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBa_WlE4hLxLqHt6yRdw0JTeRS_3pDgPo",
+            authDomain: "gremioifce-92540.firebaseapp.com",
+            projectId: "gremioifce-92540",
+            storageBucket: "gremioifce-92540.appspot.com",
+            messagingSenderId: "30782912737",
+            appId: "1:30782912737:web:364c0d7ff022"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // AUTENTICAÇÃO DO ADMIN
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('tela-login-admin').style.display = 'none';
+                document.getElementById('painel-admin').style.display = 'block';
+                document.getElementById('btn-logout-admin').classList.remove('d-none');
+                
+                carregarAvisosAdmin();
+                carregarAlunos();
+                carregarEnquetesAdmin();
+                carregarSugestoesAdmin();
+                carregarPautasAdmin();
+                carregarMateriaisAdmin();
+                carregarEventosAdmin();
+            } else {
+                document.getElementById('tela-login-admin').style.display = 'block';
+                document.getElementById('painel-admin').style.display = 'none';
+                document.getElementById('btn-logout-admin').classList.add('d-none');
+            }
+        });
+
+        function fazerLoginAdmin() {
+            const email = document.getElementById('admin-email').value.trim();
+            const senha = document.getElementById('admin-senha').value.trim();
+            const erroDiv = document.getElementById('login-erro');
+
+            erroDiv.classList.add('d-none');
+
+            if (!email || !senha) {
+                erroDiv.textContent = "Preencha e-mail e senha!";
+                erroDiv.classList.remove('d-none');
+                return;
+            }
+
+            auth.signInWithEmailAndPassword(email, senha).catch(err => {
+                console.error("Erro no login admin:", err);
+                erroDiv.textContent = "Acesso negado: E-mail ou senha incorretos!";
+                erroDiv.classList.remove('d-none');
+            });
+        }
+
+        function fazerLogoutAdmin() {
+            auth.signOut();
+        }
+
+        function mostrarAlertaSucesso(msg) {
+            const alerta = document.getElementById('alerta-sucesso');
+            alerta.textContent = "✅ " + msg;
+            alerta.classList.remove('d-none');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setTimeout(() => {
+                alerta.classList.add('d-none');
+            }, 3000);
+        }
+
+        // REMOÇÃO INDIVIDUAL DE OPÇÕES
+        function adicionarCampoOpcao() {
+            const container = document.getElementById('container-opcoes');
+            const total = container.querySelectorAll('.opcao-enquete').length + 1;
+            const div = document.createElement('div');
+            div.className = 'input-group mb-2';
+            div.innerHTML = `
+                <input type="text" class="form-control opcao-enquete" placeholder="Opção ${total}">
+                <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removerCampoOpcao(btn) {
+            const container = document.getElementById('container-opcoes');
+            if (container.querySelectorAll('.opcao-enquete').length > 2) {
+                btn.parentElement.remove();
+            } else {
+                alert("A enquete precisa ter pelo menos 2 opções!");
+            }
+        }
+
+        // CRIAR NOVA ENQUETE
+        function criarEnquete() {
+            const titulo = document.getElementById('enquete-titulo').value.trim();
+            const inputsOpcoes = document.querySelectorAll('.opcao-enquete');
+            
+            let opcoes = [];
+            inputsOpcoes.forEach((input, index) => {
+                const val = input.value.trim();
+                if (val) {
+                    opcoes.push({ id: index, texto: val, votos: 0 });
+                }
+            });
+
+            if (!titulo || opcoes.length < 2) {
+                alert("Preencha o título e pelo menos 2 opções de voto!");
+                return;
+            }
+
+            db.collection('enquetes').add({
+                titulo: titulo,
+                opcoes: opcoes,
+                ativa: true,
+                votosAlunos: [],
+                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                mostrarAlertaSucesso("Enquete criada com sucesso!");
+                document.getElementById('enquete-titulo').value = '';
+                document.getElementById('container-opcoes').innerHTML = `
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control opcao-enquete" placeholder="Opção 1">
+                        <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
+                    </div>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control opcao-enquete" placeholder="Opção 2">
+                        <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
+                    </div>
+                `;
+            }).catch(err => {
+                console.error("Erro ao criar enquete:", err);
+                alert("Erro ao criar enquete.");
+            });
+        }
+
+        // PUBLICAR AVISO
+        function publicarAviso() {
+            const titulo = document.getElementById('aviso-titulo').value.trim();
+            const mensagem = document.getElementById('aviso-mensagem').value.trim();
+
+            if (!titulo || !mensagem) {
+                alert("Preencha título e mensagem do aviso!");
+                return;
+            }
+
+            db.collection('mural').add({
+                titulo: titulo,
+                mensagem: mensagem,
+                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                mostrarAlertaSucesso("Aviso publicado no mural com sucesso!");
+                document.getElementById('aviso-titulo').value = '';
+                document.getElementById('aviso-mensagem').value = '';
+            }).catch(err => {
+                console.error("Erro ao publicar aviso:", err);
+                alert("Erro ao publicar aviso.");
+            });
+        }
+
+        // CARREGAR AVISOS
+        function carregarAvisosAdmin() {
+            db.collection('mural').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+                const container = document.getElementById('lista-avisos-admin');
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-muted small mb-0">Nenhum aviso publicado no momento.</p>';
+                    return;
+                }
+
+                let html = '<div class="list-group">';
+                snapshot.forEach(doc => {
+                    const aviso = doc.data();
+                    let dataHora = '';
+                    if (aviso.criadoEm) {
+                        const d = aviso.criadoEm.toDate();
+                        dataHora = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    }
+
+                    html += `
+                        <div class="list-group-item d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="fw-bold mb-1 text-success">${aviso.titulo}</h6>
+                                <p class="mb-1 small text-dark">${aviso.mensagem}</p>
+                                ${dataHora ? `<span class="badge bg-light text-muted border">${dataHora}</span>` : ''}
+                            </div>
+                            <button onclick="excluirAviso('${doc.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            });
+        }
+
+        function excluirAviso(id) {
+            if (confirm("Tem certeza que deseja excluir este aviso?")) {
+                db.collection('mural').doc(id).delete();
+            }
+        }
+
+        // CADASTRAR ALUNO
+        function cadastrarAluno() {
+            const nome = document.getElementById('cad-nome').value.trim();
+            const email = document.getElementById('cad-email').value.trim().toLowerCase();
+            const senha = document.getElementById('cad-senha').value.trim();
+
+            if (!nome || !email || !senha) {
+                alert("Preencha todos os campos do aluno!");
+                return;
+            }
+
+            db.collection('alunos').doc(email).set({
+                nome: nome,
+                email: email,
+                senha: senha,
+                ativo: true
+            }).then(() => {
+                mostrarAlertaSucesso("Aluno cadastrado com sucesso!");
+                document.getElementById('cad-nome').value = '';
+                document.getElementById('cad-email').value = '';
+                document.getElementById('cad-senha').value = '';
+            }).catch(err => alert("Erro ao cadastrar aluno."));
+        }
+
+        // CARREGAR ALUNOS
+        function carregarAlunos() {
+            db.collection('alunos').onSnapshot(snapshot => {
+                const container = document.getElementById('lista-alunos-admin');
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-muted small mb-0">Nenhum aluno cadastrado.</p>';
+                    return;
+                }
+                let html = '<ul class="list-group">';
+                snapshot.forEach(doc => {
+                    const aluno = doc.data();
+                    const statusBg = aluno.ativo ? 'bg-success' : 'bg-danger';
+                    const statusTxt = aluno.ativo ? 'Ativo' : 'Bloqueado';
+
+                    html += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong style="font-size: 14px;">${aluno.nome}</strong><br>
+                                <small class="text-muted">${aluno.email}</small>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge ${statusBg}">${statusTxt}</span>
+                                <button onclick="alternarStatusAluno('${aluno.email}', ${!aluno.ativo})" class="btn btn-outline-warning btn-sm py-0" style="font-size: 11px;">
+                                    ${aluno.ativo ? 'Bloquear' : 'Desbloquear'}
+                                </button>
+                                <button onclick="excluirAluno('${aluno.email}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                            </div>
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+                container.innerHTML = html;
+            });
+        }
+
+        function alternarStatusAluno(email, novoStatus) {
+            db.collection('alunos').doc(email).update({ ativo: novoStatus });
+        }
+
+        function excluirAluno(email) {
+            if (confirm(`Excluir o aluno ${email}?`)) {
+                db.collection('alunos').doc(email).delete();
+            }
+        }
+
+        // CARREGAR ENQUETES
+        function carregarEnquetesAdmin() {
+            db.collection('enquetes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+                const container = document.getElementById('lista-enquetes-admin');
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-muted small mb-0">Nenhuma enquete cadastrada.</p>';
+                    return;
+                }
+                let html = '';
+                snapshot.forEach(doc => {
+                    const enquete = doc.data();
+                    const id = doc.id;
+                    const votosAlunos = enquete.votosAlunos || [];
+                    const totalVotos = enquete.opcoes ? enquete.opcoes.reduce((acc, op) => acc + (op.votos || 0), 0) : votosAlunos.length;
+
+                    html += `
+                        <div class="border rounded p-3 mb-3 bg-white">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold m-0 text-success">${enquete.titulo}</h6>
+                                <span class="badge ${enquete.ativa ? 'bg-success' : 'bg-secondary'}">${enquete.ativa ? 'Ativa' : 'Encerrada'}</span>
+                            </div>
+                            <ul class="list-group mb-2">
+                    `;
+                    if (enquete.opcoes) {
+                        enquete.opcoes.forEach(op => {
+                            const pct = totalVotos > 0 ? Math.round((op.votos / totalVotos) * 100) : 0;
+                            html += `<li class="list-group-item d-flex justify-content-between small py-1">
+                                <span>${op.texto}</span>
+                                <strong>${op.votos} votos (${pct}%)</strong>
+                            </li>`;
+                        });
+                    }
+                    html += `</ul>
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button onclick="alternarStatusEnquete('${id}', ${!enquete.ativa})" class="btn btn-outline-secondary btn-sm py-0" style="font-size: 11px;">
+                                    ${enquete.ativa ? 'Encerrar' : 'Reabrir'}
+                                </button>
+                                <button onclick="excluirEnquete('${id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            });
+        }
+
+        function alternarStatusEnquete(id, novoStatus) {
+            db.collection('enquetes').doc(id).update({ ativa: novoStatus });
+        }
+
+        function excluirEnquete(id) {
+            if (confirm("Excluir esta enquete?")) {
+                db.collection('enquetes').doc(id).delete();
+            }
+        }
+
+        // CARREGAR SUGESTÕES
+        function carregarSugestoesAdmin() {
+            db.collection('sugestoes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+                const container = document.getElementById('lista-sugestoes-admin');
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-muted small mb-0">Nenhuma sugestão enviada.</p>';
+                    return;
+                }
+                let html = '<div class="list-group">';
+                snapshot.forEach(doc => {
+                    const sug = doc.data();
+                    let dataHora = '';
+                    if (sug.criadoEm) {
+                        const d = sug.criadoEm.toDate();
+                        dataHora = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    }
+
+                    html += `
+                        <div class="list-group-item d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong style="font-size: 13px;" class="text-success">${sug.nome || 'Aluno'} (${sug.email || 'Sem e-mail'})</strong>
+                                <p class="m-0 text-dark small mt-1">${sug.texto}</p>
+                                ${dataHora ? `<small class="text-muted mt-1 d-block" style="font-size: 11px;">📅 ${dataHora}</small>` : ''}
+                            </div>
+                            <button onclick="excluirSugestao('${doc.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Apagar</button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            });
+        }
+
+        function excluirSugestao(id) {
+            if (confirm("Deseja apagar esta sugestão?")) {
+                db.collection('sugestoes').doc(id).delete();
+            }
+        }
+
+        // PAUTAS E REIVINDICAÇÕES
+        function carregarPautasAdmin() {
+            db.collection('reivindicacoes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+                const container = document.getElementById('lista-pautas-admin');
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-muted small mb-0">Nenhuma pauta cadastrada pelos alunos.</p>';
+                    return;
+                }
+                let html = '<div class="list-group">';
+                snapshot.forEach(doc => {
+                    const pauta = doc.data();
+                    const apoios = pauta.apoios ? pauta.apoios.length : 0;
+                    html += `
+                        <div class="list-group-item d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="fw-bold mb-1 text-success">${pauta.titulo} <span class="badge bg-primary">👍 ${apoios} Apoios</span></h6>
+                                <p class="mb-1 small text-dark">${pauta.descricao}</p>
+                                <small class="text-muted" style="font-size: 11px;">Criado por: ${pauta.autor || 'Aluno'}</small>
+                            </div>
+                            <button onclick="excluirPauta('${doc.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            });
+        }
+
+        function excluirPauta(id) {
+            if (confirm("Excluir esta pauta?")) {
+                db.collection('reivindicacoes').doc(id).delete();
+            }
+        }
+
+        // EMPRÉSTIMO DE MATERIAIS
+        function cadastrarMaterial() {
+            const nome = document.getElementById('mat-nome').value.trim();
+            const qtd = document.getElementById('mat-qtd').value.trim() || '1 un';
+
+            if (!nome) {
+                alert("Preencha o nome do material!");
+                return;
+            }
+
+            db.collection('materiais').add({
+                nome: nome,
+                qtd: qtd,
+                status: 'Disponível',
+                emprestadoPara: '',
+                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                mostrarAlertaSucesso("Material cadastrado com sucesso!");
+                document.getElementById('mat-nome').value = '';
+                document.getElementById('mat-qtd').value = '';
+            });
+        }
+
+        function carregarMateriaisAdmin() {
+            db.collection('materiais').onSnapshot(snapshot => {
+                const container = document.getElementById('lista-materiais-admin');
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-muted small mb-0">Nenhum material cadastrado.</p>';
+                    return;
+                }
+                let html = '<ul class="list-group">';
+                snapshot.forEach(doc => {
+                    const mat = doc.data();
+                    const disponivel = mat.status === 'Disponível';
+                    html += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="text-dark">${mat.nome}</strong> (${mat.qtd}) 
+                                <span class="badge ${disponivel ? 'bg-success' : 'bg-warning text-dark'}">${mat.status}</span><br>
+                                ${!disponivel ? `<small class="text-muted">Com: ${mat.emprestadoPara}</small>` : ''}
+                            </div>
+                            <div class="d-flex gap-1">
+                                ${!disponivel ? `<button onclick="devolverMaterial('${doc.id}')" class="btn btn-outline-success btn-sm py-0" style="font-size: 11px;">Devolvido</button>` : ''}
+                                <button onclick="excluirMaterial('${doc.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                            </div>
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+                container.innerHTML = html;
+            });
+        }
+
+        function devolverMaterial(id) {
+            db.collection('materiais').doc(id).update({
+                status: 'Disponível',
+                emprestadoPara: ''
+            });
+        }
+
+        function excluirMaterial(id) {
+            if (confirm("Excluir este material?")) {
+                db.collection('materiais').doc(id).delete();
+            }
+        }
+
+        // EVENTOS E INSCRIÇÕES
+        function criarEvento() {
+            const titulo = document.getElementById('evento-titulo').value.trim();
+            const data = document.getElementById('evento-data').value.trim();
+            const descricao = document.getElementById('evento-descricao').value.trim();
+
+            if (!titulo || !data) {
+                alert("Preencha título e data do evento!");
+                return;
+            }
+
+            db.collection('eventos').add({
+                titulo: titulo,
+                data: data,
+                descricao: descricao,
+                inscritos: [],
+                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                mostrarAlertaSucesso("Evento publicado com sucesso!");
+                document.getElementById('evento-titulo').value = '';
+                document.getElementById('evento-data').value = '';
+                document.getElementById('evento-descricao').value = '';
+            });
+        }
+
+        function carregarEventosAdmin() {
+            db.collection('eventos').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+                const container = document.getElementById('lista-eventos-admin');
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-muted small mb-0">Nenhum evento cadastrado.</p>';
+                    return;
+                }
+                let html = '<div class="list-group">';
+                snapshot.forEach(doc => {
+                    const ev = doc.data();
+                    const inscritos = ev.inscritos || [];
+                    html += `
+                        <div class="list-group-item d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="fw-bold mb-1 text-success">${ev.titulo} <span class="badge bg-info text-dark">📅 ${ev.data}</span></h6>
+                                <p class="mb-1 small text-dark">${ev.descricao}</p>
+                                <small class="text-muted fw-bold">Inscritos (${inscritos.length}): ${inscritos.join(', ') || 'Nenhum inscrito ainda'}</small>
+                            </div>
+                            <button onclick="excluirEvento('${doc.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            });
+        }
+
+        function excluirEvento(id) {
+            if (confirm("Excluir este evento?")) {
+                db.collection('eventos').doc(id).delete();
+            }
+        }
+    </script>
+</body>
+</html>

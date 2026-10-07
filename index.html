@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Aluno - Grêmio IFCE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --ifce-green: #2d8647;
+            --ifce-dark: #121814;
+            --ifce-accent-green: #00e676;
+        }
+        body { background-color: #f4f6f9; }
+        .navbar-ifce { background-color: var(--ifce-green); }
+        .btn-ifce { background-color: var(--ifce-green); color: white; }
+        .btn-ifce:hover { background-color: #236b37; color: white; }
+        .card-custom { border: none; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        #portal-aluno { display: none; }
+
+        /* =========================================================
+           TELA DE ENTRADA / ONBOARDING (ESTILO QUÍMICA IFCE)
+           ========================================================= */
+        #screen-onboarding {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: var(--ifce-dark);
+            background-image: 
+                radial-gradient(circle at 50% 30%, #1e2922 0%, #0d120f 70%),
+                radial-gradient(rgba(45, 134, 71, 0.1) 1px, transparent 0);
+            background-size: 100% 100%, 30px 30px;
+            color: #ffffff;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 20px 20px 20px;
+            overflow: hidden;
+        }
+
+        .top-logo-chem {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--ifce-accent-green);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-top: 10px;
+            text-shadow: 0 0 12px rgba(0, 230, 118, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .slides-wrapper-chem {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .slide-chem {
+            min-width: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 15px;
+        }
+
+        .chem-icon-box {
+            font-size: 4.5rem;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 15px rgba(45, 134, 71, 0.6));
+            animation: floatChem 3s ease-in-out infinite;
+        }
+
+        @keyframes floatChem {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .highlight-title-chem {
+            font-size: 2.4rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #ffffff;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(0, 230, 118, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .highlight-title-chem span {
+            color: var(--ifce-accent-green);
+        }
+
+        .subtitle-chem {
+            font-size: 1rem;
+            color: #a0b3a6;
+            max-width: 350px;
+            font-weight: 400;
+        }
+
+        .login-card-chem {
+            background: #18221b;
+            width: 100%;
+            max-width: 380px;
+            padding: 25px 20px;
+            border-radius: 20px;
+            border: 1px solid #283a2e;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+            text-align: left;
+        }
+
+        .login-card-chem h2 {
+            font-size: 1.6rem;
+            margin-bottom: 5px;
+            text-align: center;
+            color: #fff;
+            font-weight: 800;
+        }
+
+        .login-card-chem p {
+            font-size: 0.85rem;
+            color: #a0b3a6;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .input-group-chem {
+            margin-bottom: 15px;
+        }
+
+        .input-group-chem label {
+            display: block;
+            font-size: 0.8rem;
+            color: #a0b3a6;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .input-group-chem input {
+            width: 100%;
+            padding: 12px 15px;
+            background: #0d120f;
+            border: 1px solid #283a2e;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        .input-group-chem input:focus {
+            border-color: var(--ifce-accent-green);
+            box-shadow: 0 0 8px rgba(0, 230, 118, 0.2);
+        }
+
+        .btn-green-chem {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #2d8647, #1b522b);
+            border: 1px solid var(--ifce-accent-green);
+            border-radius: 12px;
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(45, 134, 71, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-green-chem:hover {
+            background: linear-gradient(135deg, #349952, #236b37);
+        }
+
+        .btn-green-chem:active {
+            transform: scale(0.98);
+        }
+
+        .dots-container-chem {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .dot-chem {
+            width: 10px;
+            height: 10px;
+            background: #283a2e;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot-chem.active {
+            width: 25px;
+            background: var(--ifce-accent-green);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 230, 118, 0.8);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TELA DE ENTRADA / ONBOARDING QUÍMICA IFCE -->
+    <div id="screen-onboarding">
+        <div class="top-logo-chem">🧪 IFCE | QUÍMICA</div>
+
+        <div class="slides-wrapper-chem" id="slidesWrapperChem">
+            <!-- SLIDE 1: BOAS-VINDAS -->
+            <div class="slide-chem">
+                <div class="chem-icon-box">🔬</div>
+                <h1 class="highlight-title-chem">REAGINDO AO <span>FUTURO</span></h1>
+                <p class="subtitle-chem">Sua central de apoio ao estudante de Química do IFCE.</p>
+            </div>
+
+            <!-- SLIDE 2: RECURSOS DO GRÊMIO -->
+            <div class="slide-chem">
+                <div class="chem-icon-box">⚗️</div>
+                <h1 class="highlight-title-chem">CONEXÃO <span>ACADÊMICA</span></h1>
+                <p class="subtitle-chem">Mural de avisos, enquetes, reivindicações e materiais a uma reação de distância.</p>
+            </div>
+
+            <!-- SLIDE 3: LOGIN -->
+            <div class="slide-chem">
+                <div class="login-card-chem">
+                    <h2>Área do Aluno</h2>
+                    <p>Entre com sua conta do portal <br><strong style="color: var(--ifce-accent-green);">Grêmio Estudantil IFCE</strong></p>
+
+                    <div id="login-erro-aluno-onboarding" class="alert alert-danger d-none p-2 small text-center mb-3"></div>
+
+                    <div class="input-group-chem">
+                        <label>E-mail Institucional</label>
+                        <input type="email" id="aluno-email-input-onboarding" placeholder="aluno@aluno.ifce.edu.br">
+                    </div>
+
+                    <div class="input-group-chem">
+                        <label>Senha</label>
+                        <input type="password" id="aluno-senha-input-onboarding" placeholder="******">
+                    </div>
+
+                    <button onclick="fazerLoginAlunoOnboarding()" class="btn-green-chem">Acessar Portal</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="dots-container-chem">
+            <div class="dot-chem active" onclick="irParaSlideChem(0)"></div>
+            <div class="dot-chem" onclick="irParaSlideChem(1)"></div>
+            <div class="dot-chem" onclick="irParaSlideChem(2)"></div>
+        </div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark navbar-ifce mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <span class="navbar-brand fw-bold m-0">Portal do Aluno - Grêmio IFCE</span>
+            <button id="btn-logout-aluno" onclick="fazerLogoutAluno()" class="btn btn-outline-light btn-sm d-none">Sair</button>
+        </div>
+    </nav>
+
+    <!-- TELA DE LOGIN DO ALUNO (OCULTA / BACKUP) -->
+    <div class="container" id="tela-login-aluno" style="max-width: 400px; margin-top: 40px; display: none;">
+        <div class="card card-custom p-4">
+            <h4 class="fw-bold text-center mb-3" style="color: var(--ifce-green);">Área do Aluno</h4>
+            <div id="login-erro-aluno" class="alert alert-danger d-none p-2 small text-center"></div>
+            <div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">E-mail Institucional</label>
+                    <input type="email" id="aluno-email-input" class="form-control" placeholder="aluno@aluno.ifce.edu.br">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Senha</label>
+                    <input type="password" id="aluno-senha-input" class="form-control" placeholder="******">
+                </div>
+                <button onclick="fazerLoginAluno()" class="btn btn-ifce w-100 fw-bold">Entrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PORTAL PRINCIPAL DO ALUNO -->
+    <div class="container pb-5" id="portal-aluno" style="max-width: 800px;">
+
+        <!-- CARD BOAS VINDAS -->
+        <div class="card card-custom p-3 mb-4 bg-success-subtle border-0">
+            <h5 class="fw-bold mb-1" style="color: var(--ifce-green);">Olá, <span id="nome-aluno-display">Aluno</span>! 👋</h5>
+            <small class="text-muted" id="email-aluno-display"></small>
+        </div>
+
+        <!-- MURAL DE AVISOS -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">📢 Mural de Avisos</h5>
+            <div id="lista-avisos-aluno">
+                <p class="text-muted small">Carregando avisos...</p>
+            </div>
+        </div>
+
+        <!-- ENQUETES E VOTAÇÕES -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-3" style="color: var(--ifce-green);">📊 Enquetes e Votações</h5>
+            <div id="lista-enquetes-aluno">
+                <p class="text-muted small">Carregando enquetes...</p>
+            </div>
+        </div>
+
+        <!-- REIVINDICAÇÕES E PAUTAS DA COMUNIDADE -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-2" style="color: var(--ifce-green);">✊ Reivindicações dos Alunos</h5>
+            <p class="text-muted small mb-3">Crie ou apoie pautas para melhorias no campus. O Grêmio levará as pautas mais apoiadas à Direção.</p>
+            
+            <div class="mb-3 p-3 bg-light rounded border">
+                <h6 class="fw-bold text-success mb-2">Criar Nova Reivindicação</h6>
+                <input type="text" id="reivindicacao-titulo" class="form-control mb-2" placeholder="Título (Ex: Manutenção dos ventiladores)">
+                <textarea id="reivindicacao-descricao" class="form-control mb-2" rows="2" placeholder="Descreva os detalhes da reivindicação..."></textarea>
+                <button onclick="criarReivindicacao()" class="btn btn-ifce btn-sm fw-bold w-100">Publicar Reivindicação</button>
+            </div>
+
+            <div id="lista-reivindicacoes-aluno">
+                <p class="text-muted small">Carregando reivindicações...</p>
+            </div>
+        </div>
+
+        <!-- EMPRÉSTIMO DE MATERIAIS DO GRÊMIO -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-2" style="color: var(--ifce-green);">🎲 Empréstimo de Materiais</h5>
+            <p class="text-muted small mb-3">Solicite jogos, bolas e equipamentos disponíveis no Grêmio para uso nos intervalos.</p>
+            <div id="lista-materiais-aluno">
+                <p class="text-muted small">Carregando materiais disponíveis...</p>
+            </div>
+        </div>
+
+        <!-- CALENDÁRIO DE EVENTOS E INSCRIÇÕES -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-2" style="color: var(--ifce-green);">📅 Eventos e Torneios</h5>
+            <p class="text-muted small mb-3">Inscreva-se nos campeonatos, oficinas e eventos organizados pelo Grêmio.</p>
+            <div id="lista-eventos-aluno">
+                <p class="text-muted small">Carregando eventos...</p>
+            </div>
+        </div>
+
+        <!-- ENVIAR SUGESTÃO -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="fw-bold mb-2" style="color: var(--ifce-green);">💡 Enviando Sugestões ao Grêmio</h5>
+            <p class="text-muted small mb-3">Mande suas ideias, críticas ou dúvidas para a gestão do Grêmio Estudantil.</p>
+            <div class="mb-3">
+                <textarea id="sugestao-texto" class="form-control" rows="3" placeholder="Escreva sua sugestão aqui..."></textarea>
+            </div>
+            <button onclick="enviarSugestao()" class="btn btn-ifce fw-bold w-100">Enviar Sugestão</button>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBBa_WlE4hLxLqHt6yRdw0JTeRS_3pDgPo",
+            authDomain: "gremioifce-92540.firebaseapp.com",
+            projectId: "gremioifce-92540",
+            storageBucket: "gremioifce-92540.appspot.com",
+            messagingSenderId: "30782912737",
+            appId: "1:30782912737:web:364c0d7ff022"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let usuarioAtual = null;
+
+        /* =========================================================
+           LÓGICA DA TELA DE ONBOARDING & INTEGRAÇÃO DE LOGIN
+           ========================================================= */
+        let currentSlideChem = 0;
+
+        function irParaSlideChem(index) {
+            currentSlideChem = index;
+            const wrapper = document.getElementById('slidesWrapperChem');
+            const dots = document.querySelectorAll('.dot-chem');
+            
+            if (wrapper) {
+                wrapper.style.transform = `translateX(-${index * 100}%)`;
+            }
+            
+            dots.forEach((dot, i) => {
+                if (i === index) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+
+        // Suporte ao toque/arrastar no mobile
+        let startXChem = 0;
+        document.addEventListener('touchstart', e => startXChem = e.touches[0].clientX);
+        document.addEventListener('touchend', e => {
+            let endXChem = e.changedTouches[0].clientX;
+            if (startXChem - endXChem > 50 && currentSlideChem < 2) irParaSlideChem(currentSlideChem + 1);
+            if (endXChem - startXChem > 50 && currentSlideChem > 0) irParaSlideChem(currentSlideChem - 1);
+        });
+
+        // Conecta o formulário da tela de Onboarding com o login
+        function fazerLoginAlunoOnboarding() {
+            const email = document.getElementById('aluno-email-input-onboarding').value.trim();
+            const senha = document.getElementById('aluno-senha-input-onboarding').value.trim();
+            
+            document.getElementById('aluno-email-input').value = email;
+            document.getElementById('aluno-senha-input').value = senha;
+            
+            const erroOnboarding = document.getElementById('login-erro-aluno-onboarding');
+            erroOnboarding.classList.add('d-none');
+
+            if (!email || !senha) {
+                erroOnboarding.textContent = "Preencha e-mail e senha!";
+                erroOnboarding.classList.remove('d-none');
+                return;
+            }
+
+            db.collection('alunos').doc(email.toLowerCase()).get().then(doc => {
+                if (!doc.exists) {
+                    erroOnboarding.textContent = "Aluno não encontrado no sistema!";
+                    erroOnboarding.classList.remove('d-none');
+                    return;
+                }
+
+                const alunoData = doc.data();
+
+                if (!alunoData.ativo) {
+                    erroOnboarding.textContent = "Seu cadastro está bloqueado. Procure o Grêmio!";
+                    erroOnboarding.classList.remove('d-none');
+                    return;
+                }
+
+                if (alunoData.senha !== senha) {
+                    erroOnboarding.textContent = "Senha incorreta!";
+                    erroOnboarding.classList.remove('d-none');
+                    return;
+                }
+
+                // Login OK
+                usuarioAtual = alunoData;
+                localStorage.setItem('aluno_logado', JSON.stringify(alunoData));
+                
+                document.getElementById('screen-onboarding').style.display = 'none';
+                iniciarSessaoAluno();
+
+            }).catch(err => {
+                console.error("Erro no login:", err);
+                erroOnboarding.textContent = "Erro ao conectar com o banco de dados.";
+                erroOnboarding.classList.remove('d-none');
+            });
+        }
+
+        // AUTENTICAÇÃO DO ALUNO COM FIRESTORE
+        function fazerLoginAluno() {
+            const email = document.getElementById('aluno-email-input').value.trim().toLowerCase();
+            const senha = document.getElementById('aluno-senha-input').value.trim();
+            const erroDiv = document.getElementById('login-erro-aluno');
+
+            erroDiv.classList.add('d-none');
+
+            if (!email || !senha) {
+                erroDiv.textContent = "Preencha e-mail e senha!";
+                erroDiv.classList.remove('d-none');
+                return;
+            }
+
+            db.collection('alunos').doc(email).get().then(doc => {
+                if (!doc.exists) {
+                    erroDiv.textContent = "Aluno não encontrado no sistema!";
+                    erroDiv.classList.remove('d-none');
+                    return;
+                }
+
+                const alunoData = doc.data();
+
+                if (!alunoData.ativo) {
+                    erroDiv.textContent = "Seu cadastro está bloqueado. Procure o Grêmio!";
+                    erroDiv.classList.remove('d-none');
+                    return;
+                }
+
+                if (alunoData.senha !== senha) {
+                    erroDiv.textContent = "Senha incorreta!";
+                    erroDiv.classList.remove('d-none');
+                    return;
+                }
+
+                // Login OK
+                usuarioAtual = alunoData;
+                localStorage.setItem('aluno_logado', JSON.stringify(alunoData));
+                iniciarSessaoAluno();
+
+            }).catch(err => {
+                console.error("Erro no login:", err);
+                erroDiv.textContent = "Erro ao conectar com o banco de dados.";
+                erroDiv.classList.remove('d-none');
+            });
+        }
+
+        function iniciarSessaoAluno() {
+            document.getElementById('screen-onboarding').style.display = 'none';
+            document.getElementById('tela-login-aluno').style.display = 'none';
+            document.getElementById('portal-aluno').style.display = 'block';
+            document.getElementById('btn-logout-aluno').classList.remove('d-none');
+
+            document.getElementById('nome-aluno-display').textContent = usuarioAtual.nome || 'Aluno';
+            document.getElementById('email-aluno-display').textContent = usuarioAtual.email;
+
+            carregarAvisosAluno();
+            carregarEnquetesAluno();
+            carregarReivindicacoesAluno();
+            carregarMateriaisAluno();
+            carregarEventosAluno();
+        }
+
+        function fazerLogoutAluno() {
+            localStorage.removeItem('aluno_logado');
+            usuarioAtual = null;
+            document.getElementById('screen-onboarding').style.display = 'flex';
+            document.getElementById('portal-aluno').style.display = 'none';
+            document.getElementById('btn-logout-aluno').classList.add('d-none');
+        }
+
+        // Auto login se já tiver salvo a sessão
+        window.onload = function() {
+            const salvo = localStorage.getItem('aluno_logado');
+            if (salvo) {
+                usuarioAtual = JSON.parse(salvo);
+                iniciarSessaoAluno();
+            }
+        };
+
+        // CARREGAR AVISOS DO MURAL
+        function carregarAvisosAluno() {
+            db.collection('mural').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+                const container = document.getElementById('lista-avisos-aluno');
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-muted small mb-0">Nenhum aviso no momento.</p>';
+                    return;
+                }
+
+                let html = '<div class="list-group">';
+                snapshot.forEach(doc => {
+                    const aviso = doc.data();
+                    let dataHora = '';
+                    if (aviso.criadoEm) {
+                        const d = aviso.criadoEm.toDate();
+                        dataHora = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                    }
+
+                    html += `
+                        <div class="list-group-item">
+                            <h6 class="fw-bold mb-1 text-success">${aviso.titulo}</h6>
+                            <p class="mb-1 small text-dark">${aviso.mensagem}</p>
+                            ${dataHora ? `<span class="badge bg-light text-muted border">${dataHora}</span>` : ''}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            });
+        }
+
+        // CARREGAR ENQUETES
+        function carregarEnquetesAluno() {
+            db.collection('enquetes').onSnapshot(snapshot => {
+                const container = document.getElementById('lista-enquetes-aluno');
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-muted small mb-0">Nenhuma enquete ativa no momento.</p>';
+                    return;
+                }
+
+                let html = '';
+                snapshot.forEach(doc => {
+                    const enquete = doc.data();
+                    const id = doc.id;
+                    const votosAlunos = enquete.votosAlunos || [];
+
+                    const jaVotou = votosAlunos.some(v => {
+                        if (typeof v === 'string') return v === usuarioAtual.email;
+                        return v && v.email === usuarioAtual.email;
+                    });
+
+                    html += `
+                        <div class="border rounded p-3 mb-3 bg-white">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold m-0">${enquete.titulo}</h6>
+                                <span class="badge ${enquete.ativa ? 'bg-success' : 'bg-secondary'}">${enquete.ativa ? 'Ativa' : 'Encerrada'}</span>
+                            </div>
+                    `;
+
+                    if (!enquete.ativa) {
+                        html += `<p class="text-muted small mb-2">Esta enquete já foi encerrada.</p>`;
+                    } else if (jaVotou) {
+                        html += `<div class="alert alert-info py-2 mb-2 small fw-bold text-center">✅ Você já votou nesta enquete!</div>`;
+                    } else {
+                        html += `<p class="text-muted small mb-2">Escolha uma opção para votar:</p>`;
+                    }
+
+                    html += `<div class="list-group mb-2">`;
+                    (enquete.opcoes || []).forEach(op => {
+                        const btnDisabled = (!enquete.ativa || jaVotou) ? 'disabled' : '';
+                        html += `
+                            <button type="button" onclick="votar('${id}', ${op.id})" ${btnDisabled} class="list-group-item list-group-item-action d-flex justify-content-between align-items-center small">
+                                <span>🔘 ${op.texto}</span>
+                                ${jaVotou ? `<span class="badge bg-secondary">${op.votos || 0} votos</span>` : ''}
+                            </button>
+                        `;
+                    });
+                    html += `</div></div>`;
+                });
+                container.innerHTML = html;
+            });
+        }
+
+        // REGISTRAR VOTO
+        function votar(enqueteId, opcaoId) {
+            if (!usuarioAtual || !usuarioAtual.email) {
+                alert("Sessão inválida. Faça login novamente!");
+                return;
+            }
+
+            const emailAluno = usuarioAtual.email;
+            const docRef = db.collection('enquetes').doc(enqueteId);
+
+            db.runTransaction(transaction => {
+                return transaction.get(docRef).then(doc => {
+                    if (!doc.exists) throw "Enquete não encontrada!";
+
+                    const enquete = doc.data();
+                    if (!enquete.ativa) throw "Esta enquete já foi encerrada!";
+
+                    const votosAlunos = enquete.votosAlunos || [];
+
+                    const jaVotou = votosAlunos.some(v => {
+                        if (typeof v === 'string') return v === emailAluno;
+                        return v && v.email === emailAluno;
+                    });
+
+                    if (jaVotou) throw "Você já votou nesta enquete!";
+
+                    votosAlunos.push({ email: emailAluno, opcaoId: opcaoId });
+
+                    const novasOpcoes = enquete.opcoes.map(op => {
+                        if (op.id === opcaoId) {
+                            return { ...op, votos: (op.votos || 0) + 1 };
+                        }
+                        return op;
+                    });
+
+                    transaction.update(docRef, {
+                        votosAlunos: votosAlunos,
+                        opcoes: novasOpcoes
+                    });
+                });
+            }).then(() => {
+                alert("Voto registrado com sucesso!");
+            }).catch(err => {
+                console.error("Erro ao votar:", err);
+                alert(typeof err === 'string' ? err : "Erro ao computar voto.");
+            });
+        }
+
+        // --- MÓDULOS NOVOS PARA O ALUNO ---
+
+        // 1. REIVINDICAÇÕES E PAUTAS
+        function criarReivindicacao() {
+            const titulo = document.getElementById('reivindicacao-titulo').value.trim();
+            const descricao = document.getElementById('reivindicacao-descricao').value.trim();
+
+            if (!titulo || !descricao) {
+                alert("Preencha título e descrição da reivindicação!");
+                return;
+            }
+
+            db.collection('reivindicacoes').add({
+                titulo: titulo,
+                descricao: descricao,
+                autor: usuarioAtual.nome || usuarioAtual.email,
+                autorEmail: usuarioAtual.email,
+                apoios: [usuarioAtual.email], // O próprio autor já apoia
+                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                alert("Reivindicação publicada! Convide outros alunos para apoiar.");
+                document.getElementById('reivindicacao-titulo').value = '';
+                document.getElementById('reivindicacao-descricao').value = '';
+            });
+        }
+
+        function carregarReivindicacoesAluno() {
+            db.collection('reivindicacoes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+                const container = document.getElementById('lista-reivindicacoes-aluno');
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-muted small mb-0">Nenhuma reivindicação no momento.</p>';
+                    return;
+                }
+
+                let html = '<div class="list-group">';
+                snapshot.forEach(doc => {
+                    const pauta = doc.data();
+                    const apoios = pauta.apoios || [];
+                    const jaApoiou = apoios.includes(usuarioAtual.email);
+
+                    html += `
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="fw-bold mb-1 text-dark">${pauta.titulo}</h6>
+                                <p class="mb-1 small text-muted">${pauta.descricao}</p>
+                                <small class="text-secondary" style="font-size: 11px;">Por: ${pauta.autor || 'Aluno'}</small>
+                            </div>
+                            <button onclick="apoiarPauta('${doc.id}')" class="btn btn-sm ${jaApoiou ? 'btn-success' : 'btn-outline-success'} fw-bold ms-2" style="white-space: nowrap;">
+                                👍 ${apoios.length} ${jaApoiou ? 'Apoiado' : 'Apoiar'}
+                            </button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            });
+        }
+
+        function apoiarPauta(id) {
+            const docRef = db.collection('reivindicacoes').doc(id);
+
+            db.runTransaction(transaction => {
+                return transaction.get(docRef).then(doc => {
+                    if (!doc.exists) return;
+                    const pauta = doc.data();
+                    let apoios = pauta.apoios || [];
+
+                    if (apoios.includes(usuarioAtual.email)) {
+                        apoios = apoios.filter(e => e !== usuarioAtual.email);
+                    } else {
+                        apoios.push(usuarioAtual.email);
+                    }
+
+                    transaction.update(docRef, { apoios: apoios });
+                });
+            });
+        }
+
+        // 2. EMPRÉSTIMO DE MATERIAIS
+        function carregarMateriaisAluno() {
+            db.collection('materiais').onSnapshot(snapshot => {
+                const container = document.getElementById('lista-materiais-aluno');
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-muted small mb-0">Nenhum material cadastrado para empréstimo.</p>';
+                    return;
+                }
+
+                let html = '<ul class="list-group">';
+                snapshot.forEach(doc => {
+                    const mat = doc.data();
+                    const disponivel = mat.status === 'Disponível';
+
+                    html += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="text-dark">${mat.nome}</strong> (${mat.qtd})<br>
+                                <span class="badge ${disponivel ? 'bg-success' : 'bg-secondary'}">${mat.status}</span>
+                            </div>
+                            ${disponivel ? 
+                                `<button onclick="solicitarMaterial('${doc.id}', '${mat.nome}')" class="btn btn-outline-success btn-sm fw-bold">Solicitar</button>` : 
+                                `<small class="text-muted">Em uso</small>`
+                            }
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+                container.innerHTML = html;
+            });
+        }
+
+        function solicitarMaterial(id, nomeMaterial) {
+            if (confirm(`Deseja solicitar o empréstimo de: ${nomeMaterial}?`)) {
+                db.collection('materiais').doc(id).update({
+                    status: 'Reservado/Em uso',
+                    emprestadoPara: usuarioAtual.nome + ' (' + usuarioAtual.email + ')'
+                }).then(() => {
+                    alert("Solicitação realizada! Dirija-se à sala do Grêmio para pegar o material.");
+                });
+            }
+        }
+
+        // 3. EVENTOS E INSCRIÇÕES
+        function carregarEventosAluno() {
+            db.collection('eventos').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+                const container = document.getElementById('lista-eventos-aluno');
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-muted small mb-0">Nenhum evento programado no momento.</p>';
+                    return;
+                }
+
+                let html = '<div class="list-group">';
+                snapshot.forEach(doc => {
+                    const ev = doc.data();
+                    const inscritos = ev.inscritos || [];
+                    const jaInscrito = inscritos.includes(usuarioAtual.email);
+
+                    html += `
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <h6 class="fw-bold text-success mb-0">${ev.titulo}</h6>
+                                <span class="badge bg-info text-dark">📅 ${ev.data}</span>
+                            </div>
+                            <p class="mb-2 small text-dark">${ev.descricao}</p>
+                            <button onclick="inscreverEvento('${doc.id}')" class="btn btn-sm ${jaInscrito ? 'btn-secondary' : 'btn-ifce'} fw-bold">
+                                ${jaInscrito ? '✅ Inscrito' : 'Fazer Inscrição'}
+                            </button>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                container.innerHTML = html;
+            });
+        }
+
+        function inscreverEvento(id) {
+            const docRef = db.collection('eventos').doc(id);
+
+            db.runTransaction(transaction => {
+                return transaction.get(docRef).then(doc => {
+                    if (!doc.exists) return;
+                    const ev = doc.data();
+                    let inscritos = ev.inscritos || [];
+
+                    if (inscritos.includes(usuarioAtual.email)) {
+                        alert("Você já está inscrito neste evento!");
+                        return;
+                    }
+
+                    inscritos.push(usuarioAtual.email);
+                    transaction.update(docRef, { inscritos: inscritos });
+                });
+            }).then(() => {
+                alert("Inscrição realizada com sucesso!");
+            });
+        }
+
+        // ENVIAR SUGESTÃO
+        function enviarSugestao() {
+            const texto = document.getElementById('sugestao-texto').value.trim();
+
+            if (!texto) {
+                alert("Escreva sua sugestão antes de enviar!");
+                return;
+            }
+
+            db.collection('sugestoes').add({
+                nome: usuarioAtual.nome || 'Aluno',
+                email: usuarioAtual.email,
+                texto: texto,
+                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                alert("Sugestão enviada com sucesso ao Grêmio!");
+                document.getElementById('sugestao-texto').value = '';
+            }).catch(err => {
+                console.error("Erro ao enviar sugestão:", err);
+                alert("Erro ao enviar sugestão.");
+            });
+        }
+    </script>
+</body>
+</html>
