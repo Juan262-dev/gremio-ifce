@@ -239,8 +239,8 @@
             </div>
         </div>
 
-        <!-- CADASTRAR ALUNO -->
-        <div class="card card-custom p-4 mb-4">
+        <!-- CADASTRAR ALUNO (ADMIN GERAL) -->
+        <div class="card card-custom p-4 mb-4 card-admin-geral">
             <h5 class="card-title-chem mb-3">👤 Cadastrar Aluno</h5>
             <div class="row g-3">
                 <div class="col-md-6">
@@ -326,8 +326,8 @@
             </div>
         </div>
 
-        <!-- ALUNOS CADASTRADOS -->
-        <div class="card card-custom p-4 mb-4">
+        <!-- ALUNOS CADASTRADOS (ADMIN GERAL) -->
+        <div class="card card-custom p-4 mb-4 card-admin-geral">
             <h5 class="card-title-chem mb-3">🎓 Alunos Cadastrados</h5>
             <div id="lista-alunos-admin">
                 <p class="text-muted-custom small">Carregando alunos...</p>
@@ -363,11 +363,12 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // Mapeamento dos cargos por e-mail
+        // Mapeamento dos cargos e níveis de acesso por e-mail
         const baseDeCargos = {
-            "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)" },
-            "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente" },
-            "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente" }
+            "juan@ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
+            "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
+            "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente", nivel: "admin" },
+            "esportes@ifce.edu.br": { nome: "Diretora de Esportes", cargo: "Diretora de Esportes", nivel: "membro" }
         };
 
         // LOGIN RESTRITO EXCLUSIVAMENTE AO FIREBASE AUTHENTICATION
@@ -400,10 +401,26 @@
             document.getElementById('painel-admin').style.display = 'block';
             document.getElementById('btn-logout-admin').classList.remove('d-none');
             
-            // Identifica o cargo pelo e-mail ou define um padrão se não estiver na lista
-            let dadosUsuario = baseDeCargos[emailUsuario] || { nome: emailUsuario.split('@')[0], cargo: "Membro da Diretoria" };
+            // Identifica o cargo e nível pelo e-mail ou define um padrão se não estiver na lista
+            let dadosUsuario = baseDeCargos[emailUsuario] || { 
+                nome: emailUsuario.split('@')[0], 
+                cargo: "Membro da Diretoria", 
+                nivel: "membro" 
+            };
+
             document.getElementById('user-name-display').textContent = dadosUsuario.nome;
             document.getElementById('user-role-display').textContent = dadosUsuario.cargo;
+
+            // --- CONTROLE DE ACESSO POR NÍVEL ---
+            const cardsAdminGeral = document.querySelectorAll('.card-admin-geral');
+            if (dadosUsuario.nivel !== "admin") {
+                // Se for membro comum, esconde as funções de gestão total (como cadastro de alunos)
+                cardsAdminGeral.forEach(card => card.style.display = 'none');
+            } else {
+                // Se for tu, a presidente ou a vice, libera tudo!
+                cardsAdminGeral.forEach(card => card.style.display = 'block');
+            }
+            // ------------------------------------
 
             carregarAvisosAdmin();
             carregarAlunos();
