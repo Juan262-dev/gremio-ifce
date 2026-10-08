@@ -239,7 +239,7 @@
             </div>
         </div>
 
-        <!-- CADASTRAR ALUNO (ADMIN GERAL) -->
+        <!-- CADASTRAR ALUNO (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
         <div class="card card-custom p-4 mb-4 card-admin-geral">
             <h5 class="card-title-chem mb-3">👤 Cadastrar Aluno</h5>
             <div class="row g-3">
@@ -261,8 +261,8 @@
             </div>
         </div>
 
-        <!-- PAUTAS E REIVINDICAÇÕES (ADMIN) -->
-        <div class="card card-custom p-4 mb-4">
+        <!-- PAUTAS E REIVINDICAÇÕES (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
+        <div class="card card-custom p-4 mb-4 card-admin-geral">
             <h5 class="card-title-chem mb-2">✊ Pautas e Reivindicações Apoiadas</h5>
             <p class="text-muted-custom small mb-3">Pautas criadas pelos alunos para encaminhar à Direção do IFCE.</p>
             <div id="lista-pautas-admin">
@@ -270,7 +270,7 @@
             </div>
         </div>
 
-        <!-- EMPRÉSTIMO DE MATERIAIS (ADMIN) -->
+        <!-- EMPRÉSTIMO DE MATERIAIS (VISÍVEL PARA ESPORTES) -->
         <div class="card card-custom p-4 mb-4">
             <h5 class="card-title-chem mb-3">🎲 Gerenciar Materiais do Grêmio</h5>
             <div class="row g-2 mb-3">
@@ -292,7 +292,7 @@
             </div>
         </div>
 
-        <!-- CRIAR EVENTO / TORNEIO (ADMIN) -->
+        <!-- CRIAR EVENTO / TORNEIO (VISÍVEL PARA ESPORTES) -->
         <div class="card card-custom p-4 mb-4">
             <h5 class="card-title-chem mb-3">📅 Criar Evento ou Torneio</h5>
             <div class="row g-2 mb-3">
@@ -326,7 +326,7 @@
             </div>
         </div>
 
-        <!-- ALUNOS CADASTRADOS (ADMIN GERAL) -->
+        <!-- ALUNOS CADASTRADOS (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
         <div class="card card-custom p-4 mb-4 card-admin-geral">
             <h5 class="card-title-chem mb-3">🎓 Alunos Cadastrados</h5>
             <div id="lista-alunos-admin">
@@ -334,8 +334,8 @@
             </div>
         </div>
 
-        <!-- SUGESTÕES DOS ALUNOS -->
-        <div class="card card-custom p-4 mb-4">
+        <!-- SUGESTÕES DOS ALUNOS (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
+        <div class="card card-custom p-4 mb-4 card-admin-geral">
             <h5 class="card-title-chem mb-3">💡 Sugestões dos Alunos</h5>
             <div id="lista-sugestoes-admin">
                 <p class="text-muted-custom small">Carregando sugestões...</p>
@@ -414,7 +414,7 @@
             // --- CONTROLE DE ACESSO POR NÍVEL ---
             const cardsAdminGeral = document.querySelectorAll('.card-admin-geral');
             if (dadosUsuario.nivel !== "admin") {
-                // Se for membro comum, esconde as funções de gestão total (como cadastro de alunos)
+                // Se for membro comum (como a Diretora de Esportes), esconde as funções de gestão geral
                 cardsAdminGeral.forEach(card => card.style.display = 'none');
             } else {
                 // Se for tu, a presidente ou a vice, libera tudo!
@@ -423,10 +423,13 @@
             // ------------------------------------
 
             carregarAvisosAdmin();
-            carregarAlunos();
+            // Carrega apenas dados permitidos dependendo do nível
+            if (dadosUsuario.nivel === "admin") {
+                carregarAlunos();
+                carregarSugestoesAdmin();
+                carregarPautasAdmin();
+            }
             carregarEnquetesAdmin();
-            carregarSugestoesAdmin();
-            carregarPautasAdmin();
             carregarMateriaisAdmin();
             carregarEventosAdmin();
         }
@@ -647,6 +650,7 @@
         function carregarAlunos() {
             db.collection('alunos').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-alunos-admin');
+                if (!container) return;
                 if (snapshot.empty) {
                     container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum aluno cadastrado.</p>';
                     return;
@@ -746,6 +750,7 @@
         function carregarSugestoesAdmin() {
             db.collection('sugestoes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-sugestoes-admin');
+                if (!container) return;
                 if (snapshot.empty) {
                     container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma sugestão enviada.</p>';
                     return;
@@ -784,6 +789,7 @@
         function carregarPautasAdmin() {
             db.collection('reivindicacoes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-pautas-admin');
+                if (!container) return;
                 if (snapshot.empty) {
                     container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma pauta cadastrada pelos alunos.</p>';
                     return;
