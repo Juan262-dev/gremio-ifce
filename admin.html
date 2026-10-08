@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Admin - Grêmio IFCE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Biblioteca jsPDF para gerar o PDF direto no navegador -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --ifce-green: #2d8647;
@@ -108,6 +110,11 @@
             transform: translateY(-1px);
         }
 
+        .btn-pdf { background-color: #2b5797; border-color: #2b5797; }
+        .btn-pdf:hover { background-color: #1d3d6f; }
+        .btn-wpp { background-color: #25d366; border-color: #25d366; color: #000; }
+        .btn-wpp:hover { background-color: #1ebe5d; color: #000; }
+
         .list-group-item {
             background-color: #121a14;
             border: 1px solid var(--ifce-card-border);
@@ -161,6 +168,31 @@
 
         <!-- ALERTA GLOBAL DE SUCESSO -->
         <div id="alerta-sucesso" class="alert alert-success d-none fw-bold text-center card-custom mb-4" role="alert" style="border-color: var(--ifce-accent-green); background: rgba(0, 230, 118, 0.1); color: var(--ifce-accent-green);"></div>
+
+        <!-- CRACHÁ DIGITAL DE IDENTIFICAÇÃO DE CARGO -->
+        <div class="card card-custom p-3 mb-4" style="background: rgba(45, 134, 71, 0.15); border-left: 5px solid var(--ifce-accent-green);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="small text-muted-custom text-uppercase fw-bold">Identificação de Cargo</span>
+                    <h5 class="mb-1 fw-bold text-white" id="user-name-display">-</h5>
+                    <p class="mb-0 small" style="color: var(--ifce-accent-green);">🪪 Cargo: <strong id="user-role-display">-</strong></p>
+                </div>
+                <span class="badge bg-success">🟢 Online</span>
+            </div>
+        </div>
+
+        <!-- RELATÓRIO DE ATIVIDADES (GERAR PDF E WHATSAPP) -->
+        <div class="card card-custom p-4 mb-4">
+            <h5 class="card-title-chem mb-3">📝 Escrever Relatório de Atividades</h5>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Conteúdo do Relatório</label>
+                <textarea id="texto-relatorio" class="form-control" rows="3" placeholder="Digite aqui o relatório das suas atividades no grêmio..."></textarea>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <button onclick="gerarPDFRelatorio()" class="btn btn-pdf fw-bold">📄 Gerar PDF</button>
+                <button onclick="enviarWhatsAppRelatorio()" class="btn btn-wpp fw-bold">📱 Enviar no WhatsApp</button>
+            </div>
+        </div>
 
         <!-- PUBLICAR MURAL DE AVISOS -->
         <div class="card card-custom p-4 mb-4">
@@ -331,6 +363,13 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
 
+        // Mapeamento dos cargos por e-mail
+        const baseDeCargos = {
+            "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)" },
+            "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente" },
+            "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente" }
+        };
+
         // LOGIN RESTRITO EXCLUSIVAMENTE AO FIREBASE AUTHENTICATION
         function fazerLoginAdmin() {
             const email = document.getElementById('admin-email').value.trim().toLowerCase();
@@ -347,7 +386,7 @@
 
             auth.signInWithEmailAndPassword(email, senha)
                 .then((userCredential) => {
-                    abrirPainelAdmin();
+                    abrirPainelAdmin(userCredential.user.email);
                 })
                 .catch((error) => {
                     console.error("Erro de login:", error.code);
@@ -356,11 +395,16 @@
                 });
         }
 
-        function abrirPainelAdmin() {
+        function abrirPainelAdmin(emailUsuario) {
             document.getElementById('tela-login-admin').style.display = 'none';
             document.getElementById('painel-admin').style.display = 'block';
             document.getElementById('btn-logout-admin').classList.remove('d-none');
             
+            // Identifica o cargo pelo e-mail ou define um padrão se não estiver na lista
+            let dadosUsuario = baseDeCargos[emailUsuario] || { nome: emailUsuario.split('@')[0], cargo: "Membro da Diretoria" };
+            document.getElementById('user-name-display').textContent = dadosUsuario.nome;
+            document.getElementById('user-role-display').textContent = dadosUsuario.cargo;
+
             carregarAvisosAdmin();
             carregarAlunos();
             carregarEnquetesAdmin();
@@ -374,6 +418,55 @@
             auth.signOut().then(() => {
                 location.reload();
             });
+        }
+
+        // Função para Gerar PDF do Relatório
+        function gerarPDFRelatorio() {
+            const texto = document.getElementById('texto-relatorio').value;
+            const nome = document.getElementById('user-name-display').textContent;
+            const cargo = document.getElementById('user-role-display').textContent;
+
+            if (!texto.trim()) {
+                alert("Macho, digita alguma coisa no relatório antes de gerar o PDF!");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFont("Helvetica", "bold");
+            doc.setFontSize(16);
+            doc.text("Grêmio Estudantil - IFCE Crateús", 20, 20);
+
+            doc.setFontSize(12);
+            doc.setFont("Helvetica", "normal");
+            doc.text(`Relatório de Atividades`, 20, 30);
+            doc.text(`Responsável: ${nome} (${cargo})`, 20, 40);
+            doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 20, 50);
+
+            doc.line(20, 55, 190, 55);
+
+            const splitText = doc.splitTextToSize(texto, 170);
+            doc.text(splitText, 20, 65);
+
+            doc.save(`relatorio_${nome.toLowerCase().replace(/\s+/g, '_')}.pdf`);
+        }
+
+        // Função para Disparar Relatório no WhatsApp
+        function enviarWhatsAppRelatorio() {
+            const texto = document.getElementById('texto-relatorio').value;
+            const nome = document.getElementById('user-name-display').textContent;
+            const cargo = document.getElementById('user-role-display').textContent;
+
+            if (!texto.trim()) {
+                alert("Macho, escreve o relatório antes de mandar no WhatsApp!");
+                return;
+            }
+
+            const mensagem = `*RELATÓRIO - GRÊMIO IFCE*\n\n*Nome:* ${nome}\n*Cargo:* ${cargo}\n\n*Conteúdo:*\n${texto}`;
+            const urlWpp = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
+            
+            window.open(urlWpp, '_blank');
         }
 
         function mostrarAlertaSucesso(msg) {
