@@ -169,17 +169,19 @@
         <!-- ALERTA GLOBAL DE SUCESSO -->
         <div id="alerta-sucesso" class="alert alert-success d-none fw-bold text-center card-custom mb-4" role="alert" style="border-color: var(--ifce-accent-green); background: rgba(0, 230, 118, 0.1); color: var(--ifce-accent-green);"></div>
 
-        <!-- AVISO DE PUNIÇÃO / BLOQUEIO CASO O USUÁRIO ESTEJA PUNIDO -->
+        <!-- AVISO DE PUNIÇÃO / BLOQUEIO COM CONTAGEM REGRESSIVA -->
         <div id="painel-bloqueio-punicao" class="card card-custom p-4 mb-4 d-none" style="border-color: #dc3545; background: rgba(220, 53, 69, 0.15);">
             <h4 class="fw-bold text-danger text-center mb-3">🚨 ACESSO BLOQUEADO POR PUNIÇÃO 🚨</h4>
-            <p class="text-white text-center mb-2">Você foi punido e teve seus privilégios suspensos no Grêmio Estudantil.</p>
-            <div class="bg-dark p-3 rounded border border-danger">
+            <p class="text-white text-center mb-2">Você foi punido e teve seus privilégios temporariamente suspensos.</p>
+            <div class="bg-dark p-3 rounded border border-danger mb-3">
                 <p class="mb-1"><strong>Punição Aplicada:</strong> <span id="punicao-info-tipo" class="text-warning">-</span></p>
-                <p class="mb-0"><strong>Motivo:</strong> <span id="punicao-info-motivo" class="text-white">-</span></p>
+                <p class="mb-2"><strong>Motivo:</strong> <span id="punicao-info-motivo" class="text-white">-</span></p>
+                <hr style="border-color: #dc3545;">
+                <p class="mb-0 text-center fw-bold text-danger" style="font-size: 1.1rem;">⏱️ Tempo Restante: <span id="contador-regressivo-punicao" class="text-white">Calculando...</span></p>
             </div>
         </div>
 
-        <!-- CONTEÚDO GERAL DO PAINEL (QUE SERÁ OCULTO SE HOUVER PUNIÇÃO) -->
+        <!-- CONTEÚDO GERAL DO PAINEL -->
         <div id="conteudo-painel-geral">
 
             <!-- CRACHÁ DIGITAL DE IDENTIFICAÇÃO DE CARGO -->
@@ -194,7 +196,7 @@
                 </div>
             </div>
 
-            <!-- RELATÓRIO DE ATIVIDADES (GERAR PDF E WHATSAPP) -->
+            <!-- RELATÓRIO DE ATIVIDADES -->
             <div class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📝 Escrever Relatório de Atividades</h5>
                 <div class="mb-3">
@@ -207,7 +209,7 @@
                 </div>
             </div>
 
-            <!-- PUBLICAR MURAL DE AVISOS / VÍDEOS (MARKETING E GERAL) -->
+            <!-- PUBLICAR MURAL DE AVISOS / VÍDEOS -->
             <div class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📢 Mural de Avisos e Vídeos</h5>
                 <div class="mb-3">
@@ -228,7 +230,7 @@
                 </div>
             </div>
 
-            <!-- CRIAR NOVA ENQUETE (MARKETING E GERAL) -->
+            <!-- CRIAR NOVA ENQUETE -->
             <div class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📊 Criar Nova Enquete</h5>
                 <div class="mb-3">
@@ -252,7 +254,7 @@
                 </div>
             </div>
 
-            <!-- CADASTRAR ALUNO (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
+            <!-- CADASTRAR ALUNO (ADMIN GERAL) -->
             <div class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">👤 Cadastrar Aluno</h5>
                 <div class="row g-3">
@@ -274,7 +276,7 @@
                 </div>
             </div>
 
-            <!-- PAUTAS E REIVINDICAÇÕES (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
+            <!-- PAUTAS E REIVINDICAÇÕES -->
             <div class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-2">✊ Pautas e Reivindicações Apoiadas</h5>
                 <p class="text-muted-custom small mb-3">Pautas criadas pelos alunos para encaminhar à Direção do IFCE.</p>
@@ -283,7 +285,7 @@
                 </div>
             </div>
 
-            <!-- EMPRÉSTIMO DE MATERIAIS (OCULTO PARA MARKETING) -->
+            <!-- EMPRÉSTIMO DE MATERIAIS -->
             <div class="card card-custom p-4 mb-4 card-admin-nao-marketing">
                 <h5 class="card-title-chem mb-3">🎲 Gerenciar Materiais do Grêmio</h5>
                 <div class="row g-2 mb-3">
@@ -305,7 +307,7 @@
                 </div>
             </div>
 
-            <!-- CRIAR EVENTO / TORNEIO (OCULTO PARA MARKETING) -->
+            <!-- CRIAR EVENTO / TORNEIO -->
             <div class="card card-custom p-4 mb-4 card-admin-nao-marketing">
                 <h5 class="card-title-chem mb-3">📅 Criar Evento ou Torneio</h5>
                 <div class="row g-2 mb-3">
@@ -344,24 +346,34 @@
                 <h5 class="card-title-chem mb-3" style="color: #ff6b6b;">⚠️ Aplicar Punição / Bloqueio a Membro</h5>
                 <div class="row g-3">
                     <div class="col-md-6">
-                        <label class="form-label fw-bold">E-mail do Aluno / Membro</label>
+                        <label class="form-label fw-bold">E-mail do Membro / Aluno</label>
                         <input type="email" id="punicao-email" class="form-control" placeholder="email@ifce.edu.br">
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-3">
                         <label class="form-label fw-bold">Punição Aplicada</label>
-                        <input type="text" id="punicao-tipo" class="form-control" placeholder="Ex: Suspensão por 7 dias / Banimento">
+                        <input type="text" id="punicao-tipo" class="form-control" placeholder="Ex: Suspensão">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Duração (Minutos)</label>
+                        <input type="number" id="punicao-tempo-min" class="form-control" placeholder="Ex: 30" min="1">
                     </div>
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Motivo da Punição</label>
-                        <textarea id="punicao-motivo" class="form-control" rows="2" placeholder="Descreva detalhadamente o motivo da punição..."></textarea>
+                        <textarea id="punicao-motivo" class="form-control" rows="2" placeholder="Descreva detalhadamente o motivo..."></textarea>
                     </div>
                     <div class="col-12 mt-3">
                         <button onclick="aplicarPunicaoMembro()" class="btn btn-danger w-100 fw-bold">Aplicar Punição e Bloquear Acesso</button>
                     </div>
                 </div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold mb-3 text-white">Membros Punidos Ativos (Gerenciar / Reduzir Punição)</h6>
+                <div id="lista-membros-punidos-admin">
+                    <p class="text-muted-custom small">Carregando punições...</p>
+                </div>
             </div>
 
-            <!-- ALUNOS CADASTRADOS (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
+            <!-- ALUNOS CADASTRADOS -->
             <div class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">🎓 Alunos Cadastrados</h5>
                 <div id="lista-alunos-admin">
@@ -369,7 +381,7 @@
                 </div>
             </div>
 
-            <!-- SUGESTÕES DOS ALUNOS (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
+            <!-- SUGESTÕES DOS ALUNOS -->
             <div class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">💡 Sugestões dos Alunos</h5>
                 <div id="lista-sugestoes-admin">
@@ -399,6 +411,7 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        let intervaloContador = null;
 
         // Mapeamento dos cargos e níveis de acesso por e-mail
         const baseDeCargos = {
@@ -406,11 +419,10 @@
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
             "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente", nivel: "admin" },
             "cecilia@aluno.ifce.edu.br": { nome: "Cecília", cargo: "Diretora de Esportes", nivel: "membro" },
-            "marketing1@ifce.edu.br": { nome: "Diretor(a) de Marketing 1", cargo: "Diretor(a) de Marketing", nivel: "marketing" },
-            "marketing2@ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing" }
+            "talison@aluno.ifce.edu.br": { nome: "Talison", cargo: "Diretor(a) de Marketing", nivel: "marketing" },
+            "marketing2@aluno.ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing" }
         };
 
-        // LOGIN RESTRITO EXCLUSIVAMENTE AO FIREBASE AUTHENTICATION
         function fazerLoginAdmin() {
             const email = document.getElementById('admin-email').value.trim().toLowerCase();
             const senha = document.getElementById('admin-senha').value.trim();
@@ -436,24 +448,21 @@
         }
 
         function verificarAcessoEAbirPainel(emailUsuario) {
-            // Verifica se o membro/aluno está punido na coleção 'membros_punidos' ou 'alunos'
             db.collection('membros_punidos').doc(emailUsuario).get().then(docPunido => {
-                let dadosPunicao = docPunido.exists ? docPunido.data() : null;
+                let dadosPunicao = null;
+                if (docPunido.exists) {
+                    const punicaoData = docPunido.data();
+                    const agora = new Date().getTime();
+                    const expiraEm = punicaoData.expiraEm ? punicaoData.expiraEm.toMillis() : 0;
 
-                if (!dadosPunicao) {
-                    // Verifica na coleção alunos também
-                    db.collection('alunos').doc(emailUsuario).get().then(docAluno => {
-                        if (docAluno.exists && docAluno.data().ativo === false) {
-                            dadosPunicao = {
-                                punicao: docAluno.data().punicao || "Bloqueio de Acesso",
-                                motivo: docAluno.data().motivoPunicao || "Sem motivo especificado"
-                            };
-                        }
-                        abrirPainelAdmin(emailUsuario, dadosPunicao);
-                    });
-                } else {
-                    abrirPainelAdmin(emailUsuario, dadosPunicao);
+                    if (expiraEm > agora) {
+                        dadosPunicao = punicaoData;
+                    } else {
+                        // Se o tempo expirou, remove a punição automaticamente
+                        db.collection('membros_punidos').doc(emailUsuario).delete();
+                    }
                 }
+                abrirPainelAdmin(emailUsuario, dadosPunicao);
             }).catch(() => {
                 abrirPainelAdmin(emailUsuario, null);
             });
@@ -473,16 +482,18 @@
             document.getElementById('user-name-display').textContent = dadosUsuario.nome;
             document.getElementById('user-role-display').textContent = dadosUsuario.cargo;
 
-            // --- VERIFICAÇÃO DE PUNIÇÃO ---
+            // --- VERIFICAÇÃO DE PUNIÇÃO COM CONTAGEM REGRESSIVA ---
             if (dadosPunicao) {
-                // Se estiver punido, oculta todo o conteúdo geral e mostra o aviso de bloqueio na tela dele
                 document.getElementById('conteudo-painel-geral').classList.add('d-none');
                 document.getElementById('painel-bloqueio-punicao').classList.remove('d-none');
                 document.getElementById('punicao-info-tipo').textContent = dadosPunicao.punicao;
                 document.getElementById('punicao-info-motivo').textContent = dadosPunicao.motivo;
-                return; // Para a execução aqui, ele não consegue mexer em nada
+
+                const tempoExpiracao = dadosPunicao.expiraEm.toMillis();
+                iniciarContadorRegressivo(tempoExpiracao);
+                return;
             }
-            // -----------------------------
+            // ------------------------------------------------------
 
             // --- CONTROLE DE ACESSO POR NÍVEL ---
             const cardsAdminGeral = document.querySelectorAll('.card-admin-geral');
@@ -505,6 +516,7 @@
                 carregarAlunos();
                 carregarSugestoesAdmin();
                 carregarPautasAdmin();
+                carregarMembrosPunidosAdmin();
             }
             carregarEnquetesAdmin();
             
@@ -514,13 +526,35 @@
             }
         }
 
+        function iniciarContadorRegressivo(expiracaoMs) {
+            if (intervaloContador) clearInterval(intervaloContador);
+
+            intervaloContador = setInterval(() => {
+                const agora = new Date().getTime();
+                const distancia = expiracaoMs - agora;
+
+                if (distancia <= 0) {
+                    clearInterval(intervaloContador);
+                    document.getElementById('contador-regressivo-punicao').textContent = "Punição encerrada! Atualize a página.";
+                    location.reload();
+                    return;
+                }
+
+                const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
+                const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
+
+                document.getElementById('contador-regressivo-punicao').textContent = 
+                    `${horas.toString().padStart(2, '0')}h ${minutos.toString().padStart(2, '0')}m ${segundos.toString().padStart(2, '0')}s`;
+            }, 1000);
+        }
+
         function fazerLogoutAdmin() {
             auth.signOut().then(() => {
                 location.reload();
             });
         }
 
-        // Função para Gerar PDF do Relatório
         function gerarPDFRelatorio() {
             const texto = document.getElementById('texto-relatorio').value;
             const nome = document.getElementById('user-name-display').textContent;
@@ -552,7 +586,6 @@
             doc.save(`relatorio_${nome.toLowerCase().replace(/\s+/g, '_')}.pdf`);
         }
 
-        // Função para Disparar Relatório no WhatsApp
         function enviarWhatsAppRelatorio() {
             const texto = document.getElementById('texto-relatorio').value;
             const nome = document.getElementById('user-name-display').textContent;
@@ -636,9 +669,6 @@
                         <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
                     </div>
                 `;
-            }).catch(err => {
-                console.error("Erro ao criar enquete:", err);
-                alert("Erro ao criar enquete.");
             });
         }
 
@@ -661,9 +691,6 @@
                 mostrarAlertaSucesso("Aviso/Vídeo publicado no mural com sucesso!");
                 document.getElementById('aviso-titulo').value = '';
                 document.getElementById('aviso-mensagem').value = '';
-            }).catch(err => {
-                console.error("Erro ao publicar aviso:", err);
-                alert("Erro ao publicar aviso.");
             });
         }
 
@@ -726,12 +753,13 @@
                 document.getElementById('cad-nome').value = '';
                 document.getElementById('cad-email').value = '';
                 document.getElementById('cad-senha').value = '';
-            }).catch(err => alert("Erro ao cadastrar aluno."));
+            });
         }
 
         function aplicarPunicaoMembro() {
             const email = document.getElementById('punicao-email').value.trim().toLowerCase();
             const tipo = document.getElementById('punicao-tipo').value.trim();
+            const tempoMin = parseInt(document.getElementById('punicao-tempo-min').value) || 10;
             const motivo = document.getElementById('punicao-motivo').value.trim();
 
             if (!email || !tipo || !motivo) {
@@ -739,32 +767,61 @@
                 return;
             }
 
-            // Salva na coleção unificada de punições para abranger qualquer membro ou aluno do grêmio
+            const expiraEm = firebase.firestore.Timestamp.fromMillis(new Date().getTime() + (tempoMin * 60 * 1000));
+
             db.collection('membros_punidos').doc(email).set({
                 email: email,
                 punicao: tipo,
                 motivo: motivo,
+                expiraEm: expiraEm,
                 punidoEm: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
-                // Tenta atualizar também na coleção alunos se existir lá
-                db.collection('alunos').doc(email).get().then(doc => {
-                    if (doc.exists) {
-                        db.collection('alunos').doc(email).update({
-                            ativo: false,
-                            punicao: tipo,
-                            motivoPunicao: motivo
-                        });
-                    }
-                });
-
-                mostrarAlertaSucesso(`Punição aplicada com sucesso a ${email}! O acesso foi bloqueado.`);
+                mostrarAlertaSucesso(`Punição aplicada com sucesso a ${email} por ${tempoMin} minutos!`);
                 document.getElementById('punicao-email').value = '';
                 document.getElementById('punicao-tipo').value = '';
+                document.getElementById('punicao-tempo-min').value = '';
                 document.getElementById('punicao-motivo').value = '';
-            }).catch(err => {
-                console.error("Erro ao aplicar punição:", err);
-                alert("Erro ao processar punição.");
             });
+        }
+
+        function carregarMembrosPunidosAdmin() {
+            db.collection('membros_punidos').onSnapshot(snapshot => {
+                const container = document.getElementById('lista-membros-punidos-admin');
+                if (!container) return;
+                if (snapshot.empty) {
+                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum membro punido no momento.</p>';
+                    return;
+                }
+
+                let html = '<ul class="list-group">';
+                snapshot.forEach(doc => {
+                    const p = doc.data();
+                    const expira = p.expiraEm ? p.expiraEm.toDate().toLocaleString('pt-BR') : 'Indeterminado';
+
+                    html += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong class="text-warning" style="font-size: 13px;">${p.email}</strong><br>
+                                <small class="text-white">Punição: <strong>${p.punicao}</strong> | Motivo: ${p.motivo}</small><br>
+                                <small class="text-muted-custom" style="font-size: 11px;">Expira em: ${expira}</small>
+                            </div>
+                            <div class="d-flex gap-1">
+                                <button onclick="removerPunicao('${p.email}')" class="btn btn-outline-success btn-sm py-0" style="font-size: 11px;">Remover / Reduzir</button>
+                            </div>
+                        </li>
+                    `;
+                });
+                html += '</ul>';
+                container.innerHTML = html;
+            });
+        }
+
+        function removerPunicao(email) {
+            if (confirm(`Remover a punição de ${email} e liberar o acesso?`)) {
+                db.collection('membros_punidos').doc(email).delete().then(() => {
+                    mostrarAlertaSucesso(`Punição de ${email} removida com sucesso!`);
+                });
+            }
         }
 
         function carregarAlunos() {
@@ -779,14 +836,13 @@
                 snapshot.forEach(doc => {
                     const aluno = doc.data();
                     const statusBg = aluno.ativo ? 'bg-success' : 'bg-danger';
-                    const statusTxt = aluno.ativo ? 'Ativo' : 'Punido/Bloqueado';
+                    const statusTxt = aluno.ativo ? 'Ativo' : 'Bloqueado';
 
                     html += `
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
                                 <strong style="font-size: 14px;" class="text-white">${aluno.nome}</strong><br>
                                 <small class="text-muted-custom">${aluno.email}</small>
-                                ${!aluno.ativo && aluno.punicao ? `<br><small class="text-danger fw-bold">Punição: ${aluno.punicao} - Motivo:${aluno.motivoPunicao}</small>` : ''}
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge ${statusBg}">${statusTxt}</span>
@@ -804,17 +860,12 @@
         }
 
         function alternarStatusAluno(email, novoStatus) {
-            db.collection('alunos').doc(email).update({ ativo: novoStatus, punicao: novoStatus ? '' : 'Bloqueio manual' });
-            if (novoStatus) {
-                // Se desbloqueou, remove da coleção de punidos
-                db.collection('membros_punidos').doc(email).delete();
-            }
+            db.collection('alunos').doc(email).update({ ativo: novoStatus });
         }
 
         function excluirAluno(email) {
             if (confirm(`Excluir o aluno ${email}?`)) {
                 db.collection('alunos').doc(email).delete();
-                db.collection('membros_punidos').doc(email).delete();
             }
         }
 
