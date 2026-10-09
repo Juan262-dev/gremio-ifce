@@ -354,15 +354,8 @@
                         <input type="text" id="punicao-tipo" class="form-control" placeholder="Ex: Suspensão">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label fw-bold">Duração</label>
-                        <select id="punicao-tempo-min" class="form-select">
-                            <option value="1">1 Minuto (Teste)</option>
-                            <option value="60">1 Hora</option>
-                            <option value="1440">1 Dia (24h)</option>
-                            <option value="10080">1 Semana</option>
-                            <option value="43200">1 Mês (30 dias)</option>
-                            <option value="525600">1 Ano</option>
-                        </select>
+                        <label class="form-label fw-bold">Tempo (Ex: 30min, 2h, 1d)</label>
+                        <input type="text" id="punicao-tempo-texto" class="form-control" placeholder="Ex: 2h ou 30min">
                     </div>
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Motivo da Punição</label>
@@ -425,8 +418,8 @@
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
             "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente", nivel: "admin" },
             "cecilia@aluno.ifce.edu.br": { nome: "Cecília", cargo: "Diretora de Esportes", nivel: "membro" },
-            "talison@aluno.ifce.edu.br": { nome: "Talison", cargo: "Diretor(a) de Marketing", nivel: "marketing" },
-            "marketing2@aluno.ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing" }
+            "marketing1@ifce.edu.br": { nome: "Diretor(a) de Marketing 1", cargo: "Diretor(a) de Marketing", nivel: "marketing" },
+            "marketing2@ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing" }
         };
 
         function fazerLoginAdmin() {
@@ -552,6 +545,20 @@
 
                 document.getElementById('contador-regressivo-punicao').textContent = tempoFormatado;
             }, 1000);
+        }
+
+        function converterTextoParaMinutos(texto) {
+            texto = texto.toLowerCase().trim();
+            const match = texto.match(/^(\d+)\s*(min|h|d|ano|m)?$/);
+            if (!match) return 60; // padrão 60 min se errar
+
+            const valor = parseInt(match[1]);
+            const unidade = match[2] || 'min';
+
+            if (unidade.includes('ano')) return valor * 525600;
+            if (unidade.includes('d')) return valor * 1440;
+            if (unidade.includes('h')) return valor * 60;
+            return valor; // minutos por padrão
         }
 
         function fazerLogoutAdmin() {
@@ -764,15 +771,16 @@
         function aplicarPunicaoMembro() {
             const email = document.getElementById('punicao-email').value.trim().toLowerCase();
             const tipo = document.getElementById('punicao-tipo').value.trim();
-            const tempoMin = parseInt(document.getElementById('punicao-tempo-min').value) || 60;
+            const textoTempo = document.getElementById('punicao-tempo-texto').value.trim();
             const motivo = document.getElementById('punicao-motivo').value.trim();
 
-            if (!email || !tipo || !motivo) {
-                alert("Macho, preencha o e-mail, o tipo de punição e o motivo!");
+            if (!email || !tipo || !textoTempo || !motivo) {
+                alert("Macho, preencha todos os campos da punição!");
                 return;
             }
 
-            const expiraEm = firebase.firestore.Timestamp.fromMillis(new Date().getTime() + (tempoMin * 60 * 1000));
+            const minutosTotais = converterTextoParaMinutos(textoTempo);
+            const expiraEm = firebase.firestore.Timestamp.fromMillis(new Date().getTime() + (minutosTotais * 60 * 1000));
 
             db.collection('membros_punidos').doc(email).set({
                 email: email,
@@ -781,9 +789,10 @@
                 expiraEm: expiraEm,
                 punidoEm: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
-                mostrarAlertaSucesso(`Punição aplicada com sucesso a ${email}!`);
+                mostrarAlertaSucesso(`Punição aplicada com sucesso a ${email} (${textoTempo})!`);
                 document.getElementById('punicao-email').value = '';
                 document.getElementById('punicao-tipo').value = '';
+                document.getElementById('punicao-tempo-texto').value = '';
                 document.getElementById('punicao-motivo').value = '';
             });
         }
