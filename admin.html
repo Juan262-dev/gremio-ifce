@@ -354,8 +354,15 @@
                         <input type="text" id="punicao-tipo" class="form-control" placeholder="Ex: Suspensão">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label fw-bold">Duração (Minutos)</label>
-                        <input type="number" id="punicao-tempo-min" class="form-control" placeholder="Ex: 30" min="1">
+                        <label class="form-label fw-bold">Duração</label>
+                        <select id="punicao-tempo-min" class="form-select">
+                            <option value="1">1 Minuto (Teste)</option>
+                            <option value="60">1 Hora</option>
+                            <option value="1440">1 Dia (24h)</option>
+                            <option value="10080">1 Semana</option>
+                            <option value="43200">1 Mês (30 dias)</option>
+                            <option value="525600">1 Ano</option>
+                        </select>
                     </div>
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Motivo da Punição</label>
@@ -413,14 +420,13 @@
         const db = firebase.firestore();
         let intervaloContador = null;
 
-        // Mapeamento dos cargos e níveis de acesso por e-mail
         const baseDeCargos = {
             "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
             "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente", nivel: "admin" },
             "cecilia@aluno.ifce.edu.br": { nome: "Cecília", cargo: "Diretora de Esportes", nivel: "membro" },
-            "talison@aluno.ifce.edu.br": { nome: "Talison", cargo: "Diretor(a) de Marketing", nivel: "marketing" },
-            "marketing2@aluno.ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing" }
+            "marketing1@ifce.edu.br": { nome: "Diretor(a) de Marketing 1", cargo: "Diretor(a) de Marketing", nivel: "marketing" },
+            "marketing2@ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing" }
         };
 
         function fazerLoginAdmin() {
@@ -458,7 +464,6 @@
                     if (expiraEm > agora) {
                         dadosPunicao = punicaoData;
                     } else {
-                        // Se o tempo expirou, remove a punição automaticamente
                         db.collection('membros_punidos').doc(emailUsuario).delete();
                     }
                 }
@@ -482,7 +487,6 @@
             document.getElementById('user-name-display').textContent = dadosUsuario.nome;
             document.getElementById('user-role-display').textContent = dadosUsuario.cargo;
 
-            // --- VERIFICAÇÃO DE PUNIÇÃO COM CONTAGEM REGRESSIVA ---
             if (dadosPunicao) {
                 document.getElementById('conteudo-painel-geral').classList.add('d-none');
                 document.getElementById('painel-bloqueio-punicao').classList.remove('d-none');
@@ -493,9 +497,7 @@
                 iniciarContadorRegressivo(tempoExpiracao);
                 return;
             }
-            // ------------------------------------------------------
 
-            // --- CONTROLE DE ACESSO POR NÍVEL ---
             const cardsAdminGeral = document.querySelectorAll('.card-admin-geral');
             const cardsAdminNaoMarketing = document.querySelectorAll('.card-admin-nao-marketing');
 
@@ -509,7 +511,6 @@
                 cardsAdminGeral.forEach(card => card.style.display = 'none');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'block');
             }
-            // ------------------------------------
 
             carregarAvisosAdmin();
             if (dadosUsuario.nivel === "admin") {
@@ -540,12 +541,16 @@
                     return;
                 }
 
+                const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
                 const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
                 const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
 
-                document.getElementById('contador-regressivo-punicao').textContent = 
-                    `${horas.toString().padStart(2, '0')}h ${minutos.toString().padStart(2, '0')}m ${segundos.toString().padStart(2, '0')}s`;
+                let tempoFormatado = '';
+                if (dias > 0) tempoFormatado += `${dias}d `;
+                tempoFormatado += `${horas.toString().padStart(2, '0')}h ${minutos.toString().padStart(2, '0')}m ${segundos.toString().padStart(2, '0')}s`;
+
+                document.getElementById('contador-regressivo-punicao').textContent = tempoFormatado;
             }, 1000);
         }
 
@@ -759,7 +764,7 @@
         function aplicarPunicaoMembro() {
             const email = document.getElementById('punicao-email').value.trim().toLowerCase();
             const tipo = document.getElementById('punicao-tipo').value.trim();
-            const tempoMin = parseInt(document.getElementById('punicao-tempo-min').value) || 10;
+            const tempoMin = parseInt(document.getElementById('punicao-tempo-min').value) || 60;
             const motivo = document.getElementById('punicao-motivo').value.trim();
 
             if (!email || !tipo || !motivo) {
@@ -776,10 +781,9 @@
                 expiraEm: expiraEm,
                 punidoEm: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
-                mostrarAlertaSucesso(`Punição aplicada com sucesso a ${email} por ${tempoMin} minutos!`);
+                mostrarAlertaSucesso(`Punição aplicada com sucesso a ${email}!`);
                 document.getElementById('punicao-email').value = '';
                 document.getElementById('punicao-tipo').value = '';
-                document.getElementById('punicao-tempo-min').value = '';
                 document.getElementById('punicao-motivo').value = '';
             });
         }
