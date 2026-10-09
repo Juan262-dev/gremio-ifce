@@ -169,199 +169,214 @@
         <!-- ALERTA GLOBAL DE SUCESSO -->
         <div id="alerta-sucesso" class="alert alert-success d-none fw-bold text-center card-custom mb-4" role="alert" style="border-color: var(--ifce-accent-green); background: rgba(0, 230, 118, 0.1); color: var(--ifce-accent-green);"></div>
 
-        <!-- CRACHÁ DIGITAL DE IDENTIFICAÇÃO DE CARGO -->
-        <div class="card card-custom p-3 mb-4" style="background: rgba(45, 134, 71, 0.15); border-left: 5px solid var(--ifce-accent-green);">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <span class="small text-muted-custom text-uppercase fw-bold">Identificação de Cargo</span>
-                    <h5 class="mb-1 fw-bold text-white" id="user-name-display">-</h5>
-                    <p class="mb-0 small" style="color: var(--ifce-accent-green);">🪪 Cargo: <strong id="user-role-display">-</strong></p>
-                </div>
-                <span class="badge bg-success">🟢 Online</span>
+        <!-- AVISO DE PUNIÇÃO / BLOQUEIO CASO O USUÁRIO ESTEJA PUNIDO -->
+        <div id="painel-bloqueio-punicao" class="card card-custom p-4 mb-4 d-none" style="border-color: #dc3545; background: rgba(220, 53, 69, 0.15);">
+            <h4 class="fw-bold text-danger text-center mb-3">🚨 ACESSO BLOQUEADO POR PUNIÇÃO 🚨</h4>
+            <p class="text-white text-center mb-2">Você foi punido e teve seus privilégios suspensos no Grêmio Estudantil.</p>
+            <div class="bg-dark p-3 rounded border border-danger">
+                <p class="mb-1"><strong>Punição Aplicada:</strong> <span id="punicao-info-tipo" class="text-warning">-</span></p>
+                <p class="mb-0"><strong>Motivo:</strong> <span id="punicao-info-motivo" class="text-white">-</span></p>
             </div>
         </div>
 
-        <!-- RELATÓRIO DE ATIVIDADES (GERAR PDF E WHATSAPP) -->
-        <div class="card card-custom p-4 mb-4">
-            <h5 class="card-title-chem mb-3">📝 Escrever Relatório de Atividades</h5>
-            <div class="mb-3">
-                <label class="form-label fw-bold">Conteúdo do Relatório</label>
-                <textarea id="texto-relatorio" class="form-control" rows="3" placeholder="Digite aqui o relatório das suas atividades no grêmio..."></textarea>
-            </div>
-            <div class="d-flex gap-2 flex-wrap">
-                <button onclick="gerarPDFRelatorio()" class="btn btn-pdf fw-bold">📄 Gerar PDF</button>
-                <button onclick="enviarWhatsAppRelatorio()" class="btn btn-wpp fw-bold">📱 Enviar no WhatsApp</button>
-            </div>
-        </div>
+        <!-- CONTEÚDO GERAL DO PAINEL (QUE SERÁ OCULTO SE HOUVER PUNIÇÃO) -->
+        <div id="conteudo-painel-geral">
 
-        <!-- PUBLICAR MURAL DE AVISOS / VÍDEOS (MARKETING E GERAL) -->
-        <div class="card card-custom p-4 mb-4">
-            <h5 class="card-title-chem mb-3">📢 Mural de Avisos e Vídeos</h5>
-            <div class="mb-3">
-                <label class="form-label fw-bold">Título do Aviso / Vídeo</label>
-                <input type="text" id="aviso-titulo" class="form-control" placeholder="Ex: Divulgação do Evento ou Reunião">
+            <!-- CRACHÁ DIGITAL DE IDENTIFICAÇÃO DE CARGO -->
+            <div class="card card-custom p-3 mb-4" style="background: rgba(45, 134, 71, 0.15); border-left: 5px solid var(--ifce-accent-green);">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <span class="small text-muted-custom text-uppercase fw-bold">Identificação de Cargo</span>
+                        <h5 class="mb-1 fw-bold text-white" id="user-name-display">-</h5>
+                        <p class="mb-0 small" style="color: var(--ifce-accent-green);">🪪 Cargo: <strong id="user-role-display">-</strong></p>
+                    </div>
+                    <span class="badge bg-success">🟢 Online</span>
+                </div>
             </div>
-            <div class="mb-3">
-                <label class="form-label fw-bold">Mensagem ou Link do Vídeo (YouTube/Drive)</label>
-                <textarea id="aviso-mensagem" class="form-control" rows="2" placeholder="Digite o recado ou cole o link do vídeo..."></textarea>
-            </div>
-            <button onclick="publicarAviso()" class="btn btn-ifce">Publicar no Mural</button>
 
-            <hr style="border-color: var(--ifce-card-border);" class="my-4">
+            <!-- RELATÓRIO DE ATIVIDADES (GERAR PDF E WHATSAPP) -->
+            <div class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-3">📝 Escrever Relatório de Atividades</h5>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Conteúdo do Relatório</label>
+                    <textarea id="texto-relatorio" class="form-control" rows="3" placeholder="Digite aqui o relatório das suas atividades no grêmio..."></textarea>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button onclick="gerarPDFRelatorio()" class="btn btn-pdf fw-bold">📄 Gerar PDF</button>
+                    <button onclick="enviarWhatsAppRelatorio()" class="btn btn-wpp fw-bold">📱 Enviar no WhatsApp</button>
+                </div>
+            </div>
 
-            <h6 class="fw-bold mb-3 text-white">Avisos Publicados</h6>
-            <div id="lista-avisos-admin">
-                <p class="text-muted-custom small">Carregando avisos...</p>
-            </div>
-        </div>
+            <!-- PUBLICAR MURAL DE AVISOS / VÍDEOS (MARKETING E GERAL) -->
+            <div class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-3">📢 Mural de Avisos e Vídeos</h5>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Título do Aviso / Vídeo</label>
+                    <input type="text" id="aviso-titulo" class="form-control" placeholder="Ex: Divulgação do Evento ou Reunião">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Mensagem ou Link do Vídeo (YouTube/Drive)</label>
+                    <textarea id="aviso-mensagem" class="form-control" rows="2" placeholder="Digite o recado ou cole o link do vídeo..."></textarea>
+                </div>
+                <button onclick="publicarAviso()" class="btn btn-ifce">Publicar no Mural</button>
 
-        <!-- CRIAR NOVA ENQUETE (MARKETING E GERAL) -->
-        <div class="card card-custom p-4 mb-4">
-            <h5 class="card-title-chem mb-3">📊 Criar Nova Enquete</h5>
-            <div class="mb-3">
-                <label class="form-label fw-bold">Pergunta / Título da Enquete</label>
-                <input type="text" id="enquete-titulo" class="form-control" placeholder="Ex: Qual tema do próximo evento?">
-            </div>
-            <label class="form-label fw-bold">Opções de Voto</label>
-            <div id="container-opcoes">
-                <div class="input-group mb-2">
-                    <input type="text" class="form-control opcao-enquete" placeholder="Opção 1">
-                    <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
-                </div>
-                <div class="input-group mb-2">
-                    <input type="text" class="form-control opcao-enquete" placeholder="Opção 2">
-                    <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
-                </div>
-            </div>
-            <div class="d-flex gap-2 mt-3">
-                <button onclick="adicionarCampoOpcao()" class="btn btn-outline-light btn-sm" style="border-radius: 8px;">+ Adicionar Opção</button>
-                <button onclick="criarEnquete()" class="btn btn-ifce ms-auto">Criar Enquete</button>
-            </div>
-        </div>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
 
-        <!-- CADASTRAR ALUNO (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
-        <div class="card card-custom p-4 mb-4 card-admin-geral">
-            <h5 class="card-title-chem mb-3">👤 Cadastrar Aluno</h5>
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Nome Completo</label>
-                    <input type="text" id="cad-nome" class="form-control" placeholder="Nome do Aluno">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">E-mail Institucional</label>
-                    <input type="email" id="cad-email" class="form-control" placeholder="aluno@aluno.ifce.edu.br">
-                </div>
-                <div class="col-md-12">
-                    <label class="form-label fw-bold">Senha do Aluno</label>
-                    <input type="password" id="cad-senha" class="form-control" placeholder="******">
-                </div>
-                <div class="col-12 mt-3">
-                    <button onclick="cadastrarAluno()" class="btn btn-ifce w-100">Cadastrar Aluno</button>
+                <h6 class="fw-bold mb-3 text-white">Avisos Publicados</h6>
+                <div id="lista-avisos-admin">
+                    <p class="text-muted-custom small">Carregando avisos...</p>
                 </div>
             </div>
-        </div>
 
-        <!-- PAUTAS E REIVINDICAÇÕES (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
-        <div class="card card-custom p-4 mb-4 card-admin-geral">
-            <h5 class="card-title-chem mb-2">✊ Pautas e Reivindicações Apoiadas</h5>
-            <p class="text-muted-custom small mb-3">Pautas criadas pelos alunos para encaminhar à Direção do IFCE.</p>
-            <div id="lista-pautas-admin">
-                <p class="text-muted-custom small">Carregando pautas...</p>
+            <!-- CRIAR NOVA ENQUETE (MARKETING E GERAL) -->
+            <div class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-3">📊 Criar Nova Enquete</h5>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Pergunta / Título da Enquete</label>
+                    <input type="text" id="enquete-titulo" class="form-control" placeholder="Ex: Qual tema do próximo evento?">
+                </div>
+                <label class="form-label fw-bold">Opções de Voto</label>
+                <div id="container-opcoes">
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control opcao-enquete" placeholder="Opção 1">
+                        <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
+                    </div>
+                    <div class="input-group mb-2">
+                        <input type="text" class="form-control opcao-enquete" placeholder="Opção 2">
+                        <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-3">
+                    <button onclick="adicionarCampoOpcao()" class="btn btn-outline-light btn-sm" style="border-radius: 8px;">+ Adicionar Opção</button>
+                    <button onclick="criarEnquete()" class="btn btn-ifce ms-auto">Criar Enquete</button>
+                </div>
             </div>
-        </div>
 
-        <!-- EMPRÉSTIMO DE MATERIAIS (OCULTO PARA MARKETING) -->
-        <div class="card card-custom p-4 mb-4 card-admin-nao-marketing">
-            <h5 class="card-title-chem mb-3">🎲 Gerenciar Materiais do Grêmio</h5>
-            <div class="row g-2 mb-3">
-                <div class="col-md-8">
-                    <label class="form-label fw-bold">Material</label>
-                    <input type="text" id="mat-nome" class="form-control" placeholder="Ex: Bola de Futsal, Xadrez">
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Qtd / Identificador</label>
-                    <input type="text" id="mat-qtd" class="form-control" placeholder="Ex: 1 un">
+            <!-- CADASTRAR ALUNO (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
+            <div class="card card-custom p-4 mb-4 card-admin-geral">
+                <h5 class="card-title-chem mb-3">👤 Cadastrar Aluno</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Nome Completo</label>
+                        <input type="text" id="cad-nome" class="form-control" placeholder="Nome do Aluno">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">E-mail Institucional</label>
+                        <input type="email" id="cad-email" class="form-control" placeholder="aluno@aluno.ifce.edu.br">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Senha do Aluno</label>
+                        <input type="password" id="cad-senha" class="form-control" placeholder="******">
+                    </div>
+                    <div class="col-12 mt-3">
+                        <button onclick="cadastrarAluno()" class="btn btn-ifce w-100">Cadastrar Aluno</button>
+                    </div>
                 </div>
             </div>
-            <button onclick="cadastrarMaterial()" class="btn btn-ifce">Cadastrar Material</button>
 
-            <hr style="border-color: var(--ifce-card-border);" class="my-4">
-            <h6 class="fw-bold mb-3 text-white">Materiais Cadastrados</h6>
-            <div id="lista-materiais-admin">
-                <p class="text-muted-custom small">Carregando materiais...</p>
+            <!-- PAUTAS E REIVINDICAÇÕES (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
+            <div class="card card-custom p-4 mb-4 card-admin-geral">
+                <h5 class="card-title-chem mb-2">✊ Pautas e Reivindicações Apoiadas</h5>
+                <p class="text-muted-custom small mb-3">Pautas criadas pelos alunos para encaminhar à Direção do IFCE.</p>
+                <div id="lista-pautas-admin">
+                    <p class="text-muted-custom small">Carregando pautas...</p>
+                </div>
             </div>
-        </div>
 
-        <!-- CRIAR EVENTO / TORNEIO (OCULTO PARA MARKETING) -->
-        <div class="card card-custom p-4 mb-4 card-admin-nao-marketing">
-            <h5 class="card-title-chem mb-3">📅 Criar Evento ou Torneio</h5>
-            <div class="row g-2 mb-3">
-                <div class="col-md-8">
-                    <label class="form-label fw-bold">Título do Evento</label>
-                    <input type="text" id="evento-titulo" class="form-control" placeholder="Ex: Interclasses de Futsal">
+            <!-- EMPRÉSTIMO DE MATERIAIS (OCULTO PARA MARKETING) -->
+            <div class="card card-custom p-4 mb-4 card-admin-nao-marketing">
+                <h5 class="card-title-chem mb-3">🎲 Gerenciar Materiais do Grêmio</h5>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold">Material</label>
+                        <input type="text" id="mat-nome" class="form-control" placeholder="Ex: Bola de Futsal, Xadrez">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Qtd / Identificador</label>
+                        <input type="text" id="mat-qtd" class="form-control" placeholder="Ex: 1 un">
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Data / Hora</label>
-                    <input type="text" id="evento-data" class="form-control" placeholder="Ex: 15/10 - 14h">
-                </div>
-                <div class="col-12 mt-2">
-                    <label class="form-label fw-bold">Descrição</label>
-                    <textarea id="evento-descricao" class="form-control" rows="2" placeholder="Descrição e regras do evento..."></textarea>
-                </div>
-            </div>
-            <button onclick="criarEvento()" class="btn btn-ifce">Publicar Evento</button>
+                <button onclick="cadastrarMaterial()" class="btn btn-ifce">Cadastrar Material</button>
 
-            <hr style="border-color: var(--ifce-card-border);" class="my-4">
-            <h6 class="fw-bold mb-3 text-white">Eventos Programados</h6>
-            <div id="lista-eventos-admin">
-                <p class="text-muted-custom small">Carregando eventos...</p>
-            </div>
-        </div>
-
-        <!-- ENQUETES ATIVAS E ENCERRADAS -->
-        <div class="card card-custom p-4 mb-4">
-            <h5 class="card-title-chem mb-3">📈 Enquetes Ativas e Encerradas</h5>
-            <div id="lista-enquetes-admin">
-                <p class="text-muted-custom small">Carregando enquetes...</p>
-            </div>
-        </div>
-
-        <!-- PAINEL DE PUNIÇÃO / BLOQUEIO DE MEMBROS (EXCLUSIVO DA CÚPULA) -->
-        <div class="card card-custom p-4 mb-4 card-admin-geral" style="border-color: #dc3545;">
-            <h5 class="card-title-chem mb-3" style="color: #ff6b6b;">⚠️ Aplicar Punição / Bloqueio a Membro</h5>
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">E-mail do Aluno / Membro</label>
-                    <input type="email" id="punicao-email" class="form-control" placeholder="aluno@aluno.ifce.edu.br">
-                </div>
-                <div class="col-md-6">
-                    <label class="form-label fw-bold">Punição Aplicada</label>
-                    <input type="text" id="punicao-tipo" class="form-control" placeholder="Ex: Suspensão por 7 dias / Banimento">
-                </div>
-                <div class="col-md-12">
-                    <label class="form-label fw-bold">Motivo da Punição</label>
-                    <textarea id="punicao-motivo" class="form-control" rows="2" placeholder="Descreva detalhadamente o motivo da punição..."></textarea>
-                </div>
-                <div class="col-12 mt-3">
-                    <button onclick="aplicarPunicaoMembro()" class="btn btn-danger w-100 fw-bold">Aplicar Punição e Bloquear Acesso</button>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold mb-3 text-white">Materiais Cadastrados</h6>
+                <div id="lista-materiais-admin">
+                    <p class="text-muted-custom small">Carregando materiais...</p>
                 </div>
             </div>
-        </div>
 
-        <!-- ALUNOS CADASTRADOS (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
-        <div class="card card-custom p-4 mb-4 card-admin-geral">
-            <h5 class="card-title-chem mb-3">🎓 Alunos Cadastrados</h5>
-            <div id="lista-alunos-admin">
-                <p class="text-muted-custom small">Carregando alunos...</p>
-            </div>
-        </div>
+            <!-- CRIAR EVENTO / TORNEIO (OCULTO PARA MARKETING) -->
+            <div class="card card-custom p-4 mb-4 card-admin-nao-marketing">
+                <h5 class="card-title-chem mb-3">📅 Criar Evento ou Torneio</h5>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold">Título do Evento</label>
+                        <input type="text" id="evento-titulo" class="form-control" placeholder="Ex: Interclasses de Futsal">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Data / Hora</label>
+                        <input type="text" id="evento-data" class="form-control" placeholder="Ex: 15/10 - 14h">
+                    </div>
+                    <div class="col-12 mt-2">
+                        <label class="form-label fw-bold">Descrição</label>
+                        <textarea id="evento-descricao" class="form-control" rows="2" placeholder="Descrição e regras do evento..."></textarea>
+                    </div>
+                </div>
+                <button onclick="criarEvento()" class="btn btn-ifce">Publicar Evento</button>
 
-        <!-- SUGESTÕES DOS ALUNOS (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
-        <div class="card card-custom p-4 mb-4 card-admin-geral">
-            <h5 class="card-title-chem mb-3">💡 Sugestões dos Alunos</h5>
-            <div id="lista-sugestoes-admin">
-                <p class="text-muted-custom small">Carregando sugestões...</p>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold mb-3 text-white">Eventos Programados</h6>
+                <div id="lista-eventos-admin">
+                    <p class="text-muted-custom small">Carregando eventos...</p>
+                </div>
             </div>
+
+            <!-- ENQUETES ATIVAS E ENCERRADAS -->
+            <div class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-3">📈 Enquetes Ativas e Encerradas</h5>
+                <div id="lista-enquetes-admin">
+                    <p class="text-muted-custom small">Carregando enquetes...</p>
+                </div>
+            </div>
+
+            <!-- PAINEL DE PUNIÇÃO / BLOQUEIO DE MEMBROS (EXCLUSIVO DA CÚPULA) -->
+            <div class="card card-custom p-4 mb-4 card-admin-geral" style="border-color: #dc3545;">
+                <h5 class="card-title-chem mb-3" style="color: #ff6b6b;">⚠️ Aplicar Punição / Bloqueio a Membro</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">E-mail do Aluno / Membro</label>
+                        <input type="email" id="punicao-email" class="form-control" placeholder="email@ifce.edu.br">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Punição Aplicada</label>
+                        <input type="text" id="punicao-tipo" class="form-control" placeholder="Ex: Suspensão por 7 dias / Banimento">
+                    </div>
+                    <div class="col-md-12">
+                        <label class="form-label fw-bold">Motivo da Punição</label>
+                        <textarea id="punicao-motivo" class="form-control" rows="2" placeholder="Descreva detalhadamente o motivo da punição..."></textarea>
+                    </div>
+                    <div class="col-12 mt-3">
+                        <button onclick="aplicarPunicaoMembro()" class="btn btn-danger w-100 fw-bold">Aplicar Punição e Bloquear Acesso</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ALUNOS CADASTRADOS (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
+            <div class="card card-custom p-4 mb-4 card-admin-geral">
+                <h5 class="card-title-chem mb-3">🎓 Alunos Cadastrados</h5>
+                <div id="lista-alunos-admin">
+                    <p class="text-muted-custom small">Carregando alunos...</p>
+                </div>
+            </div>
+
+            <!-- SUGESTÕES DOS ALUNOS (ADMIN GERAL - OCULTO PARA MEMBROS COMUNS) -->
+            <div class="card card-custom p-4 mb-4 card-admin-geral">
+                <h5 class="card-title-chem mb-3">💡 Sugestões dos Alunos</h5>
+                <div id="lista-sugestoes-admin">
+                    <p class="text-muted-custom small">Carregando sugestões...</p>
+                </div>
+            </div>
+
         </div>
 
     </div>
@@ -391,8 +406,8 @@
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
             "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente", nivel: "admin" },
             "cecilia@aluno.ifce.edu.br": { nome: "Cecília", cargo: "Diretora de Esportes", nivel: "membro" },
-            "thalison@aluno.ifce.edu.br": { nome: "Thalison", cargo: "Diretor(a) de Marketing", nivel: "marketing" },
-            "marketing2@aluno.ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing" }
+            "marketing1@ifce.edu.br": { nome: "Diretor(a) de Marketing 1", cargo: "Diretor(a) de Marketing", nivel: "marketing" },
+            "marketing2@ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing" }
         };
 
         // LOGIN RESTRITO EXCLUSIVAMENTE AO FIREBASE AUTHENTICATION
@@ -411,7 +426,7 @@
 
             auth.signInWithEmailAndPassword(email, senha)
                 .then((userCredential) => {
-                    abrirPainelAdmin(userCredential.user.email);
+                    verificarAcessoEAbirPainel(userCredential.user.email);
                 })
                 .catch((error) => {
                     console.error("Erro de login:", error.code);
@@ -420,12 +435,35 @@
                 });
         }
 
-        function abrirPainelAdmin(emailUsuario) {
+        function verificarAcessoEAbirPainel(emailUsuario) {
+            // Verifica se o membro/aluno está punido na coleção 'membros_punidos' ou 'alunos'
+            db.collection('membros_punidos').doc(emailUsuario).get().then(docPunido => {
+                let dadosPunicao = docPunido.exists ? docPunido.data() : null;
+
+                if (!dadosPunicao) {
+                    // Verifica na coleção alunos também
+                    db.collection('alunos').doc(emailUsuario).get().then(docAluno => {
+                        if (docAluno.exists && docAluno.data().ativo === false) {
+                            dadosPunicao = {
+                                punicao: docAluno.data().punicao || "Bloqueio de Acesso",
+                                motivo: docAluno.data().motivoPunicao || "Sem motivo especificado"
+                            };
+                        }
+                        abrirPainelAdmin(emailUsuario, dadosPunicao);
+                    });
+                } else {
+                    abrirPainelAdmin(emailUsuario, dadosPunicao);
+                }
+            }).catch(() => {
+                abrirPainelAdmin(emailUsuario, null);
+            });
+        }
+
+        function abrirPainelAdmin(emailUsuario, dadosPunicao) {
             document.getElementById('tela-login-admin').style.display = 'none';
             document.getElementById('painel-admin').style.display = 'block';
             document.getElementById('btn-logout-admin').classList.remove('d-none');
             
-            // Identifica o cargo e nível pelo e-mail ou define um padrão se não estiver na lista
             let dadosUsuario = baseDeCargos[emailUsuario] || { 
                 nome: emailUsuario.split('@')[0], 
                 cargo: "Membro da Diretoria", 
@@ -435,27 +473,34 @@
             document.getElementById('user-name-display').textContent = dadosUsuario.nome;
             document.getElementById('user-role-display').textContent = dadosUsuario.cargo;
 
+            // --- VERIFICAÇÃO DE PUNIÇÃO ---
+            if (dadosPunicao) {
+                // Se estiver punido, oculta todo o conteúdo geral e mostra o aviso de bloqueio na tela dele
+                document.getElementById('conteudo-painel-geral').classList.add('d-none');
+                document.getElementById('painel-bloqueio-punicao').classList.remove('d-none');
+                document.getElementById('punicao-info-tipo').textContent = dadosPunicao.punicao;
+                document.getElementById('punicao-info-motivo').textContent = dadosPunicao.motivo;
+                return; // Para a execução aqui, ele não consegue mexer em nada
+            }
+            // -----------------------------
+
             // --- CONTROLE DE ACESSO POR NÍVEL ---
             const cardsAdminGeral = document.querySelectorAll('.card-admin-geral');
             const cardsAdminNaoMarketing = document.querySelectorAll('.card-admin-nao-marketing');
 
             if (dadosUsuario.nivel === "admin") {
-                // Cúpula vê tudo
                 cardsAdminGeral.forEach(card => card.style.display = 'block');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'block');
             } else if (dadosUsuario.nivel === "marketing") {
-                // Marketing vê mural, enquetes e relatórios, mas esconde gestão geral e de esportes
                 cardsAdminGeral.forEach(card => card.style.display = 'none');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'none');
             } else {
-                // Outros membros comuns (ex: Esportes)
                 cardsAdminGeral.forEach(card => card.style.display = 'none');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'block');
             }
             // ------------------------------------
 
             carregarAvisosAdmin();
-            // Carrega apenas dados permitidos dependendo do nível
             if (dadosUsuario.nivel === "admin") {
                 carregarAlunos();
                 carregarSugestoesAdmin();
@@ -694,22 +739,28 @@
                 return;
             }
 
-            db.collection('alunos').doc(email).get().then(doc => {
-                if (!doc.exists) {
-                    alert("E-mail não encontrado na base de alunos!");
-                    return;
-                }
-                db.collection('alunos').doc(email).update({
-                    ativo: false,
-                    punicao: tipo,
-                    motivoPunicao: motivo,
-                    punidoEm: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => {
-                    mostrarAlertaSucesso(`Punição aplicada com sucesso ao aluno ${email}!`);
-                    document.getElementById('punicao-email').value = '';
-                    document.getElementById('punicao-tipo').value = '';
-                    document.getElementById('punicao-motivo').value = '';
+            // Salva na coleção unificada de punições para abranger qualquer membro ou aluno do grêmio
+            db.collection('membros_punidos').doc(email).set({
+                email: email,
+                punicao: tipo,
+                motivo: motivo,
+                punidoEm: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                // Tenta atualizar também na coleção alunos se existir lá
+                db.collection('alunos').doc(email).get().then(doc => {
+                    if (doc.exists) {
+                        db.collection('alunos').doc(email).update({
+                            ativo: false,
+                            punicao: tipo,
+                            motivoPunicao: motivo
+                        });
+                    }
                 });
+
+                mostrarAlertaSucesso(`Punição aplicada com sucesso a ${email}! O acesso foi bloqueado.`);
+                document.getElementById('punicao-email').value = '';
+                document.getElementById('punicao-tipo').value = '';
+                document.getElementById('punicao-motivo').value = '';
             }).catch(err => {
                 console.error("Erro ao aplicar punição:", err);
                 alert("Erro ao processar punição.");
@@ -754,11 +805,16 @@
 
         function alternarStatusAluno(email, novoStatus) {
             db.collection('alunos').doc(email).update({ ativo: novoStatus, punicao: novoStatus ? '' : 'Bloqueio manual' });
+            if (novoStatus) {
+                // Se desbloqueou, remove da coleção de punidos
+                db.collection('membros_punidos').doc(email).delete();
+            }
         }
 
         function excluirAluno(email) {
             if (confirm(`Excluir o aluno ${email}?`)) {
                 db.collection('alunos').doc(email).delete();
+                db.collection('membros_punidos').doc(email).delete();
             }
         }
 
