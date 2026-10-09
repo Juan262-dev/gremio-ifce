@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Admin - Grêmio IFCE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Biblioteca jsPDF para gerar o PDF direto no navegador -->
+    <!-- Biblioteca jsPDF para gerar o PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Biblioteca Html5-Qrcode para leitura de QR Code pela câmera -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
         :root {
             --ifce-green: #2d8647;
@@ -127,6 +129,39 @@
             color: var(--ifce-text-muted) !important;
         }
 
+        .avatar-perfil {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--ifce-accent-green);
+        }
+
+        .galeria-marketing {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .membro-marketing-card {
+            background: #121a14;
+            border: 1px solid var(--ifce-card-border);
+            padding: 10px;
+            border-radius: 12px;
+            text-align: center;
+            width: 140px;
+        }
+
+        .membro-marketing-card img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 5px;
+            border: 1px solid var(--ifce-accent-green);
+        }
+
         #painel-admin { display: none; }
     </style>
 </head>
@@ -140,25 +175,37 @@
         </div>
     </nav>
 
-    <!-- TELA DE LOGIN DO ADMIN -->
-    <div class="container" id="tela-login-admin" style="max-width: 400px; margin-top: 60px;">
+    <!-- TELA DE LOGIN DO ADMIN / QR CODE -->
+    <div class="container" id="tela-login-admin" style="max-width: 420px; margin-top: 40px;">
         <div class="card card-custom p-4">
             <div class="text-center mb-3">
                 <span style="font-size: 3rem;">🔬</span>
                 <h4 class="fw-bold mt-2" style="color: var(--ifce-accent-green);">Acesso Restrito</h4>
                 <p class="small text-muted-custom">Gestão do Grêmio Estudantil IFCE</p>
             </div>
+            
             <div id="login-erro" class="alert alert-danger d-none p-2 small text-center" style="border-radius: 8px;"></div>
-            <div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">E-mail Admin</label>
-                    <input type="email" id="admin-email" class="form-control" placeholder="kevin.silva10@aluno.ifce.edu.br">
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Senha</label>
-                    <input type="password" id="admin-senha" class="form-control" placeholder="******">
-                </div>
-                <button onclick="fazerLoginAdmin()" class="btn btn-ifce w-100 mt-2">Entrar no Painel</button>
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold">E-mail</label>
+                <input type="email" id="admin-email" class="form-control" placeholder="kevin.silva10@aluno.ifce.edu.br">
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-bold">Senha</label>
+                <input type="password" id="admin-senha" class="form-control" placeholder="******">
+            </div>
+            <button onclick="fazerLoginAdmin()" class="btn btn-ifce w-100 mb-3">Entrar com Senha</button>
+
+            <hr style="border-color: var(--ifce-card-border);">
+
+            <div class="text-center">
+                <button onclick="abrirLeitorQRCode()" class="btn btn-outline-light w-100 fw-bold" style="border-radius: 10px;">📷 Entrar via QR Code</button>
+            </div>
+
+            <!-- LEITOR DE QR CODE (OCULTO ATÉ CLICAR) -->
+            <div id="container-qrcode-reader" class="mt-3 d-none">
+                <div id="reader" style="width: 100%; border-radius: 10px; overflow: hidden;"></div>
+                <button onclick="fecharLeitorQRCode()" class="btn btn-outline-danger btn-sm w-100 mt-2">Fechar Câmera</button>
             </div>
         </div>
     </div>
@@ -184,15 +231,36 @@
         <!-- CONTEÚDO GERAL DO PAINEL -->
         <div id="conteudo-painel-geral">
 
-            <!-- CRACHÁ DIGITAL DE IDENTIFICAÇÃO DE CARGO -->
+            <!-- CRACHÁ DIGITAL DE IDENTIFICAÇÃO DE CARGO COM FOTO -->
             <div class="card card-custom p-3 mb-4" style="background: rgba(45, 134, 71, 0.15); border-left: 5px solid var(--ifce-accent-green);">
                 <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <span class="small text-muted-custom text-uppercase fw-bold">Identificação de Cargo</span>
-                        <h5 class="mb-1 fw-bold text-white" id="user-name-display">-</h5>
-                        <p class="mb-0 small" style="color: var(--ifce-accent-green);">🪪 Cargo: <strong id="user-role-display">-</strong></p>
+                    <div class="d-flex align-items-center gap-3">
+                        <img id="user-avatar-display" src="https://via.placeholder.com/60" alt="Foto" class="avatar-perfil">
+                        <div>
+                            <span class="small text-muted-custom text-uppercase fw-bold">Identificação de Cargo</span>
+                            <h5 class="mb-1 fw-bold text-white" id="user-name-display">-</h5>
+                            <p class="mb-0 small" style="color: var(--ifce-accent-green);">🪪 Cargo: <strong id="user-role-display">-</strong></p>
+                        </div>
                     </div>
                     <span class="badge bg-success">🟢 Online</span>
+                </div>
+            </div>
+
+            <!-- PAINEL EXCLUSIVO DE MARKETING (MOSTRA A FOTO DOS DOIS DIRETORES) -->
+            <div class="card card-custom p-4 mb-4 card-admin-marketing d-none">
+                <h5 class="card-title-chem mb-2">📸 Diretores de Marketing Ativos</h5>
+                <p class="text-muted-custom small mb-3">Responsáveis pelas postagens, enquetes e divulgação do grêmio.</p>
+                <div class="galeria-marketing">
+                    <div class="membro-marketing-card">
+                        <img src="https://via.placeholder.com/50" alt="Marketing 1" id="foto-mkt-1">
+                        <strong class="d-block small text-white">Marketing 1</strong>
+                        <small class="text-muted-custom" style="font-size: 10px;">marketing1@ifce.edu.br</small>
+                    </div>
+                    <div class="membro-marketing-card">
+                        <img src="https://via.placeholder.com/50" alt="Marketing 2" id="foto-mkt-2">
+                        <strong class="d-block small text-white">Marketing 2</strong>
+                        <small class="text-muted-custom" style="font-size: 10px;">marketing2@ifce.edu.br</small>
+                    </div>
                 </div>
             </div>
 
@@ -412,14 +480,16 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         let intervaloContador = null;
+        let html5QrCode = null;
 
+        // Base de cargos com foto personalizada e nível de acesso
         const baseDeCargos = {
-            "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
-            "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
-            "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente", nivel: "admin" },
-            "cecilia@aluno.ifce.edu.br": { nome: "Cecília", cargo: "Diretora de Esportes", nivel: "membro" },
-            "marketing1@ifce.edu.br": { nome: "Diretor(a) de Marketing 1", cargo: "Diretor(a) de Marketing", nivel: "marketing" },
-            "marketing2@ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing" }
+            "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin", foto: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" },
+            "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin", foto: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" },
+            "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente", nivel: "admin", foto: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150" },
+            "cecilia@aluno.ifce.edu.br": { nome: "Cecília", cargo: "Diretora de Esportes", nivel: "membro", foto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" },
+            "talison@aluno.ifce.edu.br": { nome: "Talison", cargo: "Diretor(a) de Marketing", nivel: "marketing", foto: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150" },
+            "marketing2@aluno.ifce.edu.br": { nome: "Diretor(a) de Marketin", cargo: "Diretor(a) de Marketing", nivel: "marketing", foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" }
         };
 
         function fazerLoginAdmin() {
@@ -445,6 +515,46 @@
                     erroDiv.classList.remove('d-none');
                 });
         }
+
+        // --- LEITOR DE QR CODE ---
+        function abrirLeitorQRCode() {
+            document.getElementById('container-qrcode-reader').classList.remove('d-none');
+            html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: { width: 250, height: 250 } },
+                (decodedText) => {
+                    // O QR code deve conter o e-mail cadastrado do membro
+                    const emailLido = decodedText.trim().toLowerCase();
+                    if (baseDeCargos[emailLido]) {
+                        fecharLeitorQRCode();
+                        document.getElementById('admin-email').value = emailLido;
+                        // Simula login direto ou busca sessão
+                        verificarAcessoEAbirPainel(emailLido);
+                    } else {
+                        alert(`QR Code reconhecido (${emailLido}), mas o e-mail não consta na base de cargos oficiais.`);
+                    }
+                },
+                (errorMessage) => {
+                    // Erros de leitura em tempo real podem ser ignorados
+                }
+            ).catch(err => {
+                alert("Erro ao iniciar a câmera para leitura do QR Code.");
+            });
+        }
+
+        function fecharLeitorQRCode() {
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    document.getElementById('container-qrcode-reader').classList.add('d-none');
+                }).catch(() => {
+                    document.getElementById('container-qrcode-reader').classList.add('d-none');
+                });
+            } else {
+                document.getElementById('container-qrcode-reader').classList.add('d-none');
+            }
+        }
+        // -------------------------
 
         function verificarAcessoEAbirPainel(emailUsuario) {
             db.collection('membros_punidos').doc(emailUsuario).get().then(docPunido => {
@@ -474,11 +584,13 @@
             let dadosUsuario = baseDeCargos[emailUsuario] || { 
                 nome: emailUsuario.split('@')[0], 
                 cargo: "Membro da Diretoria", 
-                nivel: "membro" 
+                nivel: "membro",
+                foto: "https://via.placeholder.com/60"
             };
 
             document.getElementById('user-name-display').textContent = dadosUsuario.nome;
             document.getElementById('user-role-display').textContent = dadosUsuario.cargo;
+            document.getElementById('user-avatar-display').src = dadosUsuario.foto;
 
             if (dadosPunicao) {
                 document.getElementById('conteudo-painel-geral').classList.add('d-none');
@@ -493,16 +605,26 @@
 
             const cardsAdminGeral = document.querySelectorAll('.card-admin-geral');
             const cardsAdminNaoMarketing = document.querySelectorAll('.card-admin-nao-marketing');
+            const cardAdminMarketing = document.querySelectorAll('.card-admin-marketing');
 
             if (dadosUsuario.nivel === "admin") {
                 cardsAdminGeral.forEach(card => card.style.display = 'block');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'block');
+                cardAdminMarketing.forEach(card => card.style.display = 'block');
+                // Configura as fotos dos diretores de marketing na aba de marketing do admin geral
+                document.getElementById('foto-mkt-1').src = baseDeCargos["marketing1@ifce.edu.br"].foto;
+                document.getElementById('foto-mkt-2').src = baseDeCargos["marketing2@ifce.edu.br"].foto;
             } else if (dadosUsuario.nivel === "marketing") {
                 cardsAdminGeral.forEach(card => card.style.display = 'none');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'none');
+                cardAdminMarketing.forEach(card => card.style.display = 'block');
+                // Exibe as fotos dos dois diretores de marketing
+                document.getElementById('foto-mkt-1').src = baseDeCargos["marketing1@ifce.edu.br"].foto;
+                document.getElementById('foto-mkt-2').src = baseDeCargos["marketing2@ifce.edu.br"].foto;
             } else {
                 cardsAdminGeral.forEach(card => card.style.display = 'none');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'block');
+                cardAdminMarketing.forEach(card => card.style.display = 'none');
             }
 
             carregarAvisosAdmin();
@@ -550,7 +672,7 @@
         function converterTextoParaMinutos(texto) {
             texto = texto.toLowerCase().trim();
             const match = texto.match(/^(\d+)\s*(min|h|d|ano|m)?$/);
-            if (!match) return 60; // padrão 60 min se errar
+            if (!match) return 60;
 
             const valor = parseInt(match[1]);
             const unidade = match[2] || 'min';
@@ -558,7 +680,7 @@
             if (unidade.includes('ano')) return valor * 525600;
             if (unidade.includes('d')) return valor * 1440;
             if (unidade.includes('h')) return valor * 60;
-            return valor; // minutos por padrão
+            return valor;
         }
 
         function fazerLogoutAdmin() {
