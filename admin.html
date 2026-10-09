@@ -194,18 +194,18 @@
             </div>
         </div>
 
-        <!-- PUBLICAR MURAL DE AVISOS -->
+        <!-- PUBLICAR MURAL DE AVISOS / VÍDEOS (MARKETING E GERAL) -->
         <div class="card card-custom p-4 mb-4">
-            <h5 class="card-title-chem mb-3">📢 Mural de Avisos</h5>
+            <h5 class="card-title-chem mb-3">📢 Mural de Avisos e Vídeos</h5>
             <div class="mb-3">
-                <label class="form-label fw-bold">Título do Aviso</label>
-                <input type="text" id="aviso-titulo" class="form-control" placeholder="Ex: Reunião Geral do Grêmio">
+                <label class="form-label fw-bold">Título do Aviso / Vídeo</label>
+                <input type="text" id="aviso-titulo" class="form-control" placeholder="Ex: Divulgação do Evento ou Reunião">
             </div>
             <div class="mb-3">
-                <label class="form-label fw-bold">Mensagem</label>
-                <textarea id="aviso-mensagem" class="form-control" rows="2" placeholder="Digite o recado para os alunos..."></textarea>
+                <label class="form-label fw-bold">Mensagem ou Link do Vídeo (YouTube/Drive)</label>
+                <textarea id="aviso-mensagem" class="form-control" rows="2" placeholder="Digite o recado ou cole o link do vídeo..."></textarea>
             </div>
-            <button onclick="publicarAviso()" class="btn btn-ifce">Publicar Aviso</button>
+            <button onclick="publicarAviso()" class="btn btn-ifce">Publicar no Mural</button>
 
             <hr style="border-color: var(--ifce-card-border);" class="my-4">
 
@@ -215,7 +215,7 @@
             </div>
         </div>
 
-        <!-- CRIAR NOVA ENQUETE -->
+        <!-- CRIAR NOVA ENQUETE (MARKETING E GERAL) -->
         <div class="card card-custom p-4 mb-4">
             <h5 class="card-title-chem mb-3">📊 Criar Nova Enquete</h5>
             <div class="mb-3">
@@ -270,8 +270,8 @@
             </div>
         </div>
 
-        <!-- EMPRÉSTIMO DE MATERIAIS (VISÍVEL PARA ESPORTES) -->
-        <div class="card card-custom p-4 mb-4">
+        <!-- EMPRÉSTIMO DE MATERIAIS (OCULTO PARA MARKETING) -->
+        <div class="card card-custom p-4 mb-4 card-admin-nao-marketing">
             <h5 class="card-title-chem mb-3">🎲 Gerenciar Materiais do Grêmio</h5>
             <div class="row g-2 mb-3">
                 <div class="col-md-8">
@@ -292,8 +292,8 @@
             </div>
         </div>
 
-        <!-- CRIAR EVENTO / TORNEIO (VISÍVEL PARA ESPORTES) -->
-        <div class="card card-custom p-4 mb-4">
+        <!-- CRIAR EVENTO / TORNEIO (OCULTO PARA MARKETING) -->
+        <div class="card card-custom p-4 mb-4 card-admin-nao-marketing">
             <h5 class="card-title-chem mb-3">📅 Criar Evento ou Torneio</h5>
             <div class="row g-2 mb-3">
                 <div class="col-md-8">
@@ -323,6 +323,28 @@
             <h5 class="card-title-chem mb-3">📈 Enquetes Ativas e Encerradas</h5>
             <div id="lista-enquetes-admin">
                 <p class="text-muted-custom small">Carregando enquetes...</p>
+            </div>
+        </div>
+
+        <!-- PAINEL DE PUNIÇÃO / BLOQUEIO DE MEMBROS (EXCLUSIVO DA CÚPULA) -->
+        <div class="card card-custom p-4 mb-4 card-admin-geral" style="border-color: #dc3545;">
+            <h5 class="card-title-chem mb-3" style="color: #ff6b6b;">⚠️ Aplicar Punição / Bloqueio a Membro</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">E-mail do Aluno / Membro</label>
+                    <input type="email" id="punicao-email" class="form-control" placeholder="aluno@aluno.ifce.edu.br">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold">Punição Aplicada</label>
+                    <input type="text" id="punicao-tipo" class="form-control" placeholder="Ex: Suspensão por 7 dias / Banimento">
+                </div>
+                <div class="col-md-12">
+                    <label class="form-label fw-bold">Motivo da Punição</label>
+                    <textarea id="punicao-motivo" class="form-control" rows="2" placeholder="Descreva detalhadamente o motivo da punição..."></textarea>
+                </div>
+                <div class="col-12 mt-3">
+                    <button onclick="aplicarPunicaoMembro()" class="btn btn-danger w-100 fw-bold">Aplicar Punição e Bloquear Acesso</button>
+                </div>
             </div>
         </div>
 
@@ -368,7 +390,9 @@
             "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
             "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente", nivel: "admin" },
-            "cecilia@aluno.ifce.edu.br": { nome: "Cecília", cargo: "Diretora de Esportes", nivel: "membro" }
+            "cecilia@aluno.ifce.edu.br": { nome: "Cecília", cargo: "Diretora de Esportes", nivel: "membro" },
+            "thalison@aluno.ifce.edu.br": { nome: "Thalison", cargo: "Diretor(a) de Marketing", nivel: "marketing" },
+            "marketing2@aluno.ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing" }
         };
 
         // LOGIN RESTRITO EXCLUSIVAMENTE AO FIREBASE AUTHENTICATION
@@ -413,12 +437,20 @@
 
             // --- CONTROLE DE ACESSO POR NÍVEL ---
             const cardsAdminGeral = document.querySelectorAll('.card-admin-geral');
-            if (dadosUsuario.nivel !== "admin") {
-                // Se for membro comum (como a Diretora de Esportes), esconde as funções de gestão geral
-                cardsAdminGeral.forEach(card => card.style.display = 'none');
-            } else {
-                // Se for tu, a presidente ou a vice, libera tudo!
+            const cardsAdminNaoMarketing = document.querySelectorAll('.card-admin-nao-marketing');
+
+            if (dadosUsuario.nivel === "admin") {
+                // Cúpula vê tudo
                 cardsAdminGeral.forEach(card => card.style.display = 'block');
+                cardsAdminNaoMarketing.forEach(card => card.style.display = 'block');
+            } else if (dadosUsuario.nivel === "marketing") {
+                // Marketing vê mural, enquetes e relatórios, mas esconde gestão geral e de esportes
+                cardsAdminGeral.forEach(card => card.style.display = 'none');
+                cardsAdminNaoMarketing.forEach(card => card.style.display = 'none');
+            } else {
+                // Outros membros comuns (ex: Esportes)
+                cardsAdminGeral.forEach(card => card.style.display = 'none');
+                cardsAdminNaoMarketing.forEach(card => card.style.display = 'block');
             }
             // ------------------------------------
 
@@ -430,8 +462,11 @@
                 carregarPautasAdmin();
             }
             carregarEnquetesAdmin();
-            carregarMateriaisAdmin();
-            carregarEventosAdmin();
+            
+            if (dadosUsuario.nivel !== "marketing") {
+                carregarMateriaisAdmin();
+                carregarEventosAdmin();
+            }
         }
 
         function fazerLogoutAdmin() {
@@ -565,6 +600,7 @@
         function publicarAviso() {
             const titulo = document.getElementById('aviso-titulo').value.trim();
             const mensagem = document.getElementById('aviso-mensagem').value.trim();
+            const autor = document.getElementById('user-name-display').textContent;
 
             if (!titulo || !mensagem) {
                 alert("Preencha título e mensagem do aviso!");
@@ -574,9 +610,10 @@
             db.collection('mural').add({
                 titulo: titulo,
                 mensagem: mensagem,
+                autor: autor,
                 criadoEm: firebase.firestore.FieldValue.serverTimestamp()
             }).then(() => {
-                mostrarAlertaSucesso("Aviso publicado no mural com sucesso!");
+                mostrarAlertaSucesso("Aviso/Vídeo publicado no mural com sucesso!");
                 document.getElementById('aviso-titulo').value = '';
                 document.getElementById('aviso-mensagem').value = '';
             }).catch(err => {
@@ -607,7 +644,7 @@
                             <div>
                                 <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${aviso.titulo}</h6>
                                 <p class="mb-1 small text-white">${aviso.mensagem}</p>
-                                ${dataHora ? `<span class="badge bg-dark text-muted-custom border border-secondary">${dataHora}</span>` : ''}
+                                <small class="text-muted-custom d-block" style="font-size: 11px;">Publicado por: ${aviso.autor || 'Diretoria'} ${dataHora ? '• ' + dataHora : ''}</small>
                             </div>
                             <button onclick="excluirAviso('${doc.id}')" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Excluir</button>
                         </div>
@@ -647,6 +684,38 @@
             }).catch(err => alert("Erro ao cadastrar aluno."));
         }
 
+        function aplicarPunicaoMembro() {
+            const email = document.getElementById('punicao-email').value.trim().toLowerCase();
+            const tipo = document.getElementById('punicao-tipo').value.trim();
+            const motivo = document.getElementById('punicao-motivo').value.trim();
+
+            if (!email || !tipo || !motivo) {
+                alert("Macho, preencha o e-mail, o tipo de punição e o motivo!");
+                return;
+            }
+
+            db.collection('alunos').doc(email).get().then(doc => {
+                if (!doc.exists) {
+                    alert("E-mail não encontrado na base de alunos!");
+                    return;
+                }
+                db.collection('alunos').doc(email).update({
+                    ativo: false,
+                    punicao: tipo,
+                    motivoPunicao: motivo,
+                    punidoEm: firebase.firestore.FieldValue.serverTimestamp()
+                }).then(() => {
+                    mostrarAlertaSucesso(`Punição aplicada com sucesso ao aluno ${email}!`);
+                    document.getElementById('punicao-email').value = '';
+                    document.getElementById('punicao-tipo').value = '';
+                    document.getElementById('punicao-motivo').value = '';
+                });
+            }).catch(err => {
+                console.error("Erro ao aplicar punição:", err);
+                alert("Erro ao processar punição.");
+            });
+        }
+
         function carregarAlunos() {
             db.collection('alunos').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-alunos-admin');
@@ -659,13 +728,14 @@
                 snapshot.forEach(doc => {
                     const aluno = doc.data();
                     const statusBg = aluno.ativo ? 'bg-success' : 'bg-danger';
-                    const statusTxt = aluno.ativo ? 'Ativo' : 'Bloqueado';
+                    const statusTxt = aluno.ativo ? 'Ativo' : 'Punido/Bloqueado';
 
                     html += `
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
                                 <strong style="font-size: 14px;" class="text-white">${aluno.nome}</strong><br>
                                 <small class="text-muted-custom">${aluno.email}</small>
+                                ${!aluno.ativo && aluno.punicao ? `<br><small class="text-danger fw-bold">Punição: ${aluno.punicao} - Motivo:${aluno.motivoPunicao}</small>` : ''}
                             </div>
                             <div class="d-flex align-items-center gap-2">
                                 <span class="badge ${statusBg}">${statusTxt}</span>
@@ -683,7 +753,7 @@
         }
 
         function alternarStatusAluno(email, novoStatus) {
-            db.collection('alunos').doc(email).update({ ativo: novoStatus });
+            db.collection('alunos').doc(email).update({ ativo: novoStatus, punicao: novoStatus ? '' : 'Bloqueio manual' });
         }
 
         function excluirAluno(email) {
