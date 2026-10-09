@@ -294,7 +294,7 @@
 
                 <h6 class="fw-bold mb-3 text-white">Avisos Publicados</h6>
                 <div id="lista-avisos-admin">
-                    <p class="text-muted-custom small">Carregando avisos...</p>
+                    <p class="text-muted-custom small">Nenhum aviso publicado.</p>
                 </div>
             </div>
 
@@ -349,7 +349,7 @@
                 <h5 class="card-title-chem mb-2">✊ Pautas e Reivindicações Apoiadas</h5>
                 <p class="text-muted-custom small mb-3">Pautas criadas pelos alunos para encaminhar à Direção do IFCE.</p>
                 <div id="lista-pautas-admin">
-                    <p class="text-muted-custom small">Carregando pautas...</p>
+                    <p class="text-muted-custom small">Nenhuma pauta cadastrada.</p>
                 </div>
             </div>
 
@@ -371,7 +371,7 @@
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <h6 class="fw-bold mb-3 text-white">Materiais Cadastrados</h6>
                 <div id="lista-materiais-admin">
-                    <p class="text-muted-custom small">Carregando materiais...</p>
+                    <p class="text-muted-custom small">Nenhum material cadastrado.</p>
                 </div>
             </div>
 
@@ -397,7 +397,7 @@
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <h6 class="fw-bold mb-3 text-white">Eventos Programados</h6>
                 <div id="lista-eventos-admin">
-                    <p class="text-muted-custom small">Carregando eventos...</p>
+                    <p class="text-muted-custom small">Nenhum evento cadastrado.</p>
                 </div>
             </div>
 
@@ -405,7 +405,7 @@
             <div class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📈 Enquetes Ativas e Encerradas</h5>
                 <div id="lista-enquetes-admin">
-                    <p class="text-muted-custom small">Carregando enquetes...</p>
+                    <p class="text-muted-custom small">Nenhuma enquete cadastrada.</p>
                 </div>
             </div>
 
@@ -437,7 +437,7 @@
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <h6 class="fw-bold mb-3 text-white">Membros Punidos Ativos (Gerenciar / Reduzir Punição)</h6>
                 <div id="lista-membros-punidos-admin">
-                    <p class="text-muted-custom small">Carregando punições...</p>
+                    <p class="text-muted-custom small">Nenhum membro punido.</p>
                 </div>
             </div>
 
@@ -445,7 +445,7 @@
             <div class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">🎓 Alunos Cadastrados</h5>
                 <div id="lista-alunos-admin">
-                    <p class="text-muted-custom small">Carregando alunos...</p>
+                    <p class="text-muted-custom small">Nenhum aluno cadastrado.</p>
                 </div>
             </div>
 
@@ -453,7 +453,7 @@
             <div class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">💡 Sugestões dos Alunos</h5>
                 <div id="lista-sugestoes-admin">
-                    <p class="text-muted-custom small">Carregando sugestões...</p>
+                    <p class="text-muted-custom small">Nenhuma sugestão enviada.</p>
                 </div>
             </div>
 
@@ -482,14 +482,13 @@
         let intervaloContador = null;
         let html5QrCode = null;
 
-        // Base de cargos com foto personalizada e nível de acesso
         const baseDeCargos = {
             "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin", foto: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150" },
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin", foto: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" },
             "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente", nivel: "admin", foto: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150" },
             "cecilia@aluno.ifce.edu.br": { nome: "Cecília", cargo: "Diretora de Esportes", nivel: "membro", foto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" },
-            "talison@aluno.ifce.edu.br": { nome: "Talison", cargo: "Diretor(a) de Marketing", nivel: "marketing", foto: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150" },
-            "marketing2@aluno.ifce.edu.br": { nome: "Diretor(a) de Marketin", cargo: "Diretor(a) de Marketing", nivel: "marketing", foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" }
+            "marketing1@ifce.edu.br": { nome: "Diretor(a) de Marketing 1", cargo: "Diretor(a) de Marketing", nivel: "marketing", foto: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150" },
+            "marketing2@ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing", foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" }
         };
 
         function fazerLoginAdmin() {
@@ -516,7 +515,6 @@
                 });
         }
 
-        // --- LEITOR DE QR CODE ---
         function abrirLeitorQRCode() {
             document.getElementById('container-qrcode-reader').classList.remove('d-none');
             html5QrCode = new Html5Qrcode("reader");
@@ -524,20 +522,16 @@
                 { facingMode: "environment" },
                 { fps: 10, qrbox: { width: 250, height: 250 } },
                 (decodedText) => {
-                    // O QR code deve conter o e-mail cadastrado do membro
                     const emailLido = decodedText.trim().toLowerCase();
                     if (baseDeCargos[emailLido]) {
                         fecharLeitorQRCode();
                         document.getElementById('admin-email').value = emailLido;
-                        // Simula login direto ou busca sessão
                         verificarAcessoEAbirPainel(emailLido);
                     } else {
                         alert(`QR Code reconhecido (${emailLido}), mas o e-mail não consta na base de cargos oficiais.`);
                     }
                 },
-                (errorMessage) => {
-                    // Erros de leitura em tempo real podem ser ignorados
-                }
+                (errorMessage) => {}
             ).catch(err => {
                 alert("Erro ao iniciar a câmera para leitura do QR Code.");
             });
@@ -554,7 +548,6 @@
                 document.getElementById('container-qrcode-reader').classList.add('d-none');
             }
         }
-        // -------------------------
 
         function verificarAcessoEAbirPainel(emailUsuario) {
             db.collection('membros_punidos').doc(emailUsuario).get().then(docPunido => {
@@ -611,14 +604,12 @@
                 cardsAdminGeral.forEach(card => card.style.display = 'block');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'block');
                 cardAdminMarketing.forEach(card => card.style.display = 'block');
-                // Configura as fotos dos diretores de marketing na aba de marketing do admin geral
                 document.getElementById('foto-mkt-1').src = baseDeCargos["marketing1@ifce.edu.br"].foto;
                 document.getElementById('foto-mkt-2').src = baseDeCargos["marketing2@ifce.edu.br"].foto;
             } else if (dadosUsuario.nivel === "marketing") {
                 cardsAdminGeral.forEach(card => card.style.display = 'none');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'none');
                 cardAdminMarketing.forEach(card => card.style.display = 'block');
-                // Exibe as fotos dos dois diretores de marketing
                 document.getElementById('foto-mkt-1').src = baseDeCargos["marketing1@ifce.edu.br"].foto;
                 document.getElementById('foto-mkt-2').src = baseDeCargos["marketing2@ifce.edu.br"].foto;
             } else {
@@ -829,10 +820,11 @@
         }
 
         function carregarAvisosAdmin() {
-            db.collection('mural').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+            db.collection('mural').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-avisos-admin');
+                if (!container) return;
                 if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum aviso publicado no momento.</p>';
+                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum aviso publicado.</p>';
                     return;
                 }
 
@@ -924,7 +916,7 @@
                 const container = document.getElementById('lista-membros-punidos-admin');
                 if (!container) return;
                 if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum membro punido no momento.</p>';
+                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum membro punido.</p>';
                     return;
                 }
 
@@ -1005,8 +997,9 @@
         }
 
         function carregarEnquetesAdmin() {
-            db.collection('enquetes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+            db.collection('enquetes').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-enquetes-admin');
+                if (!container) return;
                 if (snapshot.empty) {
                     container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma enquete cadastrada.</p>';
                     return;
@@ -1060,7 +1053,7 @@
         }
 
         function carregarSugestoesAdmin() {
-            db.collection('sugestoes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+            db.collection('sugestoes').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-sugestoes-admin');
                 if (!container) return;
                 if (snapshot.empty) {
@@ -1099,11 +1092,11 @@
         }
 
         function carregarPautasAdmin() {
-            db.collection('reivindicacoes').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+            db.collection('reivindicacoes').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-pautas-admin');
                 if (!container) return;
                 if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma pauta cadastrada pelos alunos.</p>';
+                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma pauta cadastrada.</p>';
                     return;
                 }
                 let html = '<div class="list-group">';
@@ -1157,6 +1150,7 @@
         function carregarMateriaisAdmin() {
             db.collection('materiais').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-materiais-admin');
+                if (!container) return;
                 if (snapshot.empty) {
                     container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum material cadastrado.</p>';
                     return;
@@ -1222,8 +1216,9 @@
         }
 
         function carregarEventosAdmin() {
-            db.collection('eventos').orderBy('criadoEm', 'desc').onSnapshot(snapshot => {
+            db.collection('eventos').onSnapshot(snapshot => {
                 const container = document.getElementById('lista-eventos-admin');
+                if (!container) return;
                 if (snapshot.empty) {
                     container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum evento cadastrado.</p>';
                     return;
