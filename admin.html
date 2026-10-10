@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Admin - Grêmio IFCE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Biblioteca Bootstrap Icons para os ícones do menu -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <!-- Biblioteca jsPDF para gerar o PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <!-- Biblioteca Html5-Qrcode para leitura de QR Code pela câmera -->
@@ -167,13 +169,33 @@
 </head>
 <body>
 
-    <!-- Navbar -->
+    <!-- Navbar com Botão do Menu Lateral Inteligente -->
     <nav class="navbar navbar-dark navbar-ifce mb-4 sticky-top">
         <div class="container d-flex justify-content-between align-items-center">
-            <span class="navbar-brand-chem">🧪 IFCE | <span>PAINEL ADMIN</span></span>
+            <div class="d-flex align-items-center gap-2">
+                <!-- Botão do Menu Lateral (Aparece apenas quando logado) -->
+                <button id="btn-menu-lateral" class="btn btn-outline-success btn-sm d-none fw-bold" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" style="border-radius: 8px;">
+                    <i class="bi bi-list fs-5"></i> Menu
+                </button>
+                <span class="navbar-brand-chem m-0">🧪 IFCE | <span>PAINEL ADMIN</span></span>
+            </div>
             <button id="btn-logout-admin" onclick="fazerLogoutAdmin()" class="btn btn-outline-danger btn-sm d-none fw-bold" style="border-radius: 8px;">Sair do Admin</button>
         </div>
     </nav>
+
+    <!-- MENU LATERAL INTELIGENTE (OFFCANVAS) -->
+    <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel" style="background-color: var(--ifce-dark); border-right: 1px solid var(--ifce-card-border);">
+        <div class="offcanvas-header border-bottom border-secondary">
+            <h5 class="offcanvas-title fw-bold" id="sidebarMenuLabel" style="color: var(--ifce-accent-green);">🧭 Navegação Rápida</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-3">
+            <p class="small text-muted-custom mb-3">Acesso direto às secções do painel:</p>
+            <div class="list-group list-group-flush" id="itensMenuNav">
+                <!-- Preenchido dinamicamente via JS conforme o cargo -->
+            </div>
+        </div>
+    </div>
 
     <!-- TELA DE LOGIN DO ADMIN / QR CODE -->
     <div class="container" id="tela-login-admin" style="max-width: 420px; margin-top: 40px;">
@@ -247,7 +269,7 @@
             </div>
 
             <!-- PAINEL EXCLUSIVO DE MARKETING (MOSTRA A FOTO DOS DOIS DIRETORES) -->
-            <div class="card card-custom p-4 mb-4 card-admin-marketing d-none">
+            <div id="secao-marketing" class="card card-custom p-4 mb-4 card-admin-marketing d-none">
                 <h5 class="card-title-chem mb-2">📸 Diretores de Marketing Ativos</h5>
                 <p class="text-muted-custom small mb-3">Responsáveis pelas postagens, enquetes e divulgação do grêmio.</p>
                 <div class="galeria-marketing">
@@ -265,7 +287,7 @@
             </div>
 
             <!-- RELATÓRIO DE ATIVIDADES -->
-            <div class="card card-custom p-4 mb-4">
+            <div id="secao-relatorio" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📝 Escrever Relatório de Atividades</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Conteúdo do Relatório</label>
@@ -278,7 +300,7 @@
             </div>
 
             <!-- PUBLICAR MURAL DE AVISOS / VÍDEOS -->
-            <div class="card card-custom p-4 mb-4">
+            <div id="secao-mural" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📢 Mural de Avisos e Vídeos</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Título do Aviso / Vídeo</label>
@@ -299,7 +321,7 @@
             </div>
 
             <!-- CRIAR NOVA ENQUETE -->
-            <div class="card card-custom p-4 mb-4">
+            <div id="secao-enquetes-criar" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📊 Criar Nova Enquete</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Pergunta / Título da Enquete</label>
@@ -323,7 +345,7 @@
             </div>
 
             <!-- CADASTRAR ALUNO (ADMIN GERAL) -->
-            <div class="card card-custom p-4 mb-4 card-admin-geral">
+            <div id="secao-alunos-cadastrar" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">👤 Cadastrar Aluno</h5>
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -345,7 +367,7 @@
             </div>
 
             <!-- PAUTAS E REIVINDICAÇÕES -->
-            <div class="card card-custom p-4 mb-4 card-admin-geral">
+            <div id="secao-pautas" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-2">✊ Pautas e Reivindicações Apoiadas</h5>
                 <p class="text-muted-custom small mb-3">Pautas criadas pelos alunos para encaminhar à Direção do IFCE.</p>
                 <div id="lista-pautas-admin">
@@ -354,7 +376,7 @@
             </div>
 
             <!-- EMPRÉSTIMO DE MATERIAIS -->
-            <div class="card card-custom p-4 mb-4 card-admin-nao-marketing">
+            <div id="secao-materiais" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
                 <h5 class="card-title-chem mb-3">🎲 Gerenciar Materiais do Grêmio</h5>
                 <div class="row g-2 mb-3">
                     <div class="col-md-8">
@@ -376,7 +398,7 @@
             </div>
 
             <!-- CRIAR EVENTO / TORNEIO -->
-            <div class="card card-custom p-4 mb-4 card-admin-nao-marketing">
+            <div id="secao-eventos" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
                 <h5 class="card-title-chem mb-3">📅 Criar Evento ou Torneio</h5>
                 <div class="row g-2 mb-3">
                     <div class="col-md-8">
@@ -402,7 +424,7 @@
             </div>
 
             <!-- ENQUETES ATIVAS E ENCERRADAS -->
-            <div class="card card-custom p-4 mb-4">
+            <div id="secao-enquetes-lista" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📈 Enquetes Ativas e Encerradas</h5>
                 <div id="lista-enquetes-admin">
                     <p class="text-muted-custom small">Nenhuma enquete cadastrada.</p>
@@ -410,7 +432,7 @@
             </div>
 
             <!-- PAINEL DE PUNIÇÃO / BLOQUEIO DE MEMBROS (EXCLUSIVO DA CÚPULA) -->
-            <div class="card card-custom p-4 mb-4 card-admin-geral" style="border-color: #dc3545;">
+            <div id="secao-punicoes" class="card card-custom p-4 mb-4 card-admin-geral" style="border-color: #dc3545;">
                 <h5 class="card-title-chem mb-3" style="color: #ff6b6b;">⚠️ Aplicar Punição / Bloqueio a Membro</h5>
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -442,7 +464,7 @@
             </div>
 
             <!-- ALUNOS CADASTRADOS -->
-            <div class="card card-custom p-4 mb-4 card-admin-geral">
+            <div id="secao-alunos-lista" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">🎓 Alunos Cadastrados</h5>
                 <div id="lista-alunos-admin">
                     <p class="text-muted-custom small">Nenhum aluno cadastrado.</p>
@@ -450,7 +472,7 @@
             </div>
 
             <!-- SUGESTÕES DOS ALUNOS -->
-            <div class="card card-custom p-4 mb-4 card-admin-geral">
+            <div id="secao-sugestoes" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">💡 Sugestões dos Alunos</h5>
                 <div id="lista-sugestoes-admin">
                     <p class="text-muted-custom small">Nenhuma sugestão enviada.</p>
@@ -465,6 +487,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <!-- Bootstrap JS (Necessário para o funcionamento do Offcanvas/Menu Lateral) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -483,13 +507,70 @@
         let html5QrCode = null;
 
         const baseDeCargos = {
-            "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin", foto: "https://i.imgur.com/eCycsqc.jpeg" },
+            "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin", foto: "https://i.imgur.com/8QjO6jZ.png" },
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin", foto: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" },
             "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente", nivel: "admin", foto: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150" },
             "cecilia@aluno.ifce.edu.br": { nome: "Cecília", cargo: "Diretora de Esportes", nivel: "membro", foto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" },
-            "marketing1@ifce.edu.br": { nome: "Diretor(a) de Marketing 1", cargo: "Diretor(a) de Marketing", nivel: "marketing", foto: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150" },
-            "marketing2@ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing", foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" }
+            "talison@aluno.ifce.edu.br": { nome: "Talison", cargo: "Diretor(a) de Marketing", nivel: "marketing", foto: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150" },
+            "marketing2@aluno.ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing", foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" }
         };
+
+        // Definição dos módulos do sistema para o Menu Lateral Inteligente
+        const modulosSistema = [
+            { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro'] },
+            { id: 'secao-mural', label: 'Mural de Avisos & Vídeos', icon: 'bi-megaphone', niveisPermitidos: ['admin', 'marketing', 'membro'] },
+            { id: 'secao-enquetes-criar', label: 'Criar Enquete', icon: 'bi-bar-chart-plus', niveisPermitidos: ['admin', 'marketing', 'membro'] },
+            { id: 'secao-enquetes-lista', label: 'Ver Enquetes', icon: 'bi-graph-up', niveisPermitidos: ['admin', 'marketing', 'membro'] },
+            { id: 'secao-marketing', label: 'Diretores de Marketing', icon: 'bi-camera-video', niveisPermitidos: ['admin', 'marketing'] },
+            { id: 'secao-materiais', label: 'Gestão de Materiais', icon: 'bi-box-seam', niveisPermitidos: ['admin', 'membro'] },
+            { id: 'secao-eventos', label: 'Eventos e Torneios', icon: 'bi-calendar-event', niveisPermitidos: ['admin', 'membro'] },
+            { id: 'secao-alunos-cadastrar', label: 'Cadastrar Aluno', icon: 'bi-person-plus', niveisPermitidos: ['admin'] },
+            { id: 'secao-alunos-lista', label: 'Alunos Cadastrados', icon: 'bi-people', niveisPermitidos: ['admin'] },
+            { id: 'secao-sugestoes', label: 'Sugestões dos Alunos', icon: 'bi-lightbulb', niveisPermitidos: ['admin'] },
+            { id: 'secao-pautas', label: 'Pautas e Reivindicações', icon: 'bi-signpost-split', niveisPermitidos: ['admin'] },
+            { id: 'secao-punicoes', label: 'Aplicar Punições', icon: 'bi-shield-exclamation', niveisPermitidos: ['admin'] }
+        ];
+
+        function renderizarMenuLateral(emailUsuario, dadosUsuario) {
+            const containerMenu = document.getElementById('itensMenuNav');
+            containerMenu.innerHTML = '';
+
+            // Tu, a Presidente e a Vice-Presidente veem tudo
+            const isCupaOuAdmin = dadosUsuario.nivel === 'admin' || 
+                                  emailUsuario === 'kevin.silva10@aluno.ifce.edu.br' || 
+                                  emailUsuario === 'evelly@ifce.edu.br' || 
+                                  emailUsuario === 'maria@ifce.edu.br';
+
+            modulosSistema.forEach(modulo => {
+                let podeVer = false;
+                if (isCupaOuAdmin) {
+                    podeVer = true; // Cúpula vê tudo
+                } else if (modulo.niveisPermitidos.includes(dadosUsuario.nivel)) {
+                    podeVer = true;
+                }
+
+                if (podeVer) {
+                    const itemLink = document.createElement('a');
+                    itemLink.href = `#${modulo.id}`;
+                    itemLink.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary d-flex align-items-center gap-2 py-3';
+                    itemLink.innerHTML = `<i class="bi ${modulo.icon} fs-5 text-success"></i> <span>${modulo.label}</span>`;
+                    
+                    itemLink.onclick = (e) => {
+                        e.preventDefault();
+                        const el = document.getElementById(modulo.id);
+                        if (el) {
+                            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                        // Fecha o menu offcanvas após clicar
+                        const offcanvasEl = document.getElementById('sidebarMenu');
+                        const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+                        if (bsOffcanvas) bsOffcanvas.hide();
+                    };
+
+                    containerMenu.appendChild(itemLink);
+                }
+            });
+        }
 
         function fazerLoginAdmin() {
             const email = document.getElementById('admin-email').value.trim().toLowerCase();
@@ -573,6 +654,7 @@
             document.getElementById('tela-login-admin').style.display = 'none';
             document.getElementById('painel-admin').style.display = 'block';
             document.getElementById('btn-logout-admin').classList.remove('d-none');
+            document.getElementById('btn-menu-lateral').classList.remove('d-none');
             
             let dadosUsuario = baseDeCargos[emailUsuario] || { 
                 nome: emailUsuario.split('@')[0], 
@@ -584,6 +666,9 @@
             document.getElementById('user-name-display').textContent = dadosUsuario.nome;
             document.getElementById('user-role-display').textContent = dadosUsuario.cargo;
             document.getElementById('user-avatar-display').src = dadosUsuario.foto;
+
+            // Renderiza o menu lateral inteligente conforme as permissões
+            renderizarMenuLateral(emailUsuario, dadosUsuario);
 
             if (dadosPunicao) {
                 document.getElementById('conteudo-painel-geral').classList.add('d-none');
@@ -604,14 +689,14 @@
                 cardsAdminGeral.forEach(card => card.style.display = 'block');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'block');
                 cardAdminMarketing.forEach(card => card.style.display = 'block');
-                document.getElementById('foto-mkt-1').src = baseDeCargos["marketing1@ifce.edu.br"].foto;
-                document.getElementById('foto-mkt-2').src = baseDeCargos["marketing2@ifce.edu.br"].foto;
+                document.getElementById('foto-mkt-1').src = baseDeCargos["talison@aluno.ifce.edu.br"].foto;
+                document.getElementById('foto-mkt-2').src = baseDeCargos["marketing2@aluno.ifce.edu.br"].foto;
             } else if (dadosUsuario.nivel === "marketing") {
                 cardsAdminGeral.forEach(card => card.style.display = 'none');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'none');
                 cardAdminMarketing.forEach(card => card.style.display = 'block');
-                document.getElementById('foto-mkt-1').src = baseDeCargos["marketing1@ifce.edu.br"].foto;
-                document.getElementById('foto-mkt-2').src = baseDeCargos["marketing2@ifce.edu.br"].foto;
+                document.getElementById('foto-mkt-1').src = baseDeCargos["talison@aluno.ifce.edu.br"].foto;
+                document.getElementById('foto-mkt-2').src = baseDeCargos["marketing2@aluno.ifce.edu.br"].foto;
             } else {
                 cardsAdminGeral.forEach(card => card.style.display = 'none');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'block');
