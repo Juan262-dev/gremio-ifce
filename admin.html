@@ -5,12 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel Admin - Grêmio IFCE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Biblioteca Bootstrap Icons para os ícones do menu -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <!-- Biblioteca jsPDF para gerar o PDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- Biblioteca Html5-Qrcode para leitura de QR Code pela câmera -->
-    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
         :root {
             --ifce-green: #2d8647;
@@ -20,10 +16,9 @@
             --ifce-accent-green: #00e676;
             --ifce-text-muted: #a0b3a6;
         }
-
         body {
             background-color: var(--ifce-dark);
-            background-image: 
+            background-image:
                 radial-gradient(circle at 50% 20%, #1e2922 0%, #0d120f 80%),
                 radial-gradient(rgba(45, 134, 71, 0.08) 1px, transparent 0);
             background-size: 100% 100%, 30px 30px;
@@ -31,116 +26,36 @@
             font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
             min-height: 100vh;
         }
-
-        .navbar-ifce {
-            background-color: rgba(24, 34, 27, 0.95);
-            border-bottom: 1px solid var(--ifce-card-border);
-            backdrop-filter: blur(10px);
-        }
-
-        .navbar-brand-chem {
-            font-weight: 800;
-            color: #ffffff;
-            letter-spacing: 1px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .navbar-brand-chem span {
-            color: var(--ifce-accent-green);
-        }
-
-        .card-custom {
-            background-color: var(--ifce-card-bg);
-            border: 1px solid var(--ifce-card-border);
-            border-radius: 16px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-            color: #ffffff;
-            transition: border-color 0.3s;
-        }
-
-        .card-custom:hover {
-            border-color: #385241;
-        }
-
-        .card-title-chem {
-            font-weight: 800;
-            color: var(--ifce-accent-green);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-transform: uppercase;
-            font-size: 1.1rem;
-            letter-spacing: 0.5px;
-        }
-
-        .form-label {
-            color: var(--ifce-text-muted);
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-control, .form-select {
-            background-color: #0d120f;
-            border: 1px solid var(--ifce-card-border);
-            color: #ffffff;
-            border-radius: 10px;
-            padding: 10px 14px;
-        }
-
-        .form-control:focus, .form-select:focus {
-            background-color: #0d120f;
-            border-color: var(--ifce-accent-green);
-            color: #ffffff;
-            box-shadow: 0 0 8px rgba(0, 230, 118, 0.2);
-        }
-
-        .btn-ifce {
-            background: linear-gradient(135deg, #2d8647, #1b522b);
-            border: 1px solid var(--ifce-accent-green);
-            color: #ffffff;
-            font-weight: 700;
-            border-radius: 10px;
-            padding: 10px 20px;
-            box-shadow: 0 4px 15px rgba(45, 134, 71, 0.3);
-            transition: all 0.2s;
-        }
-
-        .btn-ifce:hover {
-            background: linear-gradient(135deg, #349952, #236b37);
-            color: #ffffff;
-            transform: translateY(-1px);
-        }
-
-        .btn-pdf { background-color: #2b5797; border-color: #2b5797; }
-        .btn-pdf:hover { background-color: #1d3d6f; }
+        .navbar-ifce { background-color: rgba(24, 34, 27, 0.95); border-bottom: 1px solid var(--ifce-card-border); backdrop-filter: blur(10px); }
+        .navbar-brand-chem { font-weight: 800; color: #fff; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; }
+        .navbar-brand-chem span { color: var(--ifce-accent-green); }
+        .card-custom { background-color: var(--ifce-card-bg); border: 1px solid var(--ifce-card-border); border-radius: 16px; box-shadow: 0 8px 25px rgba(0,0,0,0.4); color: #fff; transition: border-color 0.3s; }
+        .card-custom:hover { border-color: #385241; }
+        .card-title-chem { font-weight: 800; color: var(--ifce-accent-green); display: flex; align-items: center; gap: 8px; text-transform: uppercase; font-size: 1.1rem; letter-spacing: 0.5px; }
+        .form-label { color: var(--ifce-text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        .form-control, .form-select { background-color: #0d120f; border: 1px solid var(--ifce-card-border); color: #fff; border-radius: 10px; padding: 10px 14px; }
+        .form-control:focus, .form-select:focus { background-color: #0d120f; border-color: var(--ifce-accent-green); color: #fff; box-shadow: 0 0 8px rgba(0, 230, 118, 0.2); }
+        .form-select-sm { padding: 2px 8px; font-size: 12px; border-radius: 6px; }
+        .btn-ifce { background: linear-gradient(135deg, #2d8647, #1b522b); border: 1px solid var(--ifce-accent-green); color: #fff; font-weight: 700; border-radius: 10px; padding: 10px 20px; box-shadow: 0 4px 15px rgba(45, 134, 71, 0.3); transition: all 0.2s; }
+        .btn-ifce:hover { background: linear-gradient(135deg, #349952, #236b37); color: #fff; transform: translateY(-1px); }
+        .btn-pdf { background-color: #2b5797; border-color: #2b5797; color: #fff; }
+        .btn-pdf:hover { background-color: #1d3d6f; color: #fff; }
         .btn-wpp { background-color: #25d366; border-color: #25d366; color: #000; }
         .btn-wpp:hover { background-color: #1ebe5d; color: #000; }
-
-        .list-group-item {
-            background-color: #121a14;
-            border: 1px solid var(--ifce-card-border);
-            color: #ffffff;
-            border-radius: 10px !important;
-            margin-bottom: 8px;
-        }
-
-        .text-muted-custom {
-            color: var(--ifce-text-muted) !important;
-        }
-
+        .list-group-item { background-color: #121a14; border: 1px solid var(--ifce-card-border); color: #fff; border-radius: 10px !important; margin-bottom: 8px; }
+        .text-muted-custom { color: var(--ifce-text-muted) !important; }
         #painel-admin { display: none; }
+        /* Cards restritos começam ESCONDIDOS; o JS só mostra para quem tem permissão */
+        .card-admin-geral, .card-admin-nao-marketing { display: none; }
+        #toast-container { position: fixed; top: 70px; right: 12px; left: 12px; z-index: 20000; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
+        #toast-container .toast { pointer-events: auto; max-width: 420px; width: 100%; }
     </style>
 </head>
 <body>
 
-    <!-- Navbar com Botão do Menu Lateral Inteligente -->
     <nav class="navbar navbar-dark navbar-ifce mb-4 sticky-top">
         <div class="container d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
-                <!-- Botão do Menu Lateral (Aparece apenas quando logado) -->
                 <button id="btn-menu-lateral" class="btn btn-outline-success btn-sm d-none fw-bold" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" style="border-radius: 8px;">
                     <i class="bi bi-list fs-5"></i> Menu
                 </button>
@@ -150,7 +65,24 @@
         </div>
     </nav>
 
-    <!-- MENU LATERAL INTELIGENTE (OFFCANVAS) -->
+    <div id="toast-container"></div>
+
+    <!-- Modal de confirmação (substitui confirm()) -->
+    <div class="modal fade" id="modalConfirmar" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-white" style="background: var(--ifce-card-bg); border: 1px solid var(--ifce-card-border); border-radius: 16px;">
+                <div class="modal-body p-4 text-center">
+                    <p id="modalConfirmarTexto" class="mb-4 fw-bold"></p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" id="modalConfirmarOk" class="btn btn-danger fw-bold">Confirmar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENU LATERAL -->
     <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel" style="background-color: var(--ifce-dark); border-right: 1px solid var(--ifce-card-border);">
         <div class="offcanvas-header border-bottom border-secondary">
             <h5 class="offcanvas-title fw-bold" id="sidebarMenuLabel" style="color: var(--ifce-accent-green);">🧭 Navegação Rápida</h5>
@@ -158,13 +90,11 @@
         </div>
         <div class="offcanvas-body p-3">
             <p class="small text-muted-custom mb-3">Acesso direto às secções do painel:</p>
-            <div class="list-group list-group-flush" id="itensMenuNav">
-                <!-- Preenchido dinamicamente via JS conforme o cargo -->
-            </div>
+            <div class="list-group list-group-flush" id="itensMenuNav"></div>
         </div>
     </div>
 
-    <!-- TELA DE LOGIN DO ADMIN / QR CODE -->
+    <!-- LOGIN (somente e-mail + senha) -->
     <div class="container" id="tela-login-admin" style="max-width: 420px; margin-top: 40px;">
         <div class="card card-custom p-4">
             <div class="text-center mb-3">
@@ -172,40 +102,22 @@
                 <h4 class="fw-bold mt-2" style="color: var(--ifce-accent-green);">Acesso Restrito</h4>
                 <p class="small text-muted-custom">Gestão do Grêmio Estudantil IFCE</p>
             </div>
-            
             <div id="login-erro" class="alert alert-danger d-none p-2 small text-center" style="border-radius: 8px;"></div>
-            
             <div class="mb-3">
                 <label class="form-label fw-bold">E-mail</label>
-                <input type="email" id="admin-email" class="form-control" placeholder="kevin.silva10@aluno.ifce.edu.br">
+                <input type="email" id="admin-email" class="form-control" placeholder="seu.email@ifce.edu.br" autocomplete="username">
             </div>
             <div class="mb-3">
                 <label class="form-label fw-bold">Senha</label>
-                <input type="password" id="admin-senha" class="form-control" placeholder="******">
+                <input type="password" id="admin-senha" class="form-control" placeholder="******" autocomplete="current-password">
             </div>
-            <button onclick="fazerLoginAdmin()" class="btn btn-ifce w-100 mb-3">Entrar com Senha</button>
-
-            <hr style="border-color: var(--ifce-card-border);">
-
-            <div class="text-center">
-                <button onclick="abrirLeitorQRCode()" class="btn btn-outline-light w-100 fw-bold" style="border-radius: 10px;">📷 Entrar via QR Code</button>
-            </div>
-
-            <!-- LEITOR DE QR CODE (OCULTO ATÉ CLICAR) -->
-            <div id="container-qrcode-reader" class="mt-3 d-none">
-                <div id="reader" style="width: 100%; border-radius: 10px; overflow: hidden;"></div>
-                <button onclick="fecharLeitorQRCode()" class="btn btn-outline-danger btn-sm w-100 mt-2">Fechar Câmera</button>
-            </div>
+            <button onclick="fazerLoginAdmin()" class="btn btn-ifce w-100">Entrar</button>
         </div>
     </div>
 
-    <!-- PAINEL PRINCIPAL DO ADMIN -->
+    <!-- PAINEL -->
     <div class="container pb-5" id="painel-admin" style="max-width: 850px;">
 
-        <!-- ALERTA GLOBAL DE SUCESSO -->
-        <div id="alerta-sucesso" class="alert alert-success d-none fw-bold text-center card-custom mb-4" role="alert" style="border-color: var(--ifce-accent-green); background: rgba(0, 230, 118, 0.1); color: var(--ifce-accent-green);"></div>
-
-        <!-- AVISO DE PUNIÇÃO / BLOQUEIO COM CONTAGEM REGRESSIVA -->
         <div id="painel-bloqueio-punicao" class="card card-custom p-4 mb-4 d-none" style="border-color: #dc3545; background: rgba(220, 53, 69, 0.15);">
             <h4 class="fw-bold text-danger text-center mb-3">🚨 ACESSO BLOQUEADO POR PUNIÇÃO 🚨</h4>
             <p class="text-white text-center mb-2">Você foi punido e teve seus privilégios temporariamente suspensos.</p>
@@ -217,10 +129,8 @@
             </div>
         </div>
 
-        <!-- CONTEÚDO GERAL DO PAINEL -->
         <div id="conteudo-painel-geral">
 
-            <!-- CRACHÁ DIGITAL DE IDENTIFICAÇÃO DE CARGO (SEM FOTO) -->
             <div class="card card-custom p-3 mb-4" style="background: rgba(45, 134, 71, 0.15); border-left: 5px solid var(--ifce-accent-green);">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -232,7 +142,6 @@
                 </div>
             </div>
 
-            <!-- RELATÓRIO DE ATIVIDADES -->
             <div id="secao-relatorio" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📝 Escrever Relatório de Atividades</h5>
                 <div class="mb-3">
@@ -245,7 +154,6 @@
                 </div>
             </div>
 
-            <!-- PUBLICAR MURAL DE AVISOS / VÍDEOS -->
             <div id="secao-mural" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📢 Mural de Avisos e Vídeos</h5>
                 <div class="mb-3">
@@ -257,16 +165,11 @@
                     <textarea id="aviso-mensagem" class="form-control" rows="2" placeholder="Digite o recado ou cole o link do vídeo..."></textarea>
                 </div>
                 <button onclick="publicarAviso()" class="btn btn-ifce">Publicar no Mural</button>
-
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
-
                 <h6 class="fw-bold mb-3 text-white">Avisos Publicados</h6>
-                <div id="lista-avisos-admin">
-                    <p class="text-muted-custom small">Nenhum aviso publicado.</p>
-                </div>
+                <div id="lista-avisos-admin"><p class="text-muted-custom small">Nenhum aviso publicado.</p></div>
             </div>
 
-            <!-- CRIAR NOVA ENQUETE -->
             <div id="secao-enquetes-criar" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📊 Criar Nova Enquete</h5>
                 <div class="mb-3">
@@ -274,23 +177,13 @@
                     <input type="text" id="enquete-titulo" class="form-control" placeholder="Ex: Qual tema do próximo evento?">
                 </div>
                 <label class="form-label fw-bold">Opções de Voto</label>
-                <div id="container-opcoes">
-                    <div class="input-group mb-2">
-                        <input type="text" class="form-control opcao-enquete" placeholder="Opção 1">
-                        <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
-                    </div>
-                    <div class="input-group mb-2">
-                        <input type="text" class="form-control opcao-enquete" placeholder="Opção 2">
-                        <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
-                    </div>
-                </div>
+                <div id="container-opcoes"></div>
                 <div class="d-flex gap-2 mt-3">
                     <button onclick="adicionarCampoOpcao()" class="btn btn-outline-light btn-sm" style="border-radius: 8px;">+ Adicionar Opção</button>
                     <button onclick="criarEnquete()" class="btn btn-ifce ms-auto">Criar Enquete</button>
                 </div>
             </div>
 
-            <!-- CADASTRAR ALUNO (ADMIN GERAL) -->
             <div id="secao-alunos-cadastrar" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">👤 Cadastrar Aluno</h5>
                 <div class="row g-3">
@@ -303,8 +196,8 @@
                         <input type="email" id="cad-email" class="form-control" placeholder="aluno@aluno.ifce.edu.br">
                     </div>
                     <div class="col-md-12">
-                        <label class="form-label fw-bold">Senha do Aluno</label>
-                        <input type="password" id="cad-senha" class="form-control" placeholder="******">
+                        <label class="form-label fw-bold">Senha do Aluno (mín. 6 caracteres)</label>
+                        <input type="password" id="cad-senha" class="form-control" placeholder="******" autocomplete="new-password">
                     </div>
                     <div class="col-12 mt-3">
                         <button onclick="cadastrarAluno()" class="btn btn-ifce w-100">Cadastrar Aluno</button>
@@ -312,16 +205,15 @@
                 </div>
             </div>
 
-            <!-- PAUTAS E REIVINDICAÇÕES -->
             <div id="secao-pautas" class="card card-custom p-4 mb-4 card-admin-geral">
-                <h5 class="card-title-chem mb-2">✊ Pautas e Reivindicações Apoiadas</h5>
-                <p class="text-muted-custom small mb-3">Pautas criadas pelos alunos para encaminhar à Direção do IFCE.</p>
-                <div id="lista-pautas-admin">
-                    <p class="text-muted-custom small">Nenhuma pauta cadastrada.</p>
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+                    <h5 class="card-title-chem m-0">✊ Pautas e Reivindicações</h5>
+                    <button data-acao="exportarPautas" class="btn btn-outline-light btn-sm" style="border-radius: 8px;">⬇️ Exportar CSV</button>
                 </div>
+                <p class="text-muted-custom small mb-3">Ordenadas pelo número de apoios. Defina o andamento de cada pauta.</p>
+                <div id="lista-pautas-admin"><p class="text-muted-custom small">Nenhuma pauta cadastrada.</p></div>
             </div>
 
-            <!-- EMPRÉSTIMO DE MATERIAIS -->
             <div id="secao-materiais" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
                 <h5 class="card-title-chem mb-3">🎲 Gerenciar Materiais do Grêmio</h5>
                 <div class="row g-2 mb-3">
@@ -335,15 +227,11 @@
                     </div>
                 </div>
                 <button onclick="cadastrarMaterial()" class="btn btn-ifce">Cadastrar Material</button>
-
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <h6 class="fw-bold mb-3 text-white">Materiais Cadastrados</h6>
-                <div id="lista-materiais-admin">
-                    <p class="text-muted-custom small">Nenhum material cadastrado.</p>
-                </div>
+                <div id="lista-materiais-admin"><p class="text-muted-custom small">Nenhum material cadastrado.</p></div>
             </div>
 
-            <!-- CRIAR EVENTO / TORNEIO -->
             <div id="secao-eventos" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
                 <h5 class="card-title-chem mb-3">📅 Criar Evento ou Torneio</h5>
                 <div class="row g-2 mb-3">
@@ -361,23 +249,16 @@
                     </div>
                 </div>
                 <button onclick="criarEvento()" class="btn btn-ifce">Publicar Evento</button>
-
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <h6 class="fw-bold mb-3 text-white">Eventos Programados</h6>
-                <div id="lista-eventos-admin">
-                    <p class="text-muted-custom small">Nenhum evento cadastrado.</p>
-                </div>
+                <div id="lista-eventos-admin"><p class="text-muted-custom small">Nenhum evento cadastrado.</p></div>
             </div>
 
-            <!-- ENQUETES ATIVAS E ENCERRADAS -->
             <div id="secao-enquetes-lista" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📈 Enquetes Ativas e Encerradas</h5>
-                <div id="lista-enquetes-admin">
-                    <p class="text-muted-custom small">Nenhuma enquete cadastrada.</p>
-                </div>
+                <div id="lista-enquetes-admin"><p class="text-muted-custom small">Nenhuma enquete cadastrada.</p></div>
             </div>
 
-            <!-- PAINEL DE PUNIÇÃO / BLOQUEIO DE MEMBROS (EXCLUSIVO DA CÚPULA) -->
             <div id="secao-punicoes" class="card card-custom p-4 mb-4 card-admin-geral" style="border-color: #dc3545;">
                 <h5 class="card-title-chem mb-3" style="color: #ff6b6b;">⚠️ Aplicar Punição / Bloqueio a Membro</h5>
                 <div class="row g-3">
@@ -385,12 +266,13 @@
                         <label class="form-label fw-bold">E-mail do Membro / Aluno</label>
                         <input type="email" id="punicao-email" class="form-control" placeholder="email@ifce.edu.br">
                     </div>
-                    <div class="col-md-3">"form-label fw-bold">Punição Aplicada</label>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Punição Aplicada</label>
                         <input type="text" id="punicao-tipo" class="form-control" placeholder="Ex: Suspensão">
                     </div>
                     <div class="col-md-3">
-                        <label class="form-label fw-bold">Tempo (Ex: 30min, 2h, 1d)</label>
-                        <input type="text" id="punicao-tempo-texto" class="form-control" placeholder="Ex: 2h ou 30min">
+                        <label class="form-label fw-bold">Tempo</label>
+                        <input type="text" id="punicao-tempo-texto" class="form-control" placeholder="30min, 2h, 1d, 2sem, 1mes, 1ano">
                     </div>
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Motivo da Punição</label>
@@ -400,39 +282,36 @@
                         <button onclick="aplicarPunicaoMembro()" class="btn btn-danger w-100 fw-bold">Aplicar Punição e Bloquear Acesso</button>
                     </div>
                 </div>
-
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
-                <h6 class="fw-bold mb-3 text-white">Membros Punidos Ativos (Gerenciar / Reduzir Punição)</h6>
-                <div id="lista-membros-punidos-admin">
-                    <p class="text-muted-custom small">Nenhum membro punido.</p>
-                </div>
+                <h6 class="fw-bold mb-3 text-white">Membros Punidos Ativos</h6>
+                <input type="search" id="busca-punidos" class="form-control mb-3" placeholder="🔍 Buscar por e-mail, punição ou motivo..." oninput="renderPunidos()">
+                <div id="lista-membros-punidos-admin"><p class="text-muted-custom small">Nenhum membro punido.</p></div>
             </div>
 
-            <!-- ALUNOS CADASTRADOS -->
             <div id="secao-alunos-lista" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">🎓 Alunos Cadastrados</h5>
-                <div id="lista-alunos-admin">
-                    <p class="text-muted-custom small">Nenhum aluno cadastrado.</p>
-                </div>
+                <input type="search" id="busca-alunos" class="form-control mb-3" placeholder="🔍 Buscar por nome ou e-mail..." oninput="renderAlunos()">
+                <div id="lista-alunos-admin"><p class="text-muted-custom small">Nenhum aluno cadastrado.</p></div>
             </div>
 
-            <!-- SUGESTÕES DOS ALUNOS -->
             <div id="secao-sugestoes" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">💡 Sugestões dos Alunos</h5>
-                <div id="lista-sugestoes-admin">
-                    <p class="text-muted-custom small">Nenhuma sugestão enviada.</p>
-                </div>
+                <input type="search" id="busca-sugestoes" class="form-control mb-3" placeholder="🔍 Buscar nas sugestões..." oninput="renderSugestoes()">
+                <div id="lista-sugestoes-admin"><p class="text-muted-custom small">Nenhuma sugestão enviada.</p></div>
+            </div>
+
+            <div id="secao-auditoria" class="card card-custom p-4 mb-4 card-admin-geral">
+                <h5 class="card-title-chem mb-3">🧾 Log de Auditoria</h5>
+                <p class="text-muted-custom small mb-3">Últimas 30 ações administrativas (inclui histórico de punições).</p>
+                <div id="lista-auditoria-admin"><p class="text-muted-custom small">Nenhuma ação registrada.</p></div>
             </div>
 
         </div>
-
     </div>
 
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
-    <!-- Bootstrap JS (Necessário para o funcionamento do Offcanvas/Menu Lateral) -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
@@ -448,9 +327,15 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-        let intervaloContador = null;
-        let html5QrCode = null;
+        const TS = firebase.firestore.FieldValue.serverTimestamp;
 
+        let intervaloContador = null;
+        let unsubs = [];
+        let painelAberto = false;
+        let cacheAlunos = [], cacheSugestoes = [], cachePunidos = [], cachePautas = [], cacheEventos = {};
+
+        // IMPORTANTE: isto é só para exibir a interface. A proteção de verdade
+        // precisa estar nas Firestore Security Rules (veja firestore.rules).
         const baseDeCargos = {
             "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
@@ -460,7 +345,6 @@
             "marketing2@ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing" }
         };
 
-        // Definição dos módulos do sistema para o Menu Lateral Inteligente
         const modulosSistema = [
             { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro'] },
             { id: 'secao-mural', label: 'Mural de Avisos & Vídeos', icon: 'bi-megaphone', niveisPermitidos: ['admin', 'marketing', 'membro'] },
@@ -472,261 +356,256 @@
             { id: 'secao-alunos-lista', label: 'Alunos Cadastrados', icon: 'bi-people', niveisPermitidos: ['admin'] },
             { id: 'secao-sugestoes', label: 'Sugestões dos Alunos', icon: 'bi-lightbulb', niveisPermitidos: ['admin'] },
             { id: 'secao-pautas', label: 'Pautas e Reivindicações', icon: 'bi-signpost-split', niveisPermitidos: ['admin'] },
-            { id: 'secao-punicoes', label: 'Aplicar Punições', icon: 'bi-shield-exclamation', niveisPermitidos: ['admin'] }
+            { id: 'secao-punicoes', label: 'Aplicar Punições', icon: 'bi-shield-exclamation', niveisPermitidos: ['admin'] },
+            { id: 'secao-auditoria', label: 'Log de Auditoria', icon: 'bi-journal-text', niveisPermitidos: ['admin'] }
         ];
 
-        function renderizarMenuLateral(emailUsuario, dadosUsuario) {
-            const containerMenu = document.getElementById('itensMenuNav');
-            containerMenu.innerHTML = '';
+        /* ================= UTILITÁRIOS ================= */
 
-            // Tu, a Presidente e a Vice-Presidente veem tudo
-            const isCupaOuAdmin = dadosUsuario.nivel === 'admin' || 
-                                  emailUsuario === 'kevin.silva10@aluno.ifce.edu.br' || 
-                                  emailUsuario === 'evelly@ifce.edu.br' || 
-                                  emailUsuario === 'maria@ifce.edu.br';
+        // Escapa texto vindo do banco (evita XSS). Seguro também dentro de atributos.
+        function esc(s) {
+            return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
 
-            modulosSistema.forEach(modulo => {
-                let podeVer = false;
-                if (isCupaOuAdmin) {
-                    podeVer = true; // Cúpula vê tudo
-                } else if (modulo.niveisPermitidos.includes(dadosUsuario.nivel)) {
-                    podeVer = true;
-                }
+        function fmtData(ts) {
+            if (!ts || !ts.toDate) return '';
+            const d = ts.toDate();
+            return d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        }
 
-                if (podeVer) {
-                    const itemLink = document.createElement('a');
-                    itemLink.href = `#${modulo.id}`;
-                    itemLink.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary d-flex align-items-center gap-2 py-3';
-                    itemLink.innerHTML = `<i class="bi ${modulo.icon} fs-5 text-success"></i> <span>${modulo.label}</span>`;
-                    
-                    itemLink.onclick = (e) => {
-                        e.preventDefault();
-                        const el = document.getElementById(modulo.id);
-                        if (el) {
-                            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                        // Fecha o menu offcanvas após clicar
-                        const offcanvasEl = document.getElementById('sidebarMenu');
-                        const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
-                        if (bsOffcanvas) bsOffcanvas.hide();
-                    };
+        function toast(msg, tipo = 'success') {
+            const c = document.getElementById('toast-container');
+            const el = document.createElement('div');
+            el.className = `toast align-items-center text-bg-${tipo} border-0`;
+            el.setAttribute('role', 'alert');
+            el.innerHTML = `<div class="d-flex"><div class="toast-body fw-bold">${esc(msg)}</div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div>`;
+            c.appendChild(el);
+            el.addEventListener('hidden.bs.toast', () => el.remove());
+            new bootstrap.Toast(el, { delay: 3500 }).show();
+        }
+        const mostrarAlertaSucesso = msg => toast(msg, 'success');
+        const erroDB = e => { console.error(e); toast('Operação não permitida ou falhou. Tente novamente.', 'danger'); };
 
-                    containerMenu.appendChild(itemLink);
-                }
+        function confirmar(msg) {
+            return new Promise(resolve => {
+                const el = document.getElementById('modalConfirmar');
+                const btn = document.getElementById('modalConfirmarOk');
+                document.getElementById('modalConfirmarTexto').textContent = msg;
+                const modal = bootstrap.Modal.getOrCreateInstance(el);
+                let ok = false;
+                const onOk = () => { ok = true; modal.hide(); };
+                const onHide = () => {
+                    btn.removeEventListener('click', onOk);
+                    el.removeEventListener('hidden.bs.modal', onHide);
+                    resolve(ok);
+                };
+                btn.addEventListener('click', onOk);
+                el.addEventListener('hidden.bs.modal', onHide);
+                modal.show();
             });
+        }
+
+        function registrarAcao(acao, detalhes) {
+            const u = auth.currentUser;
+            db.collection('acoes_admin').add({
+                acao: acao,
+                detalhes: detalhes || '',
+                autor: u ? u.email : 'desconhecido',
+                em: TS()
+            }).catch(() => {});
+        }
+
+        function ouvir(query, callback) {
+            unsubs.push(query.onSnapshot(callback, err => {
+                console.error(err);
+                toast('Sem permissão ou erro ao carregar dados.', 'danger');
+            }));
+        }
+        function limparListeners() {
+            unsubs.forEach(u => { try { u(); } catch (e) {} });
+            unsubs = [];
+        }
+
+        function baixarCSV(nomeArquivo, linhas) {
+            const celula = v => {
+                let t = String(v ?? '');
+                if (/^[=+\-@]/.test(t)) t = "'" + t; // evita injeção de fórmula no Excel
+                return '"' + t.replace(/"/g, '""') + '"';
+            };
+            const csv = '\uFEFF' + linhas.map(l => l.map(celula).join(';')).join('\n');
+            const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
+            const a = document.createElement('a');
+            a.href = url; a.download = nomeArquivo;
+            document.body.appendChild(a); a.click(); a.remove();
+            URL.revokeObjectURL(url);
+        }
+
+        /* ================= LOGIN / SESSÃO ================= */
+
+        function mostrarErroLogin(msg) {
+            const erroDiv = document.getElementById('login-erro');
+            erroDiv.textContent = msg;
+            erroDiv.classList.remove('d-none');
         }
 
         function fazerLoginAdmin() {
             const email = document.getElementById('admin-email').value.trim().toLowerCase();
-            const senha = document.getElementById('admin-senha').value.trim();
-            const erroDiv = document.getElementById('login-erro');
+            const senha = document.getElementById('admin-senha').value;
+            document.getElementById('login-erro').classList.add('d-none');
 
-            erroDiv.classList.add('d-none');
+            if (!email || !senha) { mostrarErroLogin("Digite o e-mail e a senha!"); return; }
 
-            if (!email || !senha) {
-                erroDiv.textContent = "Digite o e-mail e a senha!";
-                erroDiv.classList.remove('d-none');
-                return;
-            }
-
-            auth.signInWithEmailAndPassword(email, senha)
-                .then((userCredential) => {
-                    verificarAcessoEAbirPainel(userCredential.user.email);
-                })
-                .catch((error) => {
-                    console.error("Erro de login:", error.code);
-                    erroDiv.textContent = "Acesso negado: E-mail não cadastrado ou senha incorreta!";
-                    erroDiv.classList.remove('d-none');
-                });
-        }
-
-        function abrirLeitorQRCode() {
-            document.getElementById('container-qrcode-reader').classList.remove('d-none');
-            html5QrCode = new Html5Qrcode("reader");
-            html5QrCode.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: { width: 250, height: 250 } },
-                (decodedText) => {
-                    const emailLido = decodedText.trim().toLowerCase();
-                    if (baseDeCargos[emailLido]) {
-                        fecharLeitorQRCode();
-                        document.getElementById('admin-email').value = emailLido;
-                        verificarAcessoEAbirPainel(emailLido);
-                    } else {
-                        alert(`QR Code reconhecido (${emailLido}), mas o e-mail não consta na base de cargos oficiais.`);
-                    }
-                },
-                (errorMessage) => {}
-            ).catch(err => {
-                alert("Erro ao iniciar a câmera para leitura do QR Code.");
+            // O painel abre pelo onAuthStateChanged abaixo
+            auth.signInWithEmailAndPassword(email, senha).catch(error => {
+                console.error("Erro de login:", error.code);
+                mostrarErroLogin("Acesso negado: e-mail não cadastrado ou senha incorreta!");
             });
         }
 
-        function fecharLeitorQRCode() {
-            if (html5QrCode) {
-                html5QrCode.stop().then(() => {
-                    document.getElementById('container-qrcode-reader').classList.add('d-none');
-                }).catch(() => {
-                    document.getElementById('container-qrcode-reader').classList.add('d-none');
-                });
-            } else {
-                document.getElementById('container-qrcode-reader').classList.add('d-none');
+        document.getElementById('admin-senha').addEventListener('keydown', e => { if (e.key === 'Enter') fazerLoginAdmin(); });
+
+        auth.onAuthStateChanged(user => {
+            if (!user || painelAberto) return;
+            const email = (user.email || '').toLowerCase();
+            if (!baseDeCargos[email]) {
+                mostrarErroLogin("Este e-mail não tem permissão de diretoria.");
+                return;
             }
-        }
+            verificarAcessoEAbirPainel(email);
+        });
 
         function verificarAcessoEAbirPainel(emailUsuario) {
+            if (painelAberto) return;
+            painelAberto = true;
             db.collection('membros_punidos').doc(emailUsuario).get().then(docPunido => {
                 let dadosPunicao = null;
                 if (docPunido.exists) {
-                    const punicaoData = docPunido.data();
-                    const agora = new Date().getTime();
-                    const expiraEm = punicaoData.expiraEm ? punicaoData.expiraEm.toMillis() : 0;
-
-                    if (expiraEm > agora) {
-                        dadosPunicao = punicaoData;
-                    } else {
-                        db.collection('membros_punidos').doc(emailUsuario).delete();
-                    }
+                    const p = docPunido.data();
+                    const expiraEm = p.expiraEm ? p.expiraEm.toMillis() : 0;
+                    if (expiraEm > Date.now()) dadosPunicao = p;
                 }
                 abrirPainelAdmin(emailUsuario, dadosPunicao);
-            }).catch(() => {
-                abrirPainelAdmin(emailUsuario, null);
-            });
+            }).catch(() => abrirPainelAdmin(emailUsuario, null));
         }
 
         function abrirPainelAdmin(emailUsuario, dadosPunicao) {
             document.getElementById('tela-login-admin').style.display = 'none';
             document.getElementById('painel-admin').style.display = 'block';
             document.getElementById('btn-logout-admin').classList.remove('d-none');
-            document.getElementById('btn-menu-lateral').classList.remove('d-none');
-            
-            let dadosUsuario = baseDeCargos[emailUsuario] || { 
-                nome: emailUsuario.split('@')[0], 
-                cargo: "Membro da Diretoria", 
-                nivel: "membro"
-            };
 
+            const dadosUsuario = baseDeCargos[emailUsuario];
             document.getElementById('user-name-display').textContent = dadosUsuario.nome;
             document.getElementById('user-role-display').textContent = dadosUsuario.cargo;
-
-            // Renderiza o menu lateral inteligente conforme as permissões
-            renderizarMenuLateral(emailUsuario, dadosUsuario);
 
             if (dadosPunicao) {
                 document.getElementById('conteudo-painel-geral').classList.add('d-none');
                 document.getElementById('painel-bloqueio-punicao').classList.remove('d-none');
                 document.getElementById('punicao-info-tipo').textContent = dadosPunicao.punicao;
                 document.getElementById('punicao-info-motivo').textContent = dadosPunicao.motivo;
-
-                const tempoExpiracao = dadosPunicao.expiraEm.toMillis();
-                iniciarContadorRegressivo(tempoExpiracao);
+                iniciarContadorRegressivo(dadosPunicao.expiraEm.toMillis());
                 return;
             }
 
-            const cardsAdminGeral = document.querySelectorAll('.card-admin-geral');
-            const cardsAdminNaoMarketing = document.querySelectorAll('.card-admin-nao-marketing');
+            document.getElementById('btn-menu-lateral').classList.remove('d-none');
+            renderizarMenuLateral(dadosUsuario);
+            resetarOpcoes();
 
-            if (dadosUsuario.nivel === "admin") {
-                cardsAdminGeral.forEach(card => card.style.display = 'block');
-                cardsAdminNaoMarketing.forEach(card => card.style.display = 'block');
-            } else if (dadosUsuario.nivel === "marketing") {
-                cardsAdminGeral.forEach(card => card.style.display = 'none');
-                cardsAdminNaoMarketing.forEach(card => card.style.display = 'none');
-            } else {
-                cardsAdminGeral.forEach(card => card.style.display = 'none');
-                cardsAdminNaoMarketing.forEach(card => card.style.display = 'block');
+            const nivel = dadosUsuario.nivel;
+            if (nivel === 'admin') {
+                document.querySelectorAll('.card-admin-geral, .card-admin-nao-marketing').forEach(c => c.style.display = 'block');
+            } else if (nivel === 'membro') {
+                document.querySelectorAll('.card-admin-nao-marketing').forEach(c => c.style.display = 'block');
             }
 
             carregarAvisosAdmin();
-            if (dadosUsuario.nivel === "admin") {
+            carregarEnquetesAdmin();
+            if (nivel === 'admin') {
                 carregarAlunos();
                 carregarSugestoesAdmin();
                 carregarPautasAdmin();
                 carregarMembrosPunidosAdmin();
+                carregarAuditoria();
             }
-            carregarEnquetesAdmin();
-            
-            if (dadosUsuario.nivel !== "marketing") {
+            if (nivel !== 'marketing') {
                 carregarMateriaisAdmin();
                 carregarEventosAdmin();
             }
         }
 
+        function renderizarMenuLateral(dadosUsuario) {
+            const containerMenu = document.getElementById('itensMenuNav');
+            containerMenu.innerHTML = '';
+            modulosSistema.filter(m => m.niveisPermitidos.includes(dadosUsuario.nivel)).forEach(modulo => {
+                const a = document.createElement('a');
+                a.href = `#${modulo.id}`;
+                a.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary d-flex align-items-center gap-2 py-3';
+                a.innerHTML = `<i class="bi ${modulo.icon} fs-5 text-success"></i> <span>${esc(modulo.label)}</span>`;
+                a.onclick = e => {
+                    e.preventDefault();
+                    const el = document.getElementById(modulo.id);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    const inst = bootstrap.Offcanvas.getInstance(document.getElementById('sidebarMenu'));
+                    if (inst) inst.hide();
+                };
+                containerMenu.appendChild(a);
+            });
+        }
+
         function iniciarContadorRegressivo(expiracaoMs) {
             if (intervaloContador) clearInterval(intervaloContador);
-
             intervaloContador = setInterval(() => {
-                const agora = new Date().getTime();
-                const distancia = expiracaoMs - agora;
-
+                const distancia = expiracaoMs - Date.now();
                 if (distancia <= 0) {
                     clearInterval(intervaloContador);
-                    document.getElementById('contador-regressivo-punicao').textContent = "Punição encerrada! Atualize a página.";
                     location.reload();
                     return;
                 }
-
-                const dias = Math.floor(distancia / (1000 * 60 * 60 * 24));
-                const horas = Math.floor((distancia % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutos = Math.floor((distancia % (1000 * 60 * 60)) / (1000 * 60));
-                const segundos = Math.floor((distancia % (1000 * 60)) / 1000);
-
-                let tempoFormatado = '';
-                if (dias > 0) tempoFormatado += `${dias}d `;
-                tempoFormatado += `${horas.toString().padStart(2, '0')}h ${minutos.toString().padStart(2, '0')}m ${segundos.toString().padStart(2, '0')}s`;
-
-                document.getElementById('contador-regressivo-punicao').textContent = tempoFormatado;
+                const dias = Math.floor(distancia / 86400000);
+                const horas = Math.floor((distancia % 86400000) / 3600000);
+                const minutos = Math.floor((distancia % 3600000) / 60000);
+                const segundos = Math.floor((distancia % 60000) / 1000);
+                let t = dias > 0 ? `${dias}d ` : '';
+                t += `${String(horas).padStart(2, '0')}h ${String(minutos).padStart(2, '0')}m ${String(segundos).padStart(2, '0')}s`;
+                document.getElementById('contador-regressivo-punicao').textContent = t;
             }, 1000);
         }
 
+        // Retorna minutos, ou null se o formato for inválido
         function converterTextoParaMinutos(texto) {
-            texto = texto.toLowerCase().trim();
-            const match = texto.match(/^(\d+)\s*(min|h|d|ano|m)?$/);
-            if (!match) return 60;
-
-            const valor = parseInt(match[1]);
-            const unidade = match[2] || 'min';
-
-            if (unidade.includes('ano')) return valor * 525600;
-            if (unidade.includes('d')) return valor * 1440;
-            if (unidade.includes('h')) return valor * 60;
-            return valor;
+            const m = texto.toLowerCase().trim().match(/^(\d+)\s*(min|h|d|sem|mes|ano)$/);
+            if (!m) return null;
+            const valor = parseInt(m[1], 10);
+            if (valor <= 0) return null;
+            const mult = { min: 1, h: 60, d: 1440, sem: 10080, mes: 43200, ano: 525600 }[m[2]];
+            return valor * mult;
         }
 
         function fazerLogoutAdmin() {
-            auth.signOut().then(() => {
-                location.reload();
-            });
+            limparListeners();
+            if (intervaloContador) clearInterval(intervaloContador);
+            auth.signOut().then(() => location.reload());
         }
+
+        /* ================= RELATÓRIO ================= */
 
         function gerarPDFRelatorio() {
             const texto = document.getElementById('texto-relatorio').value;
             const nome = document.getElementById('user-name-display').textContent;
             const cargo = document.getElementById('user-role-display').textContent;
-
-            if (!texto.trim()) {
-                alert("Macho, digita alguma coisa no relatório antes de gerar o PDF!");
-                return;
-            }
+            if (!texto.trim()) { toast("Digite alguma coisa no relatório antes de gerar o PDF.", 'warning'); return; }
 
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
-
             doc.setFont("Helvetica", "bold");
             doc.setFontSize(16);
             doc.text("Grêmio Estudantil - IFCE Crateús", 20, 20);
-
             doc.setFontSize(12);
             doc.setFont("Helvetica", "normal");
             doc.text(`Relatório de Atividades`, 20, 30);
             doc.text(`Responsável: ${nome} (${cargo})`, 20, 40);
             doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 20, 50);
-
             doc.line(20, 55, 190, 55);
-
-            const splitText = doc.splitTextToSize(texto, 170);
-            doc.text(splitText, 20, 65);
-
+            doc.text(doc.splitTextToSize(texto, 170), 20, 65);
             doc.save(`relatorio_${nome.toLowerCase().replace(/\s+/g, '_')}.pdf`);
         }
 
@@ -734,26 +613,17 @@
             const texto = document.getElementById('texto-relatorio').value;
             const nome = document.getElementById('user-name-display').textContent;
             const cargo = document.getElementById('user-role-display').textContent;
-
-            if (!texto.trim()) {
-                alert("Macho, escreve o relatório antes de mandar no WhatsApp!");
-                return;
-            }
-
+            if (!texto.trim()) { toast("Escreva o relatório antes de enviar no WhatsApp.", 'warning'); return; }
             const mensagem = `*RELATÓRIO - GRÊMIO IFCE*\n\n*Nome:* ${nome}\n*Cargo:* ${cargo}\n\n*Conteúdo:*\n${texto}`;
-            const urlWpp = `https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`;
-            
-            window.open(urlWpp, '_blank');
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(mensagem)}`, '_blank');
         }
 
-        function mostrarAlertaSucesso(msg) {
-            const alerta = document.getElementById('alerta-sucesso');
-            alerta.textContent = "✅ " + msg;
-            alerta.classList.remove('d-none');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            setTimeout(() => {
-                alerta.classList.add('d-none');
-            }, 3000);
+        /* ================= ENQUETES ================= */
+
+        function resetarOpcoes() {
+            const c = document.getElementById('container-opcoes');
+            c.innerHTML = '';
+            adicionarCampoOpcao(); adicionarCampoOpcao();
         }
 
         function adicionarCampoOpcao() {
@@ -763,143 +633,221 @@
             div.className = 'input-group mb-2';
             div.innerHTML = `
                 <input type="text" class="form-control opcao-enquete" placeholder="Opção ${total}">
-                <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
-            `;
+                <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>`;
             container.appendChild(div);
         }
 
         function removerCampoOpcao(btn) {
             const container = document.getElementById('container-opcoes');
-            if (container.querySelectorAll('.opcao-enquete').length > 2) {
-                btn.parentElement.remove();
-            } else {
-                alert("A enquete precisa ter pelo menos 2 opções!");
-            }
+            if (container.querySelectorAll('.opcao-enquete').length > 2) btn.parentElement.remove();
+            else toast("A enquete precisa ter pelo menos 2 opções!", 'warning');
         }
 
         function criarEnquete() {
             const titulo = document.getElementById('enquete-titulo').value.trim();
-            const inputsOpcoes = document.querySelectorAll('.opcao-enquete');
-            
-            let opcoes = [];
-            inputsOpcoes.forEach((input, index) => {
+            const opcoes = [];
+            document.querySelectorAll('.opcao-enquete').forEach(input => {
                 const val = input.value.trim();
-                if (val) {
-                    opcoes.push({ id: index, texto: val, votos: 0 });
-                }
+                if (val) opcoes.push({ id: opcoes.length, texto: val, votos: 0 });
             });
-
-            if (!titulo || opcoes.length < 2) {
-                alert("Preencha o título e pelo menos 2 opções de voto!");
-                return;
-            }
+            if (!titulo || opcoes.length < 2) { toast("Preencha o título e pelo menos 2 opções de voto!", 'warning'); return; }
 
             db.collection('enquetes').add({
-                titulo: titulo,
-                opcoes: opcoes,
-                ativa: true,
-                votosAlunos: [],
-                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+                titulo, opcoes, ativa: true, votosAlunos: [], criadoEm: TS()
             }).then(() => {
                 mostrarAlertaSucesso("Enquete criada com sucesso!");
+                registrarAcao('Enquete criada', titulo);
                 document.getElementById('enquete-titulo').value = '';
-                document.getElementById('container-opcoes').innerHTML = `
-                    <div class="input-group mb-2">
-                        <input type="text" class="form-control opcao-enquete" placeholder="Opção 1">
-                        <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
-                    </div>
-                    <div class="input-group mb-2">
-                        <input type="text" class="form-control opcao-enquete" placeholder="Opção 2">
-                        <button class="btn btn-outline-danger fw-bold" type="button" onclick="removerCampoOpcao(this)">✕</button>
-                    </div>
-                `;
+                resetarOpcoes();
+            }).catch(erroDB);
+        }
+
+        function carregarEnquetesAdmin() {
+            ouvir(db.collection('enquetes').orderBy('criadoEm', 'desc'), snapshot => {
+                const container = document.getElementById('lista-enquetes-admin');
+                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma enquete cadastrada.</p>'; return; }
+                let html = '';
+                snapshot.forEach(doc => {
+                    const e = doc.data();
+                    const totalVotos = (e.opcoes || []).reduce((acc, op) => acc + (op.votos || 0), 0);
+                    html += `
+                        <div class="border rounded p-3 mb-3" style="background-color: #121a14; border-color: var(--ifce-card-border) !important;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h6 class="fw-bold m-0" style="color: var(--ifce-accent-green);">${esc(e.titulo)}</h6>
+                                <span class="badge ${e.ativa ? 'bg-success' : 'bg-secondary'}">${e.ativa ? 'Ativa' : 'Encerrada'}</span>
+                            </div>
+                            <ul class="list-group mb-2">`;
+                    (e.opcoes || []).forEach(op => {
+                        const v = op.votos || 0;
+                        const pct = totalVotos > 0 ? Math.round((v / totalVotos) * 100) : 0;
+                        html += `<li class="list-group-item d-flex justify-content-between small py-1 bg-dark text-white border-secondary">
+                                    <span>${esc(op.texto)}</span><strong>${v} votos (${pct}%)</strong></li>`;
+                    });
+                    html += `</ul>
+                            <div class="d-flex gap-2 justify-content-end">
+                                <button data-acao="alternarEnquete" data-id="${esc(doc.id)}" data-valor="${!e.ativa}" class="btn btn-outline-secondary btn-sm py-0" style="font-size: 11px;">${e.ativa ? 'Encerrar' : 'Reabrir'}</button>
+                                <button data-acao="excluirEnquete" data-id="${esc(doc.id)}" data-titulo="${esc(e.titulo)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                            </div>
+                        </div>`;
+                });
+                container.innerHTML = html;
             });
         }
+
+        /* ================= MURAL ================= */
 
         function publicarAviso() {
             const titulo = document.getElementById('aviso-titulo').value.trim();
             const mensagem = document.getElementById('aviso-mensagem').value.trim();
             const autor = document.getElementById('user-name-display').textContent;
+            if (!titulo || !mensagem) { toast("Preencha título e mensagem do aviso!", 'warning'); return; }
 
-            if (!titulo || !mensagem) {
-                alert("Preencha título e mensagem do aviso!");
-                return;
-            }
-
-            db.collection('mural').add({
-                titulo: titulo,
-                mensagem: mensagem,
-                autor: autor,
-                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-            }).then(() => {
+            db.collection('mural').add({ titulo, mensagem, autor, criadoEm: TS() }).then(() => {
                 mostrarAlertaSucesso("Aviso/Vídeo publicado no mural com sucesso!");
+                registrarAcao('Aviso publicado', titulo);
                 document.getElementById('aviso-titulo').value = '';
                 document.getElementById('aviso-mensagem').value = '';
-            });
+            }).catch(erroDB);
         }
 
         function carregarAvisosAdmin() {
-            db.collection('mural').onSnapshot(snapshot => {
+            ouvir(db.collection('mural').orderBy('criadoEm', 'desc'), snapshot => {
                 const container = document.getElementById('lista-avisos-admin');
-                if (!container) return;
-                if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum aviso publicado.</p>';
-                    return;
-                }
-
+                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum aviso publicado.</p>'; return; }
                 let html = '<div class="list-group">';
                 snapshot.forEach(doc => {
-                    const aviso = doc.data();
-                    let dataHora = '';
-                    if (aviso.criadoEm) {
-                        const d = aviso.criadoEm.toDate();
-                        dataHora = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                    }
-
+                    const a = doc.data();
+                    const dh = fmtData(a.criadoEm);
                     html += `
                         <div class="list-group-item d-flex justify-content-between align-items-start">
                             <div>
-                                <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${aviso.titulo}</h6>
-                                <p class="mb-1 small text-white">${aviso.mensagem}</p>
-                                <small class="text-muted-custom d-block" style="font-size: 11px;">Publicado por: ${aviso.autor || 'Diretoria'} ${dataHora ? '• ' + dataHora : ''}</small>
+                                <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${esc(a.titulo)}</h6>
+                                <p class="mb-1 small text-white">${esc(a.mensagem)}</p>
+                                <small class="text-muted-custom d-block" style="font-size: 11px;">Publicado por: ${esc(a.autor || 'Diretoria')} ${dh ? '• ' + esc(dh) : ''}</small>
                             </div>
-                            <button onclick="excluirAviso('${doc.id}')" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Excluir</button>
-                        </div>
-                    `;
+                            <button data-acao="excluirAviso" data-id="${esc(doc.id)}" data-titulo="${esc(a.titulo)}" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Excluir</button>
+                        </div>`;
                 });
-                html += '</div>';
-                container.innerHTML = html;
+                container.innerHTML = html + '</div>';
             });
         }
 
-        function excluirAviso(id) {
-            if (confirm("Tem certeza que deseja excluir este aviso?")) {
-                db.collection('mural').doc(id).delete();
-            }
-        }
+        /* ================= ALUNOS ================= */
 
         function cadastrarAluno() {
             const nome = document.getElementById('cad-nome').value.trim();
             const email = document.getElementById('cad-email').value.trim().toLowerCase();
             const senha = document.getElementById('cad-senha').value.trim();
 
-            if (!nome || !email || !senha) {
-                alert("Preencha todos os campos do aluno!");
-                return;
-            }
+            if (!nome || !email || !senha) { toast("Preencha todos os campos do aluno!", 'warning'); return; }
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast("E-mail inválido!", 'warning'); return; }
+            if (senha.length < 6) { toast("A senha precisa ter pelo menos 6 caracteres.", 'warning'); return; }
 
-            db.collection('alunos').doc(email).set({
-                nome: nome,
-                email: email,
-                senha: senha,
-                ativo: true
-            }).then(() => {
+            db.collection('alunos').doc(email).get().then(async existente => {
+                if (existente.exists && !(await confirmar(`Já existe um aluno com ${email}. Sobrescrever?`))) return;
+                // ATENÇÃO: a senha ainda é salva em texto puro porque o index.html compara com ela.
+                // Migre para Firebase Authentication (veja as instruções) e remova este campo.
+                await db.collection('alunos').doc(email).set({ nome, email, senha, ativo: true });
                 mostrarAlertaSucesso("Aluno cadastrado com sucesso!");
-                document.getElementById('cad-nome').value = '';
-                document.getElementById('cad-email').value = '';
-                document.getElementById('cad-senha').value = '';
+                registrarAcao('Aluno cadastrado', email);
+                ['cad-nome', 'cad-email', 'cad-senha'].forEach(id => document.getElementById(id).value = '');
+            }).catch(erroDB);
+        }
+
+        function carregarAlunos() {
+            ouvir(db.collection('alunos').orderBy('nome'), snapshot => {
+                cacheAlunos = snapshot.docs.map(d => d.data());
+                renderAlunos();
             });
         }
+
+        function renderAlunos() {
+            const container = document.getElementById('lista-alunos-admin');
+            const termo = document.getElementById('busca-alunos').value.trim().toLowerCase();
+            const lista = cacheAlunos.filter(a => !termo || (a.nome || '').toLowerCase().includes(termo) || (a.email || '').toLowerCase().includes(termo));
+            if (!lista.length) { container.innerHTML = `<p class="text-muted-custom small mb-0">${termo ? 'Nenhum resultado.' : 'Nenhum aluno cadastrado.'}</p>`; return; }
+            let html = `<p class="small text-muted-custom">${lista.length} aluno(s)</p><ul class="list-group">`;
+            lista.forEach(a => {
+                html += `
+                    <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
+                        <div>
+                            <strong style="font-size: 14px;" class="text-white">${esc(a.nome)}</strong><br>
+                            <small class="text-muted-custom">${esc(a.email)}</small>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge ${a.ativo ? 'bg-success' : 'bg-danger'}">${a.ativo ? 'Ativo' : 'Bloqueado'}</span>
+                            <button data-acao="alternarAluno" data-id="${esc(a.email)}" data-valor="${!a.ativo}" class="btn btn-outline-warning btn-sm py-0" style="font-size: 11px;">${a.ativo ? 'Bloquear' : 'Desbloquear'}</button>
+                            <button data-acao="excluirAluno" data-id="${esc(a.email)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                        </div>
+                    </li>`;
+            });
+            container.innerHTML = html + '</ul>';
+        }
+
+        /* ================= SUGESTÕES ================= */
+
+        function carregarSugestoesAdmin() {
+            ouvir(db.collection('sugestoes').orderBy('criadoEm', 'desc'), snapshot => {
+                cacheSugestoes = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderSugestoes();
+            });
+        }
+
+        function renderSugestoes() {
+            const container = document.getElementById('lista-sugestoes-admin');
+            const termo = document.getElementById('busca-sugestoes').value.trim().toLowerCase();
+            const lista = cacheSugestoes.filter(s => !termo || `${s.nome} ${s.email} ${s.texto}`.toLowerCase().includes(termo));
+            if (!lista.length) { container.innerHTML = `<p class="text-muted-custom small mb-0">${termo ? 'Nenhum resultado.' : 'Nenhuma sugestão enviada.'}</p>`; return; }
+            let html = '<div class="list-group">';
+            lista.forEach(s => {
+                const dh = fmtData(s.criadoEm);
+                html += `
+                    <div class="list-group-item d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong style="font-size: 13px; color: var(--ifce-accent-green);">${esc(s.nome || 'Aluno')} (${esc(s.email || 'Sem e-mail')})</strong>
+                            <p class="m-0 text-white small mt-1">${esc(s.texto)}</p>
+                            ${dh ? `<small class="text-muted-custom mt-1 d-block" style="font-size: 11px;">📅 ${esc(dh)}</small>` : ''}
+                        </div>
+                        <button data-acao="excluirSugestao" data-id="${esc(s.id)}" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Apagar</button>
+                    </div>`;
+            });
+            container.innerHTML = html + '</div>';
+        }
+
+        /* ================= PAUTAS ================= */
+
+        const STATUS_PAUTA = ['Em análise', 'Encaminhada', 'Resolvida'];
+
+        function carregarPautasAdmin() {
+            ouvir(db.collection('reivindicacoes'), snapshot => {
+                cachePautas = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+                    .sort((a, b) => (b.apoios ? b.apoios.length : 0) - (a.apoios ? a.apoios.length : 0));
+                const container = document.getElementById('lista-pautas-admin');
+                if (!cachePautas.length) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma pauta cadastrada.</p>'; return; }
+                let html = '<div class="list-group">';
+                cachePautas.forEach(p => {
+                    const n = p.apoios ? p.apoios.length : 0;
+                    const status = p.status || STATUS_PAUTA[0];
+                    html += `
+                        <div class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${esc(p.titulo)} <span class="badge bg-primary">👍 ${n} Apoios</span></h6>
+                                    <p class="mb-1 small text-white">${esc(p.descricao)}</p>
+                                    <small class="text-muted-custom" style="font-size: 11px;">Criado por: ${esc(p.autor || 'Aluno')}</small>
+                                </div>
+                                <button data-acao="excluirPauta" data-id="${esc(p.id)}" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Excluir</button>
+                            </div>
+                            <select data-mudar="statusPauta" data-id="${esc(p.id)}" class="form-select form-select-sm mt-2" style="max-width: 200px;">
+                                ${STATUS_PAUTA.map(s => `<option ${s === status ? 'selected' : ''}>${esc(s)}</option>`).join('')}
+                            </select>
+                        </div>`;
+                });
+                container.innerHTML = html + '</div>';
+            });
+        }
+
+        /* ================= PUNIÇÕES ================= */
 
         function aplicarPunicaoMembro() {
             const email = document.getElementById('punicao-email').value.trim().toLowerCase();
@@ -907,366 +855,197 @@
             const textoTempo = document.getElementById('punicao-tempo-texto').value.trim();
             const motivo = document.getElementById('punicao-motivo').value.trim();
 
-            if (!email || !tipo || !textoTempo || !motivo) {
-                alert("Macho, preencha todos os campos da punição!");
-                return;
-            }
+            if (!email || !tipo || !textoTempo || !motivo) { toast("Preencha todos os campos da punição!", 'warning'); return; }
+            const minutos = converterTextoParaMinutos(textoTempo);
+            if (minutos === null) { toast("Tempo inválido. Use: 30min, 2h, 1d, 2sem, 1mes ou 1ano.", 'danger'); return; }
 
-            const minutosTotais = converterTextoParaMinutos(textoTempo);
-            const expiraEm = firebase.firestore.Timestamp.fromMillis(new Date().getTime() + (minutosTotais * 60 * 1000));
-
+            const expiraEm = firebase.firestore.Timestamp.fromMillis(Date.now() + minutos * 60000);
             db.collection('membros_punidos').doc(email).set({
-                email: email,
-                punicao: tipo,
-                motivo: motivo,
-                expiraEm: expiraEm,
-                punidoEm: firebase.firestore.FieldValue.serverTimestamp()
+                email, punicao: tipo, motivo, expiraEm, punidoEm: TS(),
+                punidoPor: auth.currentUser ? auth.currentUser.email : ''
             }).then(() => {
-                mostrarAlertaSucesso(`Punição aplicada com sucesso a ${email} (${textoTempo})!`);
-                document.getElementById('punicao-email').value = '';
-                document.getElementById('punicao-tipo').value = '';
-                document.getElementById('punicao-tempo-texto').value = '';
-                document.getElementById('punicao-motivo').value = '';
-            });
+                mostrarAlertaSucesso(`Punição aplicada a ${email} (${textoTempo})!`);
+                registrarAcao('Punição aplicada', `${email} | ${tipo} | ${textoTempo} | ${motivo}`);
+                ['punicao-email', 'punicao-tipo', 'punicao-tempo-texto', 'punicao-motivo'].forEach(id => document.getElementById(id).value = '');
+            }).catch(erroDB);
         }
 
         function carregarMembrosPunidosAdmin() {
-            db.collection('membros_punidos').onSnapshot(snapshot => {
-                const container = document.getElementById('lista-membros-punidos-admin');
-                if (!container) return;
-                if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum membro punido.</p>';
-                    return;
-                }
-
-                let html = '<ul class="list-group">';
-                snapshot.forEach(doc => {
-                    const p = doc.data();
-                    const expira = p.expiraEm ? p.expiraEm.toDate().toLocaleString('pt-BR') : 'Indeterminado';
-
-                    html += `
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong class="text-warning" style="font-size: 13px;">${p.email}</strong><br>
-                                <small class="text-white">Punição: <strong>${p.punicao}</strong> | Motivo: ${p.motivo}</small><br>
-                                <small class="text-muted-custom" style="font-size: 11px;">Expira em: ${expira}</small>
-                            </div>
-                            <div class="d-flex gap-1">
-                                <button onclick="removerPunicao('${p.email}')" class="btn btn-outline-success btn-sm py-0" style="font-size: 11px;">Remover / Reduzir</button>
-                            </div>
-                        </li>
-                    `;
-                });
-                html += '</ul>';
-                container.innerHTML = html;
+            ouvir(db.collection('membros_punidos').orderBy('expiraEm'), snapshot => {
+                cachePunidos = snapshot.docs.map(d => d.data());
+                renderPunidos();
             });
         }
 
-        function removerPunicao(email) {
-            if (confirm(`Remover a punição de ${email} e liberar o acesso?`)) {
-                db.collection('membros_punidos').doc(email).delete().then(() => {
-                    mostrarAlertaSucesso(`Punição de ${email} removida com sucesso!`);
-                });
-            }
-        }
-
-        function carregarAlunos() {
-            db.collection('alunos').onSnapshot(snapshot => {
-                const container = document.getElementById('lista-alunos-admin');
-                if (!container) return;
-                if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum aluno cadastrado.</p>';
-                    return;
-                }
-                let html = '<ul class="list-group">';
-                snapshot.forEach(doc => {
-                    const aluno = doc.data();
-                    const statusBg = aluno.ativo ? 'bg-success' : 'bg-danger';
-                    const statusTxt = aluno.ativo ? 'Ativo' : 'Bloqueado';
-
-                    html += `
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong style="font-size: 14px;" class="text-white">${aluno.nome}</strong><br>
-                                <small class="text-muted-custom">${aluno.email}</small>
-                            </div>
-                            <div class="d-flex align-items-center gap-2">
-                                <span class="badge ${statusBg}">${statusTxt}</span>
-                                <button onclick="alternarStatusAluno('${aluno.email}', ${!aluno.ativo})" class="btn btn-outline-warning btn-sm py-0" style="font-size: 11px;">
-                                    ${aluno.ativo ? 'Bloquear' : 'Desbloquear'}
-                                </button>
-                                <button onclick="excluirAluno('${aluno.email}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
-                            </div>
-                        </li>
-                    `;
-                });
-                html += '</ul>';
-                container.innerHTML = html;
-            });
-        }
-
-        function alternarStatusAluno(email, novoStatus) {
-            db.collection('alunos').doc(email).update({ ativo: novoStatus });
-        }
-
-        function excluirAluno(email) {
-            if (confirm(`Excluir o aluno ${email}?`)) {
-                db.collection('alunos').doc(email).delete();
-            }
-        }
-
-        function carregarEnquetesAdmin() {
-            db.collection('enquetes').onSnapshot(snapshot => {
-                const container = document.getElementById('lista-enquetes-admin');
-                if (!container) return;
-                if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma enquete cadastrada.</p>';
-                    return;
-                }
-                let html = '';
-                snapshot.forEach(doc => {
-                    const enquete = doc.data();
-                    const id = doc.id;
-                    const votosAlunos = enquete.votosAlunos || [];
-                    const totalVotos = enquete.opcoes ? enquete.opcoes.reduce((acc, op) => acc + (op.votos || 0), 0) : votosAlunos.length;
-
-                    html += `
-                        <div class="border rounded p-3 mb-3" style="background-color: #121a14; border-color: var(--ifce-card-border) !important;">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="fw-bold m-0" style="color: var(--ifce-accent-green);">${enquete.titulo}</h6>
-                                <span class="badge ${enquete.ativa ? 'bg-success' : 'bg-secondary'}">${enquete.ativa ? 'Ativa' : 'Encerrada'}</span>
-                            </div>
-                            <ul class="list-group mb-2">
-                    `;
-                    if (enquete.opcoes) {
-                        enquete.opcoes.forEach(op => {
-                            const pct = totalVotos > 0 ? Math.round((op.votos / totalVotos) * 100) : 0;
-                            html += `<li class="list-group-item d-flex justify-content-between small py-1 bg-dark text-white border-secondary">
-                                <span>${op.texto}</span>
-                                <strong>${op.votos} votos (${pct}%)</strong>
-                            </li>`;
-                        });
-                    }
-                    html += `</ul>
-                            <div class="d-flex gap-2 justify-content-end">
-                                <button onclick="alternarStatusEnquete('${id}', ${!enquete.ativa})" class="btn btn-outline-secondary btn-sm py-0" style="font-size: 11px;">
-                                    ${enquete.ativa ? 'Encerrar' : 'Reabrir'}
-                                </button>
-                                <button onclick="excluirEnquete('${id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
-                            </div>
+        function renderPunidos() {
+            const container = document.getElementById('lista-membros-punidos-admin');
+            const termo = document.getElementById('busca-punidos').value.trim().toLowerCase();
+            const agora = Date.now();
+            // Ignora punições já vencidas
+            const lista = cachePunidos.filter(p => p.expiraEm && p.expiraEm.toMillis() > agora)
+                .filter(p => !termo || `${p.email} ${p.punicao} ${p.motivo}`.toLowerCase().includes(termo));
+            if (!lista.length) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum membro punido.</p>'; return; }
+            let html = '<ul class="list-group">';
+            lista.forEach(p => {
+                html += `
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong class="text-warning" style="font-size: 13px;">${esc(p.email)}</strong><br>
+                            <small class="text-white">Punição: <strong>${esc(p.punicao)}</strong> | Motivo: ${esc(p.motivo)}</small><br>
+                            <small class="text-muted-custom" style="font-size: 11px;">Expira em: ${esc(p.expiraEm.toDate().toLocaleString('pt-BR'))}${p.punidoPor ? ' • por ' + esc(p.punidoPor) : ''}</small>
                         </div>
-                    `;
-                });
-                container.innerHTML = html;
+                        <button data-acao="removerPunicao" data-id="${esc(p.email)}" class="btn btn-outline-success btn-sm py-0" style="font-size: 11px;">Remover</button>
+                    </li>`;
             });
+            container.innerHTML = html + '</ul>';
         }
 
-        function alternarStatusEnquete(id, novoStatus) {
-            db.collection('enquetes').doc(id).update({ ativa: novoStatus });
-        }
-
-        function excluirEnquete(id) {
-            if (confirm("Excluir esta enquete?")) {
-                db.collection('enquetes').doc(id).delete();
-            }
-        }
-
-        function carregarSugestoesAdmin() {
-            db.collection('sugestoes').onSnapshot(snapshot => {
-                const container = document.getElementById('lista-sugestoes-admin');
-                if (!container) return;
-                if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma sugestão enviada.</p>';
-                    return;
-                }
-                let html = '<div class="list-group">';
-                snapshot.forEach(doc => {
-                    const sug = doc.data();
-                    let dataHora = '';
-                    if (sug.criadoEm) {
-                        const d = sug.criadoEm.toDate();
-                        dataHora = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                    }
-
-                    html += `
-                        <div class="list-group-item d-flex justify-content-between align-items-start">
-                            <div>
-                                <strong style="font-size: 13px; color: var(--ifce-accent-green);">${sug.nome || 'Aluno'} (${sug.email || 'Sem e-mail'})</strong>
-                                <p class="m-0 text-white small mt-1">${sug.texto}</p>
-                                ${dataHora ? `<small class="text-muted-custom mt-1 d-block" style="font-size: 11px;">📅 ${dataHora}</small>` : ''}
-                            </div>
-                            <button onclick="excluirSugestao('${doc.id}')" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Apagar</button>
-                        </div>
-                    `;
-                });
-                html += '</div>';
-                container.innerHTML = html;
-            });
-        }
-
-        function excluirSugestao(id) {
-            if (confirm("Deseja apagar esta sugestão?")) {
-                db.collection('sugestoes').doc(id).delete();
-            }
-        }
-
-        function carregarPautasAdmin() {
-            db.collection('reivindicacoes').onSnapshot(snapshot => {
-                const container = document.getElementById('lista-pautas-admin');
-                if (!container) return;
-                if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma pauta cadastrada.</p>';
-                    return;
-                }
-                let html = '<div class="list-group">';
-                snapshot.forEach(doc => {
-                    const pauta = doc.data();
-                    const apoios = pauta.apoios ? pauta.apoios.length : 0;
-                    html += `
-                        <div class="list-group-item d-flex justify-content-between align-items-start">
-                            <div>
-                                <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${pauta.titulo} <span class="badge bg-primary">👍 ${apoios} Apoios</span></h6>
-                                <p class="mb-1 small text-white">${pauta.descricao}</p>
-                                <small class="text-muted-custom" style="font-size: 11px;">Criado por: ${pauta.autor || 'Aluno'}</small>
-                            </div>
-                            <button onclick="excluirPauta('${doc.id}')" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Excluir</button>
-                        </div>
-                    `;
-                });
-                html += '</div>';
-                container.innerHTML = html;
-            });
-        }
-
-        function excluirPauta(id) {
-            if (confirm("Excluir esta pauta?")) {
-                db.collection('reivindicacoes').doc(id).delete();
-            }
-        }
+        /* ================= MATERIAIS ================= */
 
         function cadastrarMaterial() {
             const nome = document.getElementById('mat-nome').value.trim();
             const qtd = document.getElementById('mat-qtd').value.trim() || '1 un';
-
-            if (!nome) {
-                alert("Preencha o nome do material!");
-                return;
-            }
+            if (!nome) { toast("Preencha o nome do material!", 'warning'); return; }
 
             db.collection('materiais').add({
-                nome: nome,
-                qtd: qtd,
-                status: 'Disponível',
-                emprestadoPara: '',
-                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+                nome, qtd, status: 'Disponível', emprestadoPara: '', criadoEm: TS()
             }).then(() => {
                 mostrarAlertaSucesso("Material cadastrado com sucesso!");
+                registrarAcao('Material cadastrado', nome);
                 document.getElementById('mat-nome').value = '';
                 document.getElementById('mat-qtd').value = '';
-            });
+            }).catch(erroDB);
         }
 
         function carregarMateriaisAdmin() {
-            db.collection('materiais').onSnapshot(snapshot => {
+            ouvir(db.collection('materiais').orderBy('criadoEm', 'desc'), snapshot => {
                 const container = document.getElementById('lista-materiais-admin');
-                if (!container) return;
-                if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum material cadastrado.</p>';
-                    return;
-                }
+                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum material cadastrado.</p>'; return; }
                 let html = '<ul class="list-group">';
                 snapshot.forEach(doc => {
-                    const mat = doc.data();
-                    const disponivel = mat.status === 'Disponível';
+                    const m = doc.data();
+                    const disp = m.status === 'Disponível';
                     html += `
                         <li class="list-group-item d-flex justify-content-between align-items-center">
                             <div>
-                                <strong class="text-white">${mat.nome}</strong> (${mat.qtd}) 
-                                <span class="badge ${disponivel ? 'bg-success' : 'bg-warning text-dark'}">${mat.status}</span><br>
-                                ${!disponivel ? `<small class="text-muted-custom">Com: ${mat.emprestadoPara}</small>` : ''}
+                                <strong class="text-white">${esc(m.nome)}</strong> (${esc(m.qtd)})
+                                <span class="badge ${disp ? 'bg-success' : 'bg-warning text-dark'}">${esc(m.status)}</span><br>
+                                ${!disp ? `<small class="text-muted-custom">Com: ${esc(m.emprestadoPara)}</small>` : ''}
                             </div>
                             <div class="d-flex gap-1">
-                                ${!disponivel ? `<button onclick="devolverMaterial('${doc.id}')" class="btn btn-outline-success btn-sm py-0" style="font-size: 11px;">Devolvido</button>` : ''}
-                                <button onclick="excluirMaterial('${doc.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                                ${!disp ? `<button data-acao="devolverMaterial" data-id="${esc(doc.id)}" data-titulo="${esc(m.nome)}" class="btn btn-outline-success btn-sm py-0" style="font-size: 11px;">Devolvido</button>` : ''}
+                                <button data-acao="excluirMaterial" data-id="${esc(doc.id)}" data-titulo="${esc(m.nome)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
                             </div>
-                        </li>
-                    `;
+                        </li>`;
                 });
-                html += '</ul>';
-                container.innerHTML = html;
+                container.innerHTML = html + '</ul>';
             });
         }
 
-        function devolverMaterial(id) {
-            db.collection('materiais').doc(id).update({
-                status: 'Disponível',
-                emprestadoPara: ''
-            });
-        }
-
-        function excluirMaterial(id) {
-            if (confirm("Excluir este material?")) {
-                db.collection('materiais').doc(id).delete();
-            }
-        }
+        /* ================= EVENTOS ================= */
 
         function criarEvento() {
             const titulo = document.getElementById('evento-titulo').value.trim();
             const data = document.getElementById('evento-data').value.trim();
             const descricao = document.getElementById('evento-descricao').value.trim();
-
-            if (!titulo || !data) {
-                alert("Preencha título e data do evento!");
-                return;
-            }
+            if (!titulo || !data) { toast("Preencha título e data do evento!", 'warning'); return; }
 
             db.collection('eventos').add({
-                titulo: titulo,
-                data: data,
-                descricao: descricao,
-                inscritos: [],
-                criadoEm: firebase.firestore.FieldValue.serverTimestamp()
+                titulo, data, descricao, inscritos: [], criadoEm: TS()
             }).then(() => {
                 mostrarAlertaSucesso("Evento publicado com sucesso!");
-                document.getElementById('evento-titulo').value = '';
-                document.getElementById('evento-data').value = '';
-                document.getElementById('evento-descricao').value = '';
-            });
+                registrarAcao('Evento criado', titulo);
+                ['evento-titulo', 'evento-data', 'evento-descricao'].forEach(id => document.getElementById(id).value = '');
+            }).catch(erroDB);
         }
 
         function carregarEventosAdmin() {
-            db.collection('eventos').onSnapshot(snapshot => {
+            ouvir(db.collection('eventos').orderBy('criadoEm', 'desc'), snapshot => {
                 const container = document.getElementById('lista-eventos-admin');
-                if (!container) return;
-                if (snapshot.empty) {
-                    container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum evento cadastrado.</p>';
-                    return;
-                }
+                cacheEventos = {};
+                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum evento cadastrado.</p>'; return; }
                 let html = '<div class="list-group">';
                 snapshot.forEach(doc => {
                     const ev = doc.data();
-                    const inscritos = ev.inscritos || [];
+                    cacheEventos[doc.id] = ev;
+                    const insc = ev.inscritos || [];
                     html += `
                         <div class="list-group-item d-flex justify-content-between align-items-start">
                             <div>
-                                <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${ev.titulo} <span class="badge bg-info text-dark">📅 ${ev.data}</span></h6>
-                                <p class="mb-1 small text-white">${ev.descricao}</p>
-                                <small class="text-muted-custom fw-bold">Inscritos (${inscritos.length}): ${inscritos.join(', ') || 'Nenhum inscrito ainda'}</small>
+                                <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${esc(ev.titulo)} <span class="badge bg-info text-dark">📅 ${esc(ev.data)}</span></h6>
+                                <p class="mb-1 small text-white">${esc(ev.descricao)}</p>
+                                <small class="text-muted-custom fw-bold">Inscritos (${insc.length}): ${esc(insc.join(', ')) || 'Nenhum inscrito ainda'}</small>
                             </div>
-                            <button onclick="excluirEvento('${doc.id}')" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Excluir</button>
-                        </div>
-                    `;
+                            <div class="d-flex flex-column gap-1 ms-2">
+                                <button data-acao="exportarInscritos" data-id="${esc(doc.id)}" class="btn btn-outline-light btn-sm py-0" style="font-size: 11px;">⬇️ CSV</button>
+                                <button data-acao="excluirEvento" data-id="${esc(doc.id)}" data-titulo="${esc(ev.titulo)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                            </div>
+                        </div>`;
                 });
-                html += '</div>';
-                container.innerHTML = html;
+                container.innerHTML = html + '</div>';
             });
         }
 
-        function excluirEvento(id) {
-            if (confirm("Excluir este evento?")) {
-                db.collection('eventos').doc(id).delete();
-            }
+        /* ================= AUDITORIA ================= */
+
+        function carregarAuditoria() {
+            ouvir(db.collection('acoes_admin').orderBy('em', 'desc').limit(30), snapshot => {
+                const container = document.getElementById('lista-auditoria-admin');
+                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma ação registrada.</p>'; return; }
+                let html = '<ul class="list-group">';
+                snapshot.forEach(doc => {
+                    const a = doc.data();
+                    html += `
+                        <li class="list-group-item small">
+                            <strong style="color: var(--ifce-accent-green);">${esc(a.acao)}</strong>
+                            <span class="text-white"> — ${esc(a.detalhes)}</span><br>
+                            <small class="text-muted-custom" style="font-size: 11px;">${esc(a.autor)} • ${esc(fmtData(a.em))}</small>
+                        </li>`;
+                });
+                container.innerHTML = html + '</ul>';
+            });
         }
+
+        /* ================= AÇÕES (delegação de eventos, sem onclick inline com dados) ================= */
+
+        const acoes = {
+            excluirAviso: async (id, el) => { if (await confirmar("Excluir este aviso?")) db.collection('mural').doc(id).delete().then(() => registrarAcao('Aviso excluído', el.dataset.titulo)).catch(erroDB); },
+            excluirEnquete: async (id, el) => { if (await confirmar("Excluir esta enquete?")) db.collection('enquetes').doc(id).delete().then(() => registrarAcao('Enquete excluída', el.dataset.titulo)).catch(erroDB); },
+            alternarEnquete: (id, el) => db.collection('enquetes').doc(id).update({ ativa: el.dataset.valor === 'true' }).catch(erroDB),
+            alternarAluno: (id, el) => { const bloq = el.dataset.valor === 'false'; db.collection('alunos').doc(id).update({ ativo: !bloq }).then(() => registrarAcao(bloq ? 'Aluno bloqueado' : 'Aluno desbloqueado', id)).catch(erroDB); },
+            excluirAluno: async id => { if (await confirmar(`Excluir o aluno ${id}?`)) db.collection('alunos').doc(id).delete().then(() => registrarAcao('Aluno excluído', id)).catch(erroDB); },
+            excluirSugestao: async id => { if (await confirmar("Apagar esta sugestão?")) db.collection('sugestoes').doc(id).delete().catch(erroDB); },
+            excluirPauta: async id => { if (await confirmar("Excluir esta pauta?")) db.collection('reivindicacoes').doc(id).delete().then(() => registrarAcao('Pauta excluída', id)).catch(erroDB); },
+            removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(erroDB); },
+            devolverMaterial: (id, el) => db.collection('materiais').doc(id).update({ status: 'Disponível', emprestadoPara: '' }).then(() => registrarAcao('Material devolvido', el.dataset.titulo)).catch(erroDB),
+            excluirMaterial: async (id, el) => { if (await confirmar("Excluir este material?")) db.collection('materiais').doc(id).delete().then(() => registrarAcao('Material excluído', el.dataset.titulo)).catch(erroDB); },
+            excluirEvento: async (id, el) => { if (await confirmar("Excluir este evento?")) db.collection('eventos').doc(id).delete().then(() => registrarAcao('Evento excluído', el.dataset.titulo)).catch(erroDB); },
+            exportarPautas: () => {
+                if (!cachePautas.length) { toast("Não há pautas para exportar.", 'warning'); return; }
+                baixarCSV('pautas.csv', [['Título', 'Descrição', 'Autor', 'Apoios', 'Status']]
+                    .concat(cachePautas.map(p => [p.titulo, p.descricao, p.autor || '', (p.apoios || []).length, p.status || STATUS_PAUTA[0]])));
+            },
+            exportarInscritos: id => {
+                const ev = cacheEventos[id];
+                if (!ev) return;
+                baixarCSV(`inscritos_${(ev.titulo || 'evento').toLowerCase().replace(/\s+/g, '_')}.csv`,
+                    [['Evento', 'Data', 'E-mail do inscrito']].concat((ev.inscritos || []).map(e => [ev.titulo, ev.data, e])));
+            }
+        };
+
+        document.addEventListener('click', e => {
+            const el = e.target.closest('[data-acao]');
+            if (!el) return;
+            const fn = acoes[el.dataset.acao];
+            if (fn) fn(el.dataset.id, el);
+        });
+
+        document.addEventListener('change', e => {
+            const el = e.target.closest('[data-mudar="statusPauta"]');
+            if (!el) return;
+            db.collection('reivindicacoes').doc(el.dataset.id).update({ status: el.value })
+                .then(() => registrarAcao('Status de pauta alterado', `${el.dataset.id} → ${el.value}`)).catch(erroDB);
+        });
     </script>
 </body>
 </html>
