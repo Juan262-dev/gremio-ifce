@@ -131,39 +131,6 @@
             color: var(--ifce-text-muted) !important;
         }
 
-        .avatar-perfil {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 2px solid var(--ifce-accent-green);
-        }
-
-        .galeria-marketing {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            margin-top: 10px;
-        }
-
-        .membro-marketing-card {
-            background: #121a14;
-            border: 1px solid var(--ifce-card-border);
-            padding: 10px;
-            border-radius: 12px;
-            text-align: center;
-            width: 140px;
-        }
-
-        .membro-marketing-card img {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-bottom: 5px;
-            border: 1px solid var(--ifce-accent-green);
-        }
-
         #painel-admin { display: none; }
     </style>
 </head>
@@ -253,36 +220,15 @@
         <!-- CONTEÚDO GERAL DO PAINEL -->
         <div id="conteudo-painel-geral">
 
-            <!-- CRACHÁ DIGITAL DE IDENTIFICAÇÃO DE CARGO COM FOTO -->
+            <!-- CRACHÁ DIGITAL DE IDENTIFICAÇÃO DE CARGO (SEM FOTO) -->
             <div class="card card-custom p-3 mb-4" style="background: rgba(45, 134, 71, 0.15); border-left: 5px solid var(--ifce-accent-green);">
                 <div class="d-flex justify-content-between align-items-center">
-                    <div class="d-flex align-items-center gap-3">
-                        <img id="user-avatar-display" src="https://via.placeholder.com/60" alt="Foto" class="avatar-perfil">
-                        <div>
-                            <span class="small text-muted-custom text-uppercase fw-bold">Identificação de Cargo</span>
-                            <h5 class="mb-1 fw-bold text-white" id="user-name-display">-</h5>
-                            <p class="mb-0 small" style="color: var(--ifce-accent-green);">🪪 Cargo: <strong id="user-role-display">-</strong></p>
-                        </div>
+                    <div>
+                        <span class="small text-muted-custom text-uppercase fw-bold">Identificação de Cargo</span>
+                        <h5 class="mb-1 fw-bold text-white" id="user-name-display">-</h5>
+                        <p class="mb-0 small" style="color: var(--ifce-accent-green);">🪪 Cargo: <strong id="user-role-display">-</strong></p>
                     </div>
                     <span class="badge bg-success">🟢 Online</span>
-                </div>
-            </div>
-
-            <!-- PAINEL EXCLUSIVO DE MARKETING (MOSTRA A FOTO DOS DOIS DIRETORES) -->
-            <div id="secao-marketing" class="card card-custom p-4 mb-4 card-admin-marketing d-none">
-                <h5 class="card-title-chem mb-2">📸 Diretores de Marketing Ativos</h5>
-                <p class="text-muted-custom small mb-3">Responsáveis pelas postagens, enquetes e divulgação do grêmio.</p>
-                <div class="galeria-marketing">
-                    <div class="membro-marketing-card">
-                        <img src="https://via.placeholder.com/50" alt="Marketing 1" id="foto-mkt-1">
-                        <strong class="d-block small text-white">Marketing 1</strong>
-                        <small class="text-muted-custom" style="font-size: 10px;">marketing1@ifce.edu.br</small>
-                    </div>
-                    <div class="membro-marketing-card">
-                        <img src="https://via.placeholder.com/50" alt="Marketing 2" id="foto-mkt-2">
-                        <strong class="d-block small text-white">Marketing 2</strong>
-                        <small class="text-muted-custom" style="font-size: 10px;">marketing2@ifce.edu.br</small>
-                    </div>
                 </div>
             </div>
 
@@ -439,8 +385,7 @@
                         <label class="form-label fw-bold">E-mail do Membro / Aluno</label>
                         <input type="email" id="punicao-email" class="form-control" placeholder="email@ifce.edu.br">
                     </div>
-                    <div class="col-md-3">
-                        <label class="form-label fw-bold">Punição Aplicada</label>
+                    <div class="col-md-3">"form-label fw-bold">Punição Aplicada</label>
                         <input type="text" id="punicao-tipo" class="form-control" placeholder="Ex: Suspensão">
                     </div>
                     <div class="col-md-3">
@@ -507,12 +452,12 @@
         let html5QrCode = null;
 
         const baseDeCargos = {
-            "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin", foto: "https://i.imgur.com/8QjO6jZ.png" },
-            "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin", foto: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150" },
-            "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente", nivel: "admin", foto: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150" },
-            "cecilia@aluno.ifce.edu.br": { nome: "Cecília", cargo: "Diretora de Esportes", nivel: "membro", foto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150" },
-            "talison@aluno.ifce.edu.br": { nome: "Talison", cargo: "Diretor(a) de Marketing", nivel: "marketing", foto: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150" },
-            "marketing2@aluno.ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing", foto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150" }
+            "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
+            "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
+            "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente", nivel: "admin" },
+            "cecilia@aluno.ifce.edu.br": { nome: "Cecília", cargo: "Diretora de Esportes", nivel: "membro" },
+            "marketing1@ifce.edu.br": { nome: "Diretor(a) de Marketing 1", cargo: "Diretor(a) de Marketing", nivel: "marketing" },
+            "marketing2@ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing" }
         };
 
         // Definição dos módulos do sistema para o Menu Lateral Inteligente
@@ -521,7 +466,6 @@
             { id: 'secao-mural', label: 'Mural de Avisos & Vídeos', icon: 'bi-megaphone', niveisPermitidos: ['admin', 'marketing', 'membro'] },
             { id: 'secao-enquetes-criar', label: 'Criar Enquete', icon: 'bi-bar-chart-plus', niveisPermitidos: ['admin', 'marketing', 'membro'] },
             { id: 'secao-enquetes-lista', label: 'Ver Enquetes', icon: 'bi-graph-up', niveisPermitidos: ['admin', 'marketing', 'membro'] },
-            { id: 'secao-marketing', label: 'Diretores de Marketing', icon: 'bi-camera-video', niveisPermitidos: ['admin', 'marketing'] },
             { id: 'secao-materiais', label: 'Gestão de Materiais', icon: 'bi-box-seam', niveisPermitidos: ['admin', 'membro'] },
             { id: 'secao-eventos', label: 'Eventos e Torneios', icon: 'bi-calendar-event', niveisPermitidos: ['admin', 'membro'] },
             { id: 'secao-alunos-cadastrar', label: 'Cadastrar Aluno', icon: 'bi-person-plus', niveisPermitidos: ['admin'] },
@@ -659,13 +603,11 @@
             let dadosUsuario = baseDeCargos[emailUsuario] || { 
                 nome: emailUsuario.split('@')[0], 
                 cargo: "Membro da Diretoria", 
-                nivel: "membro",
-                foto: "https://via.placeholder.com/60"
+                nivel: "membro"
             };
 
             document.getElementById('user-name-display').textContent = dadosUsuario.nome;
             document.getElementById('user-role-display').textContent = dadosUsuario.cargo;
-            document.getElementById('user-avatar-display').src = dadosUsuario.foto;
 
             // Renderiza o menu lateral inteligente conforme as permissões
             renderizarMenuLateral(emailUsuario, dadosUsuario);
@@ -683,24 +625,16 @@
 
             const cardsAdminGeral = document.querySelectorAll('.card-admin-geral');
             const cardsAdminNaoMarketing = document.querySelectorAll('.card-admin-nao-marketing');
-            const cardAdminMarketing = document.querySelectorAll('.card-admin-marketing');
 
             if (dadosUsuario.nivel === "admin") {
                 cardsAdminGeral.forEach(card => card.style.display = 'block');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'block');
-                cardAdminMarketing.forEach(card => card.style.display = 'block');
-                document.getElementById('foto-mkt-1').src = baseDeCargos["talison@aluno.ifce.edu.br"].foto;
-                document.getElementById('foto-mkt-2').src = baseDeCargos["marketing2@aluno.ifce.edu.br"].foto;
             } else if (dadosUsuario.nivel === "marketing") {
                 cardsAdminGeral.forEach(card => card.style.display = 'none');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'none');
-                cardAdminMarketing.forEach(card => card.style.display = 'block');
-                document.getElementById('foto-mkt-1').src = baseDeCargos["talison@aluno.ifce.edu.br"].foto;
-                document.getElementById('foto-mkt-2').src = baseDeCargos["marketing2@aluno.ifce.edu.br"].foto;
             } else {
                 cardsAdminGeral.forEach(card => card.style.display = 'none');
                 cardsAdminNaoMarketing.forEach(card => card.style.display = 'block');
-                cardAdminMarketing.forEach(card => card.style.display = 'none');
             }
 
             carregarAvisosAdmin();
