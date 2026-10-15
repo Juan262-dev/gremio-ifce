@@ -14,6 +14,11 @@ body{background-color:#f4f6f9}
 .card-custom{border:none;border-radius:10px;box-shadow:0 4px 6px rgba(0,0,0,.05)}
 #portal-aluno{display:none;padding-bottom:100px!important}
 .card-custom{scroll-margin-top:70px}
+#btn-sino{position:relative;background:none;border:0;color:#fff;font-size:22px;line-height:1;padding:4px 8px;order:-1}
+#btn-logout-aluno.d-none ~ #btn-sino{display:none}
+#sino-badge{display:none;position:absolute;top:-2px;right:0;background:#dc3545;color:#fff;border-radius:10px;font-size:10px;padding:1px 5px;font-weight:700}
+#painel-notif{display:none;position:fixed;top:60px;left:8px;right:8px;max-width:380px;margin-left:auto;background:#fff;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,.25);z-index:1045;max-height:70vh;overflow:auto}
+#painel-notif .item-notif{display:block;width:100%;text-align:left;border:0;border-top:1px solid #eee;background:none;padding:12px 14px;font-size:14px}
 #bottom-nav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:1030;background:#fff;border-top:1px solid #dee2e6;box-shadow:0 -2px 10px rgba(0,0,0,.08);overflow-x:auto;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
 #bottom-nav button{flex:1 0 auto;min-width:64px;border:0;background:none;color:#555;font-size:11px;padding:6px 8px;border-radius:10px;display:flex;flex-direction:column;align-items:center}
 #bottom-nav button span{font-size:20px;line-height:1.1}
@@ -78,7 +83,7 @@ body{background-color:#f4f6f9}
 <nav class="navbar navbar-dark navbar-ifce mb-4 sticky-top">
   <div class="container d-flex justify-content-between align-items-center">
     <span class="navbar-brand fw-bold m-0">Portal do Aluno - Grêmio IFCE</span>
-    <button id="btn-logout-aluno" onclick="fazerLogoutAluno()" class="btn btn-outline-light btn-sm d-none">Sair</button>
+    <div class="d-flex align-items-center gap-2"><button id="btn-logout-aluno" onclick="fazerLogoutAluno()" class="btn btn-outline-light btn-sm d-none">Sair</button><button id="btn-sino" type="button" onclick="alternarPainelNotif()" aria-label="Novidades">🔔<span id="sino-badge">0</span></button></div>
   </div>
 </nav>
 
@@ -127,7 +132,18 @@ body{background-color:#f4f6f9}
     <p class="text-muted small mb-3">Mande suas ideias, críticas ou dúvidas para a gestão do Grêmio Estudantil.</p>
     <div class="mb-3"><textarea id="sugestao-texto" class="form-control" rows="3" maxlength="1000" placeholder="Escreva sua sugestão aqui..."></textarea></div>
     <button onclick="enviarSugestao()" class="btn btn-ifce fw-bold w-100">Enviar Sugestão</button>
+    <hr class="my-4">
+    <h6 class="fw-bold mb-2">Minhas sugestões</h6>
+    <div id="lista-minhas-sugestoes"><p class="text-muted small mb-0">Carregando...</p></div>
   </div>
+</div>
+
+<div id="painel-notif">
+  <div class="d-flex justify-content-between align-items-center p-3">
+    <strong>🔔 Novidades</strong>
+    <button class="btn btn-sm btn-outline-success" onclick="marcarLidas()">Marcar como lidas</button>
+  </div>
+  <div id="lista-notif"></div>
 </div>
 
 <nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
@@ -175,6 +191,7 @@ function dataHoraBR(ts) {
 function lista(id, query, vazio, itemFn, wrapper = 'list-group') {
   ouvir(query, snap => {
     const c = document.getElementById(id);
+    if (ganchosNovidades[id]) { novidades[ganchosNovidades[id]] = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderNotificacoes(); }
     if (snap.empty) { c.innerHTML = `<p class="text-muted small mb-0">${vazio}</p>`; return; }
     c.innerHTML = `<div class="${wrapper}">` + snap.docs.map(d => itemFn(d.data(), d.id)).join('') + '</div>';
   });
@@ -278,7 +295,8 @@ function iniciarSessaoAluno() {
   document.getElementById('nome-aluno-display').textContent = usuarioAtual.nome;
   document.getElementById('email-aluno-display').textContent = usuarioAtual.email;
   document.getElementById('aluno-senha-input').value = '';
-  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos();
+  Object.keys(novidades).forEach(k => novidades[k] = []);
+  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarMinhasSugestoes();
 }
 
 /* ---------- Mural ---------- */
@@ -359,7 +377,7 @@ function carregarReivindicacoes() {
     return `
     <div class="list-group-item d-flex justify-content-between align-items-center">
       <div>
-        <h6 class="fw-bold mb-1 text-dark">${esc(p.titulo)}</h6>
+        <h6 class="fw-bold mb-1 text-dark">${esc(p.titulo)} ${badgeStatus(p)}</h6>
         <p class="mb-1 small text-muted">${esc(p.descricao)}</p>
         <small class="text-secondary" style="font-size:11px">Por: ${esc(p.autor || 'Aluno')}</small>
       </div>
@@ -445,6 +463,73 @@ function enviarSugestao() {
     document.getElementById('sugestao-texto').value = '';
   }).catch(() => aviso("Erro ao enviar sugestão.", 'danger'));
 }
+
+/* ---------- status das pautas, minhas sugestões e novidades ---------- */
+const novidades = { avisos: [], eventos: [], enquetes: [], pautas: [], sugestoes: [] };
+const ganchosNovidades = { 'lista-avisos-aluno': 'avisos', 'lista-eventos-aluno': 'eventos', 'lista-enquetes-aluno': 'enquetes', 'lista-reivindicacoes-aluno': 'pautas' };
+function badgeStatus(p) {
+  const st = p.status || 'Em análise';
+  const cor = { 'Em análise': 'bg-secondary', 'Encaminhada': 'bg-primary', 'Resolvida': 'bg-success' }[st] || 'bg-secondary';
+  return `<span class="badge ${cor}">${esc(st)}</span>`;
+}
+function carregarMinhasSugestoes() {
+  ouvir(db.collection('sugestoes').where('email', '==', usuarioAtual.email), snap => {
+    const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .sort((a, b) => (b.criadoEm ? b.criadoEm.toMillis() : Infinity) - (a.criadoEm ? a.criadoEm.toMillis() : Infinity));
+    novidades.sugestoes = docs;
+    renderNotificacoes();
+    const c = document.getElementById('lista-minhas-sugestoes');
+    if (!docs.length) { c.innerHTML = '<p class="text-muted small mb-0">Você ainda não enviou nenhuma sugestão.</p>'; return; }
+    c.innerHTML = '<div class="list-group">' + docs.map(s => `
+      <div class="list-group-item">
+        <p class="mb-1 small text-dark" style="white-space:pre-wrap">${esc(s.texto)}</p>
+        ${s.criadoEm ? `<span class="badge bg-light text-muted border">${esc(dataHoraBR(s.criadoEm))}</span>` : ''}
+        ${s.resposta
+          ? `<div class="alert alert-success py-2 mt-2 mb-0 small">💬 <strong>Resposta${s.respondidaPor ? ' de ' + esc(s.respondidaPor) : ''}:</strong> ${esc(s.resposta)}</div>`
+          : '<span class="badge bg-warning text-dark ms-1">Aguardando resposta</span>'}
+      </div>`).join('') + '</div>';
+  });
+}
+function chaveVisto() { return 'visto:' + usuarioAtual.email; }
+function ultimoVisto() {
+  let v = null;
+  try { v = localStorage.getItem(chaveVisto()); } catch (e) {}
+  if (v === null) { v = String(Date.now()); try { localStorage.setItem(chaveVisto(), v); } catch (e) {} }
+  return Number(v);
+}
+const msDe = ts => (ts && ts.toMillis ? ts.toMillis() : 0);
+function renderNotificacoes() {
+  if (!usuarioAtual) return;
+  const visto = ultimoVisto(), itens = [];
+  novidades.avisos.forEach(a => { if (msDe(a.criadoEm) > visto) itens.push({ t: msDe(a.criadoEm), txt: `📢 Novo aviso: ${a.titulo}`, alvo: 'sec-avisos' }); });
+  novidades.eventos.forEach(e => { if (msDe(e.criadoEm) > visto) itens.push({ t: msDe(e.criadoEm), txt: `📅 Novo evento: ${e.titulo}`, alvo: 'sec-eventos' }); });
+  novidades.enquetes.forEach(e => { if (e.ativa && msDe(e.criadoEm) > visto) itens.push({ t: msDe(e.criadoEm), txt: `📊 Nova enquete: ${e.titulo}`, alvo: 'sec-enquetes' }); });
+  novidades.pautas.forEach(p => { if (msDe(p.statusEm) > visto && (p.apoios || []).includes(usuarioAtual.email)) itens.push({ t: msDe(p.statusEm), txt: `✊ A pauta "${p.titulo}" agora está: ${p.status}`, alvo: 'sec-pautas' }); });
+  novidades.sugestoes.forEach(s => { if (msDe(s.respondidaEm) > visto) itens.push({ t: msDe(s.respondidaEm), txt: '💬 O Grêmio respondeu a sua sugestão', alvo: 'sec-sugestoes' }); });
+  itens.sort((a, b) => b.t - a.t);
+  const badge = document.getElementById('sino-badge');
+  badge.textContent = itens.length > 9 ? '9+' : itens.length;
+  badge.style.display = itens.length ? 'inline-block' : 'none';
+  document.getElementById('lista-notif').innerHTML = itens.length
+    ? itens.map(i => `<button class="item-notif" data-alvo="${i.alvo}">${esc(i.txt)}</button>`).join('')
+    : '<p class="text-muted small px-3 pb-3 mb-0">Nada de novo por enquanto. 🎉</p>';
+}
+function alternarPainelNotif() {
+  const p = document.getElementById('painel-notif');
+  p.style.display = p.style.display === 'block' ? 'none' : 'block';
+}
+function marcarLidas() {
+  try { localStorage.setItem(chaveVisto(), String(Date.now())); } catch (e) {}
+  renderNotificacoes();
+  document.getElementById('painel-notif').style.display = 'none';
+}
+document.getElementById('lista-notif').addEventListener('click', e => {
+  const b = e.target.closest('[data-alvo]');
+  if (!b) return;
+  document.getElementById('painel-notif').style.display = 'none';
+  document.getElementById(b.dataset.alvo).scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
 /* ---------- barra de navegação inferior (celular) ---------- */
 (function () {
   const nav = document.getElementById('bottom-nav');
