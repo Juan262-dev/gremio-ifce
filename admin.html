@@ -384,7 +384,7 @@
             new bootstrap.Toast(el, { delay: 3500 }).show();
         }
         const mostrarAlertaSucesso = msg => toast(msg, 'success');
-        const erroDB = e => { console.error(e); toast('Operação não permitida ou falhou. Tente novamente.', 'danger'); };
+        const erroDB = e => { console.error(e); toast('Operação não permitida ou falhou (' + (e && e.code ? e.code : 'erro') + '). Tente novamente.', 'danger'); };
 
         function confirmar(msg) {
             return new Promise(resolve => {
@@ -745,9 +745,17 @@
 
             db.collection('alunos').doc(email).get().then(async existente => {
                 if (existente.exists && !(await confirmar(`Já existe um aluno com ${email}. Sobrescrever?`))) return;
-                // ATENÇÃO: a senha ainda é salva em texto puro porque o index.html compara com ela.
-                // Migre para Firebase Authentication (veja as instruções) e remova este campo.
-                await db.collection('alunos').doc(email).set({ nome, email, senha, ativo: true });
+                // Cria a conta no Firebase Authentication usando um app secundário,
+                // para não deslogar o admin. A senha NÃO é salva no Firestore.
+                try {
+                    const appSec = firebase.apps.find(a => a.name === 'sec') || firebase.initializeApp(firebaseConfig, 'sec');
+                    await appSec.auth().createUserWithEmailAndPassword(email, senha);
+                    await appSec.auth().signOut();
+                } catch (err) {
+                    if (err.code !== 'auth/email-already-in-use') { console.error(err); toast('Erro ao criar a conta: ' + (err.code || 'desconhecido'), 'danger'); return; }
+                    toast('Esse e-mail já tinha conta; só o cadastro foi atualizado (a senha não mudou).', 'warning');
+                }
+                await db.collection('alunos').doc(email).set({ nome, email, ativo: true });
                 mostrarAlertaSucesso("Aluno cadastrado com sucesso!");
                 registrarAcao('Aluno cadastrado', email);
                 ['cad-nome', 'cad-email', 'cad-senha'].forEach(id => document.getElementById(id).value = '');
