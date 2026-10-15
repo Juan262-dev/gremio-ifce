@@ -46,6 +46,7 @@
         .text-muted-custom { color: var(--ifce-text-muted) !important; }
         #painel-admin { display: none; padding-bottom: 100px !important; }
         .card-custom { scroll-margin-top: 70px; }
+        .card-root { display: none; }
         #bottom-nav { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 1030; background: rgba(24,34,27,.97); border-top: 1px solid var(--ifce-card-border); backdrop-filter: blur(10px); gap: 2px; padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); }
         #bottom-nav button { flex: 1 1 0; border: 0; background: none; color: var(--ifce-text-muted); font-size: 11px; padding: 6px 2px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
         #bottom-nav button i { font-size: 20px; line-height: 1.1; }
@@ -198,6 +199,40 @@
                 </div>
             </div>
 
+            <div id="secao-nova-gestao" class="card card-custom p-4 mb-4 card-root" style="border-color: #f0ad4e;">
+                <h5 class="card-title-chem mb-1" style="color: #f0ad4e;">🔄 Nova Gestão <span class="badge bg-warning text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <p class="text-muted-custom small mb-3">Ferramentas de virada de gestão. Aparecem apenas para o e-mail raiz do sistema.</p>
+
+                <h6 class="fw-bold text-white">1. Trocar a diretoria</h6>
+                <p class="text-muted-custom small mb-2">Uma linha por diretor: <code>Nome;email;cargo;nivel;senha</code> (nível: admin, membro ou marketing; a senha é opcional e só serve para criar a conta de login).</p>
+                <textarea id="ng-lista" class="form-control" rows="4" placeholder="Ana Souza;ana@ifce.edu.br;Presidente;admin;senha123"></textarea>
+                <div class="form-check my-2"><input class="form-check-input" type="checkbox" id="ng-remover" checked><label class="form-check-label small" for="ng-remover">Remover os cargos antigos que não estiverem na lista (o seu nunca é removido)</label></div>
+                <button onclick="trocarDiretoria()" class="btn btn-warning btn-sm fw-bold">Aplicar nova diretoria</button>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+
+                <h6 class="fw-bold text-white">2. Backup da gestão</h6>
+                <p class="text-muted-custom small mb-2">Baixa um arquivo com alunos (sem senhas), pautas, eventos, sugestões, materiais, jogos, enquetes, avisos, cargos e log. Faça isto antes da limpeza.</p>
+                <button onclick="baixarBackup()" class="btn btn-outline-light btn-sm fw-bold">⬇️ Baixar backup</button>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+
+                <h6 class="fw-bold text-white">3. Limpeza para a nova gestão</h6>
+                <p class="text-muted-custom small mb-2">Apaga de forma definitiva só o que você marcar. Os alunos não são mexidos.</p>
+                <div class="form-check"><input class="form-check-input" type="checkbox" data-limpar="mural" id="lm1"><label class="form-check-label small" for="lm1">Todos os avisos do mural</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" data-limpar="eventos" id="lm2"><label class="form-check-label small" for="lm2">Eventos que já passaram (com dia no calendário)</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" data-limpar="jogos" id="lm3"><label class="form-check-label small" for="lm3">Jogos encerrados</label></div>
+                <div class="form-check"><input class="form-check-input" type="checkbox" data-limpar="enquetes" id="lm4"><label class="form-check-label small" for="lm4">Enquetes encerradas</label></div>
+                <div class="form-check mb-2"><input class="form-check-input" type="checkbox" data-limpar="punicoes" id="lm5"><label class="form-check-label small" for="lm5">Punições vencidas</label></div>
+                <button onclick="limparGestao()" class="btn btn-outline-danger btn-sm fw-bold">Apagar o que marquei</button>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+
+                <h6 class="fw-bold text-white">4. Formandos / desativar turma</h6>
+                <p class="text-muted-custom small mb-2">Digite o nome da turma exatamente como está no campo "turma" dos alunos. Todos os alunos dela serão bloqueados.</p>
+                <div class="input-group input-group-sm">
+                    <input type="text" id="ng-turma" class="form-control" placeholder="Ex: 3º Química 2026">
+                    <button onclick="desativarTurma()" class="btn btn-outline-warning">Desativar turma</button>
+                </div>
+            </div>
+
             <div id="secao-diretoria" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-2">🧑‍💼 Diretoria e Cargos</h5>
                 <p class="text-muted-custom small mb-3">Quem está aqui entra no painel. Níveis: <strong>admin</strong> (vê tudo), <strong>membro</strong> (materiais, eventos, jogos) e <strong>marketing</strong> (relatório, mural, enquetes). Para criar a conta de login, preencha a senha (6+ caracteres); se a pessoa já tem conta, deixe em branco.</p>
@@ -229,7 +264,7 @@
                     </div>
                     <div class="col-md-12">
                         <label class="form-label fw-bold">Senha do Aluno (mín. 6 caracteres)</label>
-                        <input type="password" id="cad-senha" class="form-control" placeholder="******" autocomplete="new-password">
+                        <input type="password" id="cad-senha" class="form-control" placeholder="******" autocomplete="new-password"></div><div class="col-md-12"><label class="form-label fw-bold">Turma (opcional)</label><input type="text" id="cad-turma" class="form-control" placeholder="Ex: 3º Química 2026">
                     </div>
                     <div class="col-12 mt-3">
                         <button onclick="cadastrarAluno()" class="btn btn-ifce w-100">Cadastrar Aluno</button>
@@ -379,6 +414,7 @@
         let intervaloContador = null;
         let unsubs = [];
         let painelAberto = false;
+        let emailLogado = '';
         let cacheAlunos = [], cacheSugestoes = [], cachePunidos = [], cachePautas = [], cacheEventos = {};
 
         // IMPORTANTE: isto é só para exibir a interface. A proteção de verdade
@@ -402,6 +438,7 @@
             { id: 'secao-materiais', label: 'Gestão de Materiais', icon: 'bi-box-seam', niveisPermitidos: ['admin', 'membro'] },
             { id: 'secao-eventos', label: 'Eventos e Torneios', icon: 'bi-calendar-event', niveisPermitidos: ['admin', 'membro'] },
             { id: 'secao-jogos', label: 'Placar dos Jogos', icon: 'bi-trophy', niveisPermitidos: ['admin', 'membro'] },
+            { id: 'secao-nova-gestao', label: 'Nova Gestão', icon: 'bi-arrow-repeat', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-diretoria', label: 'Diretoria e Cargos', icon: 'bi-person-badge', niveisPermitidos: ['admin'] },
             { id: 'secao-alunos-cadastrar', label: 'Cadastrar Aluno', icon: 'bi-person-plus', niveisPermitidos: ['admin'] },
             { id: 'secao-alunos-lista', label: 'Alunos Cadastrados', icon: 'bi-people', niveisPermitidos: ['admin'] },
@@ -552,6 +589,7 @@
             document.getElementById('btn-logout-admin').classList.remove('d-none');
 
             const dadosUsuario = dadosCargo;
+            emailLogado = emailUsuario;
             document.getElementById('user-name-display').textContent = dadosUsuario.nome;
             document.getElementById('user-role-display').textContent = dadosUsuario.cargo;
 
@@ -570,6 +608,7 @@
             resetarOpcoes();
 
             const nivel = dadosUsuario.nivel;
+            if (emailUsuario === ROOT_EMAIL) document.getElementById('secao-nova-gestao').style.display = 'block';
             if (nivel === 'admin') {
                 document.querySelectorAll('.card-admin-geral, .card-admin-nao-marketing').forEach(c => c.style.display = 'block');
             } else if (nivel === 'membro') {
@@ -635,7 +674,7 @@
         function renderizarMenuLateral(dadosUsuario) {
             const containerMenu = document.getElementById('itensMenuNav');
             containerMenu.innerHTML = '';
-            modulosSistema.filter(m => m.niveisPermitidos.includes(dadosUsuario.nivel)).forEach(modulo => {
+            modulosSistema.filter(m => m.niveisPermitidos.includes(dadosUsuario.nivel) && (!m.soRaiz || emailLogado === ROOT_EMAIL)).forEach(modulo => {
                 const a = document.createElement('a');
                 a.href = `#${modulo.id}`;
                 a.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary d-flex align-items-center gap-2 py-3';
@@ -838,6 +877,7 @@
             const nome = document.getElementById('cad-nome').value.trim();
             const email = document.getElementById('cad-email').value.trim().toLowerCase();
             const senha = document.getElementById('cad-senha').value.trim();
+            const turma = document.getElementById('cad-turma').value.trim();
 
             if (!nome || !email || !senha) { toast("Preencha todos os campos do aluno!", 'warning'); return; }
             if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { toast("E-mail inválido!", 'warning'); return; }
@@ -855,10 +895,10 @@
                     if (err.code !== 'auth/email-already-in-use') { console.error(err); toast('Erro ao criar a conta: ' + (err.code || 'desconhecido'), 'danger'); return; }
                     toast('Esse e-mail já tinha conta; só o cadastro foi atualizado (a senha não mudou).', 'warning');
                 }
-                await db.collection('alunos').doc(email).set({ nome, email, ativo: true });
+                await db.collection('alunos').doc(email).set({ nome, email, turma, ativo: true });
                 mostrarAlertaSucesso("Aluno cadastrado com sucesso!");
                 registrarAcao('Aluno cadastrado', email);
-                ['cad-nome', 'cad-email', 'cad-senha'].forEach(id => document.getElementById(id).value = '');
+                ['cad-nome', 'cad-email', 'cad-senha', 'cad-turma'].forEach(id => document.getElementById(id).value = '');
             }).catch(e => erroDB(e, 'cadastrarAluno'));
         }
 
@@ -880,7 +920,8 @@
                     <li class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
                         <div>
                             <strong style="font-size: 14px;" class="text-white">${esc(a.nome)}</strong><br>
-                            <small class="text-muted-custom">${esc(a.email)}</small>
+                            <small class="text-muted-custom">${esc(a.email)}</small><br>
+                            <input type="text" class="form-control form-control-sm mt-1" style="max-width: 170px;" placeholder="turma" value="${esc(a.turma || '')}" data-mudar="turmaAluno" data-id="${esc(a.email)}">
                         </div>
                         <div class="d-flex align-items-center gap-2">
                             <span class="badge ${a.ativo ? 'bg-success' : 'bg-danger'}">${a.ativo ? 'Ativo' : 'Bloqueado'}</span>
@@ -1160,6 +1201,126 @@
             });
         }
 
+        /* ================= NOVA GESTÃO (somente o e-mail raiz) ================= */
+
+        function soRaiz() {
+            if (emailLogado !== ROOT_EMAIL) { toast('Função restrita ao e-mail raiz.', 'danger'); return false; }
+            return true;
+        }
+        function paraJSON(v) {
+            if (v && typeof v.toDate === 'function') return v.toDate().toISOString();
+            if (Array.isArray(v)) return v.map(paraJSON);
+            if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, paraJSON(x)]));
+            return v;
+        }
+        async function baixarBackup() {
+            if (!soRaiz()) return;
+            const nomes = ['cargos', 'alunos', 'reivindicacoes', 'eventos', 'sugestoes', 'materiais', 'jogos', 'enquetes', 'mural', 'membros_punidos', 'acoes_admin'];
+            toast('Gerando backup...');
+            try {
+                const out = { geradoEm: new Date().toISOString(), geradoPor: emailLogado };
+                for (const n of nomes) {
+                    const snap = await db.collection(n).get();
+                    out[n] = snap.docs.map(d => { const x = { id: d.id, ...paraJSON(d.data()) }; delete x.senha; return x; });
+                }
+                const url = URL.createObjectURL(new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' }));
+                const a = document.createElement('a');
+                a.href = url; a.download = `backup_gremio_${hojeISO()}.json`;
+                document.body.appendChild(a); a.click(); a.remove();
+                URL.revokeObjectURL(url);
+                registrarAcao('Backup baixado', nomes.length + ' coleções');
+            } catch (e) { erroDB(e, 'baixarBackup'); }
+        }
+        async function apagarEmLotes(refs) {
+            for (let i = 0; i < refs.length; i += 400) {
+                const b = db.batch();
+                refs.slice(i, i + 400).forEach(r => b.delete(r));
+                await b.commit();
+            }
+        }
+        async function limparGestao() {
+            if (!soRaiz()) return;
+            const marcados = [...document.querySelectorAll('[data-limpar]:checked')].map(c => c.dataset.limpar);
+            if (!marcados.length) { toast('Marque o que deseja limpar.', 'warning'); return; }
+            if (!(await confirmar('Isso apaga de forma definitiva o que você marcou. Você já baixou o backup?'))) return;
+            const hoje = hojeISO(), agora = Date.now();
+            const regras = {
+                mural: ['mural', () => true],
+                eventos: ['eventos', d => d.dataISO && d.dataISO < hoje],
+                jogos: ['jogos', d => d.status === 'Encerrado'],
+                enquetes: ['enquetes', d => d.ativa === false],
+                punicoes: ['membros_punidos', d => d.expiraEm && d.expiraEm.toMillis() < agora]
+            };
+            let total = 0;
+            try {
+                for (const m of marcados) {
+                    const [col, filtro] = regras[m];
+                    const snap = await db.collection(col).get();
+                    const alvo = snap.docs.filter(d => filtro(d.data()));
+                    await apagarEmLotes(alvo.map(d => d.ref));
+                    total += alvo.length;
+                }
+                mostrarAlertaSucesso(`${total} item(ns) apagado(s).`);
+                registrarAcao('Limpeza de gestão', `${marcados.join(', ')}: ${total} itens`);
+                document.querySelectorAll('[data-limpar]').forEach(c => c.checked = false);
+                carregarResumo();
+            } catch (e) { erroDB(e, 'limparGestao'); }
+        }
+        async function desativarTurma() {
+            if (!soRaiz()) return;
+            const turma = document.getElementById('ng-turma').value.trim();
+            if (!turma) { toast('Digite o nome da turma.', 'warning'); return; }
+            try {
+                const snap = await db.collection('alunos').where('turma', '==', turma).get();
+                const alvo = snap.docs.filter(d => d.data().ativo);
+                if (!alvo.length) { toast('Nenhum aluno ativo nessa turma.', 'warning'); return; }
+                if (!(await confirmar(`Desativar ${alvo.length} aluno(s) da turma "${turma}"?`))) return;
+                for (let i = 0; i < alvo.length; i += 400) {
+                    const b = db.batch();
+                    alvo.slice(i, i + 400).forEach(d => b.update(d.ref, { ativo: false }));
+                    await b.commit();
+                }
+                mostrarAlertaSucesso(`${alvo.length} aluno(s) da turma "${turma}" desativado(s).`);
+                registrarAcao('Turma desativada', `${turma}: ${alvo.length} alunos`);
+                document.getElementById('ng-turma').value = '';
+            } catch (e) { erroDB(e, 'desativarTurma'); }
+        }
+        async function trocarDiretoria() {
+            if (!soRaiz()) return;
+            const linhas = document.getElementById('ng-lista').value.split('\n').map(l => l.trim()).filter(Boolean);
+            const novos = [];
+            for (const l of linhas) {
+                const [nome, email, cargo, nivel, senha] = l.split(';').map(x => (x || '').trim());
+                const em = (email || '').toLowerCase();
+                if (em === ROOT_EMAIL) continue;
+                if (!nome || !em.includes('@') || !cargo || !['admin', 'membro', 'marketing'].includes(nivel) || (senha && senha.length < 6)) {
+                    toast(`Linha inválida: "${l.slice(0, 40)}". Formato: Nome;email;cargo;nivel;senha`, 'danger'); return;
+                }
+                novos.push({ nome, email: em, cargo, nivel, senha });
+            }
+            if (!novos.length) { toast('Cole pelo menos uma linha.', 'warning'); return; }
+            const remover = document.getElementById('ng-remover').checked;
+            if (!(await confirmar(`Cadastrar ${novos.length} diretor(es)${remover ? ' e REMOVER os cargos antigos' : ''}?`))) return;
+            try {
+                let contas = 0;
+                for (const n of novos) {
+                    if (n.senha && (await criarContaAuth(n.email, n.senha)) === 'criada') contas++;
+                    await db.collection('cargos').doc(n.email).set({ nome: n.nome, cargo: n.cargo, nivel: n.nivel });
+                }
+                let removidos = 0;
+                if (remover) {
+                    const manter = new Set([ROOT_EMAIL, ...novos.map(n => n.email)]);
+                    const snap = await db.collection('cargos').get();
+                    const alvo = snap.docs.filter(d => !manter.has(d.id));
+                    await apagarEmLotes(alvo.map(d => d.ref));
+                    removidos = alvo.length;
+                }
+                mostrarAlertaSucesso(`${novos.length} diretor(es) salvo(s), ${contas} conta(s) criada(s), ${removidos} removido(s).`);
+                registrarAcao('Diretoria trocada', `${novos.length} novos, ${removidos} removidos`);
+                document.getElementById('ng-lista').value = '';
+            } catch (e) { erroDB(e, 'trocarDiretoria'); }
+        }
+
         /* ================= RESUMO ================= */
 
         async function carregarResumo() {
@@ -1326,6 +1487,12 @@
             if (st) {
                 db.collection('reivindicacoes').doc(st.dataset.id).update({ status: st.value, statusEm: firebase.firestore.FieldValue.serverTimestamp() })
                     .then(() => registrarAcao('Status de pauta alterado', `${st.dataset.id} → ${st.value}`)).catch(err => erroDB(err, 'statusPauta'));
+                return;
+            }
+            const tu = e.target.closest('[data-mudar="turmaAluno"]');
+            if (tu) {
+                db.collection('alunos').doc(tu.dataset.id).update({ turma: tu.value.trim() })
+                    .then(() => toast('Turma salva.')).catch(err => erroDB(err, 'turmaAluno'));
                 return;
             }
             const nv = e.target.closest('[data-mudar="nivelCargo"]');
