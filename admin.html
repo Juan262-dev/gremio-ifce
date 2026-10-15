@@ -330,9 +330,11 @@
             appId: "1:30782912737:web:364c0d7ff022"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+        // App separado ('admin'): o login do painel fica isolado do login dos alunos (index.html).
+        // Sem isso, entrar no portal do aluno no mesmo navegador derrubava a sessão do painel.
+        const adminApp = firebase.initializeApp(firebaseConfig, 'admin');
+        const auth = adminApp.auth();
+        const db = adminApp.firestore();
         const TS = firebase.firestore.FieldValue.serverTimestamp;
 
         let intervaloContador = null;
@@ -473,10 +475,12 @@
         document.getElementById('admin-senha').addEventListener('keydown', e => { if (e.key === 'Enter') fazerLoginAdmin(); });
 
         auth.onAuthStateChanged(user => {
-            if (!user || painelAberto) return;
+            if (!user) { if (painelAberto) location.reload(); return; }
+            if (painelAberto) return;
             const email = (user.email || '').toLowerCase();
             if (!baseDeCargos[email]) {
                 mostrarErroLogin("Este e-mail não tem permissão de diretoria.");
+                auth.signOut();
                 return;
             }
             verificarAcessoEAbirPainel(email);
