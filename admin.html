@@ -148,6 +148,14 @@
                 </div>
             </div>
 
+            <div id="secao-resumo" class="card card-custom p-4 mb-4 card-admin-geral">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="card-title-chem m-0">📌 Resumo do Grêmio</h5>
+                    <button onclick="carregarResumo()" class="btn btn-outline-light btn-sm">↻ Atualizar</button>
+                </div>
+                <div id="resumo-grid" class="row g-2"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
             <div id="secao-relatorio" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📝 Escrever Relatório de Atividades</h5>
                 <div class="mb-3">
@@ -188,6 +196,24 @@
                     <button onclick="adicionarCampoOpcao()" class="btn btn-outline-light btn-sm" style="border-radius: 8px;">+ Adicionar Opção</button>
                     <button onclick="criarEnquete()" class="btn btn-ifce ms-auto">Criar Enquete</button>
                 </div>
+            </div>
+
+            <div id="secao-diretoria" class="card card-custom p-4 mb-4 card-admin-geral">
+                <h5 class="card-title-chem mb-2">🧑‍💼 Diretoria e Cargos</h5>
+                <p class="text-muted-custom small mb-3">Quem está aqui entra no painel. Níveis: <strong>admin</strong> (vê tudo), <strong>membro</strong> (materiais, eventos, jogos) e <strong>marketing</strong> (relatório, mural, enquetes). Para criar a conta de login, preencha a senha (6+ caracteres); se a pessoa já tem conta, deixe em branco.</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6"><label class="form-label fw-bold">Nome</label><input type="text" id="dir-nome" class="form-control" placeholder="Nome do diretor"></div>
+                    <div class="col-md-6"><label class="form-label fw-bold">E-mail</label><input type="email" id="dir-email" class="form-control" placeholder="email@ifce.edu.br"></div>
+                    <div class="col-md-6"><label class="form-label fw-bold">Cargo</label><input type="text" id="dir-cargo" class="form-control" placeholder="Ex: Diretor de Esportes"></div>
+                    <div class="col-md-3"><label class="form-label fw-bold">Nível</label><select id="dir-nivel" class="form-select"><option>membro</option><option>marketing</option><option>admin</option></select></div>
+                    <div class="col-md-3"><label class="form-label fw-bold">Senha (opcional)</label><input type="password" id="dir-senha" class="form-control" placeholder="******"></div>
+                </div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button onclick="salvarDiretor()" class="btn btn-ifce">Salvar Diretor</button>
+                    <button data-acao="importarCargos" class="btn btn-outline-light btn-sm">Importar diretoria atual</button>
+                </div>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <div id="lista-diretoria-admin"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
             <div id="secao-alunos-cadastrar" class="card card-custom p-4 mb-4 card-admin-geral">
@@ -247,7 +273,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Data / Hora</label>
-                        <input type="text" id="evento-data" class="form-control" placeholder="Ex: 15/10 - 14h">
+                        <input type="text" id="evento-data" class="form-control" placeholder="Ex: 15/10 - 14h"></div><div class="col-12 mt-2"><label class="form-label fw-bold">Dia no calendário (opcional)</label><input type="date" id="evento-dataiso" class="form-control">
                     </div>
                     <div class="col-12 mt-2">
                         <label class="form-label fw-bold">Descrição</label>
@@ -258,6 +284,19 @@
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <h6 class="fw-bold mb-3 text-white">Eventos Programados</h6>
                 <div id="lista-eventos-admin"><p class="text-muted-custom small">Nenhum evento cadastrado.</p></div>
+            </div>
+
+            <div id="secao-jogos" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
+                <h5 class="card-title-chem mb-3">🏆 Placar dos Jogos</h5>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6"><label class="form-label fw-bold">Torneio / Modalidade</label><input type="text" id="jogo-torneio" class="form-control" placeholder="Ex: Interclasses de Futsal"></div>
+                    <div class="col-md-6"><label class="form-label fw-bold">Data / Hora</label><input type="text" id="jogo-data" class="form-control" placeholder="Ex: 15/10 - 14h"></div>
+                    <div class="col-6"><label class="form-label fw-bold">Time A</label><input type="text" id="jogo-timea" class="form-control" placeholder="1º A"></div>
+                    <div class="col-6"><label class="form-label fw-bold">Time B</label><input type="text" id="jogo-timeb" class="form-control" placeholder="2º B"></div>
+                </div>
+                <button onclick="criarJogo()" class="btn btn-ifce">Adicionar Jogo</button>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <div id="lista-jogos-admin"><p class="text-muted-custom small">Nenhum jogo cadastrado.</p></div>
             </div>
 
             <div id="secao-enquetes-lista" class="card card-custom p-4 mb-4">
@@ -344,7 +383,8 @@
 
         // IMPORTANTE: isto é só para exibir a interface. A proteção de verdade
         // precisa estar nas Firestore Security Rules (veja firestore.rules).
-        const baseDeCargos = {
+        const ROOT_EMAIL = 'kevin.silva10@aluno.ifce.edu.br';
+        const cargosIniciais = {
             "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
             "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente", nivel: "admin" },
@@ -354,12 +394,15 @@
         };
 
         const modulosSistema = [
+            { id: 'secao-resumo', label: 'Resumo', icon: 'bi-speedometer2', niveisPermitidos: ['admin'] },
             { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro'] },
             { id: 'secao-mural', label: 'Mural de Avisos & Vídeos', icon: 'bi-megaphone', niveisPermitidos: ['admin', 'marketing', 'membro'] },
             { id: 'secao-enquetes-criar', label: 'Criar Enquete', icon: 'bi-bar-chart-plus', niveisPermitidos: ['admin', 'marketing', 'membro'] },
             { id: 'secao-enquetes-lista', label: 'Ver Enquetes', icon: 'bi-graph-up', niveisPermitidos: ['admin', 'marketing', 'membro'] },
             { id: 'secao-materiais', label: 'Gestão de Materiais', icon: 'bi-box-seam', niveisPermitidos: ['admin', 'membro'] },
             { id: 'secao-eventos', label: 'Eventos e Torneios', icon: 'bi-calendar-event', niveisPermitidos: ['admin', 'membro'] },
+            { id: 'secao-jogos', label: 'Placar dos Jogos', icon: 'bi-trophy', niveisPermitidos: ['admin', 'membro'] },
+            { id: 'secao-diretoria', label: 'Diretoria e Cargos', icon: 'bi-person-badge', niveisPermitidos: ['admin'] },
             { id: 'secao-alunos-cadastrar', label: 'Cadastrar Aluno', icon: 'bi-person-plus', niveisPermitidos: ['admin'] },
             { id: 'secao-alunos-lista', label: 'Alunos Cadastrados', icon: 'bi-people', niveisPermitidos: ['admin'] },
             { id: 'secao-sugestoes', label: 'Sugestões dos Alunos', icon: 'bi-lightbulb', niveisPermitidos: ['admin'] },
@@ -478,15 +521,18 @@
             if (!user) { if (painelAberto) location.reload(); return; }
             if (painelAberto) return;
             const email = (user.email || '').toLowerCase();
-            if (!baseDeCargos[email]) {
-                mostrarErroLogin("Este e-mail não tem permissão de diretoria.");
-                auth.signOut();
-                return;
-            }
-            verificarAcessoEAbirPainel(email);
+            const semCargo = () => { mostrarErroLogin("Este e-mail não tem cargo no painel. Peça à presidência para cadastrar."); auth.signOut(); };
+            db.collection('cargos').doc(email).get().then(doc => {
+                let dados = doc.exists ? doc.data() : null;
+                if (!dados && email === ROOT_EMAIL) dados = cargosIniciais[ROOT_EMAIL];
+                if (!dados) { semCargo(); return; }
+                verificarAcessoEAbirPainel(email, dados);
+            }).catch(() => {
+                if (email === ROOT_EMAIL) verificarAcessoEAbirPainel(email, cargosIniciais[ROOT_EMAIL]); else semCargo();
+            });
         });
 
-        function verificarAcessoEAbirPainel(emailUsuario) {
+        function verificarAcessoEAbirPainel(emailUsuario, dadosCargo) {
             if (painelAberto) return;
             painelAberto = true;
             db.collection('membros_punidos').doc(emailUsuario).get().then(docPunido => {
@@ -496,16 +542,16 @@
                     const expiraEm = p.expiraEm ? p.expiraEm.toMillis() : 0;
                     if (expiraEm > Date.now()) dadosPunicao = p;
                 }
-                abrirPainelAdmin(emailUsuario, dadosPunicao);
-            }).catch(() => abrirPainelAdmin(emailUsuario, null));
+                abrirPainelAdmin(emailUsuario, dadosCargo, dadosPunicao);
+            }).catch(() => abrirPainelAdmin(emailUsuario, dadosCargo, null));
         }
 
-        function abrirPainelAdmin(emailUsuario, dadosPunicao) {
+        function abrirPainelAdmin(emailUsuario, dadosCargo, dadosPunicao) {
             document.getElementById('tela-login-admin').style.display = 'none';
             document.getElementById('painel-admin').style.display = 'block';
             document.getElementById('btn-logout-admin').classList.remove('d-none');
 
-            const dadosUsuario = baseDeCargos[emailUsuario];
+            const dadosUsuario = dadosCargo;
             document.getElementById('user-name-display').textContent = dadosUsuario.nome;
             document.getElementById('user-role-display').textContent = dadosUsuario.cargo;
 
@@ -538,9 +584,12 @@
                 carregarPautasAdmin();
                 carregarMembrosPunidosAdmin();
                 carregarAuditoria();
+                carregarResumo();
+                carregarDiretoria();
             }
             if (nivel !== 'marketing') {
                 carregarMateriaisAdmin();
+                carregarJogosAdmin();
                 carregarEventosAdmin();
             }
         }
@@ -983,29 +1032,157 @@
             }).catch(e => erroDB(e, 'cadastrarMaterial'));
         }
 
+        const hojeISO = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+        const dataBR = iso => (iso ? iso.split('-').reverse().join('/') : '');
+
+        /* ================= MATERIAIS: pedido -> aprovação -> devolução ================= */
+
         function carregarMateriaisAdmin() {
             ouvir(db.collection('materiais').orderBy('criadoEm', 'desc'), snapshot => {
                 const container = document.getElementById('lista-materiais-admin');
                 if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum material cadastrado.</p>'; return; }
-                let html = '<ul class="list-group">';
-                snapshot.forEach(doc => {
-                    const m = doc.data();
-                    const disp = m.status === 'Disponível';
-                    html += `
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong class="text-white">${esc(m.nome)}</strong> (${esc(m.qtd)})
-                                <span class="badge ${disp ? 'bg-success' : 'bg-warning text-dark'}">${esc(m.status)}</span><br>
-                                ${!disp ? `<small class="text-muted-custom">Com: ${esc(m.emprestadoPara)}</small>` : ''}
-                            </div>
-                            <div class="d-flex gap-1">
-                                ${!disp ? `<button data-acao="devolverMaterial" data-id="${esc(doc.id)}" data-titulo="${esc(m.nome)}" class="btn btn-outline-success btn-sm py-0" style="font-size: 11px;">Devolvido</button>` : ''}
-                                <button data-acao="excluirMaterial" data-id="${esc(doc.id)}" data-titulo="${esc(m.nome)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
-                            </div>
+                const hoje = hojeISO();
+                const prazoPadrao = new Date(Date.now() + 2 * 864e5 - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+                container.innerHTML = '<ul class="list-group">' + snapshot.docs.map(doc => {
+                    const m = doc.data(), id = esc(doc.id), nome = esc(m.nome);
+                    const disp = m.status === 'Disponível', pedido = m.status === 'Solicitado';
+                    const atrasado = m.devolverAte && m.devolverAte < hoje && !disp && !pedido;
+                    const badge = disp ? 'bg-success' : pedido ? 'bg-info text-dark' : 'bg-warning text-dark';
+                    const aprovar = pedido ? `
+                        <div class="d-flex gap-1 mt-2 align-items-center flex-wrap">
+                            <input type="date" class="form-control form-control-sm" style="max-width: 150px;" data-prazo="${id}" value="${prazoPadrao}">
+                            <button data-acao="aprovarMaterial" data-id="${id}" data-titulo="${nome}" class="btn btn-success btn-sm py-0" style="font-size: 11px;">Aprovar</button>
+                            <button data-acao="recusarMaterial" data-id="${id}" data-titulo="${nome}" class="btn btn-outline-warning btn-sm py-0" style="font-size: 11px;">Recusar</button>
+                        </div>` : '';
+                    return `
+                        <li class="list-group-item">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <strong class="text-white">${nome}</strong> (${esc(m.qtd)})
+                                    <span class="badge ${badge}">${esc(m.status)}</span>${atrasado ? ' <span class="badge bg-danger">Atrasado</span>' : ''}<br>
+                                    ${!disp ? `<small class="text-muted-custom">Com: ${esc(m.emprestadoPara)}${m.devolverAte ? ' • devolver até ' + esc(dataBR(m.devolverAte)) : ''}</small>` : ''}
+                                </div>
+                                <div class="d-flex gap-1">
+                                    ${(!disp && !pedido) ? `<button data-acao="devolverMaterial" data-id="${id}" data-titulo="${nome}" class="btn btn-outline-success btn-sm py-0" style="font-size: 11px;">Devolvido</button>` : ''}
+                                    <button data-acao="excluirMaterial" data-id="${id}" data-titulo="${nome}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                                </div>
+                            </div>${aprovar}
                         </li>`;
-                });
-                container.innerHTML = html + '</ul>';
+                }).join('') + '</ul>';
             });
+        }
+
+        /* ================= JOGOS / PLACAR ================= */
+
+        function criarJogo() {
+            const g = id => document.getElementById(id).value.trim();
+            const torneio = g('jogo-torneio'), data = g('jogo-data'), timeA = g('jogo-timea'), timeB = g('jogo-timeb');
+            if (!torneio || !timeA || !timeB) { toast('Preencha torneio e os dois times!', 'warning'); return; }
+            db.collection('jogos').add({ torneio, data, timeA, timeB, placarA: 0, placarB: 0, status: 'Agendado', criadoEm: TS() })
+                .then(() => {
+                    mostrarAlertaSucesso('Jogo adicionado!');
+                    registrarAcao('Jogo criado', `${timeA} x ${timeB} (${torneio})`);
+                    ['jogo-torneio', 'jogo-data', 'jogo-timea', 'jogo-timeb'].forEach(i => document.getElementById(i).value = '');
+                }).catch(e => erroDB(e, 'criarJogo'));
+        }
+        function carregarJogosAdmin() {
+            ouvir(db.collection('jogos').orderBy('criadoEm', 'desc'), snap => {
+                const c = document.getElementById('lista-jogos-admin');
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum jogo cadastrado.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + snap.docs.map(d => {
+                    const j = d.data(), id = esc(d.id);
+                    return `
+                    <div class="list-group-item">
+                        <small class="text-muted-custom">${esc(j.torneio)}${j.data ? ' • ' + esc(j.data) : ''}</small>
+                        <div class="d-flex align-items-center gap-2 my-2">
+                            <strong class="flex-grow-1 text-end">${esc(j.timeA)}</strong>
+                            <input type="number" min="0" class="form-control form-control-sm text-center" style="width: 64px;" data-pa="${id}" value="${Number(j.placarA) || 0}">
+                            <span>x</span>
+                            <input type="number" min="0" class="form-control form-control-sm text-center" style="width: 64px;" data-pb="${id}" value="${Number(j.placarB) || 0}">
+                            <strong class="flex-grow-1">${esc(j.timeB)}</strong>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center flex-wrap">
+                            <select class="form-select form-select-sm" style="max-width: 170px;" data-st="${id}">
+                                ${['Agendado', 'Em andamento', 'Encerrado'].map(x => `<option ${x === j.status ? 'selected' : ''}>${x}</option>`).join('')}
+                            </select>
+                            <button data-acao="salvarJogo" data-id="${id}" class="btn btn-success btn-sm py-0" style="font-size: 11px;">Salvar placar</button>
+                            <button data-acao="excluirJogo" data-id="${id}" class="btn btn-outline-danger btn-sm py-0 ms-auto" style="font-size: 11px;">Excluir</button>
+                        </div>
+                    </div>`;
+                }).join('') + '</div>';
+            });
+        }
+
+        /* ================= DIRETORIA E CARGOS ================= */
+
+        async function criarContaAuth(email, senha) {
+            const appSec = firebase.apps.find(a => a.name === 'sec') || firebase.initializeApp(firebaseConfig, 'sec');
+            try {
+                await appSec.auth().createUserWithEmailAndPassword(email, senha);
+                await appSec.auth().signOut();
+                return 'criada';
+            } catch (err) {
+                if (err.code === 'auth/email-already-in-use') return 'existia';
+                throw err;
+            }
+        }
+        async function salvarDiretor() {
+            const g = id => document.getElementById(id).value.trim();
+            const nome = g('dir-nome'), email = g('dir-email').toLowerCase(), cargo = g('dir-cargo'), nivel = g('dir-nivel'), senha = document.getElementById('dir-senha').value;
+            if (!nome || !email || !cargo) { toast('Preencha nome, e-mail e cargo!', 'warning'); return; }
+            if (senha && senha.length < 6) { toast('A senha precisa ter 6+ caracteres.', 'warning'); return; }
+            try {
+                let msg = '';
+                if (senha) msg = (await criarContaAuth(email, senha)) === 'criada' ? ' Conta de login criada.' : ' (a conta já existia; a senha não mudou)';
+                await db.collection('cargos').doc(email).set({ nome, cargo, nivel });
+                mostrarAlertaSucesso(`${nome} salvo como ${nivel}.${msg}`);
+                registrarAcao('Diretor salvo', `${email} (${nivel})`);
+                ['dir-nome', 'dir-email', 'dir-cargo', 'dir-senha'].forEach(i => document.getElementById(i).value = '');
+            } catch (e) { erroDB(e, 'salvarDiretor'); }
+        }
+        function carregarDiretoria() {
+            ouvir(db.collection('cargos'), snap => {
+                const c = document.getElementById('lista-diretoria-admin');
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum cargo no banco ainda. Toque em "Importar diretoria atual".</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + snap.docs.map(d => {
+                    const x = d.data(), raiz = d.id === ROOT_EMAIL, id = esc(d.id);
+                    return `
+                    <div class="list-group-item d-flex justify-content-between align-items-center gap-2">
+                        <div><strong class="text-white">${esc(x.nome)}</strong> <small class="text-muted-custom">— ${esc(x.cargo)}</small><br><small class="text-muted-custom">${id}</small></div>
+                        <div class="d-flex gap-1 align-items-center">
+                            <select data-mudar="nivelCargo" data-id="${id}" class="form-select form-select-sm" style="width: auto;" ${raiz ? 'disabled' : ''}>
+                                ${['admin', 'membro', 'marketing'].map(n => `<option ${n === x.nivel ? 'selected' : ''}>${n}</option>`).join('')}
+                            </select>
+                            ${raiz ? '' : `<button data-acao="removerCargo" data-id="${id}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Remover</button>`}
+                        </div>
+                    </div>`;
+                }).join('') + '</div>';
+            });
+        }
+
+        /* ================= RESUMO ================= */
+
+        async function carregarResumo() {
+            const grid = document.getElementById('resumo-grid');
+            try {
+                const q = c => db.collection(c).get().then(s => s.docs.map(d => d.data()));
+                const [al, pa, su, ev, ma, en, jo] = await Promise.all(['alunos', 'reivindicacoes', 'sugestoes', 'eventos', 'materiais', 'enquetes', 'jogos'].map(q));
+                const hoje = hojeISO();
+                const itens = [
+                    ['🎓', 'Alunos ativos', al.filter(a => a.ativo).length],
+                    ['✊', 'Pautas em aberto', pa.filter(p => (p.status || 'Em análise') !== 'Resolvida').length],
+                    ['💡', 'Sugestões sem resposta', su.filter(x => !x.resposta).length],
+                    ['📅', 'Próximos eventos', ev.filter(e => !e.dataISO || e.dataISO >= hoje).length],
+                    ['🎲', 'Pedidos de material', ma.filter(m => m.status === 'Solicitado').length],
+                    ['⏰', 'Devoluções atrasadas', ma.filter(m => m.devolverAte && m.devolverAte < hoje && m.status === 'Emprestado').length],
+                    ['📊', 'Enquetes ativas', en.filter(e => e.ativa).length],
+                    ['🏆', 'Jogos agendados', jo.filter(j => j.status !== 'Encerrado').length]
+                ];
+                grid.innerHTML = itens.map(([ic, t, n]) => `
+                    <div class="col-6 col-md-3"><div class="p-3 rounded text-center" style="background: #121a14; border: 1px solid var(--ifce-card-border);">
+                        <div style="font-size: 1.4rem;">${ic}</div><div class="fw-bold fs-4" style="color: var(--ifce-accent-green);">${n}</div><div class="small text-muted-custom">${t}</div>
+                    </div></div>`).join('');
+            } catch (e) { grid.innerHTML = '<p class="text-muted-custom small mb-0">Não foi possível carregar o resumo.</p>'; console.error(e); }
         }
 
         /* ================= EVENTOS ================= */
@@ -1017,11 +1194,11 @@
             if (!titulo || !data) { toast("Preencha título e data do evento!", 'warning'); return; }
 
             db.collection('eventos').add({
-                titulo, data, descricao, inscritos: [], criadoEm: TS()
+                titulo, data, descricao, dataISO: document.getElementById('evento-dataiso').value || '', inscritos: [], criadoEm: TS()
             }).then(() => {
                 mostrarAlertaSucesso("Evento publicado com sucesso!");
                 registrarAcao('Evento criado', titulo);
-                ['evento-titulo', 'evento-data', 'evento-descricao'].forEach(id => document.getElementById(id).value = '');
+                ['evento-titulo', 'evento-data', 'evento-dataiso', 'evento-descricao'].forEach(id => document.getElementById(id).value = '');
             }).catch(e => erroDB(e, 'criarEvento'));
         }
 
@@ -1090,10 +1267,38 @@
                     respondidaEm: firebase.firestore.FieldValue.serverTimestamp()
                 }).then(() => { toast('Resposta enviada ao aluno!'); registrarAcao('Sugestão respondida', id); }).catch(e => erroDB(e, 'responderSugestao'));
             },
+            aprovarMaterial: (id, el) => {
+                const inp = document.querySelector(`[data-prazo="${CSS.escape(id)}"]`);
+                const prazo = inp ? inp.value : '';
+                if (!prazo) { toast('Escolha o prazo de devolução.', 'warning'); return; }
+                db.collection('materiais').doc(id).update({ status: 'Emprestado', devolverAte: prazo })
+                    .then(() => registrarAcao('Empréstimo aprovado', `${el.dataset.titulo} até ${prazo}`)).catch(e => erroDB(e, 'aprovarMaterial'));
+            },
+            recusarMaterial: (id, el) => db.collection('materiais').doc(id).update({ status: 'Disponível', emprestadoPara: '', devolverAte: '' })
+                .then(() => registrarAcao('Empréstimo recusado', el.dataset.titulo)).catch(e => erroDB(e, 'recusarMaterial')),
+            salvarJogo: (id) => {
+                const num = sel => Math.max(0, parseInt(document.querySelector(sel).value, 10) || 0);
+                const q = CSS.escape(id);
+                db.collection('jogos').doc(id).update({
+                    placarA: num(`[data-pa="${q}"]`), placarB: num(`[data-pb="${q}"]`),
+                    status: document.querySelector(`[data-st="${q}"]`).value
+                }).then(() => toast('Placar salvo!')).catch(e => erroDB(e, 'salvarJogo'));
+            },
+            excluirJogo: async id => { if (await confirmar("Excluir este jogo?")) db.collection('jogos').doc(id).delete().catch(e => erroDB(e, 'excluirJogo')); },
+            removerCargo: async id => {
+                if (await confirmar(`Remover ${id} da diretoria? A pessoa perde o acesso ao painel.`))
+                    db.collection('cargos').doc(id).delete().then(() => registrarAcao('Diretor removido', id)).catch(e => erroDB(e, 'removerCargo'));
+            },
+            importarCargos: async () => {
+                if (!(await confirmar("Importar a diretoria atual (lista do código) para o banco?"))) return;
+                const batch = db.batch();
+                Object.entries(cargosIniciais).forEach(([email, d]) => batch.set(db.collection('cargos').doc(email), d));
+                batch.commit().then(() => { toast('Diretoria importada!'); registrarAcao('Diretoria importada', Object.keys(cargosIniciais).length + ' cargos'); }).catch(e => erroDB(e, 'importarCargos'));
+            },
             excluirSugestao: async id => { if (await confirmar("Apagar esta sugestão?")) db.collection('sugestoes').doc(id).delete().catch(e => erroDB(e, 'excluirSugestao')); },
             excluirPauta: async id => { if (await confirmar("Excluir esta pauta?")) db.collection('reivindicacoes').doc(id).delete().then(() => registrarAcao('Pauta excluída', id)).catch(e => erroDB(e, 'excluirPauta')); },
             removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(e => erroDB(e, 'removerPunicao')); },
-            devolverMaterial: (id, el) => db.collection('materiais').doc(id).update({ status: 'Disponível', emprestadoPara: '' }).then(() => registrarAcao('Material devolvido', el.dataset.titulo)).catch(e => erroDB(e, 'devolverMaterial')),
+            devolverMaterial: (id, el) => db.collection('materiais').doc(id).update({ status: 'Disponível', emprestadoPara: '', devolverAte: '' }).then(() => registrarAcao('Material devolvido', el.dataset.titulo)).catch(e => erroDB(e, 'devolverMaterial')),
             excluirMaterial: async (id, el) => { if (await confirmar("Excluir este material?")) db.collection('materiais').doc(id).delete().then(() => registrarAcao('Material excluído', el.dataset.titulo)).catch(e => erroDB(e, 'excluirMaterial')); },
             excluirEvento: async (id, el) => { if (await confirmar("Excluir este evento?")) db.collection('eventos').doc(id).delete().then(() => registrarAcao('Evento excluído', el.dataset.titulo)).catch(e => erroDB(e, 'excluirEvento')); },
             exportarPautas: () => {
@@ -1117,10 +1322,17 @@
         });
 
         document.addEventListener('change', e => {
-            const el = e.target.closest('[data-mudar="statusPauta"]');
-            if (!el) return;
-            db.collection('reivindicacoes').doc(el.dataset.id).update({ status: el.value, statusEm: firebase.firestore.FieldValue.serverTimestamp() })
-                .then(() => registrarAcao('Status de pauta alterado', `${el.dataset.id} → ${el.value}`)).catch(e => erroDB(e, 'statusPauta'));
+            const st = e.target.closest('[data-mudar="statusPauta"]');
+            if (st) {
+                db.collection('reivindicacoes').doc(st.dataset.id).update({ status: st.value, statusEm: firebase.firestore.FieldValue.serverTimestamp() })
+                    .then(() => registrarAcao('Status de pauta alterado', `${st.dataset.id} → ${st.value}`)).catch(err => erroDB(err, 'statusPauta'));
+                return;
+            }
+            const nv = e.target.closest('[data-mudar="nivelCargo"]');
+            if (nv) {
+                db.collection('cargos').doc(nv.dataset.id).update({ nivel: nv.value })
+                    .then(() => registrarAcao('Nível de cargo alterado', `${nv.dataset.id} → ${nv.value}`)).catch(err => erroDB(err, 'nivelCargo'));
+            }
         });
     </script>
 </body>

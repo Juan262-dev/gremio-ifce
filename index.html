@@ -127,6 +127,11 @@ body{background-color:#f4f6f9}
     <div id="lista-eventos-aluno"><p class="text-muted small">Carregando eventos...</p></div>
   </div>
 
+  <div id="sec-jogos" class="card card-custom p-4 mb-4">
+    <h5 class="fw-bold mb-3" style="color:var(--ifce-green)">🏆 Placar dos Jogos</h5>
+    <div id="lista-jogos-aluno"><p class="text-muted small">Carregando jogos...</p></div>
+  </div>
+
   <div id="sec-sugestoes" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">💡 Enviando Sugestões ao Grêmio</h5>
     <p class="text-muted small mb-3">Mande suas ideias, críticas ou dúvidas para a gestão do Grêmio Estudantil.</p>
@@ -146,7 +151,7 @@ body{background-color:#f4f6f9}
   <div id="lista-notif"></div>
 </div>
 
-<nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
+<nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
 <div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100000;width:100%;max-width:420px;margin-bottom:72px"></div>
 
@@ -296,7 +301,7 @@ function iniciarSessaoAluno() {
   document.getElementById('email-aluno-display').textContent = usuarioAtual.email;
   document.getElementById('aluno-senha-input').value = '';
   Object.keys(novidades).forEach(k => novidades[k] = []);
-  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarMinhasSugestoes();
+  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarJogos(); carregarMinhasSugestoes();
 }
 
 /* ---------- Mural ---------- */
@@ -397,42 +402,77 @@ function apoiarPauta(id) {
 }
 
 /* ---------- Materiais ---------- */
+const hojeISO = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+const dataBR = iso => (iso ? iso.split('-').reverse().join('/') : '');
 function carregarMateriais() {
   lista('lista-materiais-aluno', db.collection('materiais').orderBy('criadoEm', 'desc'), 'Nenhum material cadastrado para empréstimo.', (m, id) => {
-    const disp = m.status === 'Disponível';
+    const meu = (m.emprestadoPara || '').includes(usuarioAtual.email);
+    const hoje = hojeISO();
+    let acao;
+    if (m.status === 'Disponível') acao = `<button data-id="${esc(id)}" data-nome="${esc(m.nome)}" onclick="solicitarMaterial(this.dataset.id, this.dataset.nome)" class="btn btn-outline-success btn-sm fw-bold">Solicitar</button>`;
+    else if (m.status === 'Solicitado' && meu) acao = '<small class="text-primary fw-bold">⏳ Aguardando aprovação</small>';
+    else if (m.status === 'Emprestado' && meu) acao = `<small class="${m.devolverAte && m.devolverAte < hoje ? 'text-danger' : 'text-success'} fw-bold">Devolver até ${esc(dataBR(m.devolverAte))}</small>`;
+    else acao = '<small class="text-muted">Em uso</small>';
+    const rotulo = m.status === 'Disponível' ? 'Disponível' : m.status === 'Solicitado' ? 'Aguardando' : 'Em uso';
     return `
     <div class="list-group-item d-flex justify-content-between align-items-center">
       <div>
         <strong class="text-dark">${esc(m.nome)}</strong> (${esc(m.qtd)})<br>
-        <span class="badge ${disp ? 'bg-success' : 'bg-secondary'}">${esc(m.status)}</span>
+        <span class="badge ${m.status === 'Disponível' ? 'bg-success' : 'bg-secondary'}">${rotulo}</span>
       </div>
-      ${disp ? `<button data-id="${esc(id)}" data-nome="${esc(m.nome)}" onclick="solicitarMaterial(this.dataset.id, this.dataset.nome)" class="btn btn-outline-success btn-sm fw-bold">Solicitar</button>` : '<small class="text-muted">Em uso</small>'}
+      ${acao}
     </div>`;
   });
 }
 function solicitarMaterial(id, nome) {
-  if (!confirm(`Deseja solicitar o empréstimo de: ${nome}?`)) return;
+  if (!confirm(`Deseja solicitar o empréstimo de: ${nome}? A diretoria vai aprovar e definir o prazo.`)) return;
   const ref = db.collection('materiais').doc(id);
   db.runTransaction(async t => {
     const doc = await t.get(ref);
     if (!doc.exists || doc.data().status !== 'Disponível') throw "Esse material acabou de ser pego por outra pessoa.";
-    t.update(ref, { status: 'Reservado/Em uso', emprestadoPara: `${usuarioAtual.nome} (${usuarioAtual.email})` });
-  }).then(() => aviso("Solicitação realizada! Dirija-se à sala do Grêmio para pegar o material.", 'success'))
+    t.update(ref, { status: 'Solicitado', emprestadoPara: `${usuarioAtual.nome} (${usuarioAtual.email})` });
+  }).then(() => aviso("Pedido enviado! Aguarde a aprovação do Grêmio.", 'success'))
     .catch(err => aviso(typeof err === 'string' ? err : "Erro ao solicitar material.", 'danger'));
 }
-
-/* ---------- Eventos ---------- */
 function carregarEventos() {
-  lista('lista-eventos-aluno', db.collection('eventos').orderBy('criadoEm', 'desc'), 'Nenhum evento programado no momento.', (ev, id) => {
-    const ja = (ev.inscritos || []).includes(usuarioAtual.email);
+  ouvir(db.collection('eventos').orderBy('criadoEm', 'desc'), snap => {
+    const todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    novidades.eventos = todos; renderNotificacoes();
+    const c = document.getElementById('lista-eventos-aluno');
+    if (!todos.length) { c.innerHTML = '<p class="text-muted small mb-0">Nenhum evento programado no momento.</p>'; return; }
+    const hoje = hojeISO();
+    const proximos = todos.filter(e => e.dataISO && e.dataISO >= hoje).sort((a, b) => a.dataISO.localeCompare(b.dataISO));
+    const semData = todos.filter(e => !e.dataISO);
+    const passados = todos.filter(e => e.dataISO && e.dataISO < hoje).sort((a, b) => b.dataISO.localeCompare(a.dataISO));
+    c.innerHTML = '<div class="list-group">' + [...proximos, ...semData, ...passados].map(ev => {
+      const ja = (ev.inscritos || []).includes(usuarioAtual.email);
+      const passou = ev.dataISO && ev.dataISO < hoje;
+      return `
+      <div class="list-group-item" ${passou ? 'style="opacity:.6"' : ''}>
+        <div class="d-flex justify-content-between align-items-start mb-1">
+          <h6 class="fw-bold text-success mb-0">${esc(ev.titulo)} ${passou ? '<span class="badge bg-secondary">Encerrado</span>' : ''}</h6>
+          <span class="badge bg-info text-dark">📅 ${esc(ev.data || dataBR(ev.dataISO))}</span>
+        </div>
+        <p class="mb-2 small text-dark">${esc(ev.descricao)}</p>
+        <button data-id="${esc(ev.id)}" ${passou ? 'disabled' : ''} onclick="inscreverEvento(this.dataset.id)" class="btn btn-sm ${ja || passou ? 'btn-secondary' : 'btn-ifce'} fw-bold">${ja ? '✅ Inscrito' : 'Fazer Inscrição'}</button>
+      </div>`;
+    }).join('') + '</div>';
+  });
+}
+function carregarJogos() {
+  lista('lista-jogos-aluno', db.collection('jogos').orderBy('criadoEm', 'desc'), 'Nenhum jogo cadastrado.', j => {
+    const cor = { 'Agendado': 'bg-secondary', 'Em andamento': 'bg-warning text-dark', 'Encerrado': 'bg-success' }[j.status] || 'bg-secondary';
     return `
     <div class="list-group-item">
-      <div class="d-flex justify-content-between align-items-start mb-1">
-        <h6 class="fw-bold text-success mb-0">${esc(ev.titulo)}</h6>
-        <span class="badge bg-info text-dark">📅 ${esc(ev.data)}</span>
+      <div class="d-flex justify-content-between align-items-center">
+        <small class="text-muted">${esc(j.torneio)}${j.data ? ' • ' + esc(j.data) : ''}</small>
+        <span class="badge ${cor}">${esc(j.status)}</span>
       </div>
-      <p class="mb-2 small text-dark">${esc(ev.descricao)}</p>
-      <button data-id="${esc(id)}" onclick="inscreverEvento(this.dataset.id)" class="btn btn-sm ${ja ? 'btn-secondary' : 'btn-ifce'} fw-bold">${ja ? '✅ Inscrito' : 'Fazer Inscrição'}</button>
+      <div class="d-flex align-items-center justify-content-center gap-3 mt-2">
+        <strong class="flex-grow-1 text-end">${esc(j.timeA)}</strong>
+        <span class="fs-4 fw-bold text-success">${Number(j.placarA) || 0} x ${Number(j.placarB) || 0}</span>
+        <strong class="flex-grow-1">${esc(j.timeB)}</strong>
+      </div>
     </div>`;
   });
 }
