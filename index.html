@@ -12,7 +12,12 @@ body{background-color:#f4f6f9}
 .btn-ifce{background-color:var(--ifce-green);color:#fff}
 .btn-ifce:hover{background-color:#236b37;color:#fff}
 .card-custom{border:none;border-radius:10px;box-shadow:0 4px 6px rgba(0,0,0,.05)}
-#portal-aluno{display:none}
+#portal-aluno{display:none;padding-bottom:100px!important}
+.card-custom{scroll-margin-top:70px}
+#bottom-nav{display:none;position:fixed;left:0;right:0;bottom:0;z-index:1030;background:#fff;border-top:1px solid #dee2e6;box-shadow:0 -2px 10px rgba(0,0,0,.08);overflow-x:auto;gap:2px;padding:6px 6px calc(6px + env(safe-area-inset-bottom))}
+#bottom-nav button{flex:1 0 auto;min-width:64px;border:0;background:none;color:#555;font-size:11px;padding:6px 8px;border-radius:10px;display:flex;flex-direction:column;align-items:center}
+#bottom-nav button span{font-size:20px;line-height:1.1}
+#bottom-nav button.ativo{background:#e6f4ea;color:var(--ifce-green);font-weight:700}
 #screen-onboarding{position:fixed;inset:0;background-color:var(--ifce-dark);background-image:radial-gradient(circle at 50% 30%,#1e2922 0%,#0d120f 70%),radial-gradient(rgba(45,134,71,.1) 1px,transparent 0);background-size:100% 100%,30px 30px;color:#fff;z-index:99999;display:flex;flex-direction:column;justify-content:space-between;align-items:center;padding:30px 20px 20px;overflow:hidden}
 .top-logo-chem{font-size:1.2rem;font-weight:800;color:var(--ifce-accent-green);text-transform:uppercase;letter-spacing:2px;margin-top:10px;text-shadow:0 0 12px rgba(0,230,118,.4)}
 .slides-wrapper-chem{width:100%;flex:1;display:flex;transition:transform .4s cubic-bezier(.25,1,.5,1)}
@@ -70,7 +75,7 @@ body{background-color:#f4f6f9}
   </div>
 </div>
 
-<nav class="navbar navbar-dark navbar-ifce mb-4">
+<nav class="navbar navbar-dark navbar-ifce mb-4 sticky-top">
   <div class="container d-flex justify-content-between align-items-center">
     <span class="navbar-brand fw-bold m-0">Portal do Aluno - Grêmio IFCE</span>
     <button id="btn-logout-aluno" onclick="fazerLogoutAluno()" class="btn btn-outline-light btn-sm d-none">Sair</button>
@@ -83,17 +88,17 @@ body{background-color:#f4f6f9}
     <small class="text-muted" id="email-aluno-display"></small>
   </div>
 
-  <div class="card card-custom p-4 mb-4">
+  <div id="sec-avisos" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-3" style="color:var(--ifce-green)">📢 Mural de Avisos</h5>
     <div id="lista-avisos-aluno"><p class="text-muted small">Carregando avisos...</p></div>
   </div>
 
-  <div class="card card-custom p-4 mb-4">
+  <div id="sec-enquetes" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-3" style="color:var(--ifce-green)">📊 Enquetes e Votações</h5>
     <div id="lista-enquetes-aluno"><p class="text-muted small">Carregando enquetes...</p></div>
   </div>
 
-  <div class="card card-custom p-4 mb-4">
+  <div id="sec-pautas" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">✊ Reivindicações dos Alunos</h5>
     <p class="text-muted small mb-3">Crie ou apoie pautas para melhorias no campus. O Grêmio levará as pautas mais apoiadas à Direção.</p>
     <div class="mb-3 p-3 bg-light rounded border">
@@ -105,19 +110,19 @@ body{background-color:#f4f6f9}
     <div id="lista-reivindicacoes-aluno"><p class="text-muted small">Carregando reivindicações...</p></div>
   </div>
 
-  <div class="card card-custom p-4 mb-4">
+  <div id="sec-materiais" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🎲 Empréstimo de Materiais</h5>
     <p class="text-muted small mb-3">Solicite jogos, bolas e equipamentos disponíveis no Grêmio para uso nos intervalos.</p>
     <div id="lista-materiais-aluno"><p class="text-muted small">Carregando materiais disponíveis...</p></div>
   </div>
 
-  <div class="card card-custom p-4 mb-4">
+  <div id="sec-eventos" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">📅 Eventos e Torneios</h5>
     <p class="text-muted small mb-3">Inscreva-se nos campeonatos, oficinas e eventos organizados pelo Grêmio.</p>
     <div id="lista-eventos-aluno"><p class="text-muted small">Carregando eventos...</p></div>
   </div>
 
-  <div class="card card-custom p-4 mb-4">
+  <div id="sec-sugestoes" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">💡 Enviando Sugestões ao Grêmio</h5>
     <p class="text-muted small mb-3">Mande suas ideias, críticas ou dúvidas para a gestão do Grêmio Estudantil.</p>
     <div class="mb-3"><textarea id="sugestao-texto" class="form-control" rows="3" maxlength="1000" placeholder="Escreva sua sugestão aqui..."></textarea></div>
@@ -125,7 +130,9 @@ body{background-color:#f4f6f9}
   </div>
 </div>
 
-<div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100000;width:100%;max-width:420px"></div>
+<nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
+
+<div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100000;width:100%;max-width:420px;margin-bottom:72px"></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -235,6 +242,7 @@ auth.onAuthStateChanged(async user => {
     limparListeners();
     document.getElementById('screen-onboarding').style.display = 'flex';
     document.getElementById('portal-aluno').style.display = 'none';
+    document.getElementById('bottom-nav').style.display = 'none';
     document.getElementById('btn-logout-aluno').classList.add('d-none');
     return;
   }
@@ -265,6 +273,7 @@ function iniciarSessaoAluno() {
   limparListeners();
   document.getElementById('screen-onboarding').style.display = 'none';
   document.getElementById('portal-aluno').style.display = 'block';
+  document.getElementById('bottom-nav').style.display = 'flex';
   document.getElementById('btn-logout-aluno').classList.remove('d-none');
   document.getElementById('nome-aluno-display').textContent = usuarioAtual.nome;
   document.getElementById('email-aluno-display').textContent = usuarioAtual.email;
@@ -436,6 +445,23 @@ function enviarSugestao() {
     document.getElementById('sugestao-texto').value = '';
   }).catch(() => aviso("Erro ao enviar sugestão.", 'danger'));
 }
+/* ---------- barra de navegação inferior (celular) ---------- */
+(function () {
+  const nav = document.getElementById('bottom-nav');
+  nav.addEventListener('click', e => {
+    const b = e.target.closest('button[data-alvo]');
+    if (b) document.getElementById(b.dataset.alvo).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+  const obs = new IntersectionObserver(entradas => {
+    entradas.forEach(en => {
+      if (!en.isIntersecting) return;
+      nav.querySelectorAll('button').forEach(b => b.classList.toggle('ativo', b.dataset.alvo === en.target.id));
+      const ativo = nav.querySelector('button.ativo');
+      if (ativo) ativo.scrollIntoView({ inline: 'center', block: 'nearest' });
+    });
+  }, { rootMargin: '-35% 0px -55% 0px' });
+  nav.querySelectorAll('button').forEach(b => obs.observe(document.getElementById(b.dataset.alvo)));
+})();
 </script>
 </body>
 </html>

@@ -44,7 +44,12 @@
         .btn-wpp:hover { background-color: #1ebe5d; color: #000; }
         .list-group-item { background-color: #121a14; border: 1px solid var(--ifce-card-border); color: #fff; border-radius: 10px !important; margin-bottom: 8px; }
         .text-muted-custom { color: var(--ifce-text-muted) !important; }
-        #painel-admin { display: none; }
+        #painel-admin { display: none; padding-bottom: 100px !important; }
+        .card-custom { scroll-margin-top: 70px; }
+        #bottom-nav { display: none; position: fixed; left: 0; right: 0; bottom: 0; z-index: 1030; background: rgba(24,34,27,.97); border-top: 1px solid var(--ifce-card-border); backdrop-filter: blur(10px); gap: 2px; padding: 6px 6px calc(6px + env(safe-area-inset-bottom)); }
+        #bottom-nav button { flex: 1 1 0; border: 0; background: none; color: var(--ifce-text-muted); font-size: 11px; padding: 6px 2px; border-radius: 10px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
+        #bottom-nav button i { font-size: 20px; line-height: 1.1; }
+        #bottom-nav button.ativo { background: rgba(0,230,118,.12); color: var(--ifce-accent-green); font-weight: 700; }
         /* Cards restritos começam ESCONDIDOS; o JS só mostra para quem tem permissão */
         .card-admin-geral, .card-admin-nao-marketing { display: none; }
         #toast-container { position: fixed; top: 70px; right: 12px; left: 12px; z-index: 20000; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
@@ -66,6 +71,7 @@
     </nav>
 
     <div id="toast-container"></div>
+    <nav id="bottom-nav" aria-label="Atalhos do painel"></nav>
 
     <!-- Modal de confirmação (substitui confirm()) -->
     <div class="modal fade" id="modalConfirmar" tabindex="-1" aria-hidden="true">
@@ -508,6 +514,7 @@
 
             document.getElementById('btn-menu-lateral').classList.remove('d-none');
             renderizarMenuLateral(dadosUsuario);
+            renderizarBarraInferior(dadosUsuario.nivel);
             resetarOpcoes();
 
             const nivel = dadosUsuario.nivel;
@@ -530,6 +537,44 @@
                 carregarMateriaisAdmin();
                 carregarEventosAdmin();
             }
+        }
+
+        const atalhosPorNivel = {
+            admin: ['secao-mural', 'secao-enquetes-lista', 'secao-alunos-lista', 'secao-pautas'],
+            membro: ['secao-mural', 'secao-materiais', 'secao-eventos', 'secao-enquetes-lista'],
+            marketing: ['secao-relatorio', 'secao-mural', 'secao-enquetes-criar', 'secao-enquetes-lista']
+        };
+        const nomesCurtos = {
+            'secao-mural': 'Mural', 'secao-enquetes-lista': 'Enquetes', 'secao-alunos-lista': 'Alunos', 'secao-pautas': 'Pautas',
+            'secao-materiais': 'Materiais', 'secao-eventos': 'Eventos', 'secao-relatorio': 'Relatório', 'secao-enquetes-criar': 'Nova enquete'
+        };
+        let observadorBarra = null;
+        function renderizarBarraInferior(nivel) {
+            const bar = document.getElementById('bottom-nav');
+            bar.innerHTML = '';
+            if (observadorBarra) observadorBarra.disconnect();
+            observadorBarra = new IntersectionObserver(entradas => {
+                entradas.forEach(en => {
+                    if (en.isIntersecting) bar.querySelectorAll('button[data-alvo]').forEach(b => b.classList.toggle('ativo', b.dataset.alvo === en.target.id));
+                });
+            }, { rootMargin: '-35% 0px -55% 0px' });
+            (atalhosPorNivel[nivel] || []).forEach(id => {
+                const m = modulosSistema.find(x => x.id === id);
+                const el = document.getElementById(id);
+                if (!m || !el) return;
+                const b = document.createElement('button');
+                b.type = 'button'; b.dataset.alvo = id;
+                b.innerHTML = `<i class="bi ${m.icon}"></i><span>${esc(nomesCurtos[id] || m.label)}</span>`;
+                b.onclick = () => el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                bar.appendChild(b);
+                observadorBarra.observe(el);
+            });
+            const mais = document.createElement('button');
+            mais.type = 'button';
+            mais.setAttribute('data-bs-toggle', 'offcanvas'); mais.setAttribute('data-bs-target', '#sidebarMenu');
+            mais.innerHTML = '<i class="bi bi-list"></i><span>Mais</span>';
+            bar.appendChild(mais);
+            bar.style.display = 'flex';
         }
 
         function renderizarMenuLateral(dadosUsuario) {
