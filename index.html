@@ -143,6 +143,12 @@ body{background-color:#f4f6f9}
   </div>
 </div>
 
+<div id="manutencao" style="display:none;position:fixed;inset:0;z-index:100001;background:#121814;color:#fff;align-items:center;justify-content:center;text-align:center;padding:30px;flex-direction:column">
+  <div style="font-size:4rem">🛠️</div>
+  <h2 class="fw-bold mt-2">Portal em manutenção</h2>
+  <p id="manutencao-msg" class="text-secondary" style="max-width:340px">Voltamos em breve.</p>
+</div>
+
 <div id="painel-notif">
   <div class="d-flex justify-content-between align-items-center p-3">
     <strong>🔔 Novidades</strong>
@@ -301,6 +307,11 @@ function iniciarSessaoAluno() {
   document.getElementById('email-aluno-display').textContent = usuarioAtual.email;
   document.getElementById('aluno-senha-input').value = '';
   Object.keys(novidades).forEach(k => novidades[k] = []);
+  ouvir(db.collection('config').doc('sistema'), doc => {
+    const d = doc.exists ? doc.data() : {};
+    document.getElementById('manutencao-msg').textContent = d.mensagem || 'Voltamos em breve.';
+    document.getElementById('manutencao').style.display = d.manutencao ? 'flex' : 'none';
+  });
   carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarJogos(); carregarMinhasSugestoes();
 }
 

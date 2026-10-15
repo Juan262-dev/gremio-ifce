@@ -199,6 +199,36 @@
                 </div>
             </div>
 
+            <div id="secao-ti" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🛠️ Ferramentas de TI <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <p class="text-muted-custom small mb-3">Manutenção do sistema. Aparece apenas para o e-mail raiz.</p>
+
+                <h6 class="fw-bold text-white">1. Diagnóstico do sistema</h6>
+                <p class="text-muted-custom small mb-2">Testa a leitura de cada coleção (acha problema de regras), mostra o seu acesso e avisa se ainda há senhas em texto puro.</p>
+                <button onclick="rodarDiagnostico()" class="btn btn-outline-info btn-sm fw-bold">▶ Rodar diagnóstico</button>
+                <div id="ti-diag" class="mt-3 small"></div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">2. Redefinir senha de alguém</h6>
+                <p class="text-muted-custom small mb-2">Envia ao e-mail um link para a pessoa criar uma senha nova (aluno ou diretor).</p>
+                <div class="input-group">
+                    <input type="email" id="ti-reset-email" class="form-control" placeholder="email@aluno.ifce.edu.br">
+                    <button onclick="redefinirSenha()" class="btn btn-outline-info">Enviar link</button>
+                </div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">3. Modo manutenção</h6>
+                <p class="text-muted-custom small mb-2">Quando ligado, os alunos veem uma tela de "em manutenção" e o banco recusa os acessos deles. A diretoria continua entrando. Status: <span id="ti-manut-status">...</span></p>
+                <input type="text" id="ti-manut-msg" class="form-control mb-2" maxlength="200" placeholder="Mensagem para os alunos (opcional)">
+                <button id="ti-manut-btn" onclick="alternarManutencao()" class="btn btn-outline-warning btn-sm fw-bold">Ativar manutenção</button>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">4. Restaurar backup</h6>
+                <p class="text-muted-custom small mb-2">Escolha um arquivo gerado em "Baixar backup". Os dados são regravados por cima dos atuais (nada é apagado). O log de ações não é restaurado e as contas de login dos alunos não são recriadas.</p>
+                <input type="file" id="ti-arquivo" accept=".json,application/json" class="form-control mb-2">
+                <button onclick="restaurarBackup()" class="btn btn-outline-danger btn-sm fw-bold">Restaurar</button>
+            </div>
+
             <div id="secao-nova-gestao" class="card card-custom p-4 mb-4 card-root" style="border-color: #f0ad4e;">
                 <h5 class="card-title-chem mb-1" style="color: #f0ad4e;">🔄 Nova Gestão <span class="badge bg-warning text-dark ms-1" style="font-size: 10px;">só você</span></h5>
                 <p class="text-muted-custom small mb-3">Ferramentas de virada de gestão. Aparecem apenas para o e-mail raiz do sistema.</p>
@@ -438,6 +468,7 @@
             { id: 'secao-materiais', label: 'Gestão de Materiais', icon: 'bi-box-seam', niveisPermitidos: ['admin', 'membro'] },
             { id: 'secao-eventos', label: 'Eventos e Torneios', icon: 'bi-calendar-event', niveisPermitidos: ['admin', 'membro'] },
             { id: 'secao-jogos', label: 'Placar dos Jogos', icon: 'bi-trophy', niveisPermitidos: ['admin', 'membro'] },
+            { id: 'secao-ti', label: 'Ferramentas de TI', icon: 'bi-tools', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-nova-gestao', label: 'Nova Gestão', icon: 'bi-arrow-repeat', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-diretoria', label: 'Diretoria e Cargos', icon: 'bi-person-badge', niveisPermitidos: ['admin'] },
             { id: 'secao-alunos-cadastrar', label: 'Cadastrar Aluno', icon: 'bi-person-plus', niveisPermitidos: ['admin'] },
@@ -608,7 +639,7 @@
             resetarOpcoes();
 
             const nivel = dadosUsuario.nivel;
-            if (emailUsuario === ROOT_EMAIL) document.getElementById('secao-nova-gestao').style.display = 'block';
+            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; carregarManutencao(); }
             if (nivel === 'admin') {
                 document.querySelectorAll('.card-admin-geral, .card-admin-nao-marketing').forEach(c => c.style.display = 'block');
             } else if (nivel === 'membro') {
@@ -1231,6 +1262,100 @@
                 registrarAcao('Backup baixado', nomes.length + ' coleções');
             } catch (e) { erroDB(e, 'baixarBackup'); }
         }
+        /* ================= FERRAMENTAS DE TI (só o e-mail raiz) ================= */
+
+        async function rodarDiagnostico() {
+            if (!soRaiz()) return;
+            const out = document.getElementById('ti-diag');
+            out.textContent = 'Testando...';
+            const nomes = ['cargos', 'alunos', 'reivindicacoes', 'eventos', 'sugestoes', 'materiais', 'jogos', 'enquetes', 'mural', 'membros_punidos', 'acoes_admin', 'config'];
+            const linhas = [`<div class="mb-2">👤 <strong>${esc(emailLogado)}</strong> • cargo: <strong>${esc(document.getElementById('user-role-display').textContent)}</strong></div>`];
+            let problemas = 0;
+            for (const n of nomes) {
+                const t0 = performance.now();
+                try {
+                    const snap = await db.collection(n).limit(500).get();
+                    linhas.push(`<div>✅ ${n} — ${snap.size} doc(s) • ${Math.round(performance.now() - t0)} ms</div>`);
+                    if (n === 'alunos') {
+                        const comSenha = snap.docs.filter(d => d.data().senha !== undefined).length;
+                        const semAtivo = snap.docs.filter(d => d.data().ativo === undefined).length;
+                        if (comSenha) { problemas++; linhas.push(`<div class="text-warning">⚠️ ${comSenha} aluno(s) ainda com senha em texto puro no banco. Rode o migrar_alunos.js.</div>`); }
+                        if (semAtivo) { problemas++; linhas.push(`<div class="text-warning">⚠️ ${semAtivo} aluno(s) sem o campo "ativo" (não conseguem entrar).</div>`); }
+                    }
+                } catch (e) {
+                    problemas++;
+                    linhas.push(`<div class="text-danger">❌ ${n} — ${esc(e.code || 'erro')}</div>`);
+                }
+            }
+            linhas.push(problemas ? `<div class="mt-2 text-warning fw-bold">${problemas} ponto(s) de atenção.</div>` : '<div class="mt-2 text-success fw-bold">Tudo certo! 🎉</div>');
+            out.innerHTML = linhas.join('');
+        }
+
+        async function redefinirSenha() {
+            if (!soRaiz()) return;
+            const email = document.getElementById('ti-reset-email').value.trim().toLowerCase();
+            if (!email || !email.includes('@')) { toast('Digite um e-mail válido.', 'warning'); return; }
+            try {
+                await auth.sendPasswordResetEmail(email);
+                toast('Link enviado para ' + email + '. Peça para olhar o spam também.');
+                registrarAcao('Redefinição de senha enviada', email);
+                document.getElementById('ti-reset-email').value = '';
+            } catch (e) { erroDB(e, 'redefinirSenha'); }
+        }
+
+        function carregarManutencao() {
+            ouvir(db.collection('config').doc('sistema'), doc => {
+                const d = doc.exists ? doc.data() : {};
+                document.getElementById('ti-manut-status').innerHTML = d.manutencao ? '🔴 <strong>LIGADO</strong>' : '🟢 desligado';
+                document.getElementById('ti-manut-btn').textContent = d.manutencao ? 'Desativar manutenção' : 'Ativar manutenção';
+                const campo = document.getElementById('ti-manut-msg');
+                if (document.activeElement !== campo) campo.value = d.mensagem || '';
+            });
+        }
+        async function alternarManutencao() {
+            if (!soRaiz()) return;
+            try {
+                const ref = db.collection('config').doc('sistema');
+                const snap = await ref.get();
+                const ligar = !(snap.exists && snap.data().manutencao === true);
+                if (!(await confirmar(ligar ? 'Ligar a manutenção? Os alunos ficam sem acesso até você desligar.' : 'Desligar a manutenção e liberar os alunos?'))) return;
+                await ref.set({ manutencao: ligar, mensagem: document.getElementById('ti-manut-msg').value.trim(), por: emailLogado, em: TS() }, { merge: true });
+                registrarAcao(ligar ? 'Manutenção ligada' : 'Manutenção desligada', '');
+            } catch (e) { erroDB(e, 'alternarManutencao'); }
+        }
+
+        const CAMPOS_DATA = ['criadoEm', 'expiraEm', 'punidoEm', 'em', 'statusEm', 'respondidaEm'];
+        function deJSON(o) {
+            const r = { ...o };
+            delete r.id; delete r.senha;
+            CAMPOS_DATA.forEach(k => { if (typeof r[k] === 'string' && !isNaN(Date.parse(r[k]))) r[k] = firebase.firestore.Timestamp.fromDate(new Date(r[k])); });
+            return r;
+        }
+        async function restaurarBackup() {
+            if (!soRaiz()) return;
+            const arq = document.getElementById('ti-arquivo').files[0];
+            if (!arq) { toast('Escolha o arquivo de backup (.json).', 'warning'); return; }
+            let dados;
+            try { dados = JSON.parse(await arq.text()); } catch (e) { toast('Arquivo inválido.', 'danger'); return; }
+            const nomes = ['cargos', 'alunos', 'reivindicacoes', 'eventos', 'sugestoes', 'materiais', 'jogos', 'enquetes', 'mural', 'membros_punidos'];
+            const total = nomes.reduce((t, n) => t + (Array.isArray(dados[n]) ? dados[n].length : 0), 0);
+            if (!total) { toast('Esse arquivo não tem dados para restaurar.', 'warning'); return; }
+            if (!(await confirmar(`Restaurar ${total} registro(s) do backup de ${String(dados.geradoEm || '').slice(0, 10)}? Eles substituem os atuais com o mesmo ID.`))) return;
+            try {
+                for (const n of nomes) {
+                    const docs = (Array.isArray(dados[n]) ? dados[n] : []).filter(d => d && d.id);
+                    for (let i = 0; i < docs.length; i += 400) {
+                        const b = db.batch();
+                        docs.slice(i, i + 400).forEach(d => b.set(db.collection(n).doc(d.id), deJSON(d), { merge: true }));
+                        await b.commit();
+                    }
+                }
+                mostrarAlertaSucesso(`${total} registro(s) restaurado(s).`);
+                registrarAcao('Backup restaurado', `${total} registros`);
+                document.getElementById('ti-arquivo').value = '';
+            } catch (e) { erroDB(e, 'restaurarBackup'); }
+        }
+
         async function apagarEmLotes(refs) {
             for (let i = 0; i < refs.length; i += 400) {
                 const b = db.batch();
