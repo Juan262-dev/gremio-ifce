@@ -390,7 +390,7 @@
             new bootstrap.Toast(el, { delay: 3500 }).show();
         }
         const mostrarAlertaSucesso = msg => toast(msg, 'success');
-        const erroDB = e => { console.error(e); toast('Operação não permitida ou falhou (' + (e && e.code ? e.code : 'erro') + '). Tente novamente.', 'danger'); };
+        const erroDB = (e, onde) => { console.error(onde, e); toast('Operação não permitida ou falhou (' + (e && e.code ? e.code : 'erro') + (onde ? ' em ' + onde : '') + '). Tente novamente.', 'danger'); };
 
         function confirmar(msg) {
             return new Promise(resolve => {
@@ -424,7 +424,9 @@
         function ouvir(query, callback) {
             unsubs.push(query.onSnapshot(callback, err => {
                 console.error(err);
-                toast('Sem permissão ou erro ao carregar dados.', 'danger');
+                let onde = '';
+                try { onde = query._delegate._query.path.canonicalString(); } catch (_) {}
+                toast('Sem permissão ou erro ao carregar dados (' + (err && err.code ? err.code : 'erro') + (onde ? ' em ' + onde : '') + ').', 'danger');
             }));
         }
         function limparListeners() {
@@ -704,7 +706,7 @@
                 registrarAcao('Enquete criada', titulo);
                 document.getElementById('enquete-titulo').value = '';
                 resetarOpcoes();
-            }).catch(erroDB);
+            }).catch(e => erroDB(e, 'criarEnquete'));
         }
 
         function carregarEnquetesAdmin() {
@@ -752,7 +754,7 @@
                 registrarAcao('Aviso publicado', titulo);
                 document.getElementById('aviso-titulo').value = '';
                 document.getElementById('aviso-mensagem').value = '';
-            }).catch(erroDB);
+            }).catch(e => erroDB(e, 'publicarAviso'));
         }
 
         function carregarAvisosAdmin() {
@@ -804,7 +806,7 @@
                 mostrarAlertaSucesso("Aluno cadastrado com sucesso!");
                 registrarAcao('Aluno cadastrado', email);
                 ['cad-nome', 'cad-email', 'cad-senha'].forEach(id => document.getElementById(id).value = '');
-            }).catch(erroDB);
+            }).catch(e => erroDB(e, 'cadastrarAluno'));
         }
 
         function carregarAlunos() {
@@ -927,7 +929,7 @@
                 mostrarAlertaSucesso(`Punição aplicada a ${email} (${textoTempo})!`);
                 registrarAcao('Punição aplicada', `${email} | ${tipo} | ${textoTempo} | ${motivo}`);
                 ['punicao-email', 'punicao-tipo', 'punicao-tempo-texto', 'punicao-motivo'].forEach(id => document.getElementById(id).value = '');
-            }).catch(erroDB);
+            }).catch(e => erroDB(e, 'aplicarPunicaoMembro'));
         }
 
         function carregarMembrosPunidosAdmin() {
@@ -974,7 +976,7 @@
                 registrarAcao('Material cadastrado', nome);
                 document.getElementById('mat-nome').value = '';
                 document.getElementById('mat-qtd').value = '';
-            }).catch(erroDB);
+            }).catch(e => erroDB(e, 'cadastrarMaterial'));
         }
 
         function carregarMateriaisAdmin() {
@@ -1016,7 +1018,7 @@
                 mostrarAlertaSucesso("Evento publicado com sucesso!");
                 registrarAcao('Evento criado', titulo);
                 ['evento-titulo', 'evento-data', 'evento-descricao'].forEach(id => document.getElementById(id).value = '');
-            }).catch(erroDB);
+            }).catch(e => erroDB(e, 'criarEvento'));
         }
 
         function carregarEventosAdmin() {
@@ -1069,11 +1071,11 @@
         /* ================= AÇÕES (delegação de eventos, sem onclick inline com dados) ================= */
 
         const acoes = {
-            excluirAviso: async (id, el) => { if (await confirmar("Excluir este aviso?")) db.collection('mural').doc(id).delete().then(() => registrarAcao('Aviso excluído', el.dataset.titulo)).catch(erroDB); },
-            excluirEnquete: async (id, el) => { if (await confirmar("Excluir esta enquete?")) db.collection('enquetes').doc(id).delete().then(() => registrarAcao('Enquete excluída', el.dataset.titulo)).catch(erroDB); },
-            alternarEnquete: (id, el) => db.collection('enquetes').doc(id).update({ ativa: el.dataset.valor === 'true' }).catch(erroDB),
-            alternarAluno: (id, el) => { const bloq = el.dataset.valor === 'false'; db.collection('alunos').doc(id).update({ ativo: !bloq }).then(() => registrarAcao(bloq ? 'Aluno bloqueado' : 'Aluno desbloqueado', id)).catch(erroDB); },
-            excluirAluno: async id => { if (await confirmar(`Excluir o aluno ${id}?`)) db.collection('alunos').doc(id).delete().then(() => registrarAcao('Aluno excluído', id)).catch(erroDB); },
+            excluirAviso: async (id, el) => { if (await confirmar("Excluir este aviso?")) db.collection('mural').doc(id).delete().then(() => registrarAcao('Aviso excluído', el.dataset.titulo)).catch(e => erroDB(e, 'excluirAviso')); },
+            excluirEnquete: async (id, el) => { if (await confirmar("Excluir esta enquete?")) db.collection('enquetes').doc(id).delete().then(() => registrarAcao('Enquete excluída', el.dataset.titulo)).catch(e => erroDB(e, 'excluirEnquete')); },
+            alternarEnquete: (id, el) => db.collection('enquetes').doc(id).update({ ativa: el.dataset.valor === 'true' }).catch(e => erroDB(e, 'alternarEnquete')),
+            alternarAluno: (id, el) => { const bloq = el.dataset.valor === 'false'; db.collection('alunos').doc(id).update({ ativo: !bloq }).then(() => registrarAcao(bloq ? 'Aluno bloqueado' : 'Aluno desbloqueado', id)).catch(e => erroDB(e, 'alternarAluno')); },
+            excluirAluno: async id => { if (await confirmar(`Excluir o aluno ${id}?`)) db.collection('alunos').doc(id).delete().then(() => registrarAcao('Aluno excluído', id)).catch(e => erroDB(e, 'excluirAluno')); },
             responderSugestao: id => {
                 const inp = document.querySelector(`[data-resp="${CSS.escape(id)}"]`);
                 const texto = inp ? inp.value.trim() : '';
@@ -1082,14 +1084,14 @@
                     resposta: texto,
                     respondidaPor: document.getElementById('user-name-display').textContent,
                     respondidaEm: firebase.firestore.FieldValue.serverTimestamp()
-                }).then(() => { toast('Resposta enviada ao aluno!'); registrarAcao('Sugestão respondida', id); }).catch(erroDB);
+                }).then(() => { toast('Resposta enviada ao aluno!'); registrarAcao('Sugestão respondida', id); }).catch(e => erroDB(e, 'responderSugestao'));
             },
-            excluirSugestao: async id => { if (await confirmar("Apagar esta sugestão?")) db.collection('sugestoes').doc(id).delete().catch(erroDB); },
-            excluirPauta: async id => { if (await confirmar("Excluir esta pauta?")) db.collection('reivindicacoes').doc(id).delete().then(() => registrarAcao('Pauta excluída', id)).catch(erroDB); },
-            removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(erroDB); },
-            devolverMaterial: (id, el) => db.collection('materiais').doc(id).update({ status: 'Disponível', emprestadoPara: '' }).then(() => registrarAcao('Material devolvido', el.dataset.titulo)).catch(erroDB),
-            excluirMaterial: async (id, el) => { if (await confirmar("Excluir este material?")) db.collection('materiais').doc(id).delete().then(() => registrarAcao('Material excluído', el.dataset.titulo)).catch(erroDB); },
-            excluirEvento: async (id, el) => { if (await confirmar("Excluir este evento?")) db.collection('eventos').doc(id).delete().then(() => registrarAcao('Evento excluído', el.dataset.titulo)).catch(erroDB); },
+            excluirSugestao: async id => { if (await confirmar("Apagar esta sugestão?")) db.collection('sugestoes').doc(id).delete().catch(e => erroDB(e, 'excluirSugestao')); },
+            excluirPauta: async id => { if (await confirmar("Excluir esta pauta?")) db.collection('reivindicacoes').doc(id).delete().then(() => registrarAcao('Pauta excluída', id)).catch(e => erroDB(e, 'excluirPauta')); },
+            removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(e => erroDB(e, 'removerPunicao')); },
+            devolverMaterial: (id, el) => db.collection('materiais').doc(id).update({ status: 'Disponível', emprestadoPara: '' }).then(() => registrarAcao('Material devolvido', el.dataset.titulo)).catch(e => erroDB(e, 'devolverMaterial')),
+            excluirMaterial: async (id, el) => { if (await confirmar("Excluir este material?")) db.collection('materiais').doc(id).delete().then(() => registrarAcao('Material excluído', el.dataset.titulo)).catch(e => erroDB(e, 'excluirMaterial')); },
+            excluirEvento: async (id, el) => { if (await confirmar("Excluir este evento?")) db.collection('eventos').doc(id).delete().then(() => registrarAcao('Evento excluído', el.dataset.titulo)).catch(e => erroDB(e, 'excluirEvento')); },
             exportarPautas: () => {
                 if (!cachePautas.length) { toast("Não há pautas para exportar.", 'warning'); return; }
                 baixarCSV('pautas.csv', [['Título', 'Descrição', 'Autor', 'Apoios', 'Status']]
@@ -1114,7 +1116,7 @@
             const el = e.target.closest('[data-mudar="statusPauta"]');
             if (!el) return;
             db.collection('reivindicacoes').doc(el.dataset.id).update({ status: el.value, statusEm: firebase.firestore.FieldValue.serverTimestamp() })
-                .then(() => registrarAcao('Status de pauta alterado', `${el.dataset.id} → ${el.value}`)).catch(erroDB);
+                .then(() => registrarAcao('Status de pauta alterado', `${el.dataset.id} → ${el.value}`)).catch(e => erroDB(e, 'statusPauta'));
         });
     </script>
 </body>
