@@ -88,6 +88,7 @@ body{background-color:#f4f6f9}
 </nav>
 
 <div class="container pb-5" id="portal-aluno" style="max-width:800px">
+  <div id="banner-portal" class="alert alert-warning text-center fw-bold mb-3 py-2" style="display:none"></div>
   <div class="card card-custom p-3 mb-4 bg-success-subtle border-0">
     <h5 class="fw-bold mb-1" style="color:var(--ifce-green)">Olá, <span id="nome-aluno-display">Aluno</span>! 👋</h5>
     <small class="text-muted" id="email-aluno-display"></small>
@@ -311,6 +312,14 @@ function iniciarSessaoAluno() {
     const d = doc.exists ? doc.data() : {};
     document.getElementById('manutencao-msg').textContent = d.mensagem || 'Voltamos em breve.';
     document.getElementById('manutencao').style.display = d.manutencao ? 'flex' : 'none';
+    const bn = document.getElementById('banner-portal');
+    bn.textContent = d.banner || ''; bn.style.display = d.banner ? 'block' : 'none';
+    const rec = d.recursos || {};
+    ['avisos', 'enquetes', 'pautas', 'materiais', 'eventos', 'jogos', 'sugestoes'].forEach(k => {
+      const off = rec[k] === false;
+      const card = document.getElementById('sec-' + k); if (card) card.style.display = off ? 'none' : '';
+      const btn = document.querySelector('#bottom-nav [data-alvo="sec-' + k + '"]'); if (btn) btn.style.display = off ? 'none' : '';
+    });
   });
   carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarJogos(); carregarMinhasSugestoes();
 }
@@ -580,6 +589,19 @@ document.getElementById('lista-notif').addEventListener('click', e => {
   document.getElementById('painel-notif').style.display = 'none';
   document.getElementById(b.dataset.alvo).scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
+
+/* ---------- relatório automático de erros (o TI vê no painel) ---------- */
+let errosEnviados = 0;
+function relatarErro(msg) {
+  if (!usuarioAtual || errosEnviados >= 5 || !msg) return;
+  errosEnviados++;
+  db.collection('erros_app').add({
+    email: usuarioAtual.email, msg: String(msg).slice(0, 300), pagina: location.pathname.slice(0, 100),
+    ua: navigator.userAgent.slice(0, 150), em: TS()
+  }).catch(() => {});
+}
+window.addEventListener('error', e => relatarErro(e.message));
+window.addEventListener('unhandledrejection', e => relatarErro(e.reason && e.reason.message ? e.reason.message : e.reason));
 
 /* ---------- barra de navegação inferior (celular) ---------- */
 (function () {

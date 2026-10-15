@@ -229,6 +229,75 @@
                 <button onclick="restaurarBackup()" class="btn btn-outline-danger btn-sm fw-bold">Restaurar</button>
             </div>
 
+            <div id="secao-ti-suporte" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🧰 Suporte e Monitoramento <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <p class="text-muted-custom small mb-3">Para atender dúvidas e achar problemas.</p>
+
+                <h6 class="fw-bold text-white">1. Ficha de um usuário</h6>
+                <div class="input-group">
+                    <input type="email" id="ti-ficha-email" class="form-control" placeholder="email@aluno.ifce.edu.br">
+                    <button onclick="fichaUsuario()" class="btn btn-outline-info">Buscar</button>
+                </div>
+                <div id="ti-ficha" class="mt-3 small"></div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">2. Log de auditoria completo</h6>
+                <div class="d-flex gap-2 flex-wrap mb-2">
+                    <button onclick="carregarLogCompleto()" class="btn btn-outline-info btn-sm">Carregar últimas 500</button>
+                    <button onclick="baixarLogCSV()" class="btn btn-outline-light btn-sm">⬇️ Baixar CSV</button>
+                </div>
+                <input type="search" id="ti-log-busca" class="form-control mb-2" placeholder="🔍 Filtrar por pessoa, ação ou detalhe..." oninput="renderLogCompleto()">
+                <div id="ti-log" class="small"></div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">3. Erros do portal dos alunos</h6>
+                <p class="text-muted-custom small mb-2">O portal avisa aqui quando algo quebra no celular de alguém.</p>
+                <div class="d-flex gap-2 flex-wrap mb-2">
+                    <button onclick="carregarErrosPortal()" class="btn btn-outline-info btn-sm">Ver últimos 50</button>
+                    <button onclick="limparErrosPortal()" class="btn btn-outline-danger btn-sm">Limpar erros</button>
+                </div>
+                <div id="ti-erros" class="small"></div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">4. Anotações privadas do TI</h6>
+                <p class="text-muted-custom small mb-2">Só você lê. Boa para o passo a passo da virada de gestão, contatos e lembretes. <strong>Não guarde senhas aqui.</strong></p>
+                <textarea id="ti-notas" class="form-control mb-2" rows="5" maxlength="5000"></textarea>
+                <button onclick="salvarNotasTI()" class="btn btn-outline-info btn-sm fw-bold">Salvar anotações</button>
+            </div>
+
+            <div id="secao-ti-portal" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🎓 Alunos e Portal <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <p class="text-muted-custom small mb-3">Ferramentas de começo de ano e controle do portal.</p>
+
+                <h6 class="fw-bold text-white">1. Cadastro de alunos em massa</h6>
+                <p class="text-muted-custom small mb-2">Uma linha por aluno: <code>Nome;email;senha;turma</code> (senha com 6+ caracteres; turma é opcional). Até 150 por vez. Cria a conta de login e o cadastro.</p>
+                <textarea id="ti-massa" class="form-control mb-2" rows="5" placeholder="Maria Silva;maria@aluno.ifce.edu.br;123456;1º Química 2026"></textarea>
+                <button onclick="cadastrarAlunosMassa()" class="btn btn-outline-info btn-sm fw-bold">Cadastrar alunos</button>
+                <div id="ti-massa-out" class="mt-2 small"></div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">2. Lista de alunos</h6>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button onclick="baixarCSVAlunos()" class="btn btn-outline-light btn-sm">⬇️ Baixar CSV de alunos</button>
+                    <button onclick="excluirAlunosBloqueados()" class="btn btn-outline-danger btn-sm">Excluir alunos bloqueados</button>
+                </div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">3. Aviso fixo e seções do portal</h6>
+                <p class="text-muted-custom small mb-2">O aviso aparece no topo do portal dos alunos. Desmarque uma seção para escondê-la (ex.: tirar "Sugestões" durante provas).</p>
+                <input type="text" id="ti-banner" class="form-control mb-2" maxlength="200" placeholder="Ex: Semana de provas: materiais indisponíveis">
+                <div class="row g-1 mb-2">
+                    <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="avisos" id="rc1"><label class="form-check-label small" for="rc1">📢 Mural</label></div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="enquetes" id="rc2"><label class="form-check-label small" for="rc2">📊 Enquetes</label></div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="pautas" id="rc3"><label class="form-check-label small" for="rc3">✊ Pautas</label></div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="materiais" id="rc4"><label class="form-check-label small" for="rc4">🎲 Materiais</label></div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="eventos" id="rc5"><label class="form-check-label small" for="rc5">📅 Eventos</label></div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="jogos" id="rc6"><label class="form-check-label small" for="rc6">🏆 Jogos</label></div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="sugestoes" id="rc7"><label class="form-check-label small" for="rc7">💡 Sugestões</label></div></div>
+                </div>
+                <button onclick="salvarPortalConfig()" class="btn btn-outline-info btn-sm fw-bold">Salvar</button>
+            </div>
+
             <div id="secao-nova-gestao" class="card card-custom p-4 mb-4 card-root" style="border-color: #f0ad4e;">
                 <h5 class="card-title-chem mb-1" style="color: #f0ad4e;">🔄 Nova Gestão <span class="badge bg-warning text-dark ms-1" style="font-size: 10px;">só você</span></h5>
                 <p class="text-muted-custom small mb-3">Ferramentas de virada de gestão. Aparecem apenas para o e-mail raiz do sistema.</p>
@@ -469,6 +538,8 @@
             { id: 'secao-eventos', label: 'Eventos e Torneios', icon: 'bi-calendar-event', niveisPermitidos: ['admin', 'membro'] },
             { id: 'secao-jogos', label: 'Placar dos Jogos', icon: 'bi-trophy', niveisPermitidos: ['admin', 'membro'] },
             { id: 'secao-ti', label: 'Ferramentas de TI', icon: 'bi-tools', niveisPermitidos: ['admin'], soRaiz: true },
+            { id: 'secao-ti-suporte', label: 'TI: Suporte e Monitoramento', icon: 'bi-life-preserver', niveisPermitidos: ['admin'], soRaiz: true },
+            { id: 'secao-ti-portal', label: 'TI: Alunos e Portal', icon: 'bi-sliders', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-nova-gestao', label: 'Nova Gestão', icon: 'bi-arrow-repeat', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-diretoria', label: 'Diretoria e Cargos', icon: 'bi-person-badge', niveisPermitidos: ['admin'] },
             { id: 'secao-alunos-cadastrar', label: 'Cadastrar Aluno', icon: 'bi-person-plus', niveisPermitidos: ['admin'] },
@@ -639,7 +710,7 @@
             resetarOpcoes();
 
             const nivel = dadosUsuario.nivel;
-            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; carregarManutencao(); }
+            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); }
             if (nivel === 'admin') {
                 document.querySelectorAll('.card-admin-geral, .card-admin-nao-marketing').forEach(c => c.style.display = 'block');
             } else if (nivel === 'membro') {
@@ -1262,6 +1333,156 @@
                 registrarAcao('Backup baixado', nomes.length + ' coleções');
             } catch (e) { erroDB(e, 'baixarBackup'); }
         }
+        /* ================= TI: SUPORTE, ALUNOS E PORTAL ================= */
+
+        async function fichaUsuario() {
+            if (!soRaiz()) return;
+            const email = document.getElementById('ti-ficha-email').value.trim().toLowerCase();
+            const out = document.getElementById('ti-ficha');
+            if (!email) { toast('Digite um e-mail.', 'warning'); return; }
+            out.textContent = 'Buscando...';
+            try {
+                const [al, ca, pu, su, ev, ma] = await Promise.all([
+                    db.collection('alunos').doc(email).get(), db.collection('cargos').doc(email).get(),
+                    db.collection('membros_punidos').doc(email).get(), db.collection('sugestoes').where('email', '==', email).get(),
+                    db.collection('eventos').get(), db.collection('materiais').get()
+                ]);
+                const L = [];
+                if (al.exists) { const a = al.data(); L.push(`🎓 <strong>${esc(a.nome)}</strong> • turma: ${esc(a.turma || '—')} • ${a.ativo ? '<span class="text-success">ativo</span>' : '<span class="text-danger">bloqueado</span>'}`); }
+                else L.push('🎓 Não é aluno cadastrado.');
+                if (ca.exists) { const c = ca.data(); L.push(`🪪 Cargo: <strong>${esc(c.cargo)}</strong> (${esc(c.nivel)})`); } else L.push('🪪 Sem cargo na diretoria.');
+                const p = pu.exists ? pu.data() : null;
+                if (p && p.expiraEm && p.expiraEm.toMillis() > Date.now()) L.push(`⚠️ Punição ativa: ${esc(p.punicao)} até ${esc(fmtData(p.expiraEm))}`);
+                L.push(`💡 Sugestões: ${su.size} (${su.docs.filter(d => d.data().resposta).length} respondidas)`);
+                const insc = ev.docs.filter(d => (d.data().inscritos || []).includes(email)).map(d => d.data().titulo);
+                L.push(`📅 Eventos inscrito: ${insc.length ? esc(insc.join(', ')) : 'nenhum'}`);
+                const mats = ma.docs.filter(d => (d.data().emprestadoPara || '').toLowerCase().includes(email)).map(d => `${d.data().nome} (${d.data().status})`);
+                L.push(`🎲 Materiais: ${mats.length ? esc(mats.join(', ')) : 'nenhum'}`);
+                out.innerHTML = L.map(x => `<div class="mb-1">${x}</div>`).join('');
+            } catch (e) { out.textContent = ''; erroDB(e, 'fichaUsuario'); }
+        }
+
+        let logCache = [];
+        async function carregarLogCompleto() {
+            if (!soRaiz()) return;
+            try {
+                const snap = await db.collection('acoes_admin').orderBy('em', 'desc').limit(500).get();
+                logCache = snap.docs.map(d => d.data());
+                renderLogCompleto();
+            } catch (e) { erroDB(e, 'logCompleto'); }
+        }
+        function renderLogCompleto() {
+            const t = document.getElementById('ti-log-busca').value.trim().toLowerCase();
+            const lista = logCache.filter(a => !t || `${a.acao} ${a.detalhes} ${a.autor}`.toLowerCase().includes(t));
+            document.getElementById('ti-log').innerHTML = lista.length
+                ? `<div class="text-muted-custom mb-2">${lista.length} registro(s)${lista.length > 100 ? ' (mostrando 100; filtre ou baixe o CSV)' : ''}</div><ul class="list-group">` +
+                  lista.slice(0, 100).map(a => `<li class="list-group-item small"><strong style="color: var(--ifce-accent-green);">${esc(a.acao)}</strong> <span class="text-white">— ${esc(a.detalhes)}</span><br><small class="text-muted-custom" style="font-size: 11px;">${esc(a.autor)} • ${esc(fmtData(a.em))}</small></li>`).join('') + '</ul>'
+                : '<p class="text-muted-custom mb-0">Nada encontrado. Toque em "Carregar últimas 500".</p>';
+        }
+        function baixarLogCSV() {
+            if (!soRaiz()) return;
+            if (!logCache.length) { toast('Carregue o log primeiro.', 'warning'); return; }
+            baixarCSV(`log_gremio_${hojeISO()}.csv`, [['Data', 'Autor', 'Ação', 'Detalhes'], ...logCache.map(a => [fmtData(a.em), a.autor, a.acao, a.detalhes])]);
+        }
+
+        async function carregarErrosPortal() {
+            if (!soRaiz()) return;
+            const out = document.getElementById('ti-erros');
+            try {
+                const snap = await db.collection('erros_app').orderBy('em', 'desc').limit(50).get();
+                out.innerHTML = snap.empty ? '<p class="text-success mb-0">Nenhum erro registrado. 🎉</p>'
+                    : '<ul class="list-group">' + snap.docs.map(d => { const x = d.data(); return `<li class="list-group-item small"><span class="text-warning">${esc(x.msg)}</span><br><small class="text-muted-custom" style="font-size: 11px;">${esc(x.email)} • ${esc(fmtData(x.em))}<br>${esc(x.ua)}</small></li>`; }).join('') + '</ul>';
+            } catch (e) { erroDB(e, 'errosPortal'); }
+        }
+        async function limparErrosPortal() {
+            if (!soRaiz()) return;
+            if (!(await confirmar('Apagar todos os erros registrados?'))) return;
+            try {
+                const snap = await db.collection('erros_app').get();
+                await apagarEmLotes(snap.docs.map(d => d.ref));
+                document.getElementById('ti-erros').innerHTML = '';
+                toast(snap.size + ' erro(s) apagado(s).');
+            } catch (e) { erroDB(e, 'limparErros'); }
+        }
+
+        async function carregarNotasTI() {
+            try {
+                const d = await db.collection('ti_privado').doc('notas').get();
+                document.getElementById('ti-notas').value = d.exists ? (d.data().texto || '') : '';
+            } catch (e) { console.error(e); }
+        }
+        async function salvarNotasTI() {
+            if (!soRaiz()) return;
+            try {
+                await db.collection('ti_privado').doc('notas').set({ texto: document.getElementById('ti-notas').value, atualizadoEm: TS() });
+                toast('Anotações salvas.');
+            } catch (e) { erroDB(e, 'salvarNotas'); }
+        }
+
+        async function cadastrarAlunosMassa() {
+            if (!soRaiz()) return;
+            const linhas = document.getElementById('ti-massa').value.split('\n').map(l => l.trim()).filter(Boolean);
+            const out = document.getElementById('ti-massa-out');
+            if (!linhas.length) { toast('Cole a lista de alunos.', 'warning'); return; }
+            if (linhas.length > 150) { toast('Máximo de 150 alunos por vez.', 'warning'); return; }
+            let criados = 0, existiam = 0, ok = 0;
+            const erros = [], batch = db.batch();
+            for (let i = 0; i < linhas.length; i++) {
+                out.textContent = `Processando ${i + 1} de ${linhas.length}...`;
+                const [nome, emailRaw, senha, turma = ''] = linhas[i].split(';').map(x => x.trim());
+                const email = (emailRaw || '').toLowerCase();
+                if (!nome || !email.includes('@') || !senha || senha.length < 6) { erros.push(`Linha ${i + 1}: dados inválidos`); continue; }
+                try {
+                    (await criarContaAuth(email, senha)) === 'criada' ? criados++ : existiam++;
+                    batch.set(db.collection('alunos').doc(email), { nome, email, turma, ativo: true }, { merge: true });
+                    ok++;
+                } catch (e) { erros.push(`${email}: ${e.code || 'erro'}`); }
+            }
+            try { if (ok) await batch.commit(); } catch (e) { erroDB(e, 'alunosMassa'); return; }
+            registrarAcao('Alunos em massa', `${criados} criados, ${existiam} já existiam, ${erros.length} erros`);
+            out.innerHTML = `✅ ${criados} conta(s) criada(s) • ${existiam} já existia(m) (senha não mudou) • ${erros.length} erro(s)` +
+                (erros.length ? '<ul class="mt-2 text-warning">' + erros.map(x => `<li>${esc(x)}</li>`).join('') + '</ul>' : '');
+            if (!erros.length) document.getElementById('ti-massa').value = '';
+        }
+        async function baixarCSVAlunos() {
+            if (!soRaiz()) return;
+            try {
+                const snap = await db.collection('alunos').orderBy('nome').get();
+                baixarCSV(`alunos_${hojeISO()}.csv`, [['Nome', 'E-mail', 'Turma', 'Situação'], ...snap.docs.map(d => { const a = d.data(); return [a.nome, a.email || d.id, a.turma || '', a.ativo ? 'Ativo' : 'Bloqueado']; })]);
+            } catch (e) { erroDB(e, 'csvAlunos'); }
+        }
+        async function excluirAlunosBloqueados() {
+            if (!soRaiz()) return;
+            try {
+                const snap = await db.collection('alunos').where('ativo', '==', false).get();
+                if (snap.empty) { toast('Não há alunos bloqueados.', 'warning'); return; }
+                if (!(await confirmar(`Excluir ${snap.size} aluno(s) bloqueado(s)? Eles perdem o acesso de vez (a conta de login continua no Authentication).`))) return;
+                await apagarEmLotes(snap.docs.map(d => d.ref));
+                registrarAcao('Alunos bloqueados excluídos', snap.size + ' alunos');
+                mostrarAlertaSucesso(snap.size + ' aluno(s) excluído(s).');
+            } catch (e) { erroDB(e, 'excluirBloqueados'); }
+        }
+
+        function carregarPortalConfig() {
+            ouvir(db.collection('config').doc('sistema'), doc => {
+                const d = doc.exists ? doc.data() : {};
+                const campo = document.getElementById('ti-banner');
+                if (document.activeElement !== campo) campo.value = d.banner || '';
+                const rec = d.recursos || {};
+                document.querySelectorAll('[data-recurso]').forEach(c => c.checked = rec[c.dataset.recurso] !== false);
+            });
+        }
+        async function salvarPortalConfig() {
+            if (!soRaiz()) return;
+            const recursos = {};
+            document.querySelectorAll('[data-recurso]').forEach(c => recursos[c.dataset.recurso] = c.checked);
+            try {
+                await db.collection('config').doc('sistema').set({ banner: document.getElementById('ti-banner').value.trim(), recursos, por: emailLogado, em: TS() }, { merge: true });
+                toast('Portal atualizado.');
+                registrarAcao('Configuração do portal alterada', Object.entries(recursos).filter(([, v]) => !v).map(([k]) => k).join(', ') || 'tudo visível');
+            } catch (e) { erroDB(e, 'portalConfig'); }
+        }
+
         /* ================= FERRAMENTAS DE TI (só o e-mail raiz) ================= */
 
         async function rodarDiagnostico() {
