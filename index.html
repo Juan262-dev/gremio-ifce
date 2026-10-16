@@ -151,6 +151,15 @@ body{background-color:#f4f6f9}
   </div>
 </div>
 
+<div id="termo-overlay" style="display:none;position:fixed;inset:0;z-index:100000;background:rgba(18,24,20,.97);color:#fff;align-items:center;justify-content:center;padding:20px;flex-direction:column">
+  <div style="background:#18221b;border:1px solid #283a2e;border-radius:16px;max-width:520px;width:100%;max-height:85vh;display:flex;flex-direction:column;padding:20px">
+    <h4 class="fw-bold mb-3">📜 Termo de uso e privacidade</h4>
+    <div id="termo-texto" style="overflow:auto;white-space:pre-wrap;font-size:.9rem;color:#cfe3d5;flex:1;margin-bottom:12px"></div>
+    <button onclick="aceitarTermo()" class="btn-green-chem">Li e aceito</button>
+    <button onclick="fazerLogoutAluno()" class="link-esqueci">Não aceito (sair)</button>
+  </div>
+</div>
+
 <div id="manutencao" style="display:none;position:fixed;inset:0;z-index:100001;background:#121814;color:#fff;align-items:center;justify-content:center;text-align:center;padding:30px;flex-direction:column">
   <div style="font-size:4rem">🛠️</div>
   <h2 class="fw-bold mt-2">Portal em manutenção</h2>
@@ -314,11 +323,15 @@ function iniciarSessaoAluno() {
   document.getElementById('nome-aluno-display').textContent = usuarioAtual.nome;
   document.getElementById('email-aluno-display').textContent = usuarioAtual.email;
   document.getElementById('aluno-senha-input').value = '';
+  aceiteVersao = undefined;
+  registrarAcesso();
   Object.keys(novidades).forEach(k => novidades[k] = []);
   ouvir(db.collection('config').doc('sistema'), doc => {
     const d = doc.exists ? doc.data() : {};
     document.getElementById('manutencao-msg').textContent = d.mensagem || 'Voltamos em breve.';
     document.getElementById('manutencao').style.display = d.manutencao ? 'flex' : 'none';
+    termoAtual = d.termo && d.termo.texto ? d.termo : null;
+    verificarTermo();
     const bn = document.getElementById('banner-portal');
     bn.textContent = d.banner || ''; bn.style.display = d.banner ? 'block' : 'none';
     const rec = d.recursos || {};
@@ -645,6 +658,33 @@ document.getElementById('lista-notif').addEventListener('click', e => {
   document.getElementById('painel-notif').style.display = 'none';
   document.getElementById(b.dataset.alvo).scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
+
+/* ---------- adoção do portal e termo de uso ---------- */
+let termoAtual = null, aceiteVersao;
+function registrarAcesso() {
+  try { if (sessionStorage.getItem('acesso-reg:' + usuarioAtual.email)) return; sessionStorage.setItem('acesso-reg:' + usuarioAtual.email, '1'); } catch (e) {}
+  db.collection('acessos').doc(usuarioAtual.email).set({
+    ultimoAcesso: TS(), total: firebase.firestore.FieldValue.increment(1), nome: usuarioAtual.nome || ''
+  }, { merge: true }).catch(() => {});
+}
+async function verificarTermo() {
+  const ov = document.getElementById('termo-overlay');
+  if (!usuarioAtual) return;
+  if (!termoAtual) { ov.style.display = 'none'; return; }
+  if (aceiteVersao === undefined) {
+    try { const d = await db.collection('aceites').doc(usuarioAtual.email).get(); aceiteVersao = d.exists ? d.data().versao : null; }
+    catch (e) { aceiteVersao = null; }
+  }
+  if (Number(aceiteVersao) !== Number(termoAtual.versao)) {
+    document.getElementById('termo-texto').textContent = termoAtual.texto;
+    ov.style.display = 'flex';
+  } else ov.style.display = 'none';
+}
+function aceitarTermo() {
+  db.collection('aceites').doc(usuarioAtual.email).set({ versao: termoAtual.versao, em: TS(), nome: usuarioAtual.nome || '' })
+    .then(() => { aceiteVersao = termoAtual.versao; verificarTermo(); })
+    .catch(() => aviso('Não foi possível registrar o aceite. Tente de novo.', 'danger'));
+}
 
 /* ---------- relatório automático de erros (o TI vê no painel) ---------- */
 let errosEnviados = 0;
