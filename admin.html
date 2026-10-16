@@ -124,6 +124,11 @@
 
     <!-- PAINEL -->
     <div class="container pb-5" id="painel-admin" style="max-width: 850px;">
+        <div id="aviso-ti" class="alert alert-info fw-bold mb-3 py-2 d-none"></div>
+        <div id="banner-preview" class="alert alert-warning d-none mb-3 py-2 justify-content-between align-items-center" style="position: sticky; top: 64px; z-index: 1020;">
+            <span>👁️ Vendo como <strong id="preview-nome"></strong></span>
+            <button onclick="verComo(null)" class="btn btn-dark btn-sm py-0">Voltar ao normal</button>
+        </div>
 
         <div id="painel-bloqueio-punicao" class="card card-custom p-4 mb-4 d-none" style="border-color: #dc3545; background: rgba(220, 53, 69, 0.15);">
             <h4 class="fw-bold text-danger text-center mb-3">🚨 ACESSO BLOQUEADO POR PUNIÇÃO 🚨</h4>
@@ -155,6 +160,54 @@
                     <button onclick="carregarResumo()" class="btn btn-outline-light btn-sm">↻ Atualizar</button>
                 </div>
                 <div id="resumo-grid" class="row g-2"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-ajuda" data-niveis="admin,membro,marketing" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">🆘 Preciso de ajuda</h5>
+                <p class="text-muted-custom small mb-3">Algo não funciona ou você quer uma função nova? Conte aqui que o TI responde.</p>
+                <select id="aj-cat" class="form-select mb-2"><option>Algo não funciona</option><option>Não consigo entrar / acessar</option><option>Dúvida de como usar</option><option>Quero uma função nova</option><option>Outro</option></select>
+                <textarea id="aj-desc" class="form-control mb-2" rows="3" maxlength="800" placeholder="Descreva o que aconteceu (em qual tela, o que você tocou, o que apareceu)..."></textarea>
+                <button onclick="criarChamado()" class="btn btn-ifce">Enviar pedido</button>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">Meus pedidos</h6>
+                <div id="lista-meus-chamados"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-guia" data-niveis="admin,membro,marketing" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-3">📖 Guia rápido do seu cargo</h5>
+                <div data-niveis="admin">
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Presidência (presidente e vice)</summary>
+                        <ul class="small text-muted-custom mt-2 mb-0">
+                            <li><strong>Resumo:</strong> mostra pedidos, pautas e sugestões pendentes de relance.</li>
+                            <li><strong>Atribuir Tarefas:</strong> escolha a pessoa (ou todos) e o prazo; cada diretor vê só as dele.</li>
+                            <li><strong>Pautas:</strong> mude o status; os alunos veem no portal e recebem aviso no sininho.</li>
+                            <li><strong>Sugestões:</strong> responda; a resposta aparece para o aluno.</li>
+                            <li><strong>Atas e Relatório do Mês:</strong> registre as reuniões (com PDF) e gere o relatório mensal.</li>
+                            <li><strong>Diretoria e Cargos:</strong> cadastre diretores e escolha o nível de cada um.</li>
+                            <li><strong>Punições e Alunos:</strong> bloqueie ou libere acessos; tudo fica no log.</li>
+                        </ul>
+                    </details>
+                </div>
+                <div data-niveis="membro">
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Esportes e Eventos</summary>
+                        <ul class="small text-muted-custom mt-2 mb-0">
+                            <li><strong>Placar e Classificação:</strong> crie o jogo, atualize o placar e marque "Encerrado" para entrar na tabela (vitória 3, empate 1).</li>
+                            <li><strong>Eventos:</strong> preencha "Dia no calendário" para o evento ordenar certo; baixe a lista de inscritos em CSV.</li>
+                            <li><strong>Materiais:</strong> aprove o pedido escolhendo o prazo; toque em "Devolvido" quando voltar.</li>
+                        </ul>
+                    </details>
+                </div>
+                <div data-niveis="marketing">
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Marketing</summary>
+                        <ul class="small text-muted-custom mt-2 mb-0">
+                            <li><strong>Mural:</strong> publique avisos e use "📌 Fixar" para deixar um no topo.</li>
+                            <li><strong>Calendário de Divulgação:</strong> planeje o que postar e atualize o status até "Publicado".</li>
+                            <li><strong>Banco de Artes:</strong> guarde links de logos e cartazes para a próxima gestão.</li>
+                            <li><strong>Vídeos:</strong> envie a aula prática no YouTube como "Não listado" e cole o link.</li>
+                        </ul>
+                    </details>
+                </div>
+                <p class="small text-muted-custom mt-3 mb-0"><strong>Para todos:</strong> use "Minhas Tarefas" para marcar o que concluiu, o "Relatório de Atividades" para gerar PDF ou mandar no WhatsApp e "Preciso de ajuda" se travar em algo.</p>
             </div>
 
             <div id="secao-tarefas" data-niveis="admin,membro,marketing" class="card card-custom p-4 mb-4">
@@ -277,6 +330,30 @@
                     <button onclick="adicionarCampoOpcao()" class="btn btn-outline-light btn-sm" style="border-radius: 8px;">+ Adicionar Opção</button>
                     <button onclick="criarEnquete()" class="btn btn-ifce ms-auto">Criar Enquete</button>
                 </div>
+            </div>
+
+            <div id="secao-ti-chamados" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">📨 Pedidos de ajuda <span id="ti-chamados-qtd" class="badge bg-warning text-dark ms-1" style="font-size: 10px;">0</span></h5>
+                <p class="text-muted-custom small mb-3">Pedidos que os diretores enviam pelo "Preciso de ajuda". O que você responder aparece para eles.</p>
+                <div id="lista-chamados-ti"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-ti-ajuda" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🤝 Ajudar os cargos <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+
+                <h6 class="fw-bold text-white mt-3">1. Ver o painel como outro cargo</h6>
+                <p class="text-muted-custom small mb-2">Mostra a tela exatamente como aquele cargo enxerga, para você achar o problema quando disserem "não aparece para mim". É só visual; você continua logado como você.</p>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button onclick="verComo('admin')" class="btn btn-outline-info btn-sm">Presidência</button>
+                    <button onclick="verComo('membro')" class="btn btn-outline-info btn-sm">Esportes/Eventos</button>
+                    <button onclick="verComo('marketing')" class="btn btn-outline-info btn-sm">Marketing</button>
+                </div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">2. Aviso do TI para a diretoria</h6>
+                <p class="text-muted-custom small mb-2">Aparece no topo do painel de todos os diretores (ex.: "Sistema em manutenção hoje às 18h"). Deixe vazio e salve para remover.</p>
+                <input type="text" id="ti-aviso-dir" class="form-control mb-2" maxlength="200" placeholder="Ex: Atualização no sábado, salvem seus relatórios">
+                <button onclick="salvarAvisoDiretoria()" class="btn btn-outline-info btn-sm fw-bold">Salvar aviso</button>
             </div>
 
             <div id="secao-ti" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
@@ -639,6 +716,10 @@
             { id: 'secao-punicoes', label: 'Aplicar Punições', icon: 'bi-shield-exclamation', niveisPermitidos: ['admin'] },
             { id: 'secao-diretoria', label: 'Diretoria e Cargos', icon: 'bi-person-badge', niveisPermitidos: ['admin'] },
             { id: 'secao-auditoria', label: 'Log de Auditoria', icon: 'bi-journal-text', niveisPermitidos: ['admin'] },
+            { id: 'secao-ajuda', label: 'Preciso de ajuda', icon: 'bi-life-preserver', niveisPermitidos: ['admin', 'membro', 'marketing'] },
+            { id: 'secao-guia', label: 'Guia rápido', icon: 'bi-book', niveisPermitidos: ['admin', 'membro', 'marketing'] },
+            { id: 'secao-ti-chamados', label: 'TI: Pedidos de ajuda', icon: 'bi-envelope-paper', niveisPermitidos: ['admin'], soRaiz: true },
+            { id: 'secao-ti-ajuda', label: 'TI: Ajudar os cargos', icon: 'bi-people', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti', label: 'Ferramentas de TI', icon: 'bi-tools', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-suporte', label: 'TI: Suporte e Monitoramento', icon: 'bi-life-preserver', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-portal', label: 'TI: Alunos e Portal', icon: 'bi-sliders', niveisPermitidos: ['admin'], soRaiz: true },
@@ -805,16 +886,17 @@
             resetarOpcoes();
 
             const nivel = dadosUsuario.nivel;
-            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); }
+            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); }
             // Cada cargo vê só o que precisa; o e-mail raiz (TI) vê tudo.
             const raiz = emailUsuario === ROOT_EMAIL;
             document.querySelectorAll('[data-niveis]').forEach(c => {
                 c.style.display = (raiz || c.dataset.niveis.split(',').includes(nivel)) ? 'block' : 'none';
             });
+            carregarAvisoTI();
             const ver = id => { const c = document.getElementById(id); return !!c && c.style.display === 'block'; };
             [
                 ['secao-resumo', carregarResumo], ['secao-tarefas', carregarMinhasTarefas], ['secao-tarefas-admin', carregarTarefasAdmin],
-                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-videos', carregarVideos],
+                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos],
                 ['secao-mural', carregarAvisosAdmin], ['secao-enquetes-lista', carregarEnquetesAdmin],
                 ['secao-alunos-lista', carregarAlunos], ['secao-sugestoes', carregarSugestoesAdmin], ['secao-pautas', carregarPautasAdmin],
                 ['secao-punicoes', carregarMembrosPunidosAdmin], ['secao-auditoria', carregarAuditoria], ['secao-diretoria', carregarDiretoria],
@@ -865,7 +947,7 @@
         function renderizarMenuLateral(dadosUsuario) {
             const containerMenu = document.getElementById('itensMenuNav');
             containerMenu.innerHTML = '';
-            modulosSistema.filter(m => (emailLogado === ROOT_EMAIL || m.niveisPermitidos.includes(dadosUsuario.nivel)) && (!m.soRaiz || emailLogado === ROOT_EMAIL)).forEach(modulo => {
+            modulosSistema.filter(m => ((emailLogado === ROOT_EMAIL && !nivelPreview) || m.niveisPermitidos.includes(dadosUsuario.nivel)) && (!m.soRaiz || (emailLogado === ROOT_EMAIL && !nivelPreview))).forEach(modulo => {
                 const a = document.createElement('a');
                 a.href = `#${modulo.id}`;
                 a.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary d-flex align-items-center gap-2 py-3';
@@ -1722,6 +1804,91 @@
             });
         }
 
+        /* ================= AJUDA ENTRE OS CARGOS E O TI ================= */
+
+        const COR_CHAMADO = { 'Aberto': 'bg-warning text-dark', 'Em andamento': 'bg-info text-dark', 'Resolvido': 'bg-success' };
+
+        function criarChamado() {
+            const descricao = document.getElementById('aj-desc').value.trim();
+            if (descricao.length < 5) { toast('Descreva o problema com um pouco mais de detalhe.', 'warning'); return; }
+            db.collection('chamados').add({
+                categoria: document.getElementById('aj-cat').value, descricao, autorEmail: emailLogado,
+                autorNome: document.getElementById('user-name-display').textContent,
+                cargo: document.getElementById('user-role-display').textContent, status: 'Aberto', criadoEm: TS()
+            }).then(() => { toast('Pedido enviado ao TI! ✅'); document.getElementById('aj-desc').value = ''; })
+              .catch(e => erroDB(e, 'criarChamado'));
+        }
+        function carregarMeusChamados() {
+            ouvir(db.collection('chamados').where('autorEmail', '==', emailLogado), snap => {
+                const c = document.getElementById('lista-meus-chamados');
+                const docs = snap.docs.map(d => d.data()).sort((a, b) => (b.criadoEm ? b.criadoEm.toMillis() : Infinity) - (a.criadoEm ? a.criadoEm.toMillis() : Infinity));
+                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Você ainda não enviou pedidos.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + docs.map(x => `
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start"><strong class="text-white small">${esc(x.categoria)}</strong><span class="badge ${COR_CHAMADO[x.status] || 'bg-secondary'}">${esc(x.status)}</span></div>
+                        <p class="small text-white mb-1 mt-1" style="white-space: pre-wrap;">${esc(x.descricao)}</p>
+                        <small class="text-muted-custom" style="font-size: 11px;">${esc(fmtData(x.criadoEm))}</small>
+                        ${x.resposta ? `<div class="small p-2 rounded mt-2" style="background: rgba(0,230,118,.1); border: 1px solid var(--ifce-card-border);">🛠️ <strong>Resposta do TI:</strong> ${esc(x.resposta)}</div>` : ''}
+                    </div>`).join('') + '</div>';
+            });
+        }
+        function carregarChamadosTI() {
+            ouvir(db.collection('chamados').orderBy('criadoEm', 'desc').limit(100), snap => {
+                const c = document.getElementById('lista-chamados-ti');
+                const docs = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.status === 'Resolvido') - (b.status === 'Resolvido'));
+                document.getElementById('ti-chamados-qtd').textContent = docs.filter(x => x.status !== 'Resolvido').length + ' em aberto';
+                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum pedido. 🎉</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + docs.map(x => `
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div><strong class="text-white">${esc(x.autorNome)}</strong> <small class="text-muted-custom">— ${esc(x.cargo)} • ${esc(x.autorEmail)}</small></div>
+                            <span class="badge ${COR_CHAMADO[x.status] || 'bg-secondary'}">${esc(x.status)}</span>
+                        </div>
+                        <small class="text-info">${esc(x.categoria)} • ${esc(fmtData(x.criadoEm))}</small>
+                        <p class="small text-white mb-2" style="white-space: pre-wrap;">${esc(x.descricao)}</p>
+                        <div class="input-group input-group-sm">
+                            <select class="form-select" style="max-width: 130px;" data-st-ch="${esc(x.id)}">${['Aberto', 'Em andamento', 'Resolvido'].map(st => `<option ${st === x.status ? 'selected' : ''}>${st}</option>`).join('')}</select>
+                            <input type="text" class="form-control" maxlength="500" data-resp-ch="${esc(x.id)}" placeholder="Responder..." value="${esc(x.resposta || '')}">
+                            <button class="btn btn-outline-info" data-acao="salvarChamado" data-id="${esc(x.id)}">Salvar</button>
+                        </div>
+                    </div>`).join('') + '</div>';
+            });
+        }
+
+        let nivelPreview = null;
+        function verComo(nivel) {
+            if (!soRaiz()) return;
+            nivelPreview = nivel || null;
+            document.querySelectorAll('[data-niveis]').forEach(c => {
+                c.style.display = (!nivelPreview || c.dataset.niveis.split(',').includes(nivelPreview)) ? 'block' : 'none';
+            });
+            document.querySelectorAll('.card-root').forEach(c => c.style.display = nivelPreview ? 'none' : 'block');
+            renderizarMenuLateral({ nivel: nivelPreview || 'admin' });
+            renderizarBarraInferior(nivelPreview || 'admin');
+            document.getElementById('banner-preview').classList.toggle('d-none', !nivelPreview);
+            document.getElementById('preview-nome').textContent = nivelPreview ? ROTULO_NIVEL[nivelPreview] : '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function carregarAvisoTI() {
+            ouvir(db.collection('config').doc('sistema'), doc => {
+                const d = doc.exists ? doc.data() : {};
+                const el = document.getElementById('aviso-ti');
+                el.textContent = d.avisoDiretoria ? '📣 Aviso do TI: ' + d.avisoDiretoria : '';
+                el.classList.toggle('d-none', !d.avisoDiretoria);
+                const campo = document.getElementById('ti-aviso-dir');
+                if (campo && document.activeElement !== campo) campo.value = d.avisoDiretoria || '';
+            });
+        }
+        async function salvarAvisoDiretoria() {
+            if (!soRaiz()) return;
+            try {
+                await db.collection('config').doc('sistema').set({ avisoDiretoria: document.getElementById('ti-aviso-dir').value.trim() }, { merge: true });
+                toast('Aviso atualizado para a diretoria.');
+                registrarAcao('Aviso do TI alterado', '');
+            } catch (e) { erroDB(e, 'avisoDiretoria'); }
+        }
+
         /* ================= TI: SUPORTE, ALUNOS E PORTAL ================= */
 
         async function fichaUsuario() {
@@ -1731,10 +1898,11 @@
             if (!email) { toast('Digite um e-mail.', 'warning'); return; }
             out.textContent = 'Buscando...';
             try {
-                const [al, ca, pu, su, ev, ma] = await Promise.all([
+                const [al, ca, pu, su, ev, ma, ac] = await Promise.all([
                     db.collection('alunos').doc(email).get(), db.collection('cargos').doc(email).get(),
                     db.collection('membros_punidos').doc(email).get(), db.collection('sugestoes').where('email', '==', email).get(),
-                    db.collection('eventos').get(), db.collection('materiais').get()
+                    db.collection('eventos').get(), db.collection('materiais').get(),
+                    db.collection('acoes_admin').where('autor', '==', email).limit(30).get()
                 ]);
                 const L = [];
                 if (al.exists) { const a = al.data(); L.push(`🎓 <strong>${esc(a.nome)}</strong> • turma: ${esc(a.turma || '—')} • ${a.ativo ? '<span class="text-success">ativo</span>' : '<span class="text-danger">bloqueado</span>'}`); }
@@ -1747,6 +1915,8 @@
                 L.push(`📅 Eventos inscrito: ${insc.length ? esc(insc.join(', ')) : 'nenhum'}`);
                 const mats = ma.docs.filter(d => (d.data().emprestadoPara || '').toLowerCase().includes(email)).map(d => `${d.data().nome} (${d.data().status})`);
                 L.push(`🎲 Materiais: ${mats.length ? esc(mats.join(', ')) : 'nenhum'}`);
+                const acs = ac.docs.map(d => d.data()).sort((a, b) => (b.em ? b.em.toMillis() : 0) - (a.em ? a.em.toMillis() : 0)).slice(0, 5);
+                if (acs.length) L.push('🧾 Últimas ações no painel:<br>' + acs.map(a => `<span class="text-muted-custom">• ${esc(a.acao)} — ${esc(a.detalhes || '')} (${esc(fmtData(a.em))})</span>`).join('<br>'));
                 out.innerHTML = L.map(x => `<div class="mb-1">${x}</div>`).join('');
             } catch (e) { out.textContent = ''; erroDB(e, 'fichaUsuario'); }
         }
@@ -2216,6 +2386,15 @@
             excluirArte: async id => { if (await confirmar('Remover este link?')) db.collection('artes').doc(id).delete().catch(e => erroDB(e, 'excluirArte')); },
             fixarAviso: (id, el) => db.collection('mural').doc(id).update({ fixado: el.dataset.fixar === 'true' }).then(() => toast(el.dataset.fixar === 'true' ? 'Aviso fixado no topo.' : 'Aviso desafixado.')).catch(e => erroDB(e, 'fixarAviso')),
             excluirVideo: async id => { if (await confirmar('Excluir este vídeo do portal? (O vídeo continua no YouTube/Drive.)')) db.collection('videos').doc(id).delete().then(() => registrarAcao('Vídeo removido', id)).catch(e => erroDB(e, 'excluirVideo')); },
+            salvarChamado: id => {
+                if (!soRaiz()) return;
+                const q = CSS.escape(id);
+                const resposta = document.querySelector(`[data-resp-ch="${q}"]`).value.trim();
+                const status = document.querySelector(`[data-st-ch="${q}"]`).value;
+                const dados = { status };
+                if (resposta) { dados.resposta = resposta; dados.respondidoEm = TS(); }
+                db.collection('chamados').doc(id).update(dados).then(() => toast('Pedido atualizado.')).catch(e => erroDB(e, 'salvarChamado'));
+            },
             excluirSugestao: async id => { if (await confirmar("Apagar esta sugestão?")) db.collection('sugestoes').doc(id).delete().catch(e => erroDB(e, 'excluirSugestao')); },
             excluirPauta: async id => { if (await confirmar("Excluir esta pauta?")) db.collection('reivindicacoes').doc(id).delete().then(() => registrarAcao('Pauta excluída', id)).catch(e => erroDB(e, 'excluirPauta')); },
             removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(e => erroDB(e, 'removerPunicao')); },
