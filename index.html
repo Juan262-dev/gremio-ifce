@@ -131,6 +131,7 @@ body{background-color:#f4f6f9}
   <div id="sec-jogos" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-3" style="color:var(--ifce-green)">🏆 Placar dos Jogos</h5>
     <div id="lista-jogos-aluno"><p class="text-muted small">Carregando jogos...</p></div>
+    <div id="classificacao-aluno"></div>
   </div>
 
   <div id="sec-sugestoes" class="card card-custom p-4 mb-4">
@@ -321,17 +322,24 @@ function iniciarSessaoAluno() {
       const btn = document.querySelector('#bottom-nav [data-alvo="sec-' + k + '"]'); if (btn) btn.style.display = off ? 'none' : '';
     });
   });
-  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarJogos(); carregarMinhasSugestoes();
+  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarJogos(); carregarClassificacao(); carregarMinhasSugestoes();
 }
 
 /* ---------- Mural ---------- */
 function carregarAvisos() {
-  lista('lista-avisos-aluno', db.collection('mural').orderBy('criadoEm', 'desc'), 'Nenhum aviso no momento.', a => `
-    <div class="list-group-item">
-      <h6 class="fw-bold mb-1 text-success">${esc(a.titulo)}</h6>
-      <p class="mb-1 small text-dark" style="white-space:pre-wrap">${esc(a.mensagem)}</p>
-      ${a.criadoEm ? `<span class="badge bg-light text-muted border">${esc(dataHoraBR(a.criadoEm))}</span>` : ''}
-    </div>`);
+  ouvir(db.collection('mural').orderBy('criadoEm', 'desc'), snap => {
+    const todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    novidades.avisos = todos; renderNotificacoes();
+    const c = document.getElementById('lista-avisos-aluno');
+    if (!todos.length) { c.innerHTML = '<p class="text-muted small mb-0">Nenhum aviso no momento.</p>'; return; }
+    const ordenados = [...todos.filter(a => a.fixado), ...todos.filter(a => !a.fixado)];
+    c.innerHTML = '<div class="list-group">' + ordenados.map(a => `
+      <div class="list-group-item" ${a.fixado ? 'style="border-left:4px solid #ffc107"' : ''}>
+        <h6 class="fw-bold mb-1 text-success">${a.fixado ? '📌 ' : ''}${esc(a.titulo)}</h6>
+        <p class="mb-1 small text-dark" style="white-space:pre-wrap">${esc(a.mensagem)}</p>
+        ${a.criadoEm ? `<span class="badge bg-light text-muted border">${esc(dataHoraBR(a.criadoEm))}</span>` : ''}
+      </div>`).join('') + '</div>';
+  });
 }
 
 /* ---------- Enquetes ---------- */
@@ -477,6 +485,25 @@ function carregarEventos() {
         <button data-id="${esc(ev.id)}" ${passou ? 'disabled' : ''} onclick="inscreverEvento(this.dataset.id)" class="btn btn-sm ${ja || passou ? 'btn-secondary' : 'btn-ifce'} fw-bold">${ja ? '✅ Inscrito' : 'Fazer Inscrição'}</button>
       </div>`;
     }).join('') + '</div>';
+  });
+}
+function carregarClassificacao() {
+  ouvir(db.collection('jogos'), snap => {
+    const por = {};
+    snap.docs.map(d => d.data()).filter(j => j.status === 'Encerrado').forEach(j => {
+      const t = por[j.torneio || 'Geral'] = por[j.torneio || 'Geral'] || {};
+      const reg = n => t[n] = t[n] || { time: n, J: 0, V: 0, E: 0, D: 0, GP: 0, GC: 0, Pts: 0 };
+      const a = reg(j.timeA), b = reg(j.timeB), pa = Number(j.placarA) || 0, pb = Number(j.placarB) || 0;
+      a.J++; b.J++; a.GP += pa; a.GC += pb; b.GP += pb; b.GC += pa;
+      if (pa > pb) { a.V++; a.Pts += 3; b.D++; } else if (pb > pa) { b.V++; b.Pts += 3; a.D++; } else { a.E++; b.E++; a.Pts++; b.Pts++; }
+    });
+    document.getElementById('classificacao-aluno').innerHTML = Object.entries(por).map(([torneio, t]) => {
+      const times = Object.values(t).sort((x, y) => y.Pts - x.Pts || (y.GP - y.GC) - (x.GP - x.GC) || y.GP - x.GP);
+      return `<div class="mt-4"><h6 class="fw-bold text-success">Classificação — ${esc(torneio)}</h6>
+        <div style="overflow-x:auto"><table class="table table-sm mb-0"><thead><tr><th>#</th><th>Time</th><th>J</th><th>V</th><th>E</th><th>D</th><th>SG</th><th>Pts</th></tr></thead><tbody>
+        ${times.map((r, i) => `<tr><td>${i + 1}</td><td>${esc(r.time)}</td><td>${r.J}</td><td>${r.V}</td><td>${r.E}</td><td>${r.D}</td><td>${r.GP - r.GC}</td><td><strong>${r.Pts}</strong></td></tr>`).join('')}
+        </tbody></table></div></div>`;
+    }).join('');
   });
 }
 function carregarJogos() {

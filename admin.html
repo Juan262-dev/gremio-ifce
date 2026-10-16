@@ -149,7 +149,7 @@
                 </div>
             </div>
 
-            <div id="secao-resumo" class="card card-custom p-4 mb-4 card-admin-geral">
+            <div id="secao-resumo" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="card-title-chem m-0">📌 Resumo do Grêmio</h5>
                     <button onclick="carregarResumo()" class="btn btn-outline-light btn-sm">↻ Atualizar</button>
@@ -157,7 +157,49 @@
                 <div id="resumo-grid" class="row g-2"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-relatorio" class="card card-custom p-4 mb-4">
+            <div id="secao-tarefas" data-niveis="admin,membro,marketing" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-3">✅ Minhas Tarefas</h5>
+                <div id="lista-minhas-tarefas"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-tarefas-admin" data-niveis="admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">📋 Atribuir Tarefas</h5>
+                <p class="text-muted-custom small mb-3">Cada diretor vê só as tarefas dele e marca quando concluir.</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-8"><label class="form-label fw-bold">Tarefa</label><input type="text" id="tar-titulo" class="form-control" maxlength="120" placeholder="Ex: Divulgar o Interclasses"></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">Prazo</label><input type="date" id="tar-prazo" class="form-control"></div>
+                    <div class="col-12"><label class="form-label fw-bold">Detalhes (opcional)</label><textarea id="tar-desc" class="form-control" rows="2" maxlength="500"></textarea></div>
+                    <div class="col-12"><label class="form-label fw-bold">Para quem</label><select id="tar-para" class="form-select"></select></div>
+                </div>
+                <button onclick="criarTarefa()" class="btn btn-ifce">Atribuir</button>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <div id="lista-tarefas-admin"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-atas" data-niveis="admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-3">📝 Atas de Reunião</h5>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-8"><label class="form-label fw-bold">Título</label><input type="text" id="ata-titulo" class="form-control" maxlength="120" placeholder="Ex: Reunião de planejamento"></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">Data</label><input type="date" id="ata-data" class="form-control"></div>
+                    <div class="col-12"><label class="form-label fw-bold">Presentes</label><textarea id="ata-presentes" class="form-control" rows="2" maxlength="600"></textarea></div>
+                    <div class="col-12"><label class="form-label fw-bold">Pauta</label><textarea id="ata-pauta" class="form-control" rows="2" maxlength="1000"></textarea></div>
+                    <div class="col-12"><label class="form-label fw-bold">Decisões</label><textarea id="ata-decisoes" class="form-control" rows="3" maxlength="2000"></textarea></div>
+                </div>
+                <button onclick="criarAta()" class="btn btn-ifce">Salvar Ata</button>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <div id="lista-atas-admin"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-relatorio-mensal" data-niveis="admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">📊 Relatório do Mês</h5>
+                <p class="text-muted-custom small mb-3">Junta ações, eventos, pautas, sugestões e tarefas do mês em um PDF para entregar à direção.</p>
+                <div class="input-group">
+                    <input type="month" id="rel-mes" class="form-control">
+                    <button onclick="gerarRelatorioMensal()" class="btn btn-pdf fw-bold">📄 Gerar PDF</button>
+                </div>
+            </div>
+
+            <div id="secao-relatorio" data-niveis="admin,membro,marketing" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📝 Escrever Relatório de Atividades</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Conteúdo do Relatório</label>
@@ -169,7 +211,32 @@
                 </div>
             </div>
 
-            <div id="secao-mural" class="card card-custom p-4 mb-4">
+            <div id="secao-divulgacao" data-niveis="marketing" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-3">📅 Calendário de Divulgação</h5>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-8"><label class="form-label fw-bold">O que divulgar</label><input type="text" id="div-titulo" class="form-control" maxlength="120" placeholder="Ex: Cartaz do Interclasses"></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">Data</label><input type="date" id="div-data" class="form-control"></div>
+                    <div class="col-md-6"><label class="form-label fw-bold">Canal</label><select id="div-canal" class="form-select"><option>Instagram</option><option>WhatsApp</option><option>Cartaz/Mural físico</option><option>Portal do aluno</option><option>Outro</option></select></div>
+                    <div class="col-md-6"><label class="form-label fw-bold">Responsável</label><input type="text" id="div-resp" class="form-control" maxlength="60"></div>
+                </div>
+                <button onclick="criarDivulgacao()" class="btn btn-ifce">Adicionar</button>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <div id="lista-divulgacao"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-artes" data-niveis="marketing" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">🎨 Banco de Artes</h5>
+                <p class="text-muted-custom small mb-3">Guarde aqui os links (Drive, Canva) de cartazes, logos e modelos para a próxima gestão reaproveitar.</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-5"><input type="text" id="arte-nome" class="form-control" maxlength="80" placeholder="Nome (Ex: Logo do Grêmio)"></div>
+                    <div class="col-md-7"><input type="url" id="arte-link" class="form-control" placeholder="https://..."></div>
+                </div>
+                <button onclick="criarArte()" class="btn btn-ifce">Salvar link</button>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <div id="lista-artes"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-mural" data-niveis="admin,marketing" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📢 Mural de Avisos e Vídeos</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Título do Aviso / Vídeo</label>
@@ -185,7 +252,7 @@
                 <div id="lista-avisos-admin"><p class="text-muted-custom small">Nenhum aviso publicado.</p></div>
             </div>
 
-            <div id="secao-enquetes-criar" class="card card-custom p-4 mb-4">
+            <div id="secao-enquetes-criar" data-niveis="admin,membro,marketing" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📊 Criar Nova Enquete</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Pergunta / Título da Enquete</label>
@@ -332,14 +399,14 @@
                 </div>
             </div>
 
-            <div id="secao-diretoria" class="card card-custom p-4 mb-4 card-admin-geral">
+            <div id="secao-diretoria" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-2">🧑‍💼 Diretoria e Cargos</h5>
-                <p class="text-muted-custom small mb-3">Quem está aqui entra no painel. Níveis: <strong>admin</strong> (vê tudo), <strong>membro</strong> (materiais, eventos, jogos) e <strong>marketing</strong> (relatório, mural, enquetes). Para criar a conta de login, preencha a senha (6+ caracteres); se a pessoa já tem conta, deixe em branco.</p>
+                <p class="text-muted-custom small mb-3">Quem está aqui entra no painel. Cada nível vê só o que precisa: <strong>Presidência</strong> (presidente e vice: alunos, pautas, sugestões, punições, diretoria, atas, tarefas), <strong>Esportes/Eventos</strong> (jogos, eventos, materiais) e <strong>Marketing</strong> (mural, calendário de divulgação, banco de artes). Para criar a conta de login, preencha a senha (6+ caracteres); se a pessoa já tem conta, deixe em branco.</p>
                 <div class="row g-2 mb-3">
                     <div class="col-md-6"><label class="form-label fw-bold">Nome</label><input type="text" id="dir-nome" class="form-control" placeholder="Nome do diretor"></div>
                     <div class="col-md-6"><label class="form-label fw-bold">E-mail</label><input type="email" id="dir-email" class="form-control" placeholder="email@ifce.edu.br"></div>
                     <div class="col-md-6"><label class="form-label fw-bold">Cargo</label><input type="text" id="dir-cargo" class="form-control" placeholder="Ex: Diretor de Esportes"></div>
-                    <div class="col-md-3"><label class="form-label fw-bold">Nível</label><select id="dir-nivel" class="form-select"><option>membro</option><option>marketing</option><option>admin</option></select></div>
+                    <div class="col-md-3"><label class="form-label fw-bold">Nível</label><select id="dir-nivel" class="form-select"><option value="membro">Esportes/Eventos</option><option value="marketing">Marketing</option><option value="admin">Presidência</option></select></div>
                     <div class="col-md-3"><label class="form-label fw-bold">Senha (opcional)</label><input type="password" id="dir-senha" class="form-control" placeholder="******"></div>
                 </div>
                 <div class="d-flex gap-2 flex-wrap">
@@ -350,7 +417,7 @@
                 <div id="lista-diretoria-admin"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-alunos-cadastrar" class="card card-custom p-4 mb-4 card-admin-geral">
+            <div id="secao-alunos-cadastrar" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">👤 Cadastrar Aluno</h5>
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -371,7 +438,7 @@
                 </div>
             </div>
 
-            <div id="secao-pautas" class="card card-custom p-4 mb-4 card-admin-geral">
+            <div id="secao-pautas" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
                 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
                     <h5 class="card-title-chem m-0">✊ Pautas e Reivindicações</h5>
                     <button data-acao="exportarPautas" class="btn btn-outline-light btn-sm" style="border-radius: 8px;">⬇️ Exportar CSV</button>
@@ -380,7 +447,7 @@
                 <div id="lista-pautas-admin"><p class="text-muted-custom small">Nenhuma pauta cadastrada.</p></div>
             </div>
 
-            <div id="secao-materiais" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
+            <div id="secao-materiais" data-niveis="membro" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
                 <h5 class="card-title-chem mb-3">🎲 Gerenciar Materiais do Grêmio</h5>
                 <div class="row g-2 mb-3">
                     <div class="col-md-8">
@@ -398,7 +465,7 @@
                 <div id="lista-materiais-admin"><p class="text-muted-custom small">Nenhum material cadastrado.</p></div>
             </div>
 
-            <div id="secao-eventos" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
+            <div id="secao-eventos" data-niveis="admin,membro" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
                 <h5 class="card-title-chem mb-3">📅 Criar Evento ou Torneio</h5>
                 <div class="row g-2 mb-3">
                     <div class="col-md-8">
@@ -420,7 +487,7 @@
                 <div id="lista-eventos-admin"><p class="text-muted-custom small">Nenhum evento cadastrado.</p></div>
             </div>
 
-            <div id="secao-jogos" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
+            <div id="secao-jogos" data-niveis="membro" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
                 <h5 class="card-title-chem mb-3">🏆 Placar dos Jogos</h5>
                 <div class="row g-2 mb-3">
                     <div class="col-md-6"><label class="form-label fw-bold">Torneio / Modalidade</label><input type="text" id="jogo-torneio" class="form-control" placeholder="Ex: Interclasses de Futsal"></div>
@@ -430,15 +497,16 @@
                 </div>
                 <button onclick="criarJogo()" class="btn btn-ifce">Adicionar Jogo</button>
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <div id="classificacao-admin"></div>
                 <div id="lista-jogos-admin"><p class="text-muted-custom small">Nenhum jogo cadastrado.</p></div>
             </div>
 
-            <div id="secao-enquetes-lista" class="card card-custom p-4 mb-4">
+            <div id="secao-enquetes-lista" data-niveis="admin,membro,marketing" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📈 Enquetes Ativas e Encerradas</h5>
                 <div id="lista-enquetes-admin"><p class="text-muted-custom small">Nenhuma enquete cadastrada.</p></div>
             </div>
 
-            <div id="secao-punicoes" class="card card-custom p-4 mb-4 card-admin-geral" style="border-color: #dc3545;">
+            <div id="secao-punicoes" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral" style="border-color: #dc3545;">
                 <h5 class="card-title-chem mb-3" style="color: #ff6b6b;">⚠️ Aplicar Punição / Bloqueio a Membro</h5>
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -467,19 +535,19 @@
                 <div id="lista-membros-punidos-admin"><p class="text-muted-custom small">Nenhum membro punido.</p></div>
             </div>
 
-            <div id="secao-alunos-lista" class="card card-custom p-4 mb-4 card-admin-geral">
+            <div id="secao-alunos-lista" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">🎓 Alunos Cadastrados</h5>
                 <input type="search" id="busca-alunos" class="form-control mb-3" placeholder="🔍 Buscar por nome ou e-mail..." oninput="renderAlunos()">
                 <div id="lista-alunos-admin"><p class="text-muted-custom small">Nenhum aluno cadastrado.</p></div>
             </div>
 
-            <div id="secao-sugestoes" class="card card-custom p-4 mb-4 card-admin-geral">
+            <div id="secao-sugestoes" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">💡 Sugestões dos Alunos</h5>
                 <input type="search" id="busca-sugestoes" class="form-control mb-3" placeholder="🔍 Buscar nas sugestões..." oninput="renderSugestoes()">
                 <div id="lista-sugestoes-admin"><p class="text-muted-custom small">Nenhuma sugestão enviada.</p></div>
             </div>
 
-            <div id="secao-auditoria" class="card card-custom p-4 mb-4 card-admin-geral">
+            <div id="secao-auditoria" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">🧾 Log de Auditoria</h5>
                 <p class="text-muted-custom small mb-3">Últimas 30 ações administrativas (inclui histórico de punições).</p>
                 <div id="lista-auditoria-admin"><p class="text-muted-custom small">Nenhuma ação registrada.</p></div>
@@ -519,6 +587,7 @@
         // IMPORTANTE: isto é só para exibir a interface. A proteção de verdade
         // precisa estar nas Firestore Security Rules (veja firestore.rules).
         const ROOT_EMAIL = 'kevin.silva10@aluno.ifce.edu.br';
+        const ROTULO_NIVEL = { admin: 'Presidência', membro: 'Esportes/Eventos', marketing: 'Marketing' };
         const cargosIniciais = {
             "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
@@ -530,24 +599,30 @@
 
         const modulosSistema = [
             { id: 'secao-resumo', label: 'Resumo', icon: 'bi-speedometer2', niveisPermitidos: ['admin'] },
+            { id: 'secao-tarefas', label: 'Minhas Tarefas', icon: 'bi-check2-square', niveisPermitidos: ['admin', 'membro', 'marketing'] },
+            { id: 'secao-tarefas-admin', label: 'Atribuir Tarefas', icon: 'bi-list-task', niveisPermitidos: ['admin'] },
+            { id: 'secao-atas', label: 'Atas de Reunião', icon: 'bi-journal-richtext', niveisPermitidos: ['admin'] },
+            { id: 'secao-relatorio-mensal', label: 'Relatório do Mês', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['admin'] },
             { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro'] },
-            { id: 'secao-mural', label: 'Mural de Avisos & Vídeos', icon: 'bi-megaphone', niveisPermitidos: ['admin', 'marketing', 'membro'] },
+            { id: 'secao-divulgacao', label: 'Calendário de Divulgação', icon: 'bi-calendar2-week', niveisPermitidos: ['marketing'] },
+            { id: 'secao-artes', label: 'Banco de Artes', icon: 'bi-images', niveisPermitidos: ['marketing'] },
+            { id: 'secao-mural', label: 'Mural de Avisos & Vídeos', icon: 'bi-megaphone', niveisPermitidos: ['admin', 'marketing'] },
             { id: 'secao-enquetes-criar', label: 'Criar Enquete', icon: 'bi-bar-chart-plus', niveisPermitidos: ['admin', 'marketing', 'membro'] },
             { id: 'secao-enquetes-lista', label: 'Ver Enquetes', icon: 'bi-graph-up', niveisPermitidos: ['admin', 'marketing', 'membro'] },
-            { id: 'secao-materiais', label: 'Gestão de Materiais', icon: 'bi-box-seam', niveisPermitidos: ['admin', 'membro'] },
+            { id: 'secao-jogos', label: 'Placar e Classificação', icon: 'bi-trophy', niveisPermitidos: ['membro'] },
             { id: 'secao-eventos', label: 'Eventos e Torneios', icon: 'bi-calendar-event', niveisPermitidos: ['admin', 'membro'] },
-            { id: 'secao-jogos', label: 'Placar dos Jogos', icon: 'bi-trophy', niveisPermitidos: ['admin', 'membro'] },
-            { id: 'secao-ti', label: 'Ferramentas de TI', icon: 'bi-tools', niveisPermitidos: ['admin'], soRaiz: true },
-            { id: 'secao-ti-suporte', label: 'TI: Suporte e Monitoramento', icon: 'bi-life-preserver', niveisPermitidos: ['admin'], soRaiz: true },
-            { id: 'secao-ti-portal', label: 'TI: Alunos e Portal', icon: 'bi-sliders', niveisPermitidos: ['admin'], soRaiz: true },
-            { id: 'secao-nova-gestao', label: 'Nova Gestão', icon: 'bi-arrow-repeat', niveisPermitidos: ['admin'], soRaiz: true },
-            { id: 'secao-diretoria', label: 'Diretoria e Cargos', icon: 'bi-person-badge', niveisPermitidos: ['admin'] },
+            { id: 'secao-materiais', label: 'Gestão de Materiais', icon: 'bi-box-seam', niveisPermitidos: ['membro'] },
             { id: 'secao-alunos-cadastrar', label: 'Cadastrar Aluno', icon: 'bi-person-plus', niveisPermitidos: ['admin'] },
             { id: 'secao-alunos-lista', label: 'Alunos Cadastrados', icon: 'bi-people', niveisPermitidos: ['admin'] },
             { id: 'secao-sugestoes', label: 'Sugestões dos Alunos', icon: 'bi-lightbulb', niveisPermitidos: ['admin'] },
             { id: 'secao-pautas', label: 'Pautas e Reivindicações', icon: 'bi-signpost-split', niveisPermitidos: ['admin'] },
             { id: 'secao-punicoes', label: 'Aplicar Punições', icon: 'bi-shield-exclamation', niveisPermitidos: ['admin'] },
-            { id: 'secao-auditoria', label: 'Log de Auditoria', icon: 'bi-journal-text', niveisPermitidos: ['admin'] }
+            { id: 'secao-diretoria', label: 'Diretoria e Cargos', icon: 'bi-person-badge', niveisPermitidos: ['admin'] },
+            { id: 'secao-auditoria', label: 'Log de Auditoria', icon: 'bi-journal-text', niveisPermitidos: ['admin'] },
+            { id: 'secao-ti', label: 'Ferramentas de TI', icon: 'bi-tools', niveisPermitidos: ['admin'], soRaiz: true },
+            { id: 'secao-ti-suporte', label: 'TI: Suporte e Monitoramento', icon: 'bi-life-preserver', niveisPermitidos: ['admin'], soRaiz: true },
+            { id: 'secao-ti-portal', label: 'TI: Alunos e Portal', icon: 'bi-sliders', niveisPermitidos: ['admin'], soRaiz: true },
+            { id: 'secao-nova-gestao', label: 'Nova Gestão', icon: 'bi-arrow-repeat', niveisPermitidos: ['admin'], soRaiz: true }
         ];
 
         /* ================= UTILITÁRIOS ================= */
@@ -711,38 +786,32 @@
 
             const nivel = dadosUsuario.nivel;
             if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); }
-            if (nivel === 'admin') {
-                document.querySelectorAll('.card-admin-geral, .card-admin-nao-marketing').forEach(c => c.style.display = 'block');
-            } else if (nivel === 'membro') {
-                document.querySelectorAll('.card-admin-nao-marketing').forEach(c => c.style.display = 'block');
-            }
-
-            carregarAvisosAdmin();
-            carregarEnquetesAdmin();
-            if (nivel === 'admin') {
-                carregarAlunos();
-                carregarSugestoesAdmin();
-                carregarPautasAdmin();
-                carregarMembrosPunidosAdmin();
-                carregarAuditoria();
-                carregarResumo();
-                carregarDiretoria();
-            }
-            if (nivel !== 'marketing') {
-                carregarMateriaisAdmin();
-                carregarJogosAdmin();
-                carregarEventosAdmin();
-            }
+            // Cada cargo vê só o que precisa; o e-mail raiz (TI) vê tudo.
+            const raiz = emailUsuario === ROOT_EMAIL;
+            document.querySelectorAll('[data-niveis]').forEach(c => {
+                c.style.display = (raiz || c.dataset.niveis.split(',').includes(nivel)) ? 'block' : 'none';
+            });
+            const ver = id => { const c = document.getElementById(id); return !!c && c.style.display === 'block'; };
+            [
+                ['secao-resumo', carregarResumo], ['secao-tarefas', carregarMinhasTarefas], ['secao-tarefas-admin', carregarTarefasAdmin],
+                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes],
+                ['secao-mural', carregarAvisosAdmin], ['secao-enquetes-lista', carregarEnquetesAdmin],
+                ['secao-alunos-lista', carregarAlunos], ['secao-sugestoes', carregarSugestoesAdmin], ['secao-pautas', carregarPautasAdmin],
+                ['secao-punicoes', carregarMembrosPunidosAdmin], ['secao-auditoria', carregarAuditoria], ['secao-diretoria', carregarDiretoria],
+                ['secao-materiais', carregarMateriaisAdmin], ['secao-jogos', carregarJogosAdmin], ['secao-jogos', carregarClassificacao],
+                ['secao-eventos', carregarEventosAdmin]
+            ].forEach(([id, fn]) => { if (ver(id)) fn(); });
         }
 
         const atalhosPorNivel = {
-            admin: ['secao-mural', 'secao-enquetes-lista', 'secao-alunos-lista', 'secao-pautas'],
-            membro: ['secao-mural', 'secao-materiais', 'secao-eventos', 'secao-enquetes-lista'],
-            marketing: ['secao-relatorio', 'secao-mural', 'secao-enquetes-criar', 'secao-enquetes-lista']
+            admin: ['secao-resumo', 'secao-tarefas', 'secao-pautas', 'secao-sugestoes'],
+            membro: ['secao-tarefas', 'secao-jogos', 'secao-eventos', 'secao-materiais'],
+            marketing: ['secao-tarefas', 'secao-mural', 'secao-divulgacao', 'secao-enquetes-lista']
         };
         const nomesCurtos = {
-            'secao-mural': 'Mural', 'secao-enquetes-lista': 'Enquetes', 'secao-alunos-lista': 'Alunos', 'secao-pautas': 'Pautas',
-            'secao-materiais': 'Materiais', 'secao-eventos': 'Eventos', 'secao-relatorio': 'Relatório', 'secao-enquetes-criar': 'Nova enquete'
+            'secao-resumo': 'Resumo', 'secao-tarefas': 'Tarefas', 'secao-pautas': 'Pautas', 'secao-sugestoes': 'Sugestões',
+            'secao-jogos': 'Jogos', 'secao-eventos': 'Eventos', 'secao-materiais': 'Materiais', 'secao-mural': 'Mural',
+            'secao-divulgacao': 'Divulgação', 'secao-enquetes-lista': 'Enquetes'
         };
         let observadorBarra = null;
         function renderizarBarraInferior(nivel) {
@@ -776,7 +845,7 @@
         function renderizarMenuLateral(dadosUsuario) {
             const containerMenu = document.getElementById('itensMenuNav');
             containerMenu.innerHTML = '';
-            modulosSistema.filter(m => m.niveisPermitidos.includes(dadosUsuario.nivel) && (!m.soRaiz || emailLogado === ROOT_EMAIL)).forEach(modulo => {
+            modulosSistema.filter(m => (emailLogado === ROOT_EMAIL || m.niveisPermitidos.includes(dadosUsuario.nivel)) && (!m.soRaiz || emailLogado === ROOT_EMAIL)).forEach(modulo => {
                 const a = document.createElement('a');
                 a.href = `#${modulo.id}`;
                 a.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary d-flex align-items-center gap-2 py-3';
@@ -962,10 +1031,11 @@
                     html += `
                         <div class="list-group-item d-flex justify-content-between align-items-start">
                             <div>
-                                <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${esc(a.titulo)}</h6>
+                                <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${a.fixado ? '📌 ' : ''}${esc(a.titulo)}</h6>
                                 <p class="mb-1 small text-white">${esc(a.mensagem)}</p>
                                 <small class="text-muted-custom d-block" style="font-size: 11px;">Publicado por: ${esc(a.autor || 'Diretoria')} ${dh ? '• ' + esc(dh) : ''}</small>
                             </div>
+                            <button data-acao="fixarAviso" data-id="${esc(doc.id)}" data-fixar="${!a.fixado}" class="btn btn-outline-warning btn-sm py-0 ms-2" style="font-size: 11px;">${a.fixado ? 'Desafixar' : '📌 Fixar'}</button>
                             <button data-acao="excluirAviso" data-id="${esc(doc.id)}" data-titulo="${esc(a.titulo)}" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Excluir</button>
                         </div>`;
                 });
@@ -1294,7 +1364,7 @@
                         <div><strong class="text-white">${esc(x.nome)}</strong> <small class="text-muted-custom">— ${esc(x.cargo)}</small><br><small class="text-muted-custom">${id}</small></div>
                         <div class="d-flex gap-1 align-items-center">
                             <select data-mudar="nivelCargo" data-id="${id}" class="form-select form-select-sm" style="width: auto;" ${raiz ? 'disabled' : ''}>
-                                ${['admin', 'membro', 'marketing'].map(n => `<option ${n === x.nivel ? 'selected' : ''}>${n}</option>`).join('')}
+                                ${['admin', 'membro', 'marketing'].map(n => `<option value="${n}" ${n === x.nivel ? 'selected' : ''}>${ROTULO_NIVEL[n]}</option>`).join('')}
                             </select>
                             ${raiz ? '' : `<button data-acao="removerCargo" data-id="${id}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Remover</button>`}
                         </div>
@@ -1333,6 +1403,255 @@
                 registrarAcao('Backup baixado', nomes.length + ' coleções');
             } catch (e) { erroDB(e, 'baixarBackup'); }
         }
+        /* ================= TAREFAS, ATAS, RELATÓRIO, DIVULGAÇÃO, ARTES ================= */
+
+        function carregarMinhasTarefas() {
+            ouvir(db.collection('tarefas').where('atribuidoPara', '==', emailLogado), snap => {
+                const c = document.getElementById('lista-minhas-tarefas');
+                const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+                    .sort((a, b) => (a.status === b.status ? 0 : a.status === 'Pendente' ? -1 : 1) || (a.prazo || '9999').localeCompare(b.prazo || '9999'));
+                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma tarefa para você. 🎉</p>'; return; }
+                const hoje = hojeISO();
+                c.innerHTML = '<div class="list-group">' + docs.map(t => {
+                    const feita = t.status === 'Concluída', atras = !feita && t.prazo && t.prazo < hoje;
+                    return `
+                    <div class="list-group-item d-flex justify-content-between align-items-start gap-2">
+                        <div style="${feita ? 'opacity:.6' : ''}">
+                            <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${esc(t.titulo)} ${feita ? '<span class="badge bg-success">Concluída</span>' : atras ? '<span class="badge bg-danger">Atrasada</span>' : ''}</h6>
+                            ${t.descricao ? `<p class="mb-1 small text-white">${esc(t.descricao)}</p>` : ''}
+                            <small class="text-muted-custom" style="font-size: 11px;">${t.prazo ? 'Prazo: ' + esc(dataBR(t.prazo)) + ' • ' : ''}Por: ${esc(t.criadaPor || 'Presidência')}</small>
+                        </div>
+                        <button data-acao="${feita ? 'reabrirTarefa' : 'concluirTarefa'}" data-id="${esc(t.id)}" class="btn btn-sm ${feita ? 'btn-outline-light' : 'btn-success'} py-0" style="font-size: 11px; white-space: nowrap;">${feita ? 'Reabrir' : '✔ Concluir'}</button>
+                    </div>`;
+                }).join('') + '</div>';
+            });
+        }
+
+        let cacheCargos = {};
+        function carregarTarefasAdmin() {
+            ouvir(db.collection('cargos'), snap => {
+                cacheCargos = {};
+                snap.docs.forEach(d => cacheCargos[d.id] = d.data());
+                const sel = document.getElementById('tar-para'), atual = sel.value;
+                sel.innerHTML = '<option value="__todos">👥 Todos os diretores</option>' + snap.docs.map(d => `<option value="${esc(d.id)}">${esc(d.data().nome)} — ${esc(d.data().cargo)}</option>`).join('');
+                if (atual) sel.value = atual;
+            });
+            ouvir(db.collection('tarefas').orderBy('criadoEm', 'desc').limit(100), snap => {
+                const c = document.getElementById('lista-tarefas-admin');
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma tarefa atribuída.</p>'; return; }
+                const hoje = hojeISO();
+                const docs = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.status === b.status ? 0 : a.status === 'Pendente' ? -1 : 1));
+                c.innerHTML = '<div class="list-group">' + docs.map(t => {
+                    const feita = t.status === 'Concluída', atras = !feita && t.prazo && t.prazo < hoje;
+                    return `
+                    <div class="list-group-item d-flex justify-content-between align-items-start gap-2">
+                        <div style="${feita ? 'opacity:.6' : ''}">
+                            <strong class="text-white">${esc(t.titulo)}</strong> ${feita ? '<span class="badge bg-success">Concluída</span>' : atras ? '<span class="badge bg-danger">Atrasada</span>' : '<span class="badge bg-warning text-dark">Pendente</span>'}<br>
+                            <small class="text-muted-custom">Para: ${esc(t.atribuidoNome || t.atribuidoPara)}${t.prazo ? ' • prazo ' + esc(dataBR(t.prazo)) : ''}</small>
+                        </div>
+                        <button data-acao="excluirTarefa" data-id="${esc(t.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                    </div>`;
+                }).join('') + '</div>';
+            });
+        }
+        async function criarTarefa() {
+            const titulo = document.getElementById('tar-titulo').value.trim();
+            const descricao = document.getElementById('tar-desc').value.trim();
+            const prazo = document.getElementById('tar-prazo').value;
+            const para = document.getElementById('tar-para').value;
+            if (!titulo || !para) { toast('Preencha a tarefa e para quem é.', 'warning'); return; }
+            const alvos = para === '__todos' ? Object.keys(cacheCargos) : [para];
+            if (!alvos.length) { toast('Cadastre diretores primeiro.', 'warning'); return; }
+            try {
+                const batch = db.batch();
+                alvos.forEach(email => batch.set(db.collection('tarefas').doc(), {
+                    titulo, descricao, prazo, atribuidoPara: email, atribuidoNome: (cacheCargos[email] || {}).nome || email,
+                    criadaPor: document.getElementById('user-name-display').textContent, status: 'Pendente', criadoEm: TS()
+                }));
+                await batch.commit();
+                mostrarAlertaSucesso(`Tarefa atribuída (${alvos.length} pessoa${alvos.length > 1 ? 's' : ''}).`);
+                registrarAcao('Tarefa atribuída', `${titulo} → ${para === '__todos' ? 'todos' : para}`);
+                ['tar-titulo', 'tar-desc', 'tar-prazo'].forEach(i => document.getElementById(i).value = '');
+            } catch (e) { erroDB(e, 'criarTarefa'); }
+        }
+
+        let cacheAtas = {};
+        function criarAta() {
+            const g = id => document.getElementById(id).value.trim();
+            const titulo = g('ata-titulo');
+            if (!titulo) { toast('Dê um título à ata.', 'warning'); return; }
+            db.collection('atas').add({
+                titulo, data: document.getElementById('ata-data').value, presentes: g('ata-presentes'), pauta: g('ata-pauta'), decisoes: g('ata-decisoes'),
+                criadaPor: document.getElementById('user-name-display').textContent, criadoEm: TS()
+            }).then(() => {
+                mostrarAlertaSucesso('Ata salva!');
+                registrarAcao('Ata criada', titulo);
+                ['ata-titulo', 'ata-data', 'ata-presentes', 'ata-pauta', 'ata-decisoes'].forEach(i => document.getElementById(i).value = '');
+            }).catch(e => erroDB(e, 'criarAta'));
+        }
+        function carregarAtas() {
+            ouvir(db.collection('atas').orderBy('criadoEm', 'desc').limit(50), snap => {
+                const c = document.getElementById('lista-atas-admin');
+                cacheAtas = {};
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma ata registrada.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + snap.docs.map(d => {
+                    const a = d.data(); cacheAtas[d.id] = a;
+                    const bloco = (t, v) => v ? `<div class="mb-2"><strong class="small" style="color: var(--ifce-accent-green);">${t}</strong><div class="small text-white" style="white-space: pre-wrap;">${esc(v)}</div></div>` : '';
+                    return `
+                    <div class="list-group-item">
+                        <details>
+                            <summary class="fw-bold text-white" style="cursor: pointer;">${esc(a.titulo)} <small class="text-muted-custom">${a.data ? '• ' + esc(dataBR(a.data)) : ''}</small></summary>
+                            <div class="mt-2">${bloco('Presentes', a.presentes)}${bloco('Pauta', a.pauta)}${bloco('Decisões', a.decisoes)}
+                                <div class="d-flex gap-2">
+                                    <button data-acao="pdfAta" data-id="${esc(d.id)}" class="btn btn-outline-light btn-sm py-0" style="font-size: 11px;">📄 PDF</button>
+                                    <button data-acao="excluirAta" data-id="${esc(d.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                                </div>
+                            </div>
+                        </details>
+                    </div>`;
+                }).join('') + '</div>';
+            });
+        }
+        function gerarPDFAta(id) {
+            const a = cacheAtas[id]; if (!a) return;
+            const { jsPDF } = window.jspdf; const doc = new jsPDF(); let y = 20;
+            const linha = t => doc.splitTextToSize(String(t), 170).forEach(p => { if (y > 280) { doc.addPage(); y = 20; } doc.text(p, 20, y); y += 6; });
+            doc.setFont('Helvetica', 'bold'); doc.setFontSize(15); doc.text('Grêmio Estudantil - IFCE Crateús', 20, y); y += 9;
+            doc.setFontSize(12); linha('ATA: ' + a.titulo); doc.setFont('Helvetica', 'normal'); linha('Data: ' + (a.data ? dataBR(a.data) : '-'));
+            [['Presentes', a.presentes], ['Pauta', a.pauta], ['Decisões', a.decisoes]].forEach(([t, v]) => {
+                if (!v) return; y += 3; doc.setFont('Helvetica', 'bold'); linha(t); doc.setFont('Helvetica', 'normal'); linha(v);
+            });
+            y += 6; linha('Registrada por: ' + (a.criadaPor || '-'));
+            doc.save(`ata_${(a.data || 'sem-data')}.pdf`);
+        }
+
+        async function gerarRelatorioMensal() {
+            const mes = document.getElementById('rel-mes').value;
+            if (!mes) { toast('Escolha o mês.', 'warning'); return; }
+            const [ano, m] = mes.split('-').map(Number);
+            const ini = new Date(ano, m - 1, 1), fim = new Date(ano, m, 1);
+            const noMes = ts => ts && ts.toDate && ts.toDate() >= ini && ts.toDate() < fim;
+            try {
+                const T = d => firebase.firestore.Timestamp.fromDate(d);
+                const [acoes, eventos, pautas, sugs, tarefas, alunos, jogos] = await Promise.all([
+                    db.collection('acoes_admin').where('em', '>=', T(ini)).where('em', '<', T(fim)).get(),
+                    db.collection('eventos').get(), db.collection('reivindicacoes').get(), db.collection('sugestoes').get(),
+                    db.collection('tarefas').get(), db.collection('alunos').get(), db.collection('jogos').get()
+                ]);
+                const ev = eventos.docs.map(d => d.data()).filter(e => e.dataISO ? e.dataISO.startsWith(mes) : noMes(e.criadoEm));
+                const pa = pautas.docs.map(d => d.data());
+                const porAcao = {};
+                acoes.docs.forEach(d => { const k = d.data().acao || 'Outras'; porAcao[k] = (porAcao[k] || 0) + 1; });
+                const { jsPDF } = window.jspdf; const doc = new jsPDF(); let y = 20;
+                const checar = n => { if (y + n > 285) { doc.addPage(); y = 20; } };
+                const linha = t => doc.splitTextToSize(String(t), 170).forEach(p => { checar(6); doc.text(p, 20, y); y += 6; });
+                const titulo = t => { checar(14); y += 3; doc.setFont('Helvetica', 'bold'); doc.setFontSize(13); doc.text(t, 20, y); y += 8; doc.setFont('Helvetica', 'normal'); doc.setFontSize(11); };
+                doc.setFont('Helvetica', 'bold'); doc.setFontSize(16); doc.text('Grêmio Estudantil - IFCE Crateús', 20, y); y += 9;
+                doc.setFontSize(12); doc.text(`Relatório mensal - ${String(m).padStart(2, '0')}/${ano}`, 20, y); y += 8; doc.setFont('Helvetica', 'normal'); doc.setFontSize(11);
+                titulo('Resumo');
+                linha(`Alunos ativos no portal: ${alunos.docs.filter(d => d.data().ativo).length}`);
+                linha(`Ações registradas pela diretoria: ${acoes.size}`);
+                linha(`Eventos no mês: ${ev.length}`);
+                linha(`Jogos cadastrados no mês: ${jogos.docs.filter(d => noMes(d.data().criadoEm)).length}`);
+                titulo('Eventos');
+                ev.length ? ev.forEach(e => linha(`- ${e.titulo} (${e.data || dataBR(e.dataISO)}) - ${(e.inscritos || []).length} inscrito(s)`)) : linha('Nenhum evento.');
+                titulo('Pautas dos alunos');
+                linha(`Novas pautas: ${pa.filter(p => noMes(p.criadoEm)).length}`);
+                const movidas = pa.filter(p => noMes(p.statusEm));
+                movidas.length ? movidas.forEach(p => linha(`- ${p.titulo}: ${p.status} (${(p.apoios || []).length} apoios)`)) : linha('Nenhuma pauta mudou de status.');
+                titulo('Sugestões');
+                const su = sugs.docs.map(d => d.data());
+                linha(`Recebidas: ${su.filter(x => noMes(x.criadoEm)).length} | Respondidas: ${su.filter(x => noMes(x.respondidaEm)).length} | Aguardando resposta: ${su.filter(x => !x.resposta).length}`);
+                titulo('Tarefas da diretoria');
+                const ta = tarefas.docs.map(d => d.data());
+                linha(`Concluídas no mês: ${ta.filter(x => noMes(x.concluidaEm)).length} | Pendentes agora: ${ta.filter(x => x.status === 'Pendente').length}`);
+                titulo('Ações registradas');
+                Object.keys(porAcao).length ? Object.entries(porAcao).sort((a, b) => b[1] - a[1]).forEach(([k, v]) => linha(`- ${k}: ${v}`)) : linha('Nenhuma ação.');
+                doc.save(`relatorio_gremio_${mes}.pdf`);
+                registrarAcao('Relatório mensal gerado', mes);
+            } catch (e) { erroDB(e, 'relatorioMensal'); }
+        }
+
+        function criarDivulgacao() {
+            const g = id => document.getElementById(id).value.trim();
+            const titulo = g('div-titulo');
+            if (!titulo) { toast('Diga o que será divulgado.', 'warning'); return; }
+            db.collection('divulgacoes').add({
+                titulo, canal: document.getElementById('div-canal').value, data: document.getElementById('div-data').value,
+                responsavel: g('div-resp'), status: 'Planejado', criadoEm: TS()
+            }).then(() => { toast('Adicionado ao calendário!'); ['div-titulo', 'div-data', 'div-resp'].forEach(i => document.getElementById(i).value = ''); })
+              .catch(e => erroDB(e, 'criarDivulgacao'));
+        }
+        function carregarDivulgacoes() {
+            ouvir(db.collection('divulgacoes').orderBy('criadoEm', 'desc').limit(100), snap => {
+                const c = document.getElementById('lista-divulgacao');
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nada planejado ainda.</p>'; return; }
+                const hoje = hojeISO();
+                const docs = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => ((a.status === 'Publicado') - (b.status === 'Publicado')) || (a.data || '9999').localeCompare(b.data || '9999'));
+                c.innerHTML = '<div class="list-group">' + docs.map(x => {
+                    const atras = x.status !== 'Publicado' && x.data && x.data < hoje;
+                    return `
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div><strong class="text-white">${esc(x.titulo)}</strong> ${atras ? '<span class="badge bg-danger">Atrasado</span>' : ''}<br>
+                            <small class="text-muted-custom">${esc(x.canal)}${x.data ? ' • ' + esc(dataBR(x.data)) : ''}${x.responsavel ? ' • ' + esc(x.responsavel) : ''}</small></div>
+                            <button data-acao="excluirDivulgacao" data-id="${esc(x.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                        </div>
+                        <select data-mudar="statusDivulgacao" data-id="${esc(x.id)}" class="form-select form-select-sm mt-2" style="max-width: 190px;">
+                            ${['Planejado', 'Em produção', 'Pronto', 'Publicado'].map(st => `<option ${st === x.status ? 'selected' : ''}>${st}</option>`).join('')}
+                        </select>
+                    </div>`;
+                }).join('') + '</div>';
+            });
+        }
+        document.addEventListener('change', e => {
+            const sd = e.target.closest('[data-mudar="statusDivulgacao"]');
+            if (sd) db.collection('divulgacoes').doc(sd.dataset.id).update({ status: sd.value }).catch(err => erroDB(err, 'statusDivulgacao'));
+        });
+
+        function criarArte() {
+            const nome = document.getElementById('arte-nome').value.trim(), link = document.getElementById('arte-link').value.trim();
+            if (!nome || !/^https:\/\//i.test(link)) { toast('Informe o nome e um link que comece com https://', 'warning'); return; }
+            db.collection('artes').add({ nome, link, criadoEm: TS() })
+                .then(() => { toast('Link salvo!'); ['arte-nome', 'arte-link'].forEach(i => document.getElementById(i).value = ''); })
+                .catch(e => erroDB(e, 'criarArte'));
+        }
+        function carregarArtes() {
+            ouvir(db.collection('artes').orderBy('criadoEm', 'desc').limit(100), snap => {
+                const c = document.getElementById('lista-artes');
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum link guardado.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + snap.docs.map(d => {
+                    const a = d.data(), ok = /^https:\/\//i.test(a.link || '');
+                    return `<div class="list-group-item d-flex justify-content-between align-items-center gap-2">
+                        <div><strong class="text-white">${esc(a.nome)}</strong><br>${ok ? `<a href="${esc(a.link)}" target="_blank" rel="noopener noreferrer" class="small">Abrir link ↗</a>` : '<small class="text-muted-custom">link inválido</small>'}</div>
+                        <button data-acao="excluirArte" data-id="${esc(d.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                    </div>`;
+                }).join('') + '</div>';
+            });
+        }
+
+        function calcularClassificacao(jogos) {
+            const por = {};
+            jogos.filter(j => j.status === 'Encerrado').forEach(j => {
+                const t = por[j.torneio || 'Geral'] = por[j.torneio || 'Geral'] || {};
+                const reg = n => t[n] = t[n] || { time: n, J: 0, V: 0, E: 0, D: 0, GP: 0, GC: 0, Pts: 0 };
+                const a = reg(j.timeA), b = reg(j.timeB), pa = Number(j.placarA) || 0, pb = Number(j.placarB) || 0;
+                a.J++; b.J++; a.GP += pa; a.GC += pb; b.GP += pb; b.GC += pa;
+                if (pa > pb) { a.V++; a.Pts += 3; b.D++; } else if (pb > pa) { b.V++; b.Pts += 3; a.D++; } else { a.E++; b.E++; a.Pts++; b.Pts++; }
+            });
+            return Object.entries(por).map(([torneio, t]) => ({ torneio, times: Object.values(t).sort((x, y) => y.Pts - x.Pts || (y.GP - y.GC) - (x.GP - x.GC) || y.GP - x.GP) }));
+        }
+        function carregarClassificacao() {
+            ouvir(db.collection('jogos'), snap => {
+                const grupos = calcularClassificacao(snap.docs.map(d => d.data()));
+                document.getElementById('classificacao-admin').innerHTML = grupos.map(({ torneio, times }) => `
+                    <div class="mb-3"><h6 class="fw-bold text-white">Classificação — ${esc(torneio)}</h6>
+                    <div style="overflow-x: auto;"><table class="table table-sm table-dark mb-0"><thead><tr><th>#</th><th>Time</th><th>J</th><th>V</th><th>E</th><th>D</th><th>SG</th><th>Pts</th></tr></thead><tbody>
+                    ${times.map((t, i) => `<tr><td>${i + 1}</td><td>${esc(t.time)}</td><td>${t.J}</td><td>${t.V}</td><td>${t.E}</td><td>${t.D}</td><td>${t.GP - t.GC}</td><td><strong>${t.Pts}</strong></td></tr>`).join('')}
+                    </tbody></table></div></div>`).join('') + (grupos.length ? '<hr style="border-color: var(--ifce-card-border);" class="my-3">' : '');
+            });
+        }
+
         /* ================= TI: SUPORTE, ALUNOS E PORTAL ================= */
 
         async function fichaUsuario() {
@@ -1802,6 +2121,14 @@
                 Object.entries(cargosIniciais).forEach(([email, d]) => batch.set(db.collection('cargos').doc(email), d));
                 batch.commit().then(() => { toast('Diretoria importada!'); registrarAcao('Diretoria importada', Object.keys(cargosIniciais).length + ' cargos'); }).catch(e => erroDB(e, 'importarCargos'));
             },
+            concluirTarefa: id => db.collection('tarefas').doc(id).update({ status: 'Concluída', concluidaEm: TS() }).then(() => toast('Tarefa concluída! 👏')).catch(e => erroDB(e, 'concluirTarefa')),
+            reabrirTarefa: id => db.collection('tarefas').doc(id).update({ status: 'Pendente', concluidaEm: firebase.firestore.FieldValue.delete() }).catch(e => erroDB(e, 'reabrirTarefa')),
+            excluirTarefa: async id => { if (await confirmar('Excluir esta tarefa?')) db.collection('tarefas').doc(id).delete().catch(e => erroDB(e, 'excluirTarefa')); },
+            pdfAta: id => gerarPDFAta(id),
+            excluirAta: async id => { if (await confirmar('Excluir esta ata?')) db.collection('atas').doc(id).delete().then(() => registrarAcao('Ata excluída', id)).catch(e => erroDB(e, 'excluirAta')); },
+            excluirDivulgacao: async id => { if (await confirmar('Remover do calendário?')) db.collection('divulgacoes').doc(id).delete().catch(e => erroDB(e, 'excluirDivulgacao')); },
+            excluirArte: async id => { if (await confirmar('Remover este link?')) db.collection('artes').doc(id).delete().catch(e => erroDB(e, 'excluirArte')); },
+            fixarAviso: (id, el) => db.collection('mural').doc(id).update({ fixado: el.dataset.fixar === 'true' }).then(() => toast(el.dataset.fixar === 'true' ? 'Aviso fixado no topo.' : 'Aviso desafixado.')).catch(e => erroDB(e, 'fixarAviso')),
             excluirSugestao: async id => { if (await confirmar("Apagar esta sugestão?")) db.collection('sugestoes').doc(id).delete().catch(e => erroDB(e, 'excluirSugestao')); },
             excluirPauta: async id => { if (await confirmar("Excluir esta pauta?")) db.collection('reivindicacoes').doc(id).delete().then(() => registrarAcao('Pauta excluída', id)).catch(e => erroDB(e, 'excluirPauta')); },
             removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(e => erroDB(e, 'removerPunicao')); },
