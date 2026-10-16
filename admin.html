@@ -326,6 +326,11 @@
                     <button onclick="carregarLogCompleto()" class="btn btn-outline-info btn-sm">Carregar últimas 500</button>
                     <button onclick="baixarLogCSV()" class="btn btn-outline-light btn-sm">⬇️ Baixar CSV</button>
                 </div>
+                <div class="input-group input-group-sm mb-2">
+                    <span class="input-group-text">Apagar log com mais de</span>
+                    <select id="ti-log-dias" class="form-select"><option value="30">30 dias</option><option value="60">60 dias</option><option value="90" selected>90 dias</option><option value="180">180 dias</option><option value="0">todos</option></select>
+                    <button onclick="apagarLogAntigo()" class="btn btn-outline-danger">Apagar</button>
+                </div>
                 <input type="search" id="ti-log-busca" class="form-control mb-2" placeholder="🔍 Filtrar por pessoa, ação ou detalhe..." oninput="renderLogCompleto()">
                 <div id="ti-log" class="small"></div>
 
@@ -1767,6 +1772,22 @@
             if (!soRaiz()) return;
             if (!logCache.length) { toast('Carregue o log primeiro.', 'warning'); return; }
             baixarCSV(`log_gremio_${hojeISO()}.csv`, [['Data', 'Autor', 'Ação', 'Detalhes'], ...logCache.map(a => [fmtData(a.em), a.autor, a.acao, a.detalhes])]);
+        }
+
+        async function apagarLogAntigo() {
+            if (!soRaiz()) return;
+            const dias = parseInt(document.getElementById('ti-log-dias').value, 10);
+            const corte = firebase.firestore.Timestamp.fromMillis(dias ? Date.now() - dias * 864e5 : Date.now());
+            try {
+                const snap = await db.collection('acoes_admin').where('em', '<', corte).get();
+                if (snap.empty) { toast('Não há registros nesse período.', 'warning'); return; }
+                if (!(await confirmar(`Apagar ${snap.size} registro(s) do log${dias ? ' com mais de ' + dias + ' dias' : ' (todos)'}? Não dá para desfazer. Baixe o CSV antes se quiser guardar.`))) return;
+                await apagarEmLotes(snap.docs.map(d => d.ref));
+                logCache = [];
+                document.getElementById('ti-log').innerHTML = '';
+                mostrarAlertaSucesso(snap.size + ' registro(s) do log apagado(s).');
+                registrarAcao('Log apagado', `${snap.size} registros${dias ? ' com mais de ' + dias + ' dias' : ' (todos)'}`);
+            } catch (e) { erroDB(e, 'apagarLog'); }
         }
 
         async function carregarErrosPortal() {
