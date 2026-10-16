@@ -224,6 +224,19 @@
                 <div id="lista-divulgacao"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
+            <div id="secao-videos" data-niveis="marketing" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">🎬 Vídeos de Aula Prática</h5>
+                <p class="text-muted-custom small mb-2">Grátis e sem limite de tamanho: <strong>1)</strong> envie o vídeo pelo app do YouTube (toque no "+", "Enviar vídeo") e em "Visibilidade" escolha <strong>Não listado</strong>; <strong>2)</strong> copie o link e cole aqui. O vídeo toca dentro do portal dos alunos. Também funciona com link do Google Drive (compartilhado como "qualquer pessoa com o link").</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-12"><label class="form-label fw-bold">Título</label><input type="text" id="vid-titulo" class="form-control" maxlength="120" placeholder="Ex: Titulação ácido-base"></div>
+                    <div class="col-12"><label class="form-label fw-bold">Link do vídeo (YouTube ou Drive)</label><input type="url" id="vid-link" class="form-control" placeholder="https://youtu.be/..."></div>
+                    <div class="col-12"><label class="form-label fw-bold">Descrição (opcional)</label><textarea id="vid-desc" class="form-control" rows="2" maxlength="500"></textarea></div>
+                </div>
+                <button onclick="publicarVideo()" class="btn btn-ifce">Publicar vídeo</button>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <div id="lista-videos-admin"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
             <div id="secao-artes" data-niveis="marketing" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">🎨 Banco de Artes</h5>
                 <p class="text-muted-custom small mb-3">Guarde aqui os links (Drive, Canva) de cartazes, logos e modelos para a próxima gestão reaproveitar.</p>
@@ -360,6 +373,7 @@
                     <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="materiais" id="rc4"><label class="form-check-label small" for="rc4">🎲 Materiais</label></div></div>
                     <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="eventos" id="rc5"><label class="form-check-label small" for="rc5">📅 Eventos</label></div></div>
                     <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="jogos" id="rc6"><label class="form-check-label small" for="rc6">🏆 Jogos</label></div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="videos" id="rc8"><label class="form-check-label small" for="rc8">🎬 Vídeos</label></div></div>
                     <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="sugestoes" id="rc7"><label class="form-check-label small" for="rc7">💡 Sugestões</label></div></div>
                 </div>
                 <button onclick="salvarPortalConfig()" class="btn btn-outline-info btn-sm fw-bold">Salvar</button>
@@ -605,6 +619,7 @@
             { id: 'secao-relatorio-mensal', label: 'Relatório do Mês', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['admin'] },
             { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro'] },
             { id: 'secao-divulgacao', label: 'Calendário de Divulgação', icon: 'bi-calendar2-week', niveisPermitidos: ['marketing'] },
+            { id: 'secao-videos', label: 'Vídeos de Aula Prática', icon: 'bi-camera-video', niveisPermitidos: ['marketing'] },
             { id: 'secao-artes', label: 'Banco de Artes', icon: 'bi-images', niveisPermitidos: ['marketing'] },
             { id: 'secao-mural', label: 'Mural de Avisos & Vídeos', icon: 'bi-megaphone', niveisPermitidos: ['admin', 'marketing'] },
             { id: 'secao-enquetes-criar', label: 'Criar Enquete', icon: 'bi-bar-chart-plus', niveisPermitidos: ['admin', 'marketing', 'membro'] },
@@ -794,7 +809,7 @@
             const ver = id => { const c = document.getElementById(id); return !!c && c.style.display === 'block'; };
             [
                 ['secao-resumo', carregarResumo], ['secao-tarefas', carregarMinhasTarefas], ['secao-tarefas-admin', carregarTarefasAdmin],
-                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes],
+                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-videos', carregarVideos],
                 ['secao-mural', carregarAvisosAdmin], ['secao-enquetes-lista', carregarEnquetesAdmin],
                 ['secao-alunos-lista', carregarAlunos], ['secao-sugestoes', carregarSugestoesAdmin], ['secao-pautas', carregarPautasAdmin],
                 ['secao-punicoes', carregarMembrosPunidosAdmin], ['secao-auditoria', carregarAuditoria], ['secao-diretoria', carregarDiretoria],
@@ -1652,6 +1667,56 @@
             });
         }
 
+        /* ================= VÍDEOS DE AULA PRÁTICA (YouTube / Drive) ================= */
+
+        function embedDe(url) {
+          url = String(url || '').trim();
+          let m = url.match(/^https:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{6,15})/i);
+          if (m) return { tipo: 'YouTube', src: 'https://www.youtube-nocookie.com/embed/' + m[1] };
+          m = url.match(/^https:\/\/drive\.google\.com\/file\/d\/([\w-]{10,})/i);
+          if (m) return { tipo: 'Google Drive', src: 'https://drive.google.com/file/d/' + m[1] + '/preview' };
+          return null;
+        }
+        function playerHTML(url) {
+          const e = embedDe(url);
+          if (!e) return '';
+          return `<div style="position:relative;padding-top:56.25%;border-radius:8px;overflow:hidden;background:#000"><iframe src="${e.src}" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>`;
+        }
+        
+        function publicarVideo() {
+            const titulo = document.getElementById('vid-titulo').value.trim();
+            const url = document.getElementById('vid-link').value.trim();
+            const descricao = document.getElementById('vid-desc').value.trim();
+            if (!titulo || !url) { toast('Dê um título e cole o link do vídeo.', 'warning'); return; }
+            const e = embedDe(url);
+            if (!e) { toast('Use um link do YouTube (youtu.be ou youtube.com) ou do Google Drive.', 'warning'); return; }
+            db.collection('videos').add({
+                titulo, descricao, url, tipo: e.tipo,
+                autor: document.getElementById('user-name-display').textContent, criadoEm: TS()
+            }).then(() => {
+                toast('Vídeo publicado para os alunos! 🎬');
+                registrarAcao('Vídeo publicado', titulo);
+                ['vid-titulo', 'vid-link', 'vid-desc'].forEach(i => document.getElementById(i).value = '');
+            }).catch(err => erroDB(err, 'publicarVideo'));
+        }
+        function carregarVideos() {
+            ouvir(db.collection('videos').orderBy('criadoEm', 'desc').limit(50), snap => {
+                const c = document.getElementById('lista-videos-admin');
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum vídeo publicado ainda.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + snap.docs.map(d => {
+                    const v = d.data();
+                    return `
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div><strong class="text-white">${esc(v.titulo)}</strong><br><small class="text-muted-custom">${esc(v.tipo || '')} • ${esc(v.autor || '')} • ${esc(fmtData(v.criadoEm))}</small></div>
+                            <button data-acao="excluirVideo" data-id="${esc(d.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                        </div>
+                        ${playerHTML(v.url)}
+                    </div>`;
+                }).join('') + '</div>';
+            });
+        }
+
         /* ================= TI: SUPORTE, ALUNOS E PORTAL ================= */
 
         async function fichaUsuario() {
@@ -2129,6 +2194,7 @@
             excluirDivulgacao: async id => { if (await confirmar('Remover do calendário?')) db.collection('divulgacoes').doc(id).delete().catch(e => erroDB(e, 'excluirDivulgacao')); },
             excluirArte: async id => { if (await confirmar('Remover este link?')) db.collection('artes').doc(id).delete().catch(e => erroDB(e, 'excluirArte')); },
             fixarAviso: (id, el) => db.collection('mural').doc(id).update({ fixado: el.dataset.fixar === 'true' }).then(() => toast(el.dataset.fixar === 'true' ? 'Aviso fixado no topo.' : 'Aviso desafixado.')).catch(e => erroDB(e, 'fixarAviso')),
+            excluirVideo: async id => { if (await confirmar('Excluir este vídeo do portal? (O vídeo continua no YouTube/Drive.)')) db.collection('videos').doc(id).delete().then(() => registrarAcao('Vídeo removido', id)).catch(e => erroDB(e, 'excluirVideo')); },
             excluirSugestao: async id => { if (await confirmar("Apagar esta sugestão?")) db.collection('sugestoes').doc(id).delete().catch(e => erroDB(e, 'excluirSugestao')); },
             excluirPauta: async id => { if (await confirmar("Excluir esta pauta?")) db.collection('reivindicacoes').doc(id).delete().then(() => registrarAcao('Pauta excluída', id)).catch(e => erroDB(e, 'excluirPauta')); },
             removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(e => erroDB(e, 'removerPunicao')); },

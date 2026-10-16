@@ -134,6 +134,12 @@ body{background-color:#f4f6f9}
     <div id="classificacao-aluno"></div>
   </div>
 
+  <div id="sec-videos" class="card card-custom p-4 mb-4">
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🎬 Vídeos de Aula Prática</h5>
+    <p class="text-muted small mb-3">Reveja as aulas práticas do laboratório quando quiser.</p>
+    <div id="lista-videos-aluno"><p class="text-muted small">Carregando vídeos...</p></div>
+  </div>
+
   <div id="sec-sugestoes" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">💡 Enviando Sugestões ao Grêmio</h5>
     <p class="text-muted small mb-3">Mande suas ideias, críticas ou dúvidas para a gestão do Grêmio Estudantil.</p>
@@ -159,7 +165,7 @@ body{background-color:#f4f6f9}
   <div id="lista-notif"></div>
 </div>
 
-<nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
+<nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
 <div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100000;width:100%;max-width:420px;margin-bottom:72px"></div>
 
@@ -316,13 +322,13 @@ function iniciarSessaoAluno() {
     const bn = document.getElementById('banner-portal');
     bn.textContent = d.banner || ''; bn.style.display = d.banner ? 'block' : 'none';
     const rec = d.recursos || {};
-    ['avisos', 'enquetes', 'pautas', 'materiais', 'eventos', 'jogos', 'sugestoes'].forEach(k => {
+    ['avisos', 'enquetes', 'pautas', 'materiais', 'eventos', 'jogos', 'videos', 'sugestoes'].forEach(k => {
       const off = rec[k] === false;
       const card = document.getElementById('sec-' + k); if (card) card.style.display = off ? 'none' : '';
       const btn = document.querySelector('#bottom-nav [data-alvo="sec-' + k + '"]'); if (btn) btn.style.display = off ? 'none' : '';
     });
   });
-  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarJogos(); carregarClassificacao(); carregarMinhasSugestoes();
+  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarJogos(); carregarClassificacao(); carregarVideos(); carregarMinhasSugestoes();
 }
 
 /* ---------- Mural ---------- */
@@ -487,6 +493,28 @@ function carregarEventos() {
     }).join('') + '</div>';
   });
 }
+function embedDe(url) {
+  url = String(url || '').trim();
+  let m = url.match(/^https:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{6,15})/i);
+  if (m) return { tipo: 'YouTube', src: 'https://www.youtube-nocookie.com/embed/' + m[1] };
+  m = url.match(/^https:\/\/drive\.google\.com\/file\/d\/([\w-]{10,})/i);
+  if (m) return { tipo: 'Google Drive', src: 'https://drive.google.com/file/d/' + m[1] + '/preview' };
+  return null;
+}
+function playerHTML(url) {
+  const e = embedDe(url);
+  if (!e) return '';
+  return `<div style="position:relative;padding-top:56.25%;border-radius:8px;overflow:hidden;background:#000"><iframe src="${e.src}" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>`;
+}
+function carregarVideos() {
+  lista('lista-videos-aluno', db.collection('videos').orderBy('criadoEm', 'desc'), 'Nenhum vídeo publicado ainda.', v => `
+    <div class="list-group-item">
+      <h6 class="fw-bold text-success mb-1">${esc(v.titulo)}</h6>
+      ${v.descricao ? `<p class="mb-2 small text-dark" style="white-space:pre-wrap">${esc(v.descricao)}</p>` : ''}
+      ${playerHTML(v.url)}
+      ${v.criadoEm ? `<span class="badge bg-light text-muted border mt-2">${esc(dataHoraBR(v.criadoEm))}</span>` : ''}
+    </div>`);
+}
 function carregarClassificacao() {
   ouvir(db.collection('jogos'), snap => {
     const por = {};
@@ -552,8 +580,8 @@ function enviarSugestao() {
 }
 
 /* ---------- status das pautas, minhas sugestões e novidades ---------- */
-const novidades = { avisos: [], eventos: [], enquetes: [], pautas: [], sugestoes: [] };
-const ganchosNovidades = { 'lista-avisos-aluno': 'avisos', 'lista-eventos-aluno': 'eventos', 'lista-enquetes-aluno': 'enquetes', 'lista-reivindicacoes-aluno': 'pautas' };
+const novidades = { avisos: [], eventos: [], enquetes: [], pautas: [], sugestoes: [], videos: [] };
+const ganchosNovidades = { 'lista-avisos-aluno': 'avisos', 'lista-eventos-aluno': 'eventos', 'lista-enquetes-aluno': 'enquetes', 'lista-reivindicacoes-aluno': 'pautas', 'lista-videos-aluno': 'videos' };
 function badgeStatus(p) {
   const st = p.status || 'Em análise';
   const cor = { 'Em análise': 'bg-secondary', 'Encaminhada': 'bg-primary', 'Resolvida': 'bg-success' }[st] || 'bg-secondary';
@@ -590,6 +618,7 @@ function renderNotificacoes() {
   const visto = ultimoVisto(), itens = [];
   novidades.avisos.forEach(a => { if (msDe(a.criadoEm) > visto) itens.push({ t: msDe(a.criadoEm), txt: `📢 Novo aviso: ${a.titulo}`, alvo: 'sec-avisos' }); });
   novidades.eventos.forEach(e => { if (msDe(e.criadoEm) > visto) itens.push({ t: msDe(e.criadoEm), txt: `📅 Novo evento: ${e.titulo}`, alvo: 'sec-eventos' }); });
+  novidades.videos.forEach(v => { if (msDe(v.criadoEm) > visto) itens.push({ t: msDe(v.criadoEm), txt: `🎬 Novo vídeo: ${v.titulo}`, alvo: 'sec-videos' }); });
   novidades.enquetes.forEach(e => { if (e.ativa && msDe(e.criadoEm) > visto) itens.push({ t: msDe(e.criadoEm), txt: `📊 Nova enquete: ${e.titulo}`, alvo: 'sec-enquetes' }); });
   novidades.pautas.forEach(p => { if (msDe(p.statusEm) > visto && (p.apoios || []).includes(usuarioAtual.email)) itens.push({ t: msDe(p.statusEm), txt: `✊ A pauta "${p.titulo}" agora está: ${p.status}`, alvo: 'sec-pautas' }); });
   novidades.sugestoes.forEach(s => { if (msDe(s.respondidaEm) > visto) itens.push({ t: msDe(s.respondidaEm), txt: '💬 O Grêmio respondeu a sua sugestão', alvo: 'sec-sugestoes' }); });
