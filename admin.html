@@ -332,6 +332,33 @@
                 </div>
             </div>
 
+            <div id="secao-ti-avancado" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🔧 Manutenção avançada <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+
+                <h6 class="fw-bold text-white mt-3">1. Verificador de integridade</h6>
+                <p class="text-muted-custom small mb-2">Procura dados esquisitos (cadastros incompletos, punições vencidas, tarefas de quem saiu, votos que não batem) e corrige o que dá com um toque.</p>
+                <button onclick="verificarIntegridade()" class="btn btn-outline-info btn-sm fw-bold">▶ Verificar agora</button>
+                <div id="ti-integridade" class="mt-3 small"></div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">2. Modos do portal (um toque)</h6>
+                <p class="text-muted-custom small mb-2">Muda o aviso e as seções que os alunos veem de uma vez. Dá para ajustar depois em "Alunos e Portal".</p>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button onclick="aplicarPreset('normal')" class="btn btn-outline-success btn-sm">✅ Normal</button>
+                    <button onclick="aplicarPreset('provas')" class="btn btn-outline-warning btn-sm">📚 Semana de provas</button>
+                    <button onclick="aplicarPreset('recesso')" class="btn btn-outline-light btn-sm">🏖️ Recesso</button>
+                </div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">3. Lembrete de backup</h6>
+                <div id="ti-backup-status" class="small mb-2">Verificando...</div>
+                <button onclick="baixarBackup()" class="btn btn-outline-light btn-sm fw-bold">⬇️ Baixar backup agora</button>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">4. Checklist de segurança do projeto</h6>
+                <div id="ti-checklist" class="small"></div>
+            </div>
+
             <div id="secao-ti-chamados" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
                 <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">📨 Pedidos de ajuda <span id="ti-chamados-qtd" class="badge bg-warning text-dark ms-1" style="font-size: 10px;">0</span></h5>
                 <p class="text-muted-custom small mb-3">Pedidos que os diretores enviam pelo "Preciso de ajuda". O que você responder aparece para eles.</p>
@@ -432,7 +459,7 @@
                 <p class="text-muted-custom small mb-3">Ferramentas de começo de ano e controle do portal.</p>
 
                 <h6 class="fw-bold text-white">1. Cadastro de alunos em massa</h6>
-                <p class="text-muted-custom small mb-2">Uma linha por aluno: <code>Nome;email;senha;turma</code> (senha com 6+ caracteres; turma é opcional). Até 150 por vez. Cria a conta de login e o cadastro.</p>
+                <p class="text-muted-custom small mb-2">Uma linha por aluno: <code>Nome;email;senha;turma</code> (deixe a senha vazia, assim <code>Nome;email;;turma</code>, para gerar uma senha automática; turma é opcional). Até 150 por vez. Cria a conta de login e o cadastro.</p>
                 <textarea id="ti-massa" class="form-control mb-2" rows="5" placeholder="Maria Silva;maria@aluno.ifce.edu.br;123456;1º Química 2026"></textarea>
                 <button onclick="cadastrarAlunosMassa()" class="btn btn-outline-info btn-sm fw-bold">Cadastrar alunos</button>
                 <div id="ti-massa-out" class="mt-2 small"></div>
@@ -718,6 +745,7 @@
             { id: 'secao-auditoria', label: 'Log de Auditoria', icon: 'bi-journal-text', niveisPermitidos: ['admin'] },
             { id: 'secao-ajuda', label: 'Preciso de ajuda', icon: 'bi-life-preserver', niveisPermitidos: ['admin', 'membro', 'marketing'] },
             { id: 'secao-guia', label: 'Guia rápido', icon: 'bi-book', niveisPermitidos: ['admin', 'membro', 'marketing'] },
+            { id: 'secao-ti-avancado', label: 'TI: Manutenção avançada', icon: 'bi-wrench-adjustable', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-chamados', label: 'TI: Pedidos de ajuda', icon: 'bi-envelope-paper', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-ajuda', label: 'TI: Ajudar os cargos', icon: 'bi-people', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti', label: 'Ferramentas de TI', icon: 'bi-tools', niveisPermitidos: ['admin'], soRaiz: true },
@@ -886,7 +914,7 @@
             resetarOpcoes();
 
             const nivel = dadosUsuario.nivel;
-            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); }
+            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); }
             // Cada cargo vê só o que precisa; o e-mail raiz (TI) vê tudo.
             const raiz = emailUsuario === ROOT_EMAIL;
             document.querySelectorAll('[data-niveis]').forEach(c => {
@@ -1503,6 +1531,7 @@
                 document.body.appendChild(a); a.click(); a.remove();
                 URL.revokeObjectURL(url);
                 registrarAcao('Backup baixado', nomes.length + ' coleções');
+                registrarUltimoBackup();
             } catch (e) { erroDB(e, 'baixarBackup'); }
         }
         /* ================= TAREFAS, ATAS, RELATÓRIO, DIVULGAÇÃO, ARTES ================= */
@@ -1889,6 +1918,135 @@
             } catch (e) { erroDB(e, 'avisoDiretoria'); }
         }
 
+        /* ================= MANUTENÇÃO AVANÇADA (só o e-mail raiz) ================= */
+
+        let ultimasCredenciais = [];
+        function gerarSenha(n = 8) {
+            const abc = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            const b = new Uint32Array(n); crypto.getRandomValues(b);
+            return Array.from(b, x => abc[x % abc.length]).join('');
+        }
+        function baixarCredenciais() {
+            if (!soRaiz()) return;
+            if (!ultimasCredenciais.length) { toast('Não há credenciais novas para baixar.', 'warning'); return; }
+            baixarCSV(`credenciais_${hojeISO()}.csv`, [['Nome', 'E-mail', 'Senha inicial', 'Turma'], ...ultimasCredenciais]);
+        }
+
+        async function verificarIntegridade() {
+            if (!soRaiz()) return;
+            const out = document.getElementById('ti-integridade');
+            out.textContent = 'Verificando...';
+            try {
+                const q = c => db.collection(c).get();
+                const [al, ca, pu, ta, ev, ma, en, jo] = await Promise.all(['alunos', 'cargos', 'membros_punidos', 'tarefas', 'eventos', 'materiais', 'enquetes', 'jogos'].map(q));
+                const hoje = hojeISO(), agora = Date.now(), itens = [];
+                const add = (nivel, txt, fix) => itens.push({ nivel, txt, fix });
+
+                const semAtivo = al.docs.filter(d => typeof d.data().ativo !== 'boolean');
+                if (semAtivo.length) add('warn', `${semAtivo.length} aluno(s) sem o campo "ativo" (não conseguem entrar).`, { acao: 'fixAtivo', rotulo: 'Marcar como ativos' });
+                const idErrado = al.docs.filter(d => d.id !== d.id.toLowerCase() || (d.data().email && d.data().email.toLowerCase() !== d.id));
+                if (idErrado.length) add('warn', `${idErrado.length} aluno(s) com ID diferente do e-mail em minúsculas: ${idErrado.slice(0, 5).map(d => d.id).join(', ')}. Recadastre-os.`);
+                const semNome = al.docs.filter(d => !d.data().nome);
+                if (semNome.length) add('info', `${semNome.length} aluno(s) sem nome.`);
+
+                const nivelRuim = ca.docs.filter(d => !['admin', 'membro', 'marketing'].includes(d.data().nivel));
+                if (nivelRuim.length) add('warn', `${nivelRuim.length} cargo(s) com nível inválido: ${nivelRuim.map(d => d.id).join(', ')}.`);
+
+                const vencidas = pu.docs.filter(d => d.data().expiraEm && d.data().expiraEm.toMillis() <= agora);
+                if (vencidas.length) add('info', `${vencidas.length} punição(ões) vencida(s) ainda no banco.`, { acao: 'fixPunicoes', rotulo: 'Apagar vencidas' });
+
+                const emails = new Set(ca.docs.map(d => d.id));
+                const orfas = ta.docs.filter(d => !emails.has(d.data().atribuidoPara));
+                if (orfas.length) add('info', `${orfas.length} tarefa(s) de diretores que não estão mais no cargo.`, { acao: 'fixTarefas', rotulo: 'Apagar tarefas órfãs' });
+
+                const atrasados = ma.docs.filter(d => d.data().status === 'Emprestado' && d.data().devolverAte && d.data().devolverAte < hoje);
+                if (atrasados.length) add('info', `${atrasados.length} material(is) com devolução atrasada: ${atrasados.map(d => d.data().nome).join(', ')}.`);
+                const legado = ma.docs.filter(d => d.data().status === 'Reservado/Em uso');
+                if (legado.length) add('info', `${legado.length} material(is) com status antigo "Reservado/Em uso" (pedidos do sistema anterior).`);
+
+                const semData = ev.docs.filter(d => !d.data().dataISO);
+                if (semData.length) add('info', `${semData.length} evento(s) sem "Dia no calendário" (não ordenam nem encerram sozinhos).`);
+
+                const votosRuins = en.docs.filter(d => { const x = d.data(); return (x.opcoes || []).reduce((t, o) => t + (o.votos || 0), 0) !== (x.votosAlunos || []).length; });
+                if (votosRuins.length) add('warn', `${votosRuins.length} enquete(s) com contagem de votos que não bate com a lista de votantes: ${votosRuins.map(d => d.data().titulo).join(', ')}.`);
+
+                const jogosSemPlacar = jo.docs.filter(d => d.data().status === 'Encerrado' && d.data().placarA === undefined);
+                if (jogosSemPlacar.length) add('info', `${jogosSemPlacar.length} jogo(s) encerrado(s) sem placar.`);
+
+                const icone = { warn: '⚠️', info: 'ℹ️' };
+                out.innerHTML = itens.length
+                    ? itens.map(i => `<div class="mb-2">${icone[i.nivel]} ${esc(i.txt)}${i.fix ? ` <button data-acao="${i.fix.acao}" class="btn btn-outline-info btn-sm py-0 ms-1" style="font-size: 11px;">${esc(i.fix.rotulo)}</button>` : ''}</div>`).join('')
+                    : '<div class="text-success fw-bold">Nenhum problema encontrado. 🎉</div>';
+            } catch (e) { out.textContent = ''; erroDB(e, 'integridade'); }
+        }
+        async function corrigirEm(colecao, filtro, acaoLog, fn) {
+            if (!soRaiz()) return;
+            try {
+                const snap = await db.collection(colecao).get();
+                const alvo = snap.docs.filter(d => filtro(d));
+                if (!alvo.length) { toast('Nada para corrigir.', 'warning'); return; }
+                if (!(await confirmar(`Corrigir ${alvo.length} registro(s)?`))) return;
+                const batch = db.batch();
+                alvo.forEach(d => fn(batch, d));
+                await batch.commit();
+                registrarAcao(acaoLog, alvo.length + ' registros');
+                toast(alvo.length + ' registro(s) corrigido(s).');
+                verificarIntegridade();
+            } catch (e) { erroDB(e, acaoLog); }
+        }
+
+        async function aplicarPreset(nome) {
+            if (!soRaiz()) return;
+            const todos = ['avisos', 'enquetes', 'pautas', 'materiais', 'eventos', 'jogos', 'videos', 'sugestoes'];
+            const rec = {}; todos.forEach(k => rec[k] = true);
+            let banner = '';
+            if (nome === 'provas') { rec.pautas = false; rec.sugestoes = false; rec.materiais = false; banner = '📚 Semana de provas: boa sorte! Alguns serviços do Grêmio estão pausados.'; }
+            if (nome === 'recesso') { rec.materiais = false; rec.eventos = false; rec.jogos = false; banner = '🏖️ Grêmio em recesso. Voltamos em breve!'; }
+            if (!(await confirmar(`Aplicar o modo "${nome}" no portal dos alunos?`))) return;
+            try {
+                await db.collection('config').doc('sistema').set({ banner, recursos: rec, por: emailLogado, em: TS() }, { merge: true });
+                toast('Modo "' + nome + '" aplicado.');
+                registrarAcao('Modo do portal', nome);
+            } catch (e) { erroDB(e, 'preset'); }
+        }
+
+        function registrarUltimoBackup() {
+            db.collection('ti_privado').doc('estado').set({ ultimoBackup: TS() }, { merge: true }).then(verificarLembreteBackup).catch(() => {});
+        }
+        async function verificarLembreteBackup() {
+            const el = document.getElementById('ti-backup-status');
+            if (!el) return;
+            try {
+                const d = await db.collection('ti_privado').doc('estado').get();
+                const t = d.exists && d.data().ultimoBackup ? d.data().ultimoBackup.toMillis() : 0;
+                const dias = t ? Math.floor((Date.now() - t) / 864e5) : null;
+                if (dias === null) { el.innerHTML = '<span class="text-warning fw-bold">⚠️ Nenhum backup registrado ainda.</span>'; toast('Você ainda não fez nenhum backup do sistema.', 'warning'); }
+                else if (dias > 30) { el.innerHTML = `<span class="text-warning fw-bold">⚠️ Último backup há ${dias} dias.</span>`; toast(`Faz ${dias} dias do último backup.`, 'warning'); }
+                else el.innerHTML = `<span class="text-success">✅ Último backup há ${dias} dia(s).</span>`;
+            } catch (e) { el.textContent = 'Não foi possível verificar.'; }
+        }
+
+        const ITENS_CHECKLIST = [
+            ['apikey', 'Restringi a apiKey ao domínio do site (Google Cloud > Credenciais)'],
+            ['chave', 'Apaguei o serviceAccountKey.json do computador'],
+            ['regras', 'Publiquei as regras mais recentes do Firestore'],
+            ['posse', 'Firebase e GitHub têm 2+ donos (Grêmio e professor orientador)'],
+            ['imagem', 'Combinei com a escola o uso de imagem e dados dos alunos'],
+            ['sucessor', 'Defini quem será o TI da próxima gestão'],
+            ['backup', 'Fiz um backup este mês']
+        ];
+        async function carregarChecklistTI() {
+            const c = document.getElementById('ti-checklist');
+            let feitos = {};
+            try { const d = await db.collection('ti_privado').doc('checklist').get(); feitos = d.exists ? (d.data().feitos || {}) : {}; } catch (e) {}
+            c.innerHTML = ITENS_CHECKLIST.map(([id, txt]) => `<div class="form-check mb-1"><input class="form-check-input" type="checkbox" data-chk="${id}" id="chk-${id}" ${feitos[id] ? 'checked' : ''}><label class="form-check-label" for="chk-${id}">${esc(txt)}</label></div>`).join('');
+        }
+        document.addEventListener('change', e => {
+            const c = e.target.closest('[data-chk]');
+            if (!c || !soRaiz()) return;
+            db.collection('ti_privado').doc('checklist').set({ feitos: { [c.dataset.chk]: c.checked }, atualizadoEm: TS() }, { merge: true }).catch(err => erroDB(err, 'checklist'));
+        });
+
         /* ================= TI: SUPORTE, ALUNOS E PORTAL ================= */
 
         async function fichaUsuario() {
@@ -1917,7 +2075,13 @@
                 L.push(`🎲 Materiais: ${mats.length ? esc(mats.join(', ')) : 'nenhum'}`);
                 const acs = ac.docs.map(d => d.data()).sort((a, b) => (b.em ? b.em.toMillis() : 0) - (a.em ? a.em.toMillis() : 0)).slice(0, 5);
                 if (acs.length) L.push('🧾 Últimas ações no painel:<br>' + acs.map(a => `<span class="text-muted-custom">• ${esc(a.acao)} — ${esc(a.detalhes || '')} (${esc(fmtData(a.em))})</span>`).join('<br>'));
-                out.innerHTML = L.map(x => `<div class="mb-1">${x}</div>`).join('');
+                let botoes = `<div class="d-flex gap-2 flex-wrap mt-2"><button data-acao="fichaSenha" data-id="${esc(email)}" class="btn btn-outline-info btn-sm py-0" style="font-size: 12px;">Enviar link de senha</button>`;
+                if (al.exists) {
+                    const a = al.data();
+                    botoes += `<button data-acao="fichaAtivo" data-id="${esc(email)}" data-valor="${!a.ativo}" class="btn btn-outline-warning btn-sm py-0" style="font-size: 12px;">${a.ativo ? 'Bloquear aluno' : 'Desbloquear aluno'}</button></div>
+                        <div class="input-group input-group-sm mt-2" style="max-width: 360px;"><input type="text" id="ficha-turma" class="form-control" maxlength="60" placeholder="Turma" value="${esc(a.turma || '')}"><button data-acao="fichaTurma" data-id="${esc(email)}" class="btn btn-outline-light">Salvar turma</button></div>`;
+                } else botoes += '</div>';
+                out.innerHTML = L.map(x => `<div class="mb-1">${x}</div>`).join('') + botoes;
             } catch (e) { out.textContent = ''; erroDB(e, 'fichaUsuario'); }
         }
 
@@ -2001,14 +2165,16 @@
             if (!linhas.length) { toast('Cole a lista de alunos.', 'warning'); return; }
             if (linhas.length > 150) { toast('Máximo de 150 alunos por vez.', 'warning'); return; }
             let criados = 0, existiam = 0, ok = 0;
-            const erros = [], batch = db.batch();
+            const erros = [], batch = db.batch(), credenciais = [];
             for (let i = 0; i < linhas.length; i++) {
                 out.textContent = `Processando ${i + 1} de ${linhas.length}...`;
-                const [nome, emailRaw, senha, turma = ''] = linhas[i].split(';').map(x => x.trim());
+                const [nome, emailRaw, senhaRaw, turma = ''] = linhas[i].split(';').map(x => x.trim());
                 const email = (emailRaw || '').toLowerCase();
-                if (!nome || !email.includes('@') || !senha || senha.length < 6) { erros.push(`Linha ${i + 1}: dados inválidos`); continue; }
+                if (!nome || !email.includes('@') || (senhaRaw && senhaRaw.length < 6)) { erros.push(`Linha ${i + 1}: dados inválidos`); continue; }
+                const senha = senhaRaw || gerarSenha();
                 try {
-                    (await criarContaAuth(email, senha)) === 'criada' ? criados++ : existiam++;
+                    const res = await criarContaAuth(email, senha);
+                    if (res === 'criada') { criados++; credenciais.push([nome, email, senha, turma]); } else existiam++;
                     batch.set(db.collection('alunos').doc(email), { nome, email, turma, ativo: true }, { merge: true });
                     ok++;
                 } catch (e) { erros.push(`${email}: ${e.code || 'erro'}`); }
@@ -2016,7 +2182,9 @@
             try { if (ok) await batch.commit(); } catch (e) { erroDB(e, 'alunosMassa'); return; }
             registrarAcao('Alunos em massa', `${criados} criados, ${existiam} já existiam, ${erros.length} erros`);
             out.innerHTML = `✅ ${criados} conta(s) criada(s) • ${existiam} já existia(m) (senha não mudou) • ${erros.length} erro(s)` +
-                (erros.length ? '<ul class="mt-2 text-warning">' + erros.map(x => `<li>${esc(x)}</li>`).join('') + '</ul>' : '');
+                (erros.length ? '<ul class="mt-2 text-warning">' + erros.map(x => `<li>${esc(x)}</li>`).join('') + '</ul>' : '') +
+                (credenciais.length ? '<div class="mt-2"><button onclick="baixarCredenciais()" class="btn btn-warning btn-sm fw-bold">⬇️ Baixar credenciais (CSV)</button><div class="text-warning mt-1">Entregue as senhas aos alunos e apague o arquivo depois. Eles podem trocar em "Esqueci minha senha".</div></div>' : '');
+            ultimasCredenciais = credenciais;
             if (!erros.length) document.getElementById('ti-massa').value = '';
         }
         async function baixarCSVAlunos() {
@@ -2395,6 +2563,17 @@
                 if (resposta) { dados.resposta = resposta; dados.respondidoEm = TS(); }
                 db.collection('chamados').doc(id).update(dados).then(() => toast('Pedido atualizado.')).catch(e => erroDB(e, 'salvarChamado'));
             },
+            fixPunicoes: () => corrigirEm('membros_punidos', d => d.data().expiraEm && d.data().expiraEm.toMillis() <= Date.now(), 'Punições vencidas apagadas', (b, d) => b.delete(d.ref)),
+            fixTarefas: async () => {
+                const cargos = new Set((await db.collection('cargos').get()).docs.map(d => d.id));
+                corrigirEm('tarefas', d => !cargos.has(d.data().atribuidoPara), 'Tarefas órfãs apagadas', (b, d) => b.delete(d.ref));
+            },
+            fixAtivo: () => corrigirEm('alunos', d => typeof d.data().ativo !== 'boolean', 'Alunos marcados como ativos', (b, d) => b.update(d.ref, { ativo: true })),
+            fichaSenha: id => auth.sendPasswordResetEmail(id).then(() => { toast('Link de senha enviado para ' + id); registrarAcao('Redefinição de senha enviada', id); }).catch(e => erroDB(e, 'fichaSenha')),
+            fichaAtivo: (id, el) => db.collection('alunos').doc(id).update({ ativo: el.dataset.valor === 'true' })
+                .then(() => { registrarAcao(el.dataset.valor === 'true' ? 'Aluno desbloqueado' : 'Aluno bloqueado', id); fichaUsuario(); }).catch(e => erroDB(e, 'fichaAtivo')),
+            fichaTurma: id => db.collection('alunos').doc(id).update({ turma: document.getElementById('ficha-turma').value.trim() })
+                .then(() => { toast('Turma salva.'); fichaUsuario(); }).catch(e => erroDB(e, 'fichaTurma')),
             excluirSugestao: async id => { if (await confirmar("Apagar esta sugestão?")) db.collection('sugestoes').doc(id).delete().catch(e => erroDB(e, 'excluirSugestao')); },
             excluirPauta: async id => { if (await confirmar("Excluir esta pauta?")) db.collection('reivindicacoes').doc(id).delete().then(() => registrarAcao('Pauta excluída', id)).catch(e => erroDB(e, 'excluirPauta')); },
             removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(e => erroDB(e, 'removerPunicao')); },
