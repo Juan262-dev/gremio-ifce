@@ -338,6 +338,126 @@
                 </div>
             </div>
 
+            <div id="secao-ti-alertas" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="card-title-chem m-0" style="color: #0dcaf0;">🚨 Central de alertas <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                    <button onclick="carregarAlertasTI()" class="btn btn-outline-info btn-sm">↻</button>
+                </div>
+                <div id="ti-alertas" class="small">Verificando...</div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">Atividade recente</h6>
+                <p class="text-muted-custom small mb-2">O que os alunos e diretores fizeram por último (sugestões, pautas, eventos, pedidos de ajuda, vídeos e avisos).</p>
+                <button onclick="carregarFeedTI()" class="btn btn-outline-info btn-sm">Atualizar</button>
+                <div id="ti-feed" class="mt-2 small"></div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">Inventário do banco</h6>
+                <p class="text-muted-custom small mb-2">Quantos registros há em cada coleção. Serve para ficar de olho no tamanho e nos limites do plano gratuito.</p>
+                <button onclick="carregarInventarioTI()" class="btn btn-outline-info btn-sm">Contar</button>
+                <div id="ti-inventario" class="mt-2 small"></div>
+            </div>
+
+            <div id="secao-ti-utilitarios" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🧩 Utilitários <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+
+                <h6 class="fw-bold text-white mt-3">1. Pendências do TI</h6>
+                <p class="text-muted-custom small mb-2">Sua lista pessoal de coisas a fazer no sistema. As vencidas aparecem na Central de alertas.</p>
+                <div class="input-group input-group-sm mb-2">
+                    <input type="text" id="ti-pend-texto" class="form-control" maxlength="120" placeholder="Ex: Trocar senha do e-mail do Grêmio">
+                    <input type="date" id="ti-pend-data" class="form-control" style="max-width: 150px;">
+                    <button onclick="adicionarPendenciaTI()" class="btn btn-outline-info">Adicionar</button>
+                </div>
+                <div id="ti-pendencias" class="small"></div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">2. Organizar lista de alunos</h6>
+                <p class="text-muted-custom small mb-2">Cole uma lista bagunçada (de planilha, WhatsApp ou e-mail). Ele acha os e-mails, arruma os nomes, tira duplicados e deixa no formato do "Cadastro em massa".</p>
+                <textarea id="ti-lista-bruta" class="form-control mb-2" rows="4" placeholder="maria silva maria@aluno.ifce.edu.br&#10;joao@aluno.ifce.edu.br&#10;Pedro Souza, pedro.souza@aluno.ifce.edu.br"></textarea>
+                <div class="input-group input-group-sm mb-2">
+                    <input type="text" id="ti-lista-turma" class="form-control" maxlength="60" placeholder="Turma de todos (opcional)">
+                    <button onclick="organizarListaAlunos()" class="btn btn-outline-info">Organizar</button>
+                </div>
+                <textarea id="ti-lista-saida" class="form-control mb-2" rows="4" readonly></textarea>
+                <div id="ti-lista-resumo" class="small mb-2"></div>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button onclick="copiarListaOrganizada()" class="btn btn-outline-light btn-sm">📋 Copiar</button>
+                    <button onclick="enviarParaCadastroMassa()" class="btn btn-outline-info btn-sm">Enviar para o cadastro em massa</button>
+                </div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">3. Gerar senha forte</h6>
+                <div class="input-group input-group-sm" style="max-width: 360px;">
+                    <input type="text" id="ti-senha-gerada" class="form-control" readonly>
+                    <button onclick="gerarSenhaForte()" class="btn btn-outline-info">Gerar</button>
+                    <button onclick="copiarSenhaGerada()" class="btn btn-outline-light">Copiar</button>
+                </div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">4. Travar ferramentas para a diretoria</h6>
+                <p class="text-muted-custom small mb-2">Marque o que deve ficar <strong>escondido</strong> para os diretores (por exemplo, enquanto você arruma algo). Você continua vendo tudo.</p>
+                <div id="ti-travas" class="row g-1"></div>
+            </div>
+
+            <div id="secao-ti-dados" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🗄️ Dados e conformidade <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+
+                <h6 class="fw-bold text-white mt-3">1. Editor de documentos (emergência)</h6>
+                <p class="text-muted-custom small mb-2">Abre qualquer documento do banco como texto para você corrigir um dado na mão. <strong>Cuidado:</strong> salvar substitui o documento inteiro. Datas aparecem como <code>{"__ts": "..."}</code>; não mexa nesse formato.</p>
+                <div class="row g-2 mb-2">
+                    <div class="col-6"><select id="ed-col" class="form-select form-select-sm"></select></div>
+                    <div class="col-6"><button onclick="editorListar()" class="btn btn-outline-info btn-sm w-100">Listar documentos</button></div>
+                    <div class="col-12"><input type="text" id="ed-id" class="form-control form-control-sm" placeholder="ID do documento (ex: aluno@aluno.ifce.edu.br)"></div>
+                </div>
+                <div id="ed-lista" class="small mb-2" style="max-height: 130px; overflow: auto;"></div>
+                <button onclick="editorAbrir()" class="btn btn-outline-light btn-sm mb-2">Abrir</button>
+                <textarea id="ed-json" class="form-control mb-2" rows="9" style="font-family: monospace; font-size: 12px;" placeholder="O conteúdo do documento aparece aqui"></textarea>
+                <div class="d-flex gap-2 flex-wrap">
+                    <button onclick="editorSalvar()" class="btn btn-outline-warning btn-sm fw-bold">Salvar</button>
+                    <button onclick="editorExcluir()" class="btn btn-outline-danger btn-sm">Excluir documento</button>
+                </div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">2. Inventário do banco</h6>
+                <p class="text-muted-custom small mb-2">Conta os documentos e o tamanho aproximado de cada coleção e compara com o limite gratuito do Firebase (1 GB). Lê tudo uma vez, então use de vez em quando.</p>
+                <button onclick="inventarioBanco()" class="btn btn-outline-info btn-sm fw-bold">▶ Medir</button>
+                <div id="ti-inventario" class="mt-3 small"></div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">3. Apagar os dados de um aluno</h6>
+                <p class="text-muted-custom small mb-2">Para quando o aluno (ou o responsável) pedir a exclusão. Remove cadastro, sugestões, acessos e aceite do termo, e tira o nome das inscrições, apoios e votos (os votos ficam anônimos para a contagem não mudar). Depois apague também a conta no Firebase > Authentication.</p>
+                <div class="input-group">
+                    <input type="email" id="ti-lgpd-email" class="form-control" placeholder="aluno@aluno.ifce.edu.br">
+                    <button onclick="apagarDadosAluno()" class="btn btn-outline-danger">Apagar dados</button>
+                </div>
+                <div id="ti-lgpd-out" class="mt-2 small"></div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">4. Passagem de TI (novo e-mail raiz)</h6>
+                <p class="text-muted-custom small mb-2">Se outra pessoa assumir o TI, digite o e-mail dela. O painel gera as regras do Firestore já com esse e-mail no seu lugar. Depois: (1) cole as regras no Firebase e publique; (2) no <code>admin.html</code>, troque o e-mail em <code>ROOT_EMAIL</code> e em <code>cargosIniciais</code>; (3) crie a conta dela no Authentication.</p>
+                <div class="input-group mb-2">
+                    <input type="email" id="ti-novo-raiz" class="form-control" placeholder="novo.ti@aluno.ifce.edu.br">
+                    <button onclick="gerarRegrasNovoRaiz()" class="btn btn-outline-info">Gerar regras</button>
+                </div>
+                <textarea id="ti-regras-out" class="form-control mb-2" rows="5" style="font-family: monospace; font-size: 11px;" readonly></textarea>
+                <button onclick="copiarRegras()" class="btn btn-outline-light btn-sm">📋 Copiar regras</button>
+            </div>
+
+            <div id="secao-ti-controle" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🧭 Controle do painel <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+
+                <h6 class="fw-bold text-white mt-3">1. Atividade da diretoria</h6>
+                <p class="text-muted-custom small mb-2">Mostra, para cada diretor, o último acesso ao painel, quantos acessos fez, quantas ações tem no log e quantas tarefas pendentes. Em amarelo quem está há mais de 14 dias sem entrar.</p>
+                <button onclick="atividadeDiretoria()" class="btn btn-outline-info btn-sm fw-bold">▶ Ver atividade</button>
+                <div id="ti-atividade" class="mt-3 small" style="overflow-x: auto;"></div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">2. Cartões visíveis para os cargos</h6>
+                <p class="text-muted-custom small mb-2">Desmarque um cartão para escondê-lo de todos os diretores (você continua vendo). Bom para desligar uma função que ainda não está pronta ou que deu problema.</p>
+                <div id="ti-ocultos" class="mb-2"></div>
+                <button onclick="salvarOcultos()" class="btn btn-outline-info btn-sm fw-bold">Salvar</button>
+            </div>
+
             <div id="secao-ti-analise" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
                 <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">📈 Análise e relatórios <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
 
@@ -453,6 +573,7 @@
                 <h6 class="fw-bold text-white">1. Diagnóstico do sistema</h6>
                 <p class="text-muted-custom small mb-2">Testa a leitura de cada coleção (acha problema de regras), mostra o seu acesso e avisa se ainda há senhas em texto puro.</p>
                 <button onclick="rodarDiagnostico()" class="btn btn-outline-info btn-sm fw-bold">▶ Rodar diagnóstico</button>
+                <button onclick="copiarDiagnostico()" class="btn btn-outline-light btn-sm">📋 Copiar relatório</button>
                 <div id="ti-diag" class="mt-3 small"></div>
 
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
@@ -506,6 +627,7 @@
                 <p class="text-muted-custom small mb-2">O portal avisa aqui quando algo quebra no celular de alguém.</p>
                 <div class="d-flex gap-2 flex-wrap mb-2">
                     <button onclick="carregarErrosPortal()" class="btn btn-outline-info btn-sm">Ver últimos 50</button>
+                    <button onclick="resumoErrosPortal()" class="btn btn-outline-light btn-sm">Resumo por tipo</button>
                     <button onclick="limparErrosPortal()" class="btn btn-outline-danger btn-sm">Limpar erros</button>
                 </div>
                 <div id="ti-erros" class="small"></div>
@@ -773,6 +895,7 @@
         // IMPORTANTE: isto é só para exibir a interface. A proteção de verdade
         // precisa estar nas Firestore Security Rules (veja firestore.rules).
         const ROOT_EMAIL = 'kevin.silva10@aluno.ifce.edu.br';
+        let nivelDoPainel = 'admin', cartoesOcultos = [];
         const ROTULO_NIVEL = { admin: 'Presidência', membro: 'Esportes/Eventos', marketing: 'Marketing' };
         const cargosIniciais = {
             "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
@@ -780,7 +903,7 @@
             "maria@ifce.edu.br": { nome: "Maria Eduarda", cargo: "Vice-Presidente", nivel: "admin" },
             "cecilia@aluno.ifce.edu.br": { nome: "Cecília", cargo: "Diretora de Esportes", nivel: "membro" },
             "marketing1@ifce.edu.br": { nome: "Diretor(a) de Marketing 1", cargo: "Diretor(a) de Marketing", nivel: "marketing" },
-            "marketing2@aluno.ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing" }
+            "marketing2@ifce.edu.br": { nome: "Diretor(a) de Marketing 2", cargo: "Diretor(a) de Marketing", nivel: "marketing" }
         };
 
         const modulosSistema = [
@@ -809,6 +932,10 @@
             { id: 'secao-ajuda', label: 'Preciso de ajuda', icon: 'bi-life-preserver', niveisPermitidos: ['admin', 'membro', 'marketing'] },
             { id: 'secao-guia', label: 'Guia rápido', icon: 'bi-book', niveisPermitidos: ['admin', 'membro', 'marketing'] },
             { id: 'secao-novidades', label: 'Novidades do sistema', icon: 'bi-stars', niveisPermitidos: ['admin', 'membro', 'marketing'] },
+            { id: 'secao-ti-alertas', label: 'TI: Central de alertas', icon: 'bi-bell', niveisPermitidos: ['admin'], soRaiz: true },
+            { id: 'secao-ti-utilitarios', label: 'TI: Utilitários', icon: 'bi-puzzle', niveisPermitidos: ['admin'], soRaiz: true },
+            { id: 'secao-ti-dados', label: 'TI: Dados e conformidade', icon: 'bi-database', niveisPermitidos: ['admin'], soRaiz: true },
+            { id: 'secao-ti-controle', label: 'TI: Controle do painel', icon: 'bi-toggles', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-analise', label: 'TI: Análise e relatórios', icon: 'bi-graph-up-arrow', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-comunic', label: 'TI: Comunicação e termo', icon: 'bi-megaphone', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-avancado', label: 'TI: Manutenção avançada', icon: 'bi-wrench-adjustable', niveisPermitidos: ['admin'], soRaiz: true },
@@ -977,12 +1104,15 @@
             document.getElementById('btn-menu-lateral').classList.remove('d-none');
             renderizarMenuLateral(dadosUsuario);
             renderizarBarraInferior(dadosUsuario.nivel);
+            registrarAcessoPainel(dadosUsuario);
             resetarOpcoes();
 
             const nivel = dadosUsuario.nivel;
-            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); carregarTermoTI(); }
+            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); carregarTermoTI(); carregarOcultosTI(); preencherEditor(); carregarAlertasTI(); carregarPendenciasTI(); carregarTravasUI(); }
             // Cada cargo vê só o que precisa; o e-mail raiz (TI) vê tudo.
+            nivelDoPainel = nivel;
             const raiz = emailUsuario === ROOT_EMAIL;
+            nivelReal = nivel;
             document.querySelectorAll('[data-niveis]').forEach(c => {
                 c.style.display = (raiz || c.dataset.niveis.split(',').includes(nivel)) ? 'block' : 'none';
             });
@@ -1022,7 +1152,7 @@
             (atalhosPorNivel[nivel] || []).forEach(id => {
                 const m = modulosSistema.find(x => x.id === id);
                 const el = document.getElementById(id);
-                if (!m || !el) return;
+                if (!m || !el || el.style.display === 'none') return;
                 const b = document.createElement('button');
                 b.type = 'button'; b.dataset.alvo = id;
                 b.innerHTML = `<i class="bi ${m.icon}"></i><span>${esc(nomesCurtos[id] || m.label)}</span>`;
@@ -1041,7 +1171,7 @@
         function renderizarMenuLateral(dadosUsuario) {
             const containerMenu = document.getElementById('itensMenuNav');
             containerMenu.innerHTML = '';
-            modulosSistema.filter(m => ((emailLogado === ROOT_EMAIL && !nivelPreview) || m.niveisPermitidos.includes(dadosUsuario.nivel)) && (!m.soRaiz || (emailLogado === ROOT_EMAIL && !nivelPreview))).forEach(modulo => {
+            modulosSistema.filter(m => ((emailLogado === ROOT_EMAIL && !nivelPreview) || m.niveisPermitidos.includes(dadosUsuario.nivel)) && (!m.soRaiz || (emailLogado === ROOT_EMAIL && !nivelPreview)) && (!cartoesOcultos.includes(m.id) || (emailLogado === ROOT_EMAIL && !nivelPreview)) && !(travas[m.id] === true && !(emailLogado === ROOT_EMAIL && !nivelPreview))).forEach(modulo => {
                 const a = document.createElement('a');
                 a.href = `#${modulo.id}`;
                 a.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary d-flex align-items-center gap-2 py-3';
@@ -1954,9 +2084,7 @@
         function verComo(nivel) {
             if (!soRaiz()) return;
             nivelPreview = nivel || null;
-            document.querySelectorAll('[data-niveis]').forEach(c => {
-                c.style.display = (!nivelPreview || c.dataset.niveis.split(',').includes(nivelPreview)) ? 'block' : 'none';
-            });
+            aplicarVisibilidade();
             document.querySelectorAll('.card-root').forEach(c => c.style.display = nivelPreview ? 'none' : 'block');
             renderizarMenuLateral({ nivel: nivelPreview || 'admin' });
             renderizarBarraInferior(nivelPreview || 'admin');
@@ -1968,9 +2096,14 @@
         function carregarAvisoTI() {
             ouvir(db.collection('config').doc('sistema'), doc => {
                 const d = doc.exists ? doc.data() : {};
+                travas = d.recursosDiretoria || {};
+                aplicarVisibilidade();
+                if (nivelReal) renderizarMenuLateral({ nivel: nivelReal });
                 const el = document.getElementById('aviso-ti');
                 el.textContent = d.avisoDiretoria ? '📣 Aviso do TI: ' + d.avisoDiretoria : '';
                 el.classList.toggle('d-none', !d.avisoDiretoria);
+                cartoesOcultos = d.cartoesOcultos || [];
+                aplicarOcultos();
                 const campo = document.getElementById('ti-aviso-dir');
                 if (campo && document.activeElement !== campo) campo.value = d.avisoDiretoria || '';
             });
@@ -1982,6 +2115,349 @@
                 toast('Aviso atualizado para a diretoria.');
                 registrarAcao('Aviso do TI alterado', '');
             } catch (e) { erroDB(e, 'avisoDiretoria'); }
+        }
+
+        /* ================= CENTRAL DE ALERTAS E UTILITÁRIOS (só o e-mail raiz) ================= */
+
+        const VERSAO_SISTEMA = '2026.10';
+        let nivelReal = null, travas = {};
+        function aplicarVisibilidade() {
+            if (!nivelReal) return;
+            const raiz = emailLogado === ROOT_EMAIL, normal = raiz && !nivelPreview;
+            const nivel = raiz && nivelPreview ? nivelPreview : nivelReal;
+            document.querySelectorAll('[data-niveis]').forEach(c => {
+                const permitido = normal || c.dataset.niveis.split(',').includes(nivel);
+                const travado = !normal && c.id && travas[c.id] === true;
+                c.style.display = permitido && !travado ? 'block' : 'none';
+            });
+        }
+
+        async function carregarAlertasTI() {
+            if (!soRaiz()) return;
+            const out = document.getElementById('ti-alertas');
+            if (!out) return;
+            out.textContent = 'Verificando...';
+            const todos = c => db.collection(c).get().then(s => s.docs.map(d => d.data())).catch(() => []);
+            const [ch, er, su, ma, ta, pu, est, pen] = await Promise.all([
+                todos('chamados'), db.collection('erros_app').orderBy('em', 'desc').limit(100).get().then(s => s.docs.map(d => d.data())).catch(() => []),
+                todos('sugestoes'), todos('materiais'), todos('tarefas'), todos('membros_punidos'),
+                db.collection('ti_privado').doc('estado').get().catch(() => null), db.collection('ti_privado').doc('pendencias').get().catch(() => null)
+            ]);
+            const hoje = hojeISO(), agora = Date.now(), L = [];
+            const add = (nivel, txt) => L.push(`<div class="mb-1">${nivel === 'red' ? '🔴' : '🟡'} ${esc(txt)}</div>`);
+            const abertos = ch.filter(c => c.status !== 'Resolvido').length;
+            if (abertos) add('red', `${abertos} pedido(s) de ajuda em aberto.`);
+            const erros24 = er.filter(e => e.em && e.em.toMillis() > agora - 864e5).length;
+            if (erros24) add('red', `${erros24} erro(s) no portal dos alunos nas últimas 24 horas.`);
+            const semResp = su.filter(x => !x.resposta && x.criadoEm && x.criadoEm.toMillis() < agora - 7 * 864e5).length;
+            if (semResp) add('yellow', `${semResp} sugestão(ões) sem resposta há mais de 7 dias.`);
+            const atrasM = ma.filter(m => m.status === 'Emprestado' && m.devolverAte && m.devolverAte < hoje).length;
+            if (atrasM) add('yellow', `${atrasM} material(is) com devolução atrasada.`);
+            const atrasT = ta.filter(t => t.status === 'Pendente' && t.prazo && t.prazo < hoje).length;
+            if (atrasT) add('yellow', `${atrasT} tarefa(s) da diretoria atrasada(s).`);
+            const venc = pu.filter(p => p.expiraEm && p.expiraEm.toMillis() <= agora).length;
+            if (venc) add('yellow', `${venc} punição(ões) vencida(s) no banco (limpe no Verificador).`);
+            const ub = est && est.exists && est.data().ultimoBackup ? est.data().ultimoBackup.toMillis() : 0;
+            if (!ub) add('yellow', 'Nenhum backup registrado ainda.');
+            else if (agora - ub > 30 * 864e5) add('yellow', `Último backup há ${Math.floor((agora - ub) / 864e5)} dias.`);
+            const pends = pen && pen.exists ? (pen.data().itens || []) : [];
+            const pv = pends.filter(p => !p.feito && p.data && p.data < hoje);
+            if (pv.length) add('red', `${pv.length} pendência(s) sua(s) vencida(s): ${pv.map(p => p.texto).join(', ')}.`);
+            out.innerHTML = (L.length ? L.join('') : '<div class="text-success fw-bold mb-1">Tudo em dia. 🎉</div>') + `<div class="text-muted-custom mt-2" style="font-size: 11px;">Sistema versão ${VERSAO_SISTEMA}</div>`;
+        }
+
+        async function carregarFeedTI() {
+            if (!soRaiz()) return;
+            const out = document.getElementById('ti-feed'); out.textContent = 'Carregando...';
+            const q = (c, f) => db.collection(c).orderBy('criadoEm', 'desc').limit(6).get().then(s => s.docs.map(d => f(d.data()))).catch(() => []);
+            const grupos = await Promise.all([
+                q('sugestoes', d => ({ t: d.criadoEm, x: `💡 ${d.nome || 'Aluno'} sugeriu: ${d.texto}` })),
+                q('reivindicacoes', d => ({ t: d.criadoEm, x: `✊ Nova pauta de ${d.autor || 'aluno'}: ${d.titulo}` })),
+                q('eventos', d => ({ t: d.criadoEm, x: `📅 Evento criado: ${d.titulo}` })),
+                q('chamados', d => ({ t: d.criadoEm, x: `📨 ${d.autorNome} pediu ajuda: ${d.categoria}` })),
+                q('videos', d => ({ t: d.criadoEm, x: `🎬 Vídeo publicado: ${d.titulo}` })),
+                q('mural', d => ({ t: d.criadoEm, x: `📢 Aviso: ${d.titulo}` }))
+            ]);
+            const itens = grupos.flat().filter(i => i.t && i.t.toMillis).sort((a, b) => b.t.toMillis() - a.t.toMillis()).slice(0, 15);
+            out.innerHTML = itens.length ? itens.map(i => `<div class="mb-1 text-white">${esc(String(i.x).slice(0, 110))} <span class="text-muted-custom" style="font-size: 11px;">${esc(fmtData(i.t))}</span></div>`).join('') : '<div class="text-muted-custom">Nada recente.</div>';
+        }
+
+        async function carregarInventarioTI() {
+            if (!soRaiz()) return;
+            const out = document.getElementById('ti-inventario'); out.textContent = 'Contando...';
+            const nomes = ['alunos', 'cargos', 'mural', 'enquetes', 'reivindicacoes', 'sugestoes', 'materiais', 'eventos', 'jogos', 'videos', 'tarefas', 'atas', 'divulgacoes', 'artes', 'chamados', 'acessos', 'aceites', 'erros_app', 'acoes_admin', 'membros_punidos'];
+            const res = await Promise.all(nomes.map(n => db.collection(n).limit(1000).get().then(s => [n, s.size]).catch(() => [n, null])));
+            out.innerHTML = '<table class="table table-sm table-dark mb-1"><tbody>' + res.map(([n, c]) => `<tr><td>${n}</td><td class="text-end">${c === null ? '—' : (c >= 1000 ? '1000+' : c)}</td></tr>`).join('') + '</tbody></table>' +
+                '<div class="text-muted-custom" style="font-size: 11px;">Plano gratuito: 1 GiB guardados, 50 mil leituras e 20 mil gravações por dia.</div>';
+        }
+
+        let pendTI = [];
+        async function carregarPendenciasTI() {
+            try { const d = await db.collection('ti_privado').doc('pendencias').get(); pendTI = d.exists ? (d.data().itens || []) : []; } catch (e) { pendTI = []; }
+            renderPendenciasTI();
+        }
+        function renderPendenciasTI() {
+            const c = document.getElementById('ti-pendencias'); if (!c) return;
+            c.innerHTML = pendTI.length ? pendTI.map((p, i) => `<div class="d-flex align-items-center gap-2 mb-1"><input type="checkbox" class="form-check-input mt-0" data-pend="${i}" ${p.feito ? 'checked' : ''}><span class="${p.feito ? 'text-decoration-line-through text-muted-custom' : 'text-white'}">${esc(p.texto)}${p.data ? ` <small class="text-muted-custom">(${esc(dataBR(p.data))})</small>` : ''}</span><button data-acao="excluirPendencia" data-id="${i}" class="btn btn-outline-danger btn-sm py-0 ms-auto" style="font-size: 11px;">✕</button></div>`).join('') : '<div class="text-muted-custom">Nada pendente.</div>';
+        }
+        function salvarPendenciasTI() { return db.collection('ti_privado').doc('pendencias').set({ itens: pendTI }).catch(e => erroDB(e, 'pendencias')); }
+        function adicionarPendenciaTI() {
+            if (!soRaiz()) return;
+            const texto = document.getElementById('ti-pend-texto').value.trim();
+            if (!texto) { toast('Escreva a pendência.', 'warning'); return; }
+            pendTI.push({ texto, data: document.getElementById('ti-pend-data').value, feito: false });
+            salvarPendenciasTI(); renderPendenciasTI();
+            document.getElementById('ti-pend-texto').value = ''; document.getElementById('ti-pend-data').value = '';
+        }
+        document.addEventListener('change', e => {
+            const p = e.target.closest('[data-pend]');
+            if (p && soRaiz()) { pendTI[Number(p.dataset.pend)].feito = p.checked; salvarPendenciasTI(); renderPendenciasTI(); }
+            const t = e.target.closest('[data-trava]');
+            if (t && soRaiz()) db.collection('config').doc('sistema').set({ recursosDiretoria: { [t.dataset.trava]: t.checked } }, { merge: true }).catch(err => erroDB(err, 'trava'));
+        });
+
+        function organizarListaAlunos() {
+            if (!soRaiz()) return;
+            const turma = document.getElementById('ti-lista-turma').value.trim();
+            const linhas = document.getElementById('ti-lista-bruta').value.split('\n').map(l => l.trim()).filter(Boolean);
+            const vistos = new Set(), saida = [], sem = []; let dup = 0;
+            const capitalizar = n => n.toLowerCase().split(' ').map(w => (['de', 'da', 'do', 'dos', 'das', 'e'].includes(w) ? w : w.charAt(0).toUpperCase() + w.slice(1))).join(' ');
+            linhas.forEach(l => {
+                const m = l.match(/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/);
+                if (!m) { sem.push(l); return; }
+                const email = m[0].toLowerCase();
+                if (vistos.has(email)) { dup++; return; }
+                vistos.add(email);
+                let nome = l.replace(m[0], ' ').replace(/[;,\t<>()\[\]|"]+/g, ' ').replace(/\s+/g, ' ').trim();
+                if (!nome) nome = email.split('@')[0].replace(/[._-]+/g, ' ');
+                saida.push(`${capitalizar(nome)};${email};;${turma}`);
+            });
+            document.getElementById('ti-lista-saida').value = saida.join('\n');
+            document.getElementById('ti-lista-resumo').innerHTML = `✅ ${saida.length} aluno(s) prontos • ${dup} duplicado(s) removido(s) • ${sem.length} linha(s) sem e-mail` +
+                (sem.length ? `<div class="text-warning">${sem.slice(0, 5).map(esc).join('<br>')}</div>` : '');
+        }
+        function copiarListaOrganizada() {
+            const t = document.getElementById('ti-lista-saida').value;
+            if (!t) { toast('Organize a lista primeiro.', 'warning'); return; }
+            (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => toast('Lista copiada.')).catch(() => toast('Não consegui copiar.', 'warning'));
+        }
+        function enviarParaCadastroMassa() {
+            const t = document.getElementById('ti-lista-saida').value;
+            if (!t) { toast('Organize a lista primeiro.', 'warning'); return; }
+            document.getElementById('ti-massa').value = t;
+            document.getElementById('secao-ti-portal').scrollIntoView({ behavior: 'smooth' });
+            toast('Lista enviada ao Cadastro em massa. Senhas vazias serão geradas.');
+        }
+        function gerarSenhaForte() { document.getElementById('ti-senha-gerada').value = gerarSenha(12); }
+        function copiarSenhaGerada() {
+            const v = document.getElementById('ti-senha-gerada').value;
+            if (!v) { toast('Gere uma senha primeiro.', 'warning'); return; }
+            (navigator.clipboard ? navigator.clipboard.writeText(v) : Promise.reject()).then(() => toast('Senha copiada.')).catch(() => toast('Não consegui copiar.', 'warning'));
+        }
+        function carregarTravasUI() {
+            ouvir(db.collection('config').doc('sistema'), doc => {
+                const t = (doc.exists && doc.data().recursosDiretoria) || {};
+                const c = document.getElementById('ti-travas'); if (!c) return;
+                c.innerHTML = modulosSistema.filter(m => !m.soRaiz).map(m => `<div class="col-12 col-md-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-trava="${m.id}" id="tv-${m.id}" ${t[m.id] ? 'checked' : ''}><label class="form-check-label small" for="tv-${m.id}">${esc(m.label)}</label></div></div>`).join('');
+            });
+        }
+
+        async function resumoErrosPortal() {
+            if (!soRaiz()) return;
+            const out = document.getElementById('ti-erros');
+            try {
+                const snap = await db.collection('erros_app').orderBy('em', 'desc').limit(200).get();
+                const cont = {};
+                snap.docs.forEach(d => { const k = String(d.data().msg || '').slice(0, 100); cont[k] = cont[k] || { n: 0, pessoas: new Set() }; cont[k].n++; cont[k].pessoas.add(d.data().email); });
+                const lista = Object.entries(cont).sort((a, b) => b[1].n - a[1].n);
+                out.innerHTML = lista.length ? '<ul class="list-group">' + lista.map(([k, v]) => `<li class="list-group-item small"><span class="badge bg-warning text-dark me-1">${v.n}×</span> <span class="text-warning">${esc(k)}</span><br><small class="text-muted-custom">${v.pessoas.size} pessoa(s)</small></li>`).join('') + '</ul>' : '<p class="text-success mb-0">Nenhum erro registrado. 🎉</p>';
+            } catch (e) { erroDB(e, 'resumoErros'); }
+        }
+
+        /* ================= DADOS, CONFORMIDADE E CONTROLE DO PAINEL (só o e-mail raiz) ================= */
+
+        const RULES_TEMPLATE = "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n\n    function signedIn() { return request.auth != null && request.auth.token.email != null; }\n    function mail() { return request.auth.token.email.lower(); }\n\n    function temCargo() { return signedIn() && exists(/databases/$(database)/documents/cargos/$(mail())); }\n    function nivelCargo() { return get(/databases/$(database)/documents/cargos/$(mail())).data.nivel; }\n\n    function isAdmin() {\n      return signedIn() && (mail() == 'kevin.silva10@aluno.ifce.edu.br' || (temCargo() && nivelCargo() == 'admin'));\n    }\n    function isDiretoria() {\n      return isAdmin() || (temCargo() && nivelCargo() in ['membro', 'marketing']);\n    }\n    // Aluno s\u00f3 acessa se o cadastro existir e estiver ativo (bloqueio vale de verdade).\n    // Modo manuten\u00e7\u00e3o: quando ligado (config/sistema), s\u00f3 a diretoria acessa os dados.\n    function emManutencao() {\n      return exists(/databases/$(database)/documents/config/sistema) &&\n        get(/databases/$(database)/documents/config/sistema).data.manutencao == true;\n    }\n    function ativo() {\n      return isDiretoria() || (signedIn() && !emManutencao() &&\n        exists(/databases/$(database)/documents/alunos/$(mail())) &&\n        get(/databases/$(database)/documents/alunos/$(mail())).data.ativo == true);\n    }\n    function isMkt() { return isAdmin() || (temCargo() && nivelCargo() == 'marketing'); }\n    function isGestor() { return isAdmin() || (temCargo() && nivelCargo() == 'membro'); }\n    function isRoot() { return signedIn() && mail() == 'kevin.silva10@aluno.ifce.edu.br'; }\n    function onlyKeys(keys) {\n      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);\n    }\n\n    match /cargos/{email} {\n      allow read: if signedIn() && (mail() == email || isDiretoria());\n      allow create, update: if isAdmin() && request.resource.data.nivel in ['admin', 'membro', 'marketing'];\n      allow delete: if isAdmin();\n    }\n\n    match /alunos/{email} {\n      allow read: if isAdmin() || (signedIn() && mail() == email);\n      allow write: if isAdmin();\n    }\n\n    match /mural/{id} {\n      allow read: if ativo();\n      allow write: if isMkt();\n    }\n\n    match /enquetes/{id} {\n      allow read: if ativo();\n      allow create, delete: if isDiretoria();\n      allow update: if isDiretoria() || (ativo() && onlyKeys(['votosAlunos', 'opcoes']));\n    }\n\n    match /reivindicacoes/{id} {\n      allow read: if ativo();\n      allow create: if ativo();\n      allow update: if isAdmin() || (ativo() && onlyKeys(['apoios']));\n      allow delete: if isAdmin();\n    }\n\n    match /materiais/{id} {\n      allow read: if ativo();\n      allow create, delete: if isGestor();\n      allow update: if isGestor() || (ativo() && onlyKeys(['status', 'emprestadoPara'])\n        && resource.data.status == 'Dispon\u00edvel' && request.resource.data.status == 'Solicitado');\n    }\n\n    match /eventos/{id} {\n      allow read: if ativo();\n      allow create, delete: if isGestor();\n      allow update: if isGestor() || (ativo() && onlyKeys(['inscritos']));\n    }\n\n    match /jogos/{id} {\n      allow read: if ativo();\n      allow write: if isGestor();\n    }\n\n    match /sugestoes/{id} {\n      allow create: if ativo() && request.resource.data.email == mail();\n      allow read: if isAdmin() || (ativo() && resource.data.email == mail());\n      allow update, delete: if isAdmin();\n    }\n\n    match /config/{id} {\n      allow read: if signedIn();\n      allow write: if isRoot();\n    }\n\n    // Erros que o portal dos alunos reporta sozinho (s\u00f3 o TI l\u00ea).\n    match /erros_app/{id} {\n      allow create: if ativo() && request.resource.data.keys().hasOnly(['email', 'msg', 'pagina', 'ua', 'em'])\n        && request.resource.data.email == mail() && request.resource.data.msg.size() < 400;\n      allow read, delete: if isRoot();\n    }\n\n    // Anota\u00e7\u00f5es privadas do TI.\n    match /ti_privado/{id} {\n      allow read, write: if isRoot();\n    }\n\n    // Tarefas por cargo: a presid\u00eancia atribui; cada diretor s\u00f3 l\u00ea e conclui as suas.\n    match /tarefas/{id} {\n      allow read: if isAdmin() || (isDiretoria() && resource.data.atribuidoPara == mail());\n      allow create, delete: if isAdmin();\n      allow update: if isAdmin() || (isDiretoria() && resource.data.atribuidoPara == mail() && onlyKeys(['status', 'concluidaEm']));\n    }\n\n    match /atas/{id} {\n      allow read, write: if isAdmin();\n    }\n\n    match /divulgacoes/{id} {\n      allow read, write: if isMkt();\n    }\n\n    match /artes/{id} {\n      allow read, write: if isMkt();\n    }\n\n    // V\u00eddeos de aula pr\u00e1tica (arquivos ficam no Firebase Storage).\n    match /videos/{id} {\n      allow read: if ativo();\n      allow write: if isMkt();\n    }\n\n    // Pedidos de ajuda ao TI: o diretor cria e l\u00ea os seus; s\u00f3 o TI responde.\n    match /chamados/{id} {\n      allow create: if isDiretoria() && request.resource.data.autorEmail == mail() && request.resource.data.status == 'Aberto'\n        && request.resource.data.keys().hasOnly(['categoria', 'descricao', 'autorEmail', 'autorNome', 'cargo', 'status', 'criadoEm']);\n      allow read: if isRoot() || (isDiretoria() && resource.data.autorEmail == mail());\n      allow update, delete: if isRoot();\n    }\n\n    // Quando cada aluno entrou pela \u00faltima vez (s\u00f3 o TI l\u00ea).\n    match /acessos/{email} {\n      allow create, update: if ativo() && mail() == email && request.resource.data.keys().hasOnly(['ultimoAcesso', 'total', 'nome']);\n      allow read, delete: if isRoot();\n    }\n\n    // Aceite do termo de uso.\n    match /aceites/{email} {\n      allow create, update: if ativo() && mail() == email && request.resource.data.keys().hasOnly(['versao', 'em', 'nome']);\n      allow read: if isRoot() || (signedIn() && mail() == email);\n      allow delete: if isRoot();\n    }\n\n    // \u00daltimo acesso de cada diretor ao painel (s\u00f3 o TI l\u00ea).\n    match /acessos_painel/{email} {\n      allow create, update: if isDiretoria() && mail() == email && request.resource.data.keys().hasOnly(['ultimoAcesso', 'total', 'nome', 'cargo']);\n      allow read: if isRoot();\n    }\n\n    match /membros_punidos/{email} {\n      allow read: if isDiretoria();\n      allow write: if isAdmin();\n    }\n\n    match /acoes_admin/{id} {\n      allow create: if isDiretoria();\n      allow read: if isAdmin();\n      allow delete: if isRoot();\n    }\n  }\n}\n";
+        const COLECOES_EDITOR = ['alunos', 'cargos', 'mural', 'enquetes', 'reivindicacoes', 'materiais', 'eventos', 'jogos', 'sugestoes', 'videos', 'tarefas', 'atas', 'divulgacoes', 'artes', 'chamados', 'membros_punidos', 'acessos', 'aceites', 'acessos_painel', 'config', 'ti_privado'];
+
+        function preencherEditor() {
+            document.getElementById('ed-col').innerHTML = COLECOES_EDITOR.map(c => `<option>${c}</option>`).join('');
+        }
+        function serializar(v) {
+            if (v && typeof v.toDate === 'function') return { __ts: v.toDate().toISOString() };
+            if (Array.isArray(v)) return v.map(serializar);
+            if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, serializar(x)]));
+            return v;
+        }
+        function desserializar(v) {
+            if (v && typeof v === 'object' && !Array.isArray(v) && typeof v.__ts === 'string') return firebase.firestore.Timestamp.fromDate(new Date(v.__ts));
+            if (Array.isArray(v)) return v.map(desserializar);
+            if (v && typeof v === 'object') return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, desserializar(x)]));
+            return v;
+        }
+        async function editorListar() {
+            if (!soRaiz()) return;
+            const col = document.getElementById('ed-col').value, box = document.getElementById('ed-lista');
+            box.textContent = 'Carregando...';
+            try {
+                const snap = await db.collection(col).limit(60).get();
+                box.innerHTML = snap.empty ? '<span class="text-muted-custom">Coleção vazia.</span>' : snap.docs.map(d => `<button class="btn btn-outline-secondary btn-sm py-0 me-1 mb-1" style="font-size: 11px;" data-acao="editorEscolher" data-id="${esc(d.id)}">${esc(d.id.length > 38 ? d.id.slice(0, 36) + '…' : d.id)}</button>`).join('') + (snap.size === 60 ? '<div class="text-muted-custom">Mostrando os 60 primeiros.</div>' : '');
+            } catch (e) { box.textContent = ''; erroDB(e, 'editorListar'); }
+        }
+        async function editorAbrir() {
+            if (!soRaiz()) return;
+            const col = document.getElementById('ed-col').value, id = document.getElementById('ed-id').value.trim();
+            if (!id) { toast('Informe o ID do documento.', 'warning'); return; }
+            try {
+                const d = await db.collection(col).doc(id).get();
+                document.getElementById('ed-json').value = d.exists ? JSON.stringify(serializar(d.data()), null, 2) : '{\n  \n}';
+                if (!d.exists) toast('Esse documento não existe. Se salvar, ele será criado.', 'warning');
+            } catch (e) { erroDB(e, 'editorAbrir'); }
+        }
+        async function editorSalvar() {
+            if (!soRaiz()) return;
+            const col = document.getElementById('ed-col').value, id = document.getElementById('ed-id').value.trim();
+            let obj;
+            try { obj = desserializar(JSON.parse(document.getElementById('ed-json').value)); } catch (e) { toast('O texto não é um JSON válido.', 'danger'); return; }
+            if (!id || !obj || typeof obj !== 'object' || Array.isArray(obj)) { toast('Informe o ID e um objeto JSON.', 'warning'); return; }
+            if (!(await confirmar(`Substituir o documento ${col}/${id} por este conteúdo?`))) return;
+            try { await db.collection(col).doc(id).set(obj); toast('Documento salvo.'); registrarAcao('Documento editado', `${col}/${id}`); }
+            catch (e) { erroDB(e, 'editorSalvar'); }
+        }
+        async function editorExcluir() {
+            if (!soRaiz()) return;
+            const col = document.getElementById('ed-col').value, id = document.getElementById('ed-id').value.trim();
+            if (!id) { toast('Informe o ID do documento.', 'warning'); return; }
+            if (!(await confirmar(`Excluir ${col}/${id}? Não dá para desfazer.`))) return;
+            try { await db.collection(col).doc(id).delete(); toast('Documento excluído.'); registrarAcao('Documento excluído', `${col}/${id}`); document.getElementById('ed-json').value = ''; }
+            catch (e) { erroDB(e, 'editorExcluir'); }
+        }
+
+        async function inventarioBanco() {
+            if (!soRaiz()) return;
+            const out = document.getElementById('ti-inventario');
+            out.textContent = 'Medindo...';
+            const nomes = [...new Set([...COLECOES_EDITOR, 'acoes_admin', 'erros_app'])];
+            let totalDocs = 0, totalBytes = 0;
+            const linhas = [];
+            for (const n of nomes) {
+                try {
+                    const snap = await db.collection(n).get();
+                    const bytes = snap.docs.reduce((t, d) => t + JSON.stringify(serializar(d.data())).length + d.id.length, 0);
+                    totalDocs += snap.size; totalBytes += bytes;
+                    linhas.push(`<tr><td>${n}</td><td>${snap.size}</td><td>${(bytes / 1024).toFixed(1)} KB</td></tr>`);
+                } catch (e) { linhas.push(`<tr><td>${n}</td><td colspan="2" class="text-danger">${esc(e.code || 'erro')}</td></tr>`); }
+            }
+            const pct = (totalBytes / (1024 ** 3) * 100).toFixed(4);
+            out.innerHTML = `<table class="table table-sm table-dark mb-2"><thead><tr><th>Coleção</th><th>Docs</th><th>Tamanho</th></tr></thead><tbody>${linhas.join('')}</tbody></table>
+                <div><strong>${totalDocs}</strong> documento(s) • <strong>${(totalBytes / 1024).toFixed(1)} KB</strong> (${pct}% do 1 GB gratuito)</div>
+                <div class="text-muted-custom mt-1" style="font-size: 11px;">Limites diários gratuitos do Firestore: 50 mil leituras e 20 mil gravações. Tamanho estimado pelo conteúdo dos documentos.</div>`;
+        }
+
+        async function apagarDadosAluno() {
+            if (!soRaiz()) return;
+            const email = document.getElementById('ti-lgpd-email').value.trim().toLowerCase();
+            const out = document.getElementById('ti-lgpd-out');
+            if (!email.includes('@')) { toast('Digite o e-mail do aluno.', 'warning'); return; }
+            if (!(await confirmar(`Apagar TODOS os dados de ${email}? Isso não pode ser desfeito.`))) return;
+            out.textContent = 'Apagando...';
+            try {
+                const FV = firebase.firestore.FieldValue;
+                const [sug, rei, eve, enq, mat] = await Promise.all([
+                    db.collection('sugestoes').where('email', '==', email).get(), db.collection('reivindicacoes').get(),
+                    db.collection('eventos').get(), db.collection('enquetes').get(), db.collection('materiais').get()
+                ]);
+                const batch = db.batch(); let n = 0;
+                ['alunos', 'acessos', 'aceites'].forEach(c => { batch.delete(db.collection(c).doc(email)); n++; });
+                sug.docs.forEach(d => { batch.delete(d.ref); n++; });
+                rei.docs.forEach(d => {
+                    const x = d.data(), up = {};
+                    if ((x.apoios || []).includes(email)) up.apoios = FV.arrayRemove(email);
+                    if ((x.autorEmail || '').toLowerCase() === email) { up.autorEmail = ''; up.autor = 'Aluno removido'; }
+                    if (Object.keys(up).length) { batch.update(d.ref, up); n++; }
+                });
+                eve.docs.forEach(d => { if ((d.data().inscritos || []).includes(email)) { batch.update(d.ref, { inscritos: FV.arrayRemove(email) }); n++; } });
+                enq.docs.forEach(d => {
+                    const v = d.data().votosAlunos || [], quem = e => (typeof e === 'string' ? e : e && e.email);
+                    if (v.some(e => quem(e) === email)) {
+                        batch.update(d.ref, { votosAlunos: v.map(e => (quem(e) === email ? (typeof e === 'string' ? 'removido' : { ...e, email: 'removido' }) : e)) }); n++;
+                    }
+                });
+                mat.docs.forEach(d => { if ((d.data().emprestadoPara || '').toLowerCase().includes(email)) { batch.update(d.ref, { emprestadoPara: '(aluno removido)' }); n++; } });
+                if (n > 480) throw new Error('muitos registros');
+                await batch.commit();
+                registrarAcao('Dados de aluno apagados (LGPD)', n + ' registros');
+                document.getElementById('ti-lgpd-email').value = '';
+                out.innerHTML = `✅ ${n} registro(s) alterado(s). <strong>Falta apagar a conta de login</strong> em Firebase > Authentication > Usuários (o painel não consegue fazer isso).`;
+            } catch (e) { out.textContent = ''; erroDB(e, 'lgpd'); }
+        }
+
+        function gerarRegrasNovoRaiz() {
+            if (!soRaiz()) return;
+            const novo = document.getElementById('ti-novo-raiz').value.trim().toLowerCase();
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(novo)) { toast('Digite um e-mail válido.', 'warning'); return; }
+            document.getElementById('ti-regras-out').value = RULES_TEMPLATE.split(ROOT_EMAIL).join(novo);
+            toast('Regras geradas. Copie e publique no Firebase.');
+        }
+        function copiarRegras() {
+            const t = document.getElementById('ti-regras-out').value;
+            if (!t) { toast('Gere as regras primeiro.', 'warning'); return; }
+            (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => toast('Regras copiadas.')).catch(() => toast('Não consegui copiar. Selecione e copie manualmente.', 'warning'));
+        }
+        function copiarDiagnostico() {
+            const corpo = document.getElementById('ti-diag').innerText.trim();
+            if (!corpo) { toast('Rode o diagnóstico primeiro.', 'warning'); return; }
+            const t = ['Diagnóstico do painel Grêmio IFCE', new Date().toLocaleString('pt-BR'), location.href, navigator.userAgent, '', corpo].join('\n');
+            (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => toast('Relatório copiado.')).catch(() => toast('Não consegui copiar.', 'warning'));
+        }
+
+        function registrarAcessoPainel(dados) {
+            try { if (sessionStorage.getItem('painel-reg:' + emailLogado)) return; sessionStorage.setItem('painel-reg:' + emailLogado, '1'); } catch (e) {}
+            db.collection('acessos_painel').doc(emailLogado).set({
+                ultimoAcesso: TS(), total: firebase.firestore.FieldValue.increment(1), nome: (dados && dados.nome) || '', cargo: (dados && dados.cargo) || ''
+            }, { merge: true }).catch(() => {});
+        }
+        async function atividadeDiretoria() {
+            if (!soRaiz()) return;
+            const out = document.getElementById('ti-atividade');
+            out.textContent = 'Calculando...';
+            try {
+                const [ca, ap, ta, lg] = await Promise.all([
+                    db.collection('cargos').get(), db.collection('acessos_painel').get(), db.collection('tarefas').get(),
+                    db.collection('acoes_admin').orderBy('em', 'desc').limit(500).get()
+                ]);
+                const acesso = {}; ap.docs.forEach(d => acesso[d.id] = d.data());
+                const acoes = {}; lg.docs.forEach(d => { const a = d.data().autor; acoes[a] = (acoes[a] || 0) + 1; });
+                const pend = {}; ta.docs.forEach(d => { const t = d.data(); if (t.status === 'Pendente') pend[t.atribuidoPara] = (pend[t.atribuidoPara] || 0) + 1; });
+                const agora = Date.now();
+                const linhas = ca.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => String(a.nome).localeCompare(String(b.nome))).map(c => {
+                    const a = acesso[c.id], t = a && a.ultimoAcesso ? a.ultimoAcesso.toMillis() : 0;
+                    const dias = t ? Math.floor((agora - t) / 864e5) : null;
+                    const alerta = dias === null || dias > 14;
+                    return `<tr class="${alerta ? 'text-warning' : ''}"><td>${esc(c.nome)}<br><small class="text-muted-custom">${esc(c.cargo)}</small></td><td>${dias === null ? 'nunca' : dias === 0 ? 'hoje' : dias + ' d'}</td><td>${a ? a.total || 0 : 0}</td><td>${acoes[c.id] || 0}</td><td>${pend[c.id] || 0}</td></tr>`;
+                });
+                out.innerHTML = '<table class="table table-sm table-dark mb-1"><thead><tr><th>Diretor</th><th>Último acesso</th><th>Acessos</th><th>Ações</th><th>Tarefas pend.</th></tr></thead><tbody>' + linhas.join('') + '</tbody></table><div class="text-muted-custom" style="font-size: 11px;">Acessos contam a partir desta versão do painel. Ações = últimas 500 do log.</div>';
+            } catch (e) { out.textContent = ''; erroDB(e, 'atividade'); }
+        }
+
+        function aplicarOcultos() {
+            if (emailLogado === ROOT_EMAIL) return;
+            cartoesOcultos.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
+            renderizarMenuLateral({ nivel: nivelDoPainel });
+            renderizarBarraInferior(nivelDoPainel);
+        }
+        function carregarOcultosTI() {
+            ouvir(db.collection('config').doc('sistema'), doc => {
+                const c = document.getElementById('ti-ocultos');
+                if (!c || c.contains(document.activeElement)) return;
+                const ocultos = (doc.exists && doc.data().cartoesOcultos) || [];
+                c.innerHTML = '<div class="row g-1">' + modulosSistema.filter(m => !m.soRaiz).map(m => `<div class="col-12 col-md-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-oculto="${m.id}" id="oc-${m.id}" ${ocultos.includes(m.id) ? '' : 'checked'}><label class="form-check-label small" for="oc-${m.id}">${esc(m.label)}</label></div></div>`).join('') + '</div>';
+            });
+        }
+        async function salvarOcultos() {
+            if (!soRaiz()) return;
+            const ids = [...document.querySelectorAll('[data-oculto]')].filter(c => !c.checked).map(c => c.dataset.oculto);
+            try { await db.collection('config').doc('sistema').set({ cartoesOcultos: ids }, { merge: true }); toast(ids.length ? ids.length + ' cartão(ões) escondido(s) dos cargos.' : 'Todos os cartões visíveis.'); registrarAcao('Cartões ocultados', ids.join(', ') || 'nenhum'); }
+            catch (e) { erroDB(e, 'ocultos'); }
         }
 
         /* ================= ANÁLISE, COMUNICAÇÃO E CONFORMIDADE (só o e-mail raiz) ================= */
@@ -2006,7 +2482,7 @@
                 out.innerHTML = `<div class="row g-2 mb-3">${caixa(ativos.length, 'alunos ativos')}${caixa(entraram.length + ' (' + pct(entraram.length) + ')', 'já entraram')}${caixa(s7.length + ' (' + pct(s7.length) + ')', 'últimos 7 dias')}${caixa(s30.length + ' (' + pct(s30.length) + ')', 'últimos 30 dias')}</div>` +
                     '<table class="table table-sm table-dark mb-2"><thead><tr><th>Turma</th><th>Entraram</th><th>Total</th></tr></thead><tbody>' +
                     Object.entries(turmas).sort().map(([t, v]) => `<tr><td>${esc(t)}</td><td>${v.entrou}</td><td>${v.total}</td></tr>`).join('') + '</tbody></table>' +
-                    (adocaoNunca.length ? `<button onclick="baixarNuncaEntraram()" class="btn btn-outline-light btn-sm">⬇️ Baixar lista de quem nunca entrou (${adocaoNunca.length})</button>` : '<div class="text-success fw-bold">Todos os alunos ativos já entraram! 🎉</div>') +
+                    (adocaoNunca.length ? `<button onclick="baixarNuncaEntraram()" class="btn btn-outline-light btn-sm">⬇️ Baixar lista de quem nunca entrou (${adocaoNunca.length})</button> <button data-acao="senhaNunca" class="btn btn-outline-info btn-sm mt-1">✉️ Enviar link de senha a quem nunca entrou (${Math.min(adocaoNunca.length, 50)})</button>` : '<div class="text-success fw-bold">Todos os alunos ativos já entraram! 🎉</div>') +
                     '<div class="text-muted-custom mt-2" style="font-size: 11px;">Só conta acessos a partir da versão nova do portal.</div>';
             } catch (e) { out.textContent = ''; erroDB(e, 'adocao'); }
         }
@@ -2323,7 +2799,8 @@
                 if (al.exists) {
                     const a = al.data();
                     botoes += `<button data-acao="fichaAtivo" data-id="${esc(email)}" data-valor="${!a.ativo}" class="btn btn-outline-warning btn-sm py-0" style="font-size: 12px;">${a.ativo ? 'Bloquear aluno' : 'Desbloquear aluno'}</button></div>
-                        <div class="input-group input-group-sm mt-2" style="max-width: 360px;"><input type="text" id="ficha-turma" class="form-control" maxlength="60" placeholder="Turma" value="${esc(a.turma || '')}"><button data-acao="fichaTurma" data-id="${esc(email)}" class="btn btn-outline-light">Salvar turma</button></div>`;
+                        <div class="input-group input-group-sm mt-2" style="max-width: 360px;"><input type="text" id="ficha-turma" class="form-control" maxlength="60" placeholder="Turma" value="${esc(a.turma || '')}"><button data-acao="fichaTurma" data-id="${esc(email)}" class="btn btn-outline-light">Salvar turma</button></div>
+                        <div class="input-group input-group-sm mt-2" style="max-width: 360px;"><input type="text" id="ficha-nome" class="form-control" maxlength="80" placeholder="Nome" value="${esc(a.nome || '')}"><button data-acao="fichaNome" data-id="${esc(email)}" class="btn btn-outline-light">Salvar nome</button></div>`;
                 } else botoes += '</div>';
                 out.innerHTML = L.map(x => `<div class="mb-1">${x}</div>`).join('') + botoes;
             } catch (e) { out.textContent = ''; erroDB(e, 'fichaUsuario'); }
@@ -2827,6 +3304,25 @@
                     await ref.set({ novidades: atual }, { merge: true });
                 } catch (e) { erroDB(e, 'excluirNovidade'); }
             },
+            excluirPendencia: id => { if (!soRaiz()) return; pendTI.splice(Number(id), 1); salvarPendenciasTI(); renderPendenciasTI(); },
+            fichaNome: id => {
+                const nome = document.getElementById('ficha-nome').value.trim();
+                if (!nome) { toast('Digite o nome.', 'warning'); return; }
+                db.collection('alunos').doc(id).update({ nome }).then(() => { toast('Nome salvo.'); registrarAcao('Nome de aluno alterado', id); fichaUsuario(); }).catch(e => erroDB(e, 'fichaNome'));
+            },
+            senhaNunca: async () => {
+                if (!soRaiz() || !adocaoNunca.length) return;
+                const alvo = adocaoNunca.slice(0, 50);
+                if (!(await confirmar(`Enviar link de senha para ${alvo.length} aluno(s) que nunca entraram? Eles recebem um e-mail para criar a própria senha.`))) return;
+                let ok = 0;
+                for (const a of alvo) {
+                    try { await auth.sendPasswordResetEmail((a.email || a.id).toLowerCase()); ok++; } catch (e) { /* conta inexistente ou limite */ }
+                    await new Promise(r => setTimeout(r, 400));
+                }
+                registrarAcao('Links de senha em massa', `${ok} de ${alvo.length} enviados`);
+                toast(`${ok} de ${alvo.length} link(s) enviado(s).`);
+            },
+            editorEscolher: id => { document.getElementById('ed-id').value = id; editorAbrir(); },
             excluirSugestao: async id => { if (await confirmar("Apagar esta sugestão?")) db.collection('sugestoes').doc(id).delete().catch(e => erroDB(e, 'excluirSugestao')); },
             excluirPauta: async id => { if (await confirmar("Excluir esta pauta?")) db.collection('reivindicacoes').doc(id).delete().then(() => registrarAcao('Pauta excluída', id)).catch(e => erroDB(e, 'excluirPauta')); },
             removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(e => erroDB(e, 'removerPunicao')); },
