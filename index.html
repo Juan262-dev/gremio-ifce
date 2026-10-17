@@ -44,6 +44,7 @@ body{background-color:#f4f6f9}
 .input-group-chem input:focus{border-color:var(--ifce-accent-green);box-shadow:0 0 8px rgba(0,230,118,.2)}
 .btn-green-chem{width:100%;padding:14px;background:linear-gradient(135deg,#2d8647,#1b522b);border:1px solid var(--ifce-accent-green);border-radius:12px;color:#fff;font-size:1rem;font-weight:700;cursor:pointer;box-shadow:0 4px 15px rgba(45,134,71,.4);margin-top:10px}
 .btn-green-chem:disabled{opacity:.6}
+.link-esqueci{background:none;border:0;color:#a0b3a6;font-size:.85rem;text-decoration:underline;width:100%;margin-top:12px;padding:6px;cursor:pointer}
 .dots-container-chem{display:flex;gap:8px;margin-bottom:10px}
 .dot-chem{width:10px;height:10px;background:#283a2e;border-radius:50%;cursor:pointer;transition:all .3s}
 .dot-chem.active{width:25px;background:var(--ifce-accent-green);border-radius:10px;box-shadow:0 0 10px rgba(0,230,118,.8)}
@@ -160,7 +161,9 @@ body{background-color:#f4f6f9}
     <p class="text-muted small mb-3">Algo não funciona no portal ou você tem uma dúvida? Conte aqui que o responsável pelo sistema responde.</p>
     <select id="aj-cat" class="form-select mb-2"><option>Algo não funciona</option><option>Não consigo acessar algo</option><option>Dúvida de como usar</option><option>Outro</option></select>
     <textarea id="aj-desc" class="form-control mb-2" rows="3" maxlength="800" placeholder="Descreva o que aconteceu..."></textarea>
-    <button onclick="criarChamadoAluno()" class="btn btn-ifce fw-bold w-100">Enviar pedido</button>
+    <button id="aj-btn" onclick="criarChamadoAluno()" class="btn btn-ifce fw-bold w-100">Enviar pedido</button>
+    <div id="aj-msg" class="small mt-2"></div>
+    <div class="text-muted" style="font-size:11px">Portal v<span class="versao-portal"></span></div>
     <hr class="my-4">
     <h6 class="fw-bold mb-2">Meus pedidos</h6>
     <div id="lista-meus-chamados"><p class="text-muted small mb-0">Carregando...</p></div>
@@ -181,9 +184,10 @@ body{background-color:#f4f6f9}
   <div style="background:#18221b;border:1px solid #283a2e;border-radius:16px;max-width:520px;width:100%;max-height:85vh;display:flex;flex-direction:column;padding:20px">
     <h4 class="fw-bold mb-3">📜 Termo de uso e privacidade</h4>
     <div id="termo-texto" style="overflow:auto;white-space:pre-wrap;font-size:.9rem;color:#cfe3d5;flex:1;margin-bottom:12px"></div>
-    <button onclick="aceitarTermo()" class="btn-green-chem">Li e aceito</button>
+    <button id="btn-aceitar-termo" onclick="aceitarTermo()" class="btn-green-chem">Li e aceito</button>
     <button onclick="fazerLogoutAluno()" class="link-esqueci">Não aceito (sair)</button>
     <div id="termo-erro" style="color:#ffc107;font-size:.85rem;margin-top:8px;text-align:center"></div>
+    <div style="font-size:.7rem;color:#6c8a75;text-align:center;margin-top:6px">Portal v<span class="versao-portal"></span></div>
   </div>
 </div>
 
@@ -764,13 +768,23 @@ async function verificarTermo() {
     ov.style.display = 'flex';
   } else ov.style.display = 'none';
 }
+const VERSAO_PORTAL = '2026.10.17-c';
+document.querySelectorAll('.versao-portal').forEach(e => e.textContent = VERSAO_PORTAL);
+// Se o servidor não responder em 10 s, avisa em vez de ficar parado sem dizer nada.
+const comTimeout = (p, ms = 10000) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej({ code: 'timeout' }), ms))]);
+function msgErroEnvio(err) {
+  const cod = err && err.code ? err.code : 'erro';
+  if (cod === 'timeout') return 'O servidor não respondeu. Verifique a internet e tente de novo.';
+  if (cod === 'permission-denied') return 'Sem permissão (permission-denied). Avise o TI: as regras do banco precisam ser atualizadas.';
+  return 'Não foi possível enviar (' + cod + '). Tente de novo.';
+}
 function aceitarTermo() {
-  db.collection('aceites').doc(usuarioAtual.email).set({ versao: termoAtual.versao, em: TS(), nome: usuarioAtual.nome || '' })
-    .then(() => { aceiteVersao = termoAtual.versao; document.getElementById('termo-erro').textContent = ''; verificarTermo(); })
-    .catch(err => {
-      const cod = err && err.code ? err.code : 'erro';
-      document.getElementById('termo-erro').textContent = 'Não foi possível registrar o aceite (' + cod + '). ' + (cod === 'permission-denied' ? 'Avise o TI: as regras do banco precisam ser atualizadas.' : 'Tente de novo.');
-    });
+  const btn = document.getElementById('btn-aceitar-termo'), erro = document.getElementById('termo-erro');
+  btn.disabled = true; btn.textContent = 'Enviando...'; erro.textContent = '';
+  comTimeout(db.collection('aceites').doc(usuarioAtual.email).set({ versao: termoAtual.versao, em: TS(), nome: usuarioAtual.nome || '' }))
+    .then(() => { aceiteVersao = termoAtual.versao; document.getElementById('termo-overlay').style.display = 'none'; })
+    .catch(err => { erro.textContent = msgErroEnvio(err); })
+    .finally(() => { btn.disabled = false; btn.textContent = 'Li e aceito'; });
 }
 
 /* ---------- app instalável, filtro de palavras e pedidos de ajuda do aluno ---------- */
@@ -790,14 +804,18 @@ function palavraProibida(texto) {
   return palavrasProibidas.find(p => { const n = normTxt(p); return n && t.includes(' ' + n + ' '); });
 }
 function criarChamadoAluno() {
+  const msg = document.getElementById('aj-msg'), btn = document.getElementById('aj-btn');
   const descricao = document.getElementById('aj-desc').value.trim();
-  if (descricao.length < 5) { aviso('Descreva o problema com um pouco mais de detalhe.', 'warning'); return; }
-  if (palavraProibida(descricao)) { aviso('Seu texto tem palavras que não são permitidas. Reescreva, por favor.', 'warning'); return; }
-  db.collection('chamados').add({
+  const falha = t => { msg.className = 'small mt-2 text-danger'; msg.textContent = t; };
+  if (descricao.length < 5) { falha('Descreva o problema com um pouco mais de detalhe.'); return; }
+  if (palavraProibida(descricao)) { falha('Seu texto tem palavras que não são permitidas. Reescreva, por favor.'); return; }
+  btn.disabled = true; btn.textContent = 'Enviando...'; msg.textContent = '';
+  comTimeout(db.collection('chamados').add({
     categoria: document.getElementById('aj-cat').value, descricao, autorEmail: usuarioAtual.email, autorNome: usuarioAtual.nome || 'Aluno',
     cargo: 'Aluno', status: 'Aberto', criadoEm: TS()
-  }).then(() => { aviso('Pedido enviado! ✅', 'success'); document.getElementById('aj-desc').value = ''; })
-    .catch(err => aviso('Não foi possível enviar o pedido (' + (err && err.code ? err.code : 'erro') + ').', 'danger'));
+  })).then(() => { msg.className = 'small mt-2 text-success fw-bold'; msg.textContent = 'Pedido enviado! ✅'; document.getElementById('aj-desc').value = ''; })
+    .catch(err => falha(msgErroEnvio(err)))
+    .finally(() => { btn.disabled = false; btn.textContent = 'Enviar pedido'; });
 }
 function carregarMeusChamados() {
   ouvir(db.collection('chamados').where('autorEmail', '==', usuarioAtual.email), snap => {
