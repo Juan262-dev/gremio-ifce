@@ -170,7 +170,7 @@
                 <div id="resumo-grid" class="row g-2"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-ajuda" data-niveis="admin,membro,marketing" class="card card-custom p-4 mb-4">
+            <div id="secao-ajuda" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">🆘 Preciso de ajuda</h5>
                 <p class="text-muted-custom small mb-3">Algo não funciona ou você quer uma função nova? Conte aqui que o TI responde.</p>
                 <select id="aj-cat" class="form-select mb-2"><option>Algo não funciona</option><option>Não consigo entrar / acessar</option><option>Dúvida de como usar</option><option>Quero uma função nova</option><option>Outro</option></select>
@@ -181,12 +181,12 @@
                 <div id="lista-meus-chamados"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-novidades" data-niveis="admin,membro,marketing" class="card card-custom p-4 mb-4">
+            <div id="secao-novidades" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">🆕 Novidades do sistema</h5>
                 <div id="lista-novidades"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-guia" data-niveis="admin,membro,marketing" class="card card-custom p-4 mb-4">
+            <div id="secao-guia" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📖 Guia rápido do seu cargo</h5>
                 <div data-niveis="admin">
                     <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Presidência (presidente e vice)</summary>
@@ -220,10 +220,37 @@
                         </ul>
                     </details>
                 </div>
+                <div data-niveis="tesouraria">
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Tesouraria</summary>
+                        <ul class="small text-muted-custom mt-2 mb-0">
+                            <li><strong>Caixa:</strong> registre cada entrada e saída com valor, data e categoria.</li>
+                            <li><strong>Comprovantes:</strong> toda saída precisa de um link https:// (foto ou Drive).</li>
+                            <li><strong>Prestação de contas:</strong> escolha o mês e toque em PDF para entregar à presidência.</li>
+                            <li><strong>Erros:</strong> só a Presidência exclui um lançamento; avise se errar algo.</li>
+                        </ul>
+                    </details>
+                </div>
+                <div data-niveis="cultura">
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Cultura</summary>
+                        <ul class="small text-muted-custom mt-2 mb-0">
+                            <li><strong>Atividades:</strong> publique a atividade; ela aparece em Eventos no portal dos alunos e aceita inscrições.</li>
+                            <li><strong>Depois do evento:</strong> cole o link das fotos em "Minhas atividades" e gere o relatório em PDF.</li>
+                        </ul>
+                    </details>
+                </div>
+                <div data-niveis="racial">
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Igualdade Racial</summary>
+                        <ul class="small text-muted-custom mt-2 mb-0">
+                            <li><strong>Ações:</strong> publique rodas de conversa e palestras como atividades.</li>
+                            <li><strong>Pautas:</strong> acompanhe as pautas do tema no próprio card (só leitura).</li>
+                            <li><strong>Datas:</strong> 21 de março e 20 de novembro já estão lembradas no card.</li>
+                        </ul>
+                    </details>
+                </div>
                 <p class="small text-muted-custom mt-3 mb-0"><strong>Para todos:</strong> use "Minhas Tarefas" para marcar o que concluiu, o "Relatório de Atividades" para gerar PDF ou mandar no WhatsApp e "Preciso de ajuda" se travar em algo.</p>
             </div>
 
-            <div id="secao-tarefas" data-niveis="admin,membro,marketing" class="card card-custom p-4 mb-4">
+            <div id="secao-tarefas" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">✅ Minhas Tarefas</h5>
                 <div id="lista-minhas-tarefas"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
@@ -265,7 +292,7 @@
                 </div>
             </div>
 
-            <div id="secao-relatorio" data-niveis="admin,membro,marketing" class="card card-custom p-4 mb-4">
+            <div id="secao-relatorio" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📝 Escrever Relatório de Atividades</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Conteúdo do Relatório</label>
@@ -330,6 +357,69 @@
                 <div id="lista-videos-admin"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
+            <div id="secao-caixa" data-niveis="tesouraria,admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">💰 Caixa do Grêmio</h5>
+                <p class="text-muted-custom small mb-3">Registre cada entrada e saída. Este painel só anota: o dinheiro continua no caixa ou na conta do Grêmio. Toda saída precisa de um link de comprovante (foto ou Drive).</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-6 col-md-3"><div class="p-2 rounded text-center" style="background:#121a14;border:1px solid var(--ifce-card-border)"><div class="text-muted-custom" style="font-size:11px">Saldo geral</div><div class="fw-bold" id="cx-saldo-geral">R$ 0,00</div></div></div>
+                    <div class="col-6 col-md-3"><div class="p-2 rounded text-center" style="background:#121a14;border:1px solid var(--ifce-card-border)"><div class="text-muted-custom" style="font-size:11px">Saldo do mês</div><div class="fw-bold" id="cx-saldo-mes">R$ 0,00</div></div></div>
+                    <div class="col-6 col-md-3"><div class="p-2 rounded text-center" style="background:#121a14;border:1px solid var(--ifce-card-border)"><div class="text-muted-custom" style="font-size:11px">Entradas do mês</div><div class="fw-bold text-success" id="cx-ent-mes">R$ 0,00</div></div></div>
+                    <div class="col-6 col-md-3"><div class="p-2 rounded text-center" style="background:#121a14;border:1px solid var(--ifce-card-border)"><div class="text-muted-custom" style="font-size:11px">Saídas do mês</div><div class="fw-bold text-danger" id="cx-sai-mes">R$ 0,00</div></div></div>
+                </div>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-3"><select id="cx-tipo" class="form-select"><option>Entrada</option><option>Saída</option></select></div>
+                    <div class="col-md-3"><input type="number" id="cx-valor" class="form-control" min="0.01" step="0.01" placeholder="Valor (R$)"></div>
+                    <div class="col-md-3"><input type="date" id="cx-data" class="form-control"></div>
+                    <div class="col-md-3"><select id="cx-categoria" class="form-select"><option>Arrecadação</option><option>Evento</option><option>Material</option><option>Compra</option><option>Transporte</option><option>Outros</option></select></div>
+                    <div class="col-12"><input type="text" id="cx-desc" class="form-control" maxlength="150" placeholder="Descrição (ex.: bolas de futsal para o interclasses)"></div>
+                    <div class="col-12"><input type="url" id="cx-comp" class="form-control" placeholder="Link do comprovante https://... (obrigatório em saídas)"></div>
+                </div>
+                <button onclick="criarLancamento()" class="btn btn-ifce">Registrar lançamento</button>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <div class="d-flex gap-2 flex-wrap align-items-center mb-2">
+                    <input type="month" id="cx-mes" class="form-control form-control-sm" style="max-width: 180px;" onchange="renderCaixa()">
+                    <button onclick="prestacaoContas()" class="btn btn-pdf btn-sm fw-bold">📄 Prestação de contas (PDF)</button>
+                    <button onclick="baixarCaixaCSV()" class="btn btn-outline-light btn-sm">⬇️ CSV do mês</button>
+                    <span id="cx-alerta" class="small text-warning"></span>
+                </div>
+                <div id="lista-caixa"></div>
+            </div>
+
+            <div id="secao-cultura" data-niveis="cultura,admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">🎭 Atividades Culturais</h5>
+                <p class="text-muted-custom small mb-3">Publique uma atividade: ela aparece na aba <strong>Eventos</strong> do portal dos alunos, com inscrição. Depois do evento, cole o link das fotos e gere o relatório em PDF.</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-12"><label class="form-label fw-bold">Título</label><input type="text" id="cultura-titulo" class="form-control" maxlength="120" placeholder="Ex: Roda de conversa"></div>
+                    <div class="col-md-6"><label class="form-label fw-bold">Dia</label><input type="date" id="cultura-data" class="form-control"></div>
+                    <div class="col-md-6"><label class="form-label fw-bold">Local</label><input type="text" id="cultura-local" class="form-control" maxlength="120" placeholder="Ex: Auditório"></div>
+                    <div class="col-12"><label class="form-label fw-bold">Descrição</label><textarea id="cultura-desc" class="form-control" rows="3" maxlength="800"></textarea></div>
+                </div>
+                <button onclick="criarAtividade('cultura')" class="btn btn-ifce">Publicar atividade</button>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">Minhas atividades</h6>
+                <div id="lista-atividades-cultura"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-racial" data-niveis="racial,admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">✊🏾 Igualdade Racial</h5>
+                <div class="p-3 rounded mb-3" style="background:#121a14;border:1px solid var(--ifce-card-border)"><small class="text-white">📅 <strong>Datas para lembrar:</strong> 21 de março (Dia Internacional para a Eliminação da Discriminação Racial) e 20 de novembro (Dia Nacional de Zumbi e da Consciência Negra).</small></div>
+                <p class="text-muted-custom small mb-3">Publique rodas de conversa, palestras e ações. Elas aparecem na aba <strong>Eventos</strong> do portal, com inscrição.</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-12"><label class="form-label fw-bold">Título</label><input type="text" id="racial-titulo" class="form-control" maxlength="120" placeholder="Ex: Roda de conversa"></div>
+                    <div class="col-md-6"><label class="form-label fw-bold">Dia</label><input type="date" id="racial-data" class="form-control"></div>
+                    <div class="col-md-6"><label class="form-label fw-bold">Local</label><input type="text" id="racial-local" class="form-control" maxlength="120" placeholder="Ex: Auditório"></div>
+                    <div class="col-12"><label class="form-label fw-bold">Descrição</label><textarea id="racial-desc" class="form-control" rows="3" maxlength="800"></textarea></div>
+                </div>
+                <button onclick="criarAtividade('racial')" class="btn btn-ifce">Publicar atividade</button>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">Minhas ações</h6>
+                <div id="lista-atividades-racial" class="mb-3"><p class="text-muted-custom small">Carregando...</p></div>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">Pautas sobre o tema (só leitura)</h6>
+                <p class="text-muted-custom small mb-2">Pautas dos alunos que falam de racismo, cotas, igualdade ou diversidade. Você acompanha; quem muda o status é a Presidência.</p>
+                <div id="lista-pautas-racial"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
             <div id="secao-artes" data-niveis="marketing" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">🎨 Banco de Artes</h5>
                 <p class="text-muted-custom small mb-3">Guarde aqui os links (Drive, Canva) de cartazes, logos e modelos para a próxima gestão reaproveitar.</p>
@@ -358,7 +448,7 @@
                 <div id="lista-avisos-admin"><p class="text-muted-custom small">Nenhum aviso publicado.</p></div>
             </div>
 
-            <div id="secao-enquetes-criar" data-niveis="admin,membro,marketing" class="card card-custom p-4 mb-4">
+            <div id="secao-enquetes-criar" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📊 Criar Nova Enquete</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Pergunta / Título da Enquete</label>
@@ -644,6 +734,9 @@
                     <button onclick="verComo('admin')" class="btn btn-outline-info btn-sm">Presidência</button>
                     <button onclick="verComo('membro')" class="btn btn-outline-info btn-sm">Esportes/Eventos</button>
                     <button onclick="verComo('marketing')" class="btn btn-outline-info btn-sm">Marketing</button>
+                    <button onclick="verComo('tesouraria')" class="btn btn-outline-info btn-sm">Tesouraria</button>
+                    <button onclick="verComo('cultura')" class="btn btn-outline-info btn-sm">Cultura</button>
+                    <button onclick="verComo('racial')" class="btn btn-outline-info btn-sm">Igualdade Racial</button>
                 </div>
 
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
@@ -798,12 +891,12 @@
 
             <div id="secao-diretoria" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-2">🧑‍💼 Diretoria e Cargos</h5>
-                <p class="text-muted-custom small mb-3">Quem está aqui entra no painel. Cada nível vê só o que precisa: <strong>Presidência</strong> (presidente e vice: alunos, pautas, sugestões, punições, diretoria, atas, tarefas), <strong>Esportes/Eventos</strong> (jogos, eventos, materiais) e <strong>Marketing</strong> (mural, calendário de divulgação, banco de artes). Para criar a conta de login, preencha a senha (6+ caracteres); se a pessoa já tem conta, deixe em branco.</p>
+                <p class="text-muted-custom small mb-3">Quem está aqui entra no painel. Cada nível vê só o que precisa: <strong>Presidência</strong> (presidente e vice: alunos, pautas, sugestões, punições, diretoria, atas, tarefas), <strong>Esportes/Eventos</strong> (jogos, eventos, materiais) e <strong>Marketing</strong> (mural, calendário de divulgação, banco de artes), <strong>Tesouraria</strong> (caixa), <strong>Cultura</strong> (atividades culturais) e <strong>Igualdade Racial</strong> (ações e pautas do tema). Para criar a conta de login, preencha a senha (6+ caracteres); se a pessoa já tem conta, deixe em branco.</p>
                 <div class="row g-2 mb-3">
                     <div class="col-md-6"><label class="form-label fw-bold">Nome</label><input type="text" id="dir-nome" class="form-control" placeholder="Nome do diretor"></div>
                     <div class="col-md-6"><label class="form-label fw-bold">E-mail</label><input type="email" id="dir-email" class="form-control" placeholder="email@ifce.edu.br"></div>
                     <div class="col-md-6"><label class="form-label fw-bold">Cargo</label><input type="text" id="dir-cargo" class="form-control" placeholder="Ex: Diretor de Esportes"></div>
-                    <div class="col-md-3"><label class="form-label fw-bold">Nível</label><select id="dir-nivel" class="form-select"><option value="membro">Esportes/Eventos</option><option value="marketing">Marketing</option><option value="admin">Presidência</option></select></div>
+                    <div class="col-md-3"><label class="form-label fw-bold">Nível</label><select id="dir-nivel" class="form-select"><option value="membro">Esportes/Eventos</option><option value="marketing">Marketing</option><option value="admin">Presidência</option><option value="tesouraria">Tesouraria</option><option value="cultura">Cultura</option><option value="racial">Igualdade Racial</option></select></div>
                     <div class="col-md-3"><label class="form-label fw-bold">Senha (opcional)</label><input type="password" id="dir-senha" class="form-control" placeholder="******"></div>
                 </div>
                 <div class="d-flex gap-2 flex-wrap">
@@ -898,7 +991,7 @@
                 <div id="lista-jogos-admin"><p class="text-muted-custom small">Nenhum jogo cadastrado.</p></div>
             </div>
 
-            <div id="secao-enquetes-lista" data-niveis="admin,membro,marketing" class="card card-custom p-4 mb-4">
+            <div id="secao-enquetes-lista" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">📈 Enquetes Ativas e Encerradas</h5>
                 <div id="lista-enquetes-admin"><p class="text-muted-custom small">Nenhuma enquete cadastrada.</p></div>
             </div>
@@ -985,7 +1078,7 @@
         // precisa estar nas Firestore Security Rules (veja firestore.rules).
         const ROOT_EMAIL = 'kevin.silva10@aluno.ifce.edu.br';
         let nivelDoPainel = 'admin', painelCongelado = false;
-        const ROTULO_NIVEL = { admin: 'Presidência', membro: 'Esportes/Eventos', marketing: 'Marketing' };
+        const ROTULO_NIVEL = { admin: 'Presidência', membro: 'Esportes/Eventos', marketing: 'Marketing', tesouraria: 'Tesouraria', cultura: 'Cultura', racial: 'Igualdade Racial' };
         const cargosIniciais = {
             "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
@@ -997,18 +1090,21 @@
 
         const modulosSistema = [
             { id: 'secao-resumo', label: 'Resumo', icon: 'bi-speedometer2', niveisPermitidos: ['admin'] },
-            { id: 'secao-tarefas', label: 'Minhas Tarefas', icon: 'bi-check2-square', niveisPermitidos: ['admin', 'membro', 'marketing'] },
+            { id: 'secao-tarefas', label: 'Minhas Tarefas', icon: 'bi-check2-square', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial'] },
             { id: 'secao-tarefas-admin', label: 'Atribuir Tarefas', icon: 'bi-list-task', niveisPermitidos: ['admin'] },
             { id: 'secao-atas', label: 'Atas de Reunião', icon: 'bi-journal-richtext', niveisPermitidos: ['admin'] },
             { id: 'secao-relatorio-mensal', label: 'Relatório do Mês', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['admin'] },
-            { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro'] },
+            { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial'] },
             { id: 'secao-divulgacao', label: 'Calendário de Divulgação', icon: 'bi-calendar2-week', niveisPermitidos: ['marketing'] },
             { id: 'secao-estudos', label: 'Estudos e Provas', icon: 'bi-journal-bookmark', niveisPermitidos: ['admin'] },
             { id: 'secao-videos', label: 'Vídeos de Aula Prática', icon: 'bi-camera-video', niveisPermitidos: ['marketing'] },
+            { id: 'secao-caixa', label: 'Caixa do Grêmio', icon: 'bi-cash-coin', niveisPermitidos: ['tesouraria', 'admin'] },
+            { id: 'secao-cultura', label: 'Atividades Culturais', icon: 'bi-palette', niveisPermitidos: ['cultura', 'admin'] },
+            { id: 'secao-racial', label: 'Igualdade Racial', icon: 'bi-balance-scale', niveisPermitidos: ['racial', 'admin'] },
             { id: 'secao-artes', label: 'Banco de Artes', icon: 'bi-images', niveisPermitidos: ['marketing'] },
             { id: 'secao-mural', label: 'Mural de Avisos & Vídeos', icon: 'bi-megaphone', niveisPermitidos: ['admin', 'marketing'] },
-            { id: 'secao-enquetes-criar', label: 'Criar Enquete', icon: 'bi-bar-chart-plus', niveisPermitidos: ['admin', 'marketing', 'membro'] },
-            { id: 'secao-enquetes-lista', label: 'Ver Enquetes', icon: 'bi-graph-up', niveisPermitidos: ['admin', 'marketing', 'membro'] },
+            { id: 'secao-enquetes-criar', label: 'Criar Enquete', icon: 'bi-bar-chart-plus', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial'] },
+            { id: 'secao-enquetes-lista', label: 'Ver Enquetes', icon: 'bi-graph-up', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial'] },
             { id: 'secao-jogos', label: 'Placar e Classificação', icon: 'bi-trophy', niveisPermitidos: ['membro'] },
             { id: 'secao-eventos', label: 'Eventos e Torneios', icon: 'bi-calendar-event', niveisPermitidos: ['admin', 'membro'] },
             { id: 'secao-materiais', label: 'Gestão de Materiais', icon: 'bi-box-seam', niveisPermitidos: ['membro'] },
@@ -1019,9 +1115,9 @@
             { id: 'secao-punicoes', label: 'Aplicar Punições', icon: 'bi-shield-exclamation', niveisPermitidos: ['admin'] },
             { id: 'secao-diretoria', label: 'Diretoria e Cargos', icon: 'bi-person-badge', niveisPermitidos: ['admin'] },
             { id: 'secao-auditoria', label: 'Log de Auditoria', icon: 'bi-journal-text', niveisPermitidos: ['admin'] },
-            { id: 'secao-ajuda', label: 'Preciso de ajuda', icon: 'bi-life-preserver', niveisPermitidos: ['admin', 'membro', 'marketing'] },
-            { id: 'secao-guia', label: 'Guia rápido', icon: 'bi-book', niveisPermitidos: ['admin', 'membro', 'marketing'] },
-            { id: 'secao-novidades', label: 'Novidades do sistema', icon: 'bi-stars', niveisPermitidos: ['admin', 'membro', 'marketing'] },
+            { id: 'secao-ajuda', label: 'Preciso de ajuda', icon: 'bi-life-preserver', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial'] },
+            { id: 'secao-guia', label: 'Guia rápido', icon: 'bi-book', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial'] },
+            { id: 'secao-novidades', label: 'Novidades do sistema', icon: 'bi-stars', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial'] },
             { id: 'secao-ti-alertas', label: 'TI: Central de alertas', icon: 'bi-bell', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-utilitarios', label: 'TI: Utilitários', icon: 'bi-puzzle', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-dados', label: 'TI: Dados e conformidade', icon: 'bi-database', niveisPermitidos: ['admin'], soRaiz: true },
@@ -1213,7 +1309,7 @@
             const ver = id => { const c = document.getElementById(id); return !!c && c.style.display === 'block'; };
             [
                 ['secao-resumo', carregarResumo], ['secao-tarefas', carregarMinhasTarefas], ['secao-tarefas-admin', carregarTarefasAdmin],
-                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin],
+                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-caixa', carregarCaixa], ['secao-cultura', () => carregarAtividades('cultura')], ['secao-racial', () => { carregarAtividades('racial'); carregarPautasRacial(); }], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin],
                 ['secao-mural', carregarAvisosAdmin], ['secao-enquetes-lista', carregarEnquetesAdmin],
                 ['secao-alunos-lista', carregarAlunos], ['secao-sugestoes', carregarSugestoesAdmin], ['secao-pautas', carregarPautasAdmin],
                 ['secao-punicoes', carregarMembrosPunidosAdmin], ['secao-auditoria', carregarAuditoria], ['secao-diretoria', carregarDiretoria],
@@ -1223,11 +1319,15 @@
         }
 
         const atalhosPorNivel = {
+            tesouraria: ['secao-caixa', 'secao-tarefas', 'secao-ajuda'],
+            cultura: ['secao-cultura', 'secao-tarefas', 'secao-enquetes-lista', 'secao-ajuda'],
+            racial: ['secao-racial', 'secao-tarefas', 'secao-enquetes-lista', 'secao-ajuda'],
             admin: ['secao-resumo', 'secao-tarefas', 'secao-pautas', 'secao-sugestoes'],
             membro: ['secao-tarefas', 'secao-jogos', 'secao-eventos', 'secao-materiais'],
             marketing: ['secao-tarefas', 'secao-mural', 'secao-divulgacao', 'secao-enquetes-lista']
         };
         const nomesCurtos = {
+            'secao-caixa': 'Caixa', 'secao-cultura': 'Cultura', 'secao-racial': 'Igualdade', 'secao-ajuda': 'Ajuda',
             'secao-resumo': 'Resumo', 'secao-tarefas': 'Tarefas', 'secao-pautas': 'Pautas', 'secao-sugestoes': 'Sugestões',
             'secao-jogos': 'Jogos', 'secao-eventos': 'Eventos', 'secao-materiais': 'Materiais', 'secao-mural': 'Mural',
             'secao-divulgacao': 'Divulgação', 'secao-enquetes-lista': 'Enquetes'
@@ -1783,7 +1883,7 @@
                         <div><strong class="text-white">${esc(x.nome)}</strong> <small class="text-muted-custom">— ${esc(x.cargo)}</small><br><small class="text-muted-custom">${id}</small></div>
                         <div class="d-flex gap-1 align-items-center">
                             <select data-mudar="nivelCargo" data-id="${id}" class="form-select form-select-sm" style="width: auto;" ${raiz ? 'disabled' : ''}>
-                                ${['admin', 'membro', 'marketing'].map(n => `<option value="${n}" ${n === x.nivel ? 'selected' : ''}>${ROTULO_NIVEL[n]}</option>`).join('')}
+                                ${['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial'].map(n => `<option value="${n}" ${n === x.nivel ? 'selected' : ''}>${ROTULO_NIVEL[n]}</option>`).join('')}
                             </select>
                             ${raiz ? '' : `<button data-acao="removerCargo" data-id="${id}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Remover</button>`}
                         </div>
@@ -3001,6 +3101,170 @@
             db.collection('ti_privado').doc('checklist').set({ feitos: { [c.dataset.chk]: c.checked }, atualizadoEm: TS() }, { merge: true }).catch(err => erroDB(err, 'checklist'));
         });
 
+        /* ================= TESOURARIA, CULTURA E IGUALDADE RACIAL ================= */
+
+        const moeda = v => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }).replace(/\u00a0/g, ' ');
+        const EIXO = { cultura: 'Cultura', racial: 'Igualdade racial' };
+        const PALAVRAS_RACIAIS = /racis|racial|neg[rx]|pret[oa]s?\b|cota|quilomb|ind[ií]gen|etnic|igualdade|diversidade/i;
+        let cacheCaixa = [], cacheAtividades = {};
+
+        /* ---- caixa ---- */
+        function criarLancamento() {
+            const tipo = document.getElementById('cx-tipo').value;
+            const valor = parseFloat(document.getElementById('cx-valor').value);
+            const data = document.getElementById('cx-data').value || hojeISO();
+            const categoria = document.getElementById('cx-categoria').value;
+            const descricao = document.getElementById('cx-desc').value.trim();
+            const comprovante = document.getElementById('cx-comp').value.trim();
+            if (!(valor > 0)) { toast('Informe um valor maior que zero.', 'warning'); return; }
+            if (!descricao) { toast('Descreva o lançamento.', 'warning'); return; }
+            if (tipo === 'Saída' && !/^https:\/\//i.test(comprovante)) { toast('Toda saída precisa de um link de comprovante (https://).', 'warning'); return; }
+            if (comprovante && !/^https:\/\//i.test(comprovante)) { toast('O comprovante precisa começar com https://', 'warning'); return; }
+            db.collection('caixa').add({
+                tipo, valor: Math.round(valor * 100) / 100, data, categoria, descricao, comprovante: comprovante || '',
+                lancadoPor: emailLogado, criadoEm: TS()
+            }).then(() => {
+                toast('Lançamento registrado.');
+                registrarAcao('Caixa: ' + tipo, `${moeda(valor)} — ${descricao}`);
+                ['cx-valor', 'cx-desc', 'cx-comp'].forEach(i => document.getElementById(i).value = '');
+            }).catch(e => erroDB(e, 'criarLancamento'));
+        }
+        function carregarCaixa() {
+            const mes = document.getElementById('cx-mes');
+            if (!mes.value) mes.value = hojeISO().slice(0, 7);
+            ouvir(db.collection('caixa').orderBy('data', 'desc').limit(1000), snap => {
+                cacheCaixa = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderCaixa();
+            });
+        }
+        function renderCaixa() {
+            const mes = document.getElementById('cx-mes').value || hojeISO().slice(0, 7);
+            const soma = (lista, t) => lista.filter(x => x.tipo === t).reduce((s, x) => s + (Number(x.valor) || 0), 0);
+            const doMes = cacheCaixa.filter(x => (x.data || '').startsWith(mes));
+            const ent = soma(doMes, 'Entrada'), sai = soma(doMes, 'Saída');
+            document.getElementById('cx-saldo-geral').textContent = moeda(soma(cacheCaixa, 'Entrada') - soma(cacheCaixa, 'Saída'));
+            document.getElementById('cx-saldo-mes').textContent = moeda(ent - sai);
+            document.getElementById('cx-ent-mes').textContent = moeda(ent);
+            document.getElementById('cx-sai-mes').textContent = moeda(sai);
+            const semComp = doMes.filter(x => x.tipo === 'Saída' && !x.comprovante).length;
+            document.getElementById('cx-alerta').textContent = semComp ? `⚠️ ${semComp} saída(s) sem comprovante` : '';
+            const c = document.getElementById('lista-caixa');
+            if (!doMes.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum lançamento neste mês.</p>'; return; }
+            const podeExcluir = nivelDoPainel === 'admin';
+            c.innerHTML = '<div class="list-group">' + doMes.map(x => `
+                <div class="list-group-item d-flex justify-content-between align-items-center gap-2">
+                    <div>
+                        <span class="badge ${x.tipo === 'Entrada' ? 'bg-success' : 'bg-danger'}">${esc(x.tipo)}</span>
+                        <strong class="text-white ms-1">${moeda(x.valor)}</strong>
+                        <small class="text-muted-custom">${esc(x.categoria || '')} • ${esc(dataBR(x.data))}</small><br>
+                        <small class="text-white">${esc(x.descricao)}</small>
+                        ${x.comprovante ? ` <a href="${esc(x.comprovante)}" target="_blank" rel="noopener noreferrer" class="small">comprovante ↗</a>` : (x.tipo === 'Saída' ? ' <span class="badge bg-warning text-dark">sem comprovante</span>' : '')}
+                    </div>
+                    ${podeExcluir ? `<button data-acao="excluirLancamento" data-id="${esc(x.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>` : ''}
+                </div>`).join('') + '</div>';
+        }
+        function prestacaoContas() {
+            const mes = document.getElementById('cx-mes').value || hojeISO().slice(0, 7);
+            const doMes = cacheCaixa.filter(x => (x.data || '').startsWith(mes)).sort((a, b) => a.data.localeCompare(b.data));
+            if (!doMes.length) { toast('Não há lançamentos neste mês.', 'warning'); return; }
+            const soma = t => doMes.filter(x => x.tipo === t).reduce((s, x) => s + (Number(x.valor) || 0), 0);
+            const { jsPDF } = window.jspdf; const doc = new jsPDF(); let y = 20;
+            const linha = t => doc.splitTextToSize(String(t), 170).forEach(p => { if (y > 280) { doc.addPage(); y = 20; } doc.text(p, 20, y); y += 6; });
+            doc.setFont('Helvetica', 'bold'); doc.setFontSize(15); doc.text('Grêmio Estudantil - IFCE Crateús', 20, y); y += 9;
+            doc.setFontSize(12); doc.text('Prestação de contas - ' + mes.split('-').reverse().join('/'), 20, y); y += 8;
+            doc.setFont('Helvetica', 'normal'); doc.setFontSize(11);
+            linha('Entradas: ' + moeda(soma('Entrada')));
+            linha('Saídas: ' + moeda(soma('Saída')));
+            linha('Saldo do mês: ' + moeda(soma('Entrada') - soma('Saída')));
+            y += 4; doc.setFont('Helvetica', 'bold'); linha('Lançamentos'); doc.setFont('Helvetica', 'normal');
+            doMes.forEach(x => linha(`${dataBR(x.data)} | ${x.tipo} | ${moeda(x.valor)} | ${x.categoria || ''} | ${x.descricao} | comprovante: ${x.comprovante ? 'sim' : 'não'}`));
+            y += 8;
+            linha('Responsável pelo caixa: ' + document.getElementById('user-name-display').textContent);
+            linha('Assinatura: ______________________________');
+            doc.save(`prestacao_contas_${mes}.pdf`);
+            registrarAcao('Prestação de contas gerada', mes);
+        }
+        function baixarCaixaCSV() {
+            const mes = document.getElementById('cx-mes').value || hojeISO().slice(0, 7);
+            const doMes = cacheCaixa.filter(x => (x.data || '').startsWith(mes)).sort((a, b) => a.data.localeCompare(b.data));
+            if (!doMes.length) { toast('Não há lançamentos neste mês.', 'warning'); return; }
+            baixarCSV(`caixa_${mes}.csv`, [['Data', 'Tipo', 'Valor', 'Categoria', 'Descrição', 'Comprovante'],
+                ...doMes.map(x => [dataBR(x.data), x.tipo, (Number(x.valor) || 0).toFixed(2).replace('.', ','), x.categoria || '', x.descricao, x.comprovante || ''])]);
+        }
+
+        /* ---- atividades (cultura e igualdade racial) ---- */
+        function criarAtividade(p) {
+            const g = id => document.getElementById(`${p}-${id}`).value.trim();
+            const titulo = g('titulo'), iso = document.getElementById(`${p}-data`).value, local = g('local'), desc = g('desc');
+            if (!titulo || !iso) { toast('Informe o título e o dia da atividade.', 'warning'); return; }
+            db.collection('eventos').add({
+                titulo, data: dataBR(iso), dataISO: iso,
+                descricao: (local ? 'Local: ' + local + '\n' : '') + desc,
+                eixo: EIXO[p], criadoPor: document.getElementById('user-name-display').textContent, criadoPorEmail: emailLogado,
+                registroLink: '', inscritos: [], criadoEm: TS()
+            }).then(() => {
+                toast('Atividade publicada para os alunos! 🎉');
+                registrarAcao('Atividade publicada', `${EIXO[p]}: ${titulo}`);
+                ['titulo', 'data', 'local', 'desc'].forEach(i => document.getElementById(`${p}-${i}`).value = '');
+            }).catch(e => erroDB(e, 'criarAtividade'));
+        }
+        function carregarAtividades(p) {
+            ouvir(db.collection('eventos').where('criadoPorEmail', '==', emailLogado), snap => {
+                const c = document.getElementById(`lista-atividades-${p}`);
+                const docs = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => x.eixo === EIXO[p])
+                    .sort((a, b) => (b.dataISO || '').localeCompare(a.dataISO || ''));
+                cacheAtividades[p] = docs;
+                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma publicada ainda.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + docs.map(x => `
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <div><strong class="text-white">${esc(x.titulo)}</strong><br><small class="text-muted-custom">${esc(x.data || '')} • ${(x.inscritos || []).length} inscrito(s)</small></div>
+                            <div class="d-flex gap-1">
+                                <button data-acao="relatorioAtividade" data-id="${esc(x.id)}" data-p="${p}" class="btn btn-outline-light btn-sm py-0" style="font-size: 11px;">📄 Relatório</button>
+                                <button data-acao="excluirAtividade" data-id="${esc(x.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                            </div>
+                        </div>
+                        <div class="input-group input-group-sm mt-2">
+                            <input type="url" class="form-control" data-link="${esc(x.id)}" value="${esc(x.registroLink || '')}" placeholder="Link das fotos e registros (Drive)">
+                            <button data-acao="salvarRegistro" data-id="${esc(x.id)}" class="btn btn-outline-success">Salvar link</button>
+                        </div>
+                    </div>`).join('') + '</div>';
+            });
+        }
+        function gerarRelatorioAtividade(id) {
+            const x = Object.values(cacheAtividades).flat().find(a => a.id === id);
+            if (!x) return;
+            const { jsPDF } = window.jspdf; const doc = new jsPDF(); let y = 20;
+            const linha = t => doc.splitTextToSize(String(t), 170).forEach(p => { if (y > 280) { doc.addPage(); y = 20; } doc.text(p, 20, y); y += 6; });
+            doc.setFont('Helvetica', 'bold'); doc.setFontSize(15); doc.text('Grêmio Estudantil - IFCE Crateús', 20, y); y += 9;
+            doc.setFontSize(12); linha('Relatório de atividade: ' + x.titulo);
+            doc.setFont('Helvetica', 'normal'); doc.setFontSize(11);
+            linha('Eixo: ' + (x.eixo || '-'));
+            linha('Data: ' + (x.data || '-'));
+            linha('Inscritos: ' + (x.inscritos || []).length);
+            y += 3; linha(x.descricao || '(sem descrição)');
+            if (x.registroLink) { y += 3; linha('Registros (fotos e materiais): ' + x.registroLink); }
+            y += 6; linha('Responsável: ' + (x.criadoPor || '-'));
+            doc.save(`relatorio_${(x.eixo || 'atividade').toLowerCase().replace(/\s+/g, '_')}_${x.dataISO || 'sem-data'}.pdf`);
+            registrarAcao('Relatório de atividade gerado', x.titulo);
+        }
+
+        /* ---- pautas sobre o tema (somente leitura) ---- */
+        function carregarPautasRacial() {
+            ouvir(db.collection('reivindicacoes').orderBy('criadoEm', 'desc'), snap => {
+                const c = document.getElementById('lista-pautas-racial');
+                const docs = snap.docs.map(d => d.data()).filter(p => PALAVRAS_RACIAIS.test(`${p.titulo || ''} ${p.descricao || ''}`));
+                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma pauta sobre o tema no momento.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + docs.map(p => `
+                    <div class="list-group-item">
+                        <strong class="text-white">${esc(p.titulo)}</strong>
+                        <span class="badge bg-primary ms-1">${esc(p.status || 'Em análise')}</span>
+                        <span class="badge bg-secondary ms-1">👍 ${(p.apoios || []).length}</span>
+                        <p class="small text-muted-custom mb-0 mt-1">${esc(p.descricao || '')}</p>
+                    </div>`).join('') + '</div>';
+            });
+        }
+
         /* ================= TI: SUPORTE, ALUNOS E PORTAL ================= */
 
         async function fichaUsuario() {
@@ -3559,6 +3823,14 @@
             editorEscolher: id => { document.getElementById('ed-id').value = id; editorAbrir(); },
             excluirEstudo: async id => { if (await confirmar('Excluir este material dos alunos?')) db.collection('estudos').doc(id).delete().then(() => registrarAcao('Material de estudo excluído', id)).catch(e => erroDB(e, 'excluirEstudo')); },
             excluirProva: async id => { if (await confirmar('Excluir esta prova do calendário?')) db.collection('provas').doc(id).delete().catch(e => erroDB(e, 'excluirProva')); },
+            excluirLancamento: async id => { if (await confirmar('Excluir este lançamento do caixa? Fica registrado no log.')) db.collection('caixa').doc(id).delete().then(() => registrarAcao('Caixa: lançamento excluído', id)).catch(e => erroDB(e, 'excluirLancamento')); },
+            salvarRegistro: id => {
+                const link = document.querySelector(`[data-link="${CSS.escape(id)}"]`).value.trim();
+                if (link && !/^https:\/\//i.test(link)) { toast('O link precisa começar com https://', 'warning'); return; }
+                db.collection('eventos').doc(id).update({ registroLink: link }).then(() => toast('Link salvo.')).catch(e => erroDB(e, 'salvarRegistro'));
+            },
+            excluirAtividade: async id => { if (await confirmar('Excluir esta atividade? Os inscritos perdem a inscrição.')) db.collection('eventos').doc(id).delete().then(() => registrarAcao('Atividade excluída', id)).catch(e => erroDB(e, 'excluirAtividade')); },
+            relatorioAtividade: id => gerarRelatorioAtividade(id),
             excluirSugestao: async id => { if (await confirmar("Apagar esta sugestão?")) db.collection('sugestoes').doc(id).delete().catch(e => erroDB(e, 'excluirSugestao')); },
             excluirPauta: async id => { if (await confirmar("Excluir esta pauta?")) db.collection('reivindicacoes').doc(id).delete().then(() => registrarAcao('Pauta excluída', id)).catch(e => erroDB(e, 'excluirPauta')); },
             removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(e => erroDB(e, 'removerPunicao')); },
