@@ -73,6 +73,13 @@
     </nav>
 
     <div id="toast-container"></div>
+    <div id="painel-congelado" style="display:none;position:fixed;inset:0;z-index:2000;background:#121814;color:#fff;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:30px">
+        <div style="font-size:4rem">🧊</div>
+        <h3 class="fw-bold mt-2">Painel fechado pelo TI</h3>
+        <p class="text-secondary" style="max-width:340px">O painel está temporariamente indisponível para a diretoria. Em breve volta ao normal.</p>
+        <button onclick="fazerLogoutAdmin()" class="btn btn-outline-light btn-sm">Sair</button>
+    </div>
+
     <nav id="bottom-nav" aria-label="Atalhos do painel"></nav>
 
     <!-- Modal de confirmação (substitui confirm()) -->
@@ -418,10 +425,10 @@
                 </div>
 
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
-                <h6 class="fw-bold text-white">2. Inventário do banco</h6>
+                <h6 class="fw-bold text-white">2. Tamanho e cotas do banco</h6>
                 <p class="text-muted-custom small mb-2">Conta os documentos e o tamanho aproximado de cada coleção e compara com o limite gratuito do Firebase (1 GB). Lê tudo uma vez, então use de vez em quando.</p>
                 <button onclick="inventarioBanco()" class="btn btn-outline-info btn-sm fw-bold">▶ Medir</button>
-                <div id="ti-inventario" class="mt-3 small"></div>
+                <div id="ti-inventario-medir" class="mt-3 small"></div>
 
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <h6 class="fw-bold text-white">3. Apagar os dados de um aluno</h6>
@@ -447,15 +454,68 @@
                 <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🧭 Controle do painel <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
 
                 <h6 class="fw-bold text-white mt-3">1. Atividade da diretoria</h6>
-                <p class="text-muted-custom small mb-2">Mostra, para cada diretor, o último acesso ao painel, quantos acessos fez, quantas ações tem no log e quantas tarefas pendentes. Em amarelo quem está há mais de 14 dias sem entrar.</p>
+                <p class="text-muted-custom small mb-2">Para cada diretor: último acesso ao painel, quantos acessos fez, quantas ações tem no log e quantas tarefas pendentes. Em amarelo quem está há mais de 14 dias sem entrar.</p>
                 <button onclick="atividadeDiretoria()" class="btn btn-outline-info btn-sm fw-bold">▶ Ver atividade</button>
                 <div id="ti-atividade" class="mt-3 small" style="overflow-x: auto;"></div>
 
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
-                <h6 class="fw-bold text-white">2. Cartões visíveis para os cargos</h6>
-                <p class="text-muted-custom small mb-2">Desmarque um cartão para escondê-lo de todos os diretores (você continua vendo). Bom para desligar uma função que ainda não está pronta ou que deu problema.</p>
-                <div id="ti-ocultos" class="mb-2"></div>
-                <button onclick="salvarOcultos()" class="btn btn-outline-info btn-sm fw-bold">Salvar</button>
+                <h6 class="fw-bold text-white">2. Congelar o painel da diretoria</h6>
+                <p class="text-muted-custom small mb-2">Botão de emergência: fecha o painel para TODOS os diretores (eles veem uma tela de "painel fechado" e o banco recusa qualquer acesso deles). Só você continua. Use enquanto investiga um problema. Status: <span id="ti-congelado-status">...</span></p>
+                <button id="ti-congelar-btn" onclick="alternarCongelamento()" class="btn btn-outline-warning btn-sm fw-bold">Congelar painel</button>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">3. Filtro de palavras dos alunos</h6>
+                <p class="text-muted-custom small mb-2">Uma palavra ou expressão por linha. Se o aluno usar uma delas em sugestão, pauta ou pedido de ajuda, o portal pede para reescrever. Ignora maiúsculas e acentos. Ajuda, mas não é à prova de burla.</p>
+                <textarea id="ti-palavras" class="form-control mb-2" rows="4" placeholder="uma palavra por linha"></textarea>
+                <button onclick="salvarPalavras()" class="btn btn-outline-info btn-sm fw-bold">Salvar lista</button>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">4. Agendar o aviso fixo do portal</h6>
+                <p class="text-muted-custom small mb-2">O texto do aviso você escreve em "Alunos e Portal". Aqui define de quando a quando ele aparece. Vazio = sempre.</p>
+                <div class="row g-2 mb-2">
+                    <div class="col-6"><label class="form-label fw-bold">De</label><input type="date" id="ti-banner-de" class="form-control"></div>
+                    <div class="col-6"><label class="form-label fw-bold">Até</label><input type="date" id="ti-banner-ate" class="form-control"></div>
+                </div>
+                <button onclick="salvarAgendaBanner()" class="btn btn-outline-info btn-sm fw-bold">Salvar período</button>
+            </div>
+
+            <div id="secao-ti-testes" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🧪 Roteiro de testes <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span> <span id="ti-roteiro-prog" class="badge bg-secondary ms-1" style="font-size: 10px;">0/0</span></h5>
+                <p class="text-muted-custom small mb-3">Passo a passo para testar tudo no celular, cargo por cargo. Use contas de teste (um aluno e um diretor de cada nível). As marcações ficam salvas.</p>
+                <div id="ti-roteiro"></div>
+                <button onclick="limparRoteiro()" class="btn btn-outline-light btn-sm mt-2">Limpar marcações</button>
+            </div>
+
+            <div id="secao-ti-manual" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">📘 Manual do TI <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <p class="text-muted-custom small mb-3">Tudo que a próxima pessoa precisa para assumir o sistema. Versão <strong id="ti-versao"></strong>.</p>
+                <button onclick="baixarManual()" class="btn btn-outline-light btn-sm mb-3">⬇️ Baixar manual (.txt)</button>
+                <div id="ti-manual-corpo">
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">1. Como o sistema funciona</summary><div class="small text-muted-custom mt-2">
+                        São dois sites no GitHub Pages: <strong>index.html</strong> (portal dos alunos) e <strong>admin.html</strong> (painel da diretoria). Os dados ficam no <strong>Firestore</strong> (banco) e o login usa o <strong>Firebase Authentication</strong>. As regras do Firestore (<strong>firestore.rules</strong>) decidem quem lê e escreve o quê. Vídeos ficam no YouTube/Drive e tocam dentro do portal. Para instalar como app no celular existem também <strong>manifest.webmanifest</strong>, <strong>sw.js</strong> e os ícones <strong>icon-192.png</strong> e <strong>icon-512.png</strong>.
+                    </div></details>
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">2. Como publicar uma atualização</summary><div class="small text-muted-custom mt-2">
+                        GitHub > repositório gremio-ifce > Add file > Upload files > envie o arquivo com o MESMO nome > Commit changes. Espere cerca de 1 minuto, feche as abas do portal e do painel e abra de novo. Se mudou as regras, publique em Firebase > Firestore > Regras ANTES de subir os arquivos. Nunca suba o serviceAccountKey.json.
+                    </div></details>
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">3. Cargos e níveis</summary><div class="small text-muted-custom mt-2">
+                        <strong>Presidência</strong> (nível admin): presidente e vice, veem alunos, pautas, sugestões, punições, diretoria, atas, tarefas e relatórios. <strong>Esportes/Eventos</strong> (nível membro): jogos, eventos, materiais. <strong>Marketing</strong>: mural, divulgação, artes, vídeos. O e-mail raiz (TI) vê tudo e fica fixo nas regras e no admin.html (ROOT_EMAIL). Os cargos ficam na coleção <strong>cargos</strong> e são gerenciados no card "Diretoria e Cargos".
+                    </div></details>
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">4. O que cada coleção guarda</summary><div class="small text-muted-custom mt-2">
+                        alunos (cadastro e se está ativo), cargos (diretoria), mural, enquetes, reivindicacoes (pautas), sugestoes, materiais, eventos, jogos, videos, tarefas, atas, divulgacoes, artes, chamados (pedidos de ajuda), membros_punidos, acoes_admin (log), acessos e aceites (uso do portal e termo), acessos_painel (uso do painel), erros_app (erros dos celulares), config (ajustes gerais: manutenção, aviso, termo, novidades) e ti_privado (anotações só do TI).
+                    </div></details>
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">5. Rotinas</summary><div class="small text-muted-custom mt-2">
+                        <strong>Todo mês:</strong> baixar backup, rodar o Verificador de integridade, olhar a Central de alertas, limpar o log antigo. <strong>Início do ano:</strong> cadastro de alunos em massa (senha vazia gera automática), definir turmas, publicar o termo de uso. <strong>Virada de gestão:</strong> card "Nova Gestão" (backup, trocar diretoria, limpeza, desativar formandos), balanço da gestão em PDF e "Passagem de TI" se o TI mudar.
+                    </div></details>
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">6. Problemas comuns</summary><div class="small text-muted-custom mt-2">
+                        <strong>permission-denied em tudo:</strong> regras desatualizadas, e-mail fora de cargos, ou painel congelado. <strong>"Este e-mail não tem cargo no painel":</strong> cadastrar em Diretoria e Cargos. <strong>"Aluno não encontrado":</strong> falta o documento em alunos (cadastrar de novo). <strong>Função nova não aparece:</strong> o GitHub ainda serve o arquivo antigo; esperar e recarregar. <strong>Vídeo não toca:</strong> link do YouTube precisa ser "Não listado" (ou Drive compartilhado com qualquer pessoa com o link). <strong>too-many-requests:</strong> esperar alguns minutos. Use o Diagnóstico e o botão "Copiar relatório" para pedir ajuda.
+                    </div></details>
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">7. Limites do plano gratuito</summary><div class="small text-muted-custom mt-2">
+                        Firestore: 1 GB guardado, 50 mil leituras e 20 mil gravações por dia. O Firebase Storage exige plano pago, por isso os vídeos não ficam nele. Se passar das cotas, o banco bloqueia até o dia seguinte; o Inventário do banco ajuda a acompanhar.
+                    </div></details>
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">8. Segurança</summary><div class="small text-muted-custom mt-2">
+                        Restrinja a apiKey ao domínio do site (Google Cloud > Credenciais). Não guarde senhas em lugar nenhum do painel. Mantenha 2 ou mais donos no Firebase e no GitHub (um professor orientador). Combine com a escola o uso de imagem e dados dos alunos e mantenha o termo de uso atualizado.
+                    </div></details>
+                </div>
             </div>
 
             <div id="secao-ti-analise" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
@@ -667,6 +727,7 @@
                     <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="materiais" id="rc4"><label class="form-check-label small" for="rc4">🎲 Materiais</label></div></div>
                     <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="eventos" id="rc5"><label class="form-check-label small" for="rc5">📅 Eventos</label></div></div>
                     <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="jogos" id="rc6"><label class="form-check-label small" for="rc6">🏆 Jogos</label></div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="ajuda" id="rc9"><label class="form-check-label small" for="rc9">🆘 Ajuda</label></div></div>
                     <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="videos" id="rc8"><label class="form-check-label small" for="rc8">🎬 Vídeos</label></div></div>
                     <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="sugestoes" id="rc7"><label class="form-check-label small" for="rc7">💡 Sugestões</label></div></div>
                 </div>
@@ -895,7 +956,7 @@
         // IMPORTANTE: isto é só para exibir a interface. A proteção de verdade
         // precisa estar nas Firestore Security Rules (veja firestore.rules).
         const ROOT_EMAIL = 'kevin.silva10@aluno.ifce.edu.br';
-        let nivelDoPainel = 'admin', cartoesOcultos = [];
+        let nivelDoPainel = 'admin', painelCongelado = false;
         const ROTULO_NIVEL = { admin: 'Presidência', membro: 'Esportes/Eventos', marketing: 'Marketing' };
         const cargosIniciais = {
             "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
@@ -935,6 +996,8 @@
             { id: 'secao-ti-alertas', label: 'TI: Central de alertas', icon: 'bi-bell', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-utilitarios', label: 'TI: Utilitários', icon: 'bi-puzzle', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-dados', label: 'TI: Dados e conformidade', icon: 'bi-database', niveisPermitidos: ['admin'], soRaiz: true },
+            { id: 'secao-ti-testes', label: 'TI: Roteiro de testes', icon: 'bi-clipboard-check', niveisPermitidos: ['admin'], soRaiz: true },
+            { id: 'secao-ti-manual', label: 'TI: Manual do TI', icon: 'bi-book-half', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-controle', label: 'TI: Controle do painel', icon: 'bi-toggles', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-analise', label: 'TI: Análise e relatórios', icon: 'bi-graph-up-arrow', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-comunic', label: 'TI: Comunicação e termo', icon: 'bi-megaphone', niveisPermitidos: ['admin'], soRaiz: true },
@@ -1005,6 +1068,7 @@
         function ouvir(query, callback) {
             unsubs.push(query.onSnapshot(callback, err => {
                 console.error(err);
+                if (painelCongelado) return;
                 let onde = '';
                 try { onde = query._delegate._query.path.canonicalString(); } catch (_) {}
                 toast('Sem permissão ou erro ao carregar dados (' + (err && err.code ? err.code : 'erro') + (onde ? ' em ' + onde : '') + ').', 'danger');
@@ -1108,7 +1172,7 @@
             resetarOpcoes();
 
             const nivel = dadosUsuario.nivel;
-            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); carregarTermoTI(); carregarOcultosTI(); preencherEditor(); carregarAlertasTI(); carregarPendenciasTI(); carregarTravasUI(); }
+            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); carregarTermoTI(); carregarRoteiroTI(); preencherEditor(); carregarAlertasTI(); carregarPendenciasTI(); carregarTravasUI(); }
             // Cada cargo vê só o que precisa; o e-mail raiz (TI) vê tudo.
             nivelDoPainel = nivel;
             const raiz = emailUsuario === ROOT_EMAIL;
@@ -1171,7 +1235,7 @@
         function renderizarMenuLateral(dadosUsuario) {
             const containerMenu = document.getElementById('itensMenuNav');
             containerMenu.innerHTML = '';
-            modulosSistema.filter(m => ((emailLogado === ROOT_EMAIL && !nivelPreview) || m.niveisPermitidos.includes(dadosUsuario.nivel)) && (!m.soRaiz || (emailLogado === ROOT_EMAIL && !nivelPreview)) && (!cartoesOcultos.includes(m.id) || (emailLogado === ROOT_EMAIL && !nivelPreview)) && !(travas[m.id] === true && !(emailLogado === ROOT_EMAIL && !nivelPreview))).forEach(modulo => {
+            modulosSistema.filter(m => ((emailLogado === ROOT_EMAIL && !nivelPreview) || m.niveisPermitidos.includes(dadosUsuario.nivel)) && (!m.soRaiz || (emailLogado === ROOT_EMAIL && !nivelPreview)) && !(travas[m.id] === true && !(emailLogado === ROOT_EMAIL && !nivelPreview))).forEach(modulo => {
                 const a = document.createElement('a');
                 a.href = `#${modulo.id}`;
                 a.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary d-flex align-items-center gap-2 py-3';
@@ -2102,8 +2166,14 @@
                 const el = document.getElementById('aviso-ti');
                 el.textContent = d.avisoDiretoria ? '📣 Aviso do TI: ' + d.avisoDiretoria : '';
                 el.classList.toggle('d-none', !d.avisoDiretoria);
-                cartoesOcultos = d.cartoesOcultos || [];
-                aplicarOcultos();
+                painelCongelado = d.painelCongelado === true;
+                aplicarCongelamento();
+                const stc = document.getElementById('ti-congelado-status'); if (stc) stc.innerHTML = painelCongelado ? '🧊 <strong>CONGELADO</strong>' : '🟢 normal';
+                const btc = document.getElementById('ti-congelar-btn'); if (btc) btc.textContent = painelCongelado ? 'Descongelar painel' : 'Congelar painel';
+                const pp = document.getElementById('ti-palavras'); if (pp && document.activeElement !== pp) pp.value = (d.palavrasProibidas || []).join('\n');
+                const bd = document.getElementById('ti-banner-de'), ba = document.getElementById('ti-banner-ate');
+                if (bd && document.activeElement !== bd) bd.value = d.bannerDe || '';
+                if (ba && document.activeElement !== ba) ba.value = d.bannerAte || '';
                 const campo = document.getElementById('ti-aviso-dir');
                 if (campo && document.activeElement !== campo) campo.value = d.avisoDiretoria || '';
             });
@@ -2119,7 +2189,7 @@
 
         /* ================= CENTRAL DE ALERTAS E UTILITÁRIOS (só o e-mail raiz) ================= */
 
-        const VERSAO_SISTEMA = '2026.10';
+        const VERSAO_SISTEMA = '2026.10.16';
         let nivelReal = null, travas = {};
         function aplicarVisibilidade() {
             if (!nivelReal) return;
@@ -2274,6 +2344,107 @@
             } catch (e) { erroDB(e, 'resumoErros'); }
         }
 
+        /* ================= CONGELAR PAINEL, FILTRO, AGENDA, ROTEIRO E MANUAL (só o e-mail raiz) ================= */
+
+        function aplicarCongelamento() {
+            const ov = document.getElementById('painel-congelado');
+            if (ov) ov.style.display = (painelCongelado && emailLogado !== ROOT_EMAIL) ? 'flex' : 'none';
+        }
+        async function alternarCongelamento() {
+            if (!soRaiz()) return;
+            const ligar = !painelCongelado;
+            if (!(await confirmar(ligar ? 'Congelar o painel? Todos os diretores perdem o acesso até você descongelar.' : 'Descongelar e liberar o painel para a diretoria?'))) return;
+            try { await db.collection('config').doc('sistema').set({ painelCongelado: ligar }, { merge: true }); registrarAcao(ligar ? 'Painel congelado' : 'Painel descongelado', ''); toast(ligar ? 'Painel congelado.' : 'Painel liberado.'); }
+            catch (e) { erroDB(e, 'congelar'); }
+        }
+        async function salvarPalavras() {
+            if (!soRaiz()) return;
+            const lista = [...new Set(document.getElementById('ti-palavras').value.split('\n').map(x => x.trim().toLowerCase()).filter(Boolean))].slice(0, 200);
+            try { await db.collection('config').doc('sistema').set({ palavrasProibidas: lista }, { merge: true }); toast(lista.length + ' palavra(s) no filtro.'); registrarAcao('Filtro de palavras alterado', lista.length + ' palavras'); }
+            catch (e) { erroDB(e, 'palavras'); }
+        }
+        async function salvarAgendaBanner() {
+            if (!soRaiz()) return;
+            const de = document.getElementById('ti-banner-de').value, ate = document.getElementById('ti-banner-ate').value;
+            if (de && ate && de > ate) { toast('A data inicial não pode ser depois da final.', 'warning'); return; }
+            try { await db.collection('config').doc('sistema').set({ bannerDe: de, bannerAte: ate }, { merge: true }); toast('Período do aviso salvo.'); }
+            catch (e) { erroDB(e, 'agendaBanner'); }
+        }
+
+        const ROTEIRO = [
+            ['Aluno (portal)', [
+                ['a1', 'Entrar com e-mail e senha de um aluno de teste'], ['a2', 'Mural, enquetes e eventos carregam'],
+                ['a3', 'Votar em uma enquete e conferir que não deixa votar de novo'], ['a4', 'Criar uma pauta e apoiar outra'],
+                ['a5', 'Enviar uma sugestão e vê-la em "Minhas sugestões"'], ['a6', 'Pedir um material emprestado'],
+                ['a7', 'Inscrever-se em um evento'], ['a8', 'Ver placar e classificação dos jogos'], ['a9', 'Assistir a um vídeo'],
+                ['a10', 'Abrir o sininho de novidades'], ['a11', 'Usar "Esqueci minha senha"'], ['a12', 'Enviar um pedido em "Preciso de ajuda"'],
+                ['a13', 'Instalar o portal como app (botão "Instalar" ou menu do navegador)']
+            ]],
+            ['Presidência', [
+                ['p1', 'Entrar no painel e ver só os cards da presidência'], ['p2', 'Cadastrar um aluno e entrar com ele no portal'],
+                ['p3', 'Bloquear e desbloquear um aluno'], ['p4', 'Aplicar e remover uma punição em um diretor de teste'],
+                ['p5', 'Responder uma sugestão (o aluno vê a resposta)'], ['p6', 'Mudar o status de uma pauta (aparece no portal)'],
+                ['p7', 'Atribuir uma tarefa e ver o diretor concluir'], ['p8', 'Criar uma ata e baixar o PDF'],
+                ['p9', 'Gerar o Relatório do Mês em PDF'], ['p10', 'Cadastrar um diretor novo em Diretoria e Cargos'], ['p11', 'Ver o log de auditoria']
+            ]],
+            ['Esportes/Eventos', [
+                ['e1', 'Entrar e ver só jogos, eventos, materiais, tarefas e enquetes'], ['e2', 'Criar um evento com "Dia no calendário"'],
+                ['e3', 'Baixar o CSV de inscritos'], ['e4', 'Criar um jogo, salvar o placar e marcar "Encerrado"'], ['e5', 'Conferir a classificação no portal'],
+                ['e6', 'Aprovar um pedido de material com prazo e marcar como devolvido']
+            ]],
+            ['Marketing', [
+                ['m1', 'Entrar e ver só mural, divulgação, artes, vídeos, tarefas e enquetes'], ['m2', 'Publicar um aviso e fixá-lo (📌 no portal)'],
+                ['m3', 'Adicionar item no Calendário de Divulgação e mudar o status'], ['m4', 'Salvar um link no Banco de Artes'],
+                ['m5', 'Publicar um vídeo (link do YouTube "Não listado") e vê-lo no portal'], ['m6', 'Criar uma enquete']
+            ]],
+            ['TI (você)', [
+                ['t1', 'Rodar o Diagnóstico e o Verificador de integridade'], ['t2', 'Ver como Presidência, Esportes e Marketing'],
+                ['t3', 'Ligar e desligar o modo manutenção (aluno vê a tela)'], ['t4', 'Congelar e descongelar o painel (diretor vê a tela)'],
+                ['t5', 'Baixar um backup'], ['t6', 'Responder um pedido de ajuda (de aluno e de diretor)'],
+                ['t7', 'Publicar um termo de uso e conferir o aceite'], ['t8', 'Conferir a Adoção do portal'],
+                ['t9', 'Testar o filtro de palavras com uma palavra da lista'], ['t10', 'Usar a Busca global']
+            ]]
+        ];
+        function atualizarProgressoRoteiro() {
+            const todos = [...document.querySelectorAll('[data-tst]')];
+            document.getElementById('ti-roteiro-prog').textContent = todos.filter(c => c.checked).length + '/' + todos.length;
+            document.querySelectorAll('[data-grupo]').forEach(g => {
+                const cs = [...g.querySelectorAll('[data-tst]')];
+                g.querySelector('.cont').textContent = cs.filter(c => c.checked).length + '/' + cs.length;
+            });
+        }
+        async function carregarRoteiroTI() {
+            const c = document.getElementById('ti-roteiro');
+            if (!c) return;
+            document.getElementById('ti-versao').textContent = VERSAO_SISTEMA;
+            let feitos = {};
+            try { const d = await db.collection('ti_privado').doc('testes').get(); feitos = d.exists ? (d.data().feitos || {}) : {}; } catch (e) {}
+            c.innerHTML = ROTEIRO.map(([grupo, itens]) => `
+                <details class="mb-2" data-grupo><summary class="fw-bold text-white" style="cursor: pointer;">${esc(grupo)} <span class="cont badge bg-secondary ms-1"></span></summary>
+                    <div class="mt-2">${itens.map(([id, txt]) => `<div class="form-check mb-1 small"><input class="form-check-input" type="checkbox" data-tst="${id}" id="tst-${id}" ${feitos[id] ? 'checked' : ''}><label class="form-check-label" for="tst-${id}">${esc(txt)}</label></div>`).join('')}</div>
+                </details>`).join('');
+            atualizarProgressoRoteiro();
+        }
+        document.addEventListener('change', e => {
+            const c = e.target.closest('[data-tst]');
+            if (!c || !soRaiz()) return;
+            db.collection('ti_privado').doc('testes').set({ feitos: { [c.dataset.tst]: c.checked }, atualizadoEm: TS() }, { merge: true }).catch(err => erroDB(err, 'roteiro'));
+            atualizarProgressoRoteiro();
+        });
+        async function limparRoteiro() {
+            if (!soRaiz()) return;
+            if (!(await confirmar('Limpar todas as marcações do roteiro?'))) return;
+            try { await db.collection('ti_privado').doc('testes').set({ feitos: {}, atualizadoEm: TS() }); carregarRoteiroTI(); } catch (e) { erroDB(e, 'limparRoteiro'); }
+        }
+        function baixarManual() {
+            if (!soRaiz()) return;
+            const corpo = [...document.querySelectorAll('#ti-manual-corpo details')].map(d => d.querySelector('summary').innerText.trim() + '\n' + d.querySelector('div').innerText.trim().replace(/\s+/g, ' ')).join('\n\n');
+            const txt = `MANUAL DO TI - GRÊMIO IFCE CRATEÚS\nVersão ${VERSAO_SISTEMA} - gerado em ${new Date().toLocaleDateString('pt-BR')}\n\n${corpo}\n`;
+            const url = URL.createObjectURL(new Blob(['\ufeff' + txt], { type: 'text/plain;charset=utf-8' }));
+            const a = document.createElement('a'); a.href = url; a.download = 'manual_ti_gremio.txt'; a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+        }
+
         /* ================= DADOS, CONFORMIDADE E CONTROLE DO PAINEL (só o e-mail raiz) ================= */
 
         const RULES_TEMPLATE = "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n\n    function signedIn() { return request.auth != null && request.auth.token.email != null; }\n    function mail() { return request.auth.token.email.lower(); }\n\n    function temCargo() { return signedIn() && exists(/databases/$(database)/documents/cargos/$(mail())); }\n    function nivelCargo() { return get(/databases/$(database)/documents/cargos/$(mail())).data.nivel; }\n\n    function isAdmin() {\n      return signedIn() && (mail() == 'kevin.silva10@aluno.ifce.edu.br' || (temCargo() && nivelCargo() == 'admin'));\n    }\n    function isDiretoria() {\n      return isAdmin() || (temCargo() && nivelCargo() in ['membro', 'marketing']);\n    }\n    // Aluno s\u00f3 acessa se o cadastro existir e estiver ativo (bloqueio vale de verdade).\n    // Modo manuten\u00e7\u00e3o: quando ligado (config/sistema), s\u00f3 a diretoria acessa os dados.\n    function emManutencao() {\n      return exists(/databases/$(database)/documents/config/sistema) &&\n        get(/databases/$(database)/documents/config/sistema).data.manutencao == true;\n    }\n    function ativo() {\n      return isDiretoria() || (signedIn() && !emManutencao() &&\n        exists(/databases/$(database)/documents/alunos/$(mail())) &&\n        get(/databases/$(database)/documents/alunos/$(mail())).data.ativo == true);\n    }\n    function isMkt() { return isAdmin() || (temCargo() && nivelCargo() == 'marketing'); }\n    function isGestor() { return isAdmin() || (temCargo() && nivelCargo() == 'membro'); }\n    function isRoot() { return signedIn() && mail() == 'kevin.silva10@aluno.ifce.edu.br'; }\n    function onlyKeys(keys) {\n      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);\n    }\n\n    match /cargos/{email} {\n      allow read: if signedIn() && (mail() == email || isDiretoria());\n      allow create, update: if isAdmin() && request.resource.data.nivel in ['admin', 'membro', 'marketing'];\n      allow delete: if isAdmin();\n    }\n\n    match /alunos/{email} {\n      allow read: if isAdmin() || (signedIn() && mail() == email);\n      allow write: if isAdmin();\n    }\n\n    match /mural/{id} {\n      allow read: if ativo();\n      allow write: if isMkt();\n    }\n\n    match /enquetes/{id} {\n      allow read: if ativo();\n      allow create, delete: if isDiretoria();\n      allow update: if isDiretoria() || (ativo() && onlyKeys(['votosAlunos', 'opcoes']));\n    }\n\n    match /reivindicacoes/{id} {\n      allow read: if ativo();\n      allow create: if ativo();\n      allow update: if isAdmin() || (ativo() && onlyKeys(['apoios']));\n      allow delete: if isAdmin();\n    }\n\n    match /materiais/{id} {\n      allow read: if ativo();\n      allow create, delete: if isGestor();\n      allow update: if isGestor() || (ativo() && onlyKeys(['status', 'emprestadoPara'])\n        && resource.data.status == 'Dispon\u00edvel' && request.resource.data.status == 'Solicitado');\n    }\n\n    match /eventos/{id} {\n      allow read: if ativo();\n      allow create, delete: if isGestor();\n      allow update: if isGestor() || (ativo() && onlyKeys(['inscritos']));\n    }\n\n    match /jogos/{id} {\n      allow read: if ativo();\n      allow write: if isGestor();\n    }\n\n    match /sugestoes/{id} {\n      allow create: if ativo() && request.resource.data.email == mail();\n      allow read: if isAdmin() || (ativo() && resource.data.email == mail());\n      allow update, delete: if isAdmin();\n    }\n\n    match /config/{id} {\n      allow read: if signedIn();\n      allow write: if isRoot();\n    }\n\n    // Erros que o portal dos alunos reporta sozinho (s\u00f3 o TI l\u00ea).\n    match /erros_app/{id} {\n      allow create: if ativo() && request.resource.data.keys().hasOnly(['email', 'msg', 'pagina', 'ua', 'em'])\n        && request.resource.data.email == mail() && request.resource.data.msg.size() < 400;\n      allow read, delete: if isRoot();\n    }\n\n    // Anota\u00e7\u00f5es privadas do TI.\n    match /ti_privado/{id} {\n      allow read, write: if isRoot();\n    }\n\n    // Tarefas por cargo: a presid\u00eancia atribui; cada diretor s\u00f3 l\u00ea e conclui as suas.\n    match /tarefas/{id} {\n      allow read: if isAdmin() || (isDiretoria() && resource.data.atribuidoPara == mail());\n      allow create, delete: if isAdmin();\n      allow update: if isAdmin() || (isDiretoria() && resource.data.atribuidoPara == mail() && onlyKeys(['status', 'concluidaEm']));\n    }\n\n    match /atas/{id} {\n      allow read, write: if isAdmin();\n    }\n\n    match /divulgacoes/{id} {\n      allow read, write: if isMkt();\n    }\n\n    match /artes/{id} {\n      allow read, write: if isMkt();\n    }\n\n    // V\u00eddeos de aula pr\u00e1tica (arquivos ficam no Firebase Storage).\n    match /videos/{id} {\n      allow read: if ativo();\n      allow write: if isMkt();\n    }\n\n    // Pedidos de ajuda ao TI: o diretor cria e l\u00ea os seus; s\u00f3 o TI responde.\n    match /chamados/{id} {\n      allow create: if isDiretoria() && request.resource.data.autorEmail == mail() && request.resource.data.status == 'Aberto'\n        && request.resource.data.keys().hasOnly(['categoria', 'descricao', 'autorEmail', 'autorNome', 'cargo', 'status', 'criadoEm']);\n      allow read: if isRoot() || (isDiretoria() && resource.data.autorEmail == mail());\n      allow update, delete: if isRoot();\n    }\n\n    // Quando cada aluno entrou pela \u00faltima vez (s\u00f3 o TI l\u00ea).\n    match /acessos/{email} {\n      allow create, update: if ativo() && mail() == email && request.resource.data.keys().hasOnly(['ultimoAcesso', 'total', 'nome']);\n      allow read, delete: if isRoot();\n    }\n\n    // Aceite do termo de uso.\n    match /aceites/{email} {\n      allow create, update: if ativo() && mail() == email && request.resource.data.keys().hasOnly(['versao', 'em', 'nome']);\n      allow read: if isRoot() || (signedIn() && mail() == email);\n      allow delete: if isRoot();\n    }\n\n    // \u00daltimo acesso de cada diretor ao painel (s\u00f3 o TI l\u00ea).\n    match /acessos_painel/{email} {\n      allow create, update: if isDiretoria() && mail() == email && request.resource.data.keys().hasOnly(['ultimoAcesso', 'total', 'nome', 'cargo']);\n      allow read: if isRoot();\n    }\n\n    match /membros_punidos/{email} {\n      allow read: if isDiretoria();\n      allow write: if isAdmin();\n    }\n\n    match /acoes_admin/{id} {\n      allow create: if isDiretoria();\n      allow read: if isAdmin();\n      allow delete: if isRoot();\n    }\n  }\n}\n";
@@ -2334,7 +2505,7 @@
 
         async function inventarioBanco() {
             if (!soRaiz()) return;
-            const out = document.getElementById('ti-inventario');
+            const out = document.getElementById('ti-inventario-medir');
             out.textContent = 'Medindo...';
             const nomes = [...new Set([...COLECOES_EDITOR, 'acoes_admin', 'erros_app'])];
             let totalDocs = 0, totalBytes = 0;
@@ -2439,26 +2610,6 @@
             } catch (e) { out.textContent = ''; erroDB(e, 'atividade'); }
         }
 
-        function aplicarOcultos() {
-            if (emailLogado === ROOT_EMAIL) return;
-            cartoesOcultos.forEach(id => { const el = document.getElementById(id); if (el) el.style.display = 'none'; });
-            renderizarMenuLateral({ nivel: nivelDoPainel });
-            renderizarBarraInferior(nivelDoPainel);
-        }
-        function carregarOcultosTI() {
-            ouvir(db.collection('config').doc('sistema'), doc => {
-                const c = document.getElementById('ti-ocultos');
-                if (!c || c.contains(document.activeElement)) return;
-                const ocultos = (doc.exists && doc.data().cartoesOcultos) || [];
-                c.innerHTML = '<div class="row g-1">' + modulosSistema.filter(m => !m.soRaiz).map(m => `<div class="col-12 col-md-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-oculto="${m.id}" id="oc-${m.id}" ${ocultos.includes(m.id) ? '' : 'checked'}><label class="form-check-label small" for="oc-${m.id}">${esc(m.label)}</label></div></div>`).join('') + '</div>';
-            });
-        }
-        async function salvarOcultos() {
-            if (!soRaiz()) return;
-            const ids = [...document.querySelectorAll('[data-oculto]')].filter(c => !c.checked).map(c => c.dataset.oculto);
-            try { await db.collection('config').doc('sistema').set({ cartoesOcultos: ids }, { merge: true }); toast(ids.length ? ids.length + ' cartão(ões) escondido(s) dos cargos.' : 'Todos os cartões visíveis.'); registrarAcao('Cartões ocultados', ids.join(', ') || 'nenhum'); }
-            catch (e) { erroDB(e, 'ocultos'); }
-        }
 
         /* ================= ANÁLISE, COMUNICAÇÃO E CONFORMIDADE (só o e-mail raiz) ================= */
 
@@ -2717,7 +2868,7 @@
 
         async function aplicarPreset(nome) {
             if (!soRaiz()) return;
-            const todos = ['avisos', 'enquetes', 'pautas', 'materiais', 'eventos', 'jogos', 'videos', 'sugestoes'];
+            const todos = ['avisos', 'enquetes', 'pautas', 'materiais', 'eventos', 'jogos', 'videos', 'ajuda', 'sugestoes'];
             const rec = {}; todos.forEach(k => rec[k] = true);
             let banner = '';
             if (nome === 'provas') { rec.pautas = false; rec.sugestoes = false; rec.materiais = false; banner = '📚 Semana de provas: boa sorte! Alguns serviços do Grêmio estão pausados.'; }
