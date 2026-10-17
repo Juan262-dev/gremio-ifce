@@ -290,6 +290,33 @@
                 <div id="lista-divulgacao"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
+            <div id="secao-estudos" data-niveis="admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">📚 Estudos e Provas</h5>
+                <p class="text-muted-custom small mb-3">Publique materiais para os alunos estudarem e avise as datas das provas. Aparece na aba "Estudos" do portal.</p>
+
+                <h6 class="fw-bold text-white">Novo material</h6>
+                <div class="row g-2 mb-3">
+                    <div class="col-12"><input type="text" id="est-titulo" class="form-control" maxlength="120" placeholder="Título (Ex: Resumo de Estequiometria)"></div>
+                    <div class="col-md-6"><input type="text" id="est-disciplina" class="form-control" maxlength="60" list="est-disc-lista" placeholder="Disciplina (Ex: Química Geral)"><datalist id="est-disc-lista"></datalist></div>
+                    <div class="col-md-6"><select id="est-tipo-adm" class="form-select"><option>Resumo</option><option>Lista de exercícios</option><option>Prova antiga</option><option>Vídeo</option><option>Link</option></select></div>
+                    <div class="col-12"><input type="url" id="est-link" class="form-control" placeholder="Link do material (Drive, YouTube, site) https://..."></div>
+                    <div class="col-12"><textarea id="est-desc" class="form-control" rows="2" maxlength="400" placeholder="Descrição (opcional)"></textarea></div>
+                </div>
+                <button onclick="criarEstudo()" class="btn btn-ifce">Publicar material</button>
+                <div id="lista-estudos-admin" class="mt-3"><p class="text-muted-custom small">Carregando...</p></div>
+
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white">Nova prova</h6>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-5"><input type="text" id="prova-disc" class="form-control" maxlength="60" placeholder="Disciplina"></div>
+                    <div class="col-md-4"><input type="date" id="prova-data" class="form-control"></div>
+                    <div class="col-md-3"><input type="text" id="prova-turma" class="form-control" maxlength="40" placeholder="Turma (opcional)"></div>
+                    <div class="col-12"><input type="text" id="prova-conteudo" class="form-control" maxlength="200" placeholder="Conteúdo (Ex: capítulos 3 e 4)"></div>
+                </div>
+                <button onclick="criarProva()" class="btn btn-ifce">Adicionar prova</button>
+                <div id="lista-provas-admin" class="mt-3"></div>
+            </div>
+
             <div id="secao-videos" data-niveis="marketing" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">🎬 Vídeos de Aula Prática</h5>
                 <p class="text-muted-custom small mb-2">Grátis e sem limite de tamanho: <strong>1)</strong> envie o vídeo pelo app do YouTube (toque no "+", "Enviar vídeo") e em "Visibilidade" escolha <strong>Não listado</strong>; <strong>2)</strong> copie o link e cole aqui. O vídeo toca dentro do portal dos alunos. Também funciona com link do Google Drive (compartilhado como "qualquer pessoa com o link").</p>
@@ -728,6 +755,7 @@
                     <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="eventos" id="rc5"><label class="form-check-label small" for="rc5">📅 Eventos</label></div></div>
                     <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="jogos" id="rc6"><label class="form-check-label small" for="rc6">🏆 Jogos</label></div></div>
                     <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="ajuda" id="rc9"><label class="form-check-label small" for="rc9">🆘 Ajuda</label></div></div>
+                    <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="estudos" id="rc10"><label class="form-check-label small" for="rc10">📚 Estudos</label></div></div>
                     <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="videos" id="rc8"><label class="form-check-label small" for="rc8">🎬 Vídeos</label></div></div>
                     <div class="col-6"><div class="form-check"><input class="form-check-input" type="checkbox" data-recurso="sugestoes" id="rc7"><label class="form-check-label small" for="rc7">💡 Sugestões</label></div></div>
                 </div>
@@ -975,6 +1003,7 @@
             { id: 'secao-relatorio-mensal', label: 'Relatório do Mês', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['admin'] },
             { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro'] },
             { id: 'secao-divulgacao', label: 'Calendário de Divulgação', icon: 'bi-calendar2-week', niveisPermitidos: ['marketing'] },
+            { id: 'secao-estudos', label: 'Estudos e Provas', icon: 'bi-journal-bookmark', niveisPermitidos: ['admin'] },
             { id: 'secao-videos', label: 'Vídeos de Aula Prática', icon: 'bi-camera-video', niveisPermitidos: ['marketing'] },
             { id: 'secao-artes', label: 'Banco de Artes', icon: 'bi-images', niveisPermitidos: ['marketing'] },
             { id: 'secao-mural', label: 'Mural de Avisos & Vídeos', icon: 'bi-megaphone', niveisPermitidos: ['admin', 'marketing'] },
@@ -1184,7 +1213,7 @@
             const ver = id => { const c = document.getElementById(id); return !!c && c.style.display === 'block'; };
             [
                 ['secao-resumo', carregarResumo], ['secao-tarefas', carregarMinhasTarefas], ['secao-tarefas-admin', carregarTarefasAdmin],
-                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos],
+                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin],
                 ['secao-mural', carregarAvisosAdmin], ['secao-enquetes-lista', carregarEnquetesAdmin],
                 ['secao-alunos-lista', carregarAlunos], ['secao-sugestoes', carregarSugestoesAdmin], ['secao-pautas', carregarPautasAdmin],
                 ['secao-punicoes', carregarMembrosPunidosAdmin], ['secao-auditoria', carregarAuditoria], ['secao-diretoria', carregarDiretoria],
@@ -2040,6 +2069,60 @@
                     <div style="overflow-x: auto;"><table class="table table-sm table-dark mb-0"><thead><tr><th>#</th><th>Time</th><th>J</th><th>V</th><th>E</th><th>D</th><th>SG</th><th>Pts</th></tr></thead><tbody>
                     ${times.map((t, i) => `<tr><td>${i + 1}</td><td>${esc(t.time)}</td><td>${t.J}</td><td>${t.V}</td><td>${t.E}</td><td>${t.D}</td><td>${t.GP - t.GC}</td><td><strong>${t.Pts}</strong></td></tr>`).join('')}
                     </tbody></table></div></div>`).join('') + (grupos.length ? '<hr style="border-color: var(--ifce-card-border);" class="my-3">' : '');
+            });
+        }
+
+        /* ================= ABA DE ESTUDOS (materiais e provas) ================= */
+
+        function criarEstudo() {
+            const g = id => document.getElementById(id).value.trim();
+            const titulo = g('est-titulo'), link = g('est-link');
+            if (!titulo) { toast('Dê um título ao material.', 'warning'); return; }
+            if (!/^https:\/\//i.test(link)) { toast('Cole um link que comece com https://', 'warning'); return; }
+            db.collection('estudos').add({
+                titulo, disciplina: g('est-disciplina'), tipo: document.getElementById('est-tipo-adm').value, link, descricao: g('est-desc'),
+                autor: document.getElementById('user-name-display').textContent, criadoEm: TS()
+            }).then(() => {
+                toast('Material publicado para os alunos! 📚');
+                registrarAcao('Material de estudo publicado', titulo);
+                ['est-titulo', 'est-link', 'est-desc'].forEach(i => document.getElementById(i).value = '');
+            }).catch(e => erroDB(e, 'criarEstudo'));
+        }
+        function criarProva() {
+            const g = id => document.getElementById(id).value.trim();
+            const disciplina = g('prova-disc'), dataISO = document.getElementById('prova-data').value;
+            if (!disciplina || !dataISO) { toast('Informe a disciplina e a data da prova.', 'warning'); return; }
+            db.collection('provas').add({ disciplina, dataISO, turma: g('prova-turma'), conteudo: g('prova-conteudo'), criadoEm: TS() })
+                .then(() => {
+                    toast('Prova adicionada.');
+                    registrarAcao('Prova cadastrada', `${disciplina} em ${dataBR(dataISO)}`);
+                    ['prova-disc', 'prova-data', 'prova-turma', 'prova-conteudo'].forEach(i => document.getElementById(i).value = '');
+                }).catch(e => erroDB(e, 'criarProva'));
+        }
+        function carregarEstudosAdmin() {
+            ouvir(db.collection('estudos').orderBy('criadoEm', 'desc').limit(100), snap => {
+                const c = document.getElementById('lista-estudos-admin');
+                const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                document.getElementById('est-disc-lista').innerHTML = [...new Set(docs.map(e => e.disciplina).filter(Boolean))].sort().map(d => `<option value="${esc(d)}">`).join('');
+                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum material publicado.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + docs.map(e => `
+                    <div class="list-group-item d-flex justify-content-between align-items-start gap-2">
+                        <div><strong class="text-white">${esc(e.titulo)}</strong> <span class="badge bg-secondary">${esc(e.tipo || '')}</span><br>
+                        <small class="text-muted-custom">${esc(e.disciplina || 'Sem disciplina')} • ${esc(fmtData(e.criadoEm))}</small></div>
+                        <button data-acao="excluirEstudo" data-id="${esc(e.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                    </div>`).join('') + '</div>';
+            });
+            ouvir(db.collection('provas').orderBy('dataISO'), snap => {
+                const c = document.getElementById('lista-provas-admin');
+                const hoje = hojeISO();
+                const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma prova cadastrada.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + docs.map(p => `
+                    <div class="list-group-item d-flex justify-content-between align-items-start gap-2" style="${p.dataISO < hoje ? 'opacity:.55' : ''}">
+                        <div><strong class="text-white">${esc(p.disciplina)}</strong> <span class="badge bg-info text-dark">${esc(dataBR(p.dataISO))}</span>${p.dataISO < hoje ? ' <span class="badge bg-secondary">Passou</span>' : ''}${p.turma ? ' <span class="badge bg-secondary">' + esc(p.turma) + '</span>' : ''}<br>
+                        <small class="text-muted-custom">${esc(p.conteudo || '')}</small></div>
+                        <button data-acao="excluirProva" data-id="${esc(p.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                    </div>`).join('') + '</div>';
             });
         }
 
@@ -3474,6 +3557,8 @@
                 toast(`${ok} de ${alvo.length} link(s) enviado(s).`);
             },
             editorEscolher: id => { document.getElementById('ed-id').value = id; editorAbrir(); },
+            excluirEstudo: async id => { if (await confirmar('Excluir este material dos alunos?')) db.collection('estudos').doc(id).delete().then(() => registrarAcao('Material de estudo excluído', id)).catch(e => erroDB(e, 'excluirEstudo')); },
+            excluirProva: async id => { if (await confirmar('Excluir esta prova do calendário?')) db.collection('provas').doc(id).delete().catch(e => erroDB(e, 'excluirProva')); },
             excluirSugestao: async id => { if (await confirmar("Apagar esta sugestão?")) db.collection('sugestoes').doc(id).delete().catch(e => erroDB(e, 'excluirSugestao')); },
             excluirPauta: async id => { if (await confirmar("Excluir esta pauta?")) db.collection('reivindicacoes').doc(id).delete().then(() => registrarAcao('Pauta excluída', id)).catch(e => erroDB(e, 'excluirPauta')); },
             removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(e => erroDB(e, 'removerPunicao')); },

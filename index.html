@@ -137,6 +137,18 @@ body{background-color:#f4f6f9}
     <div id="classificacao-aluno"></div>
   </div>
 
+  <div id="sec-estudos" class="card card-custom p-4 mb-4">
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">📚 Estudos</h5>
+    <p class="text-muted small mb-3">Materiais para estudar para as provas: resumos, listas de exercícios, provas antigas e vídeos.</p>
+    <div id="lista-provas-aluno" class="mb-3"></div>
+    <div class="row g-2 mb-3">
+      <div class="col-6"><select id="est-disc" class="form-select form-select-sm" onchange="renderEstudos()"><option value="">Todas as disciplinas</option></select></div>
+      <div class="col-6"><select id="est-tipo" class="form-select form-select-sm" onchange="renderEstudos()"><option value="">Todos os tipos</option><option>Resumo</option><option>Lista de exercícios</option><option>Prova antiga</option><option>Vídeo</option><option>Link</option></select></div>
+      <div class="col-12"><input type="search" id="est-busca" class="form-control form-control-sm" placeholder="🔍 Buscar material..." oninput="renderEstudos()"></div>
+    </div>
+    <div id="lista-estudos-aluno"><p class="text-muted small">Carregando materiais...</p></div>
+  </div>
+
   <div id="sec-videos" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🎬 Vídeos de Aula Prática</h5>
     <p class="text-muted small mb-3">Reveja as aulas práticas do laboratório quando quiser.</p>
@@ -171,6 +183,7 @@ body{background-color:#f4f6f9}
     <div id="termo-texto" style="overflow:auto;white-space:pre-wrap;font-size:.9rem;color:#cfe3d5;flex:1;margin-bottom:12px"></div>
     <button onclick="aceitarTermo()" class="btn-green-chem">Li e aceito</button>
     <button onclick="fazerLogoutAluno()" class="link-esqueci">Não aceito (sair)</button>
+    <div id="termo-erro" style="color:#ffc107;font-size:.85rem;margin-top:8px;text-align:center"></div>
   </div>
 </div>
 
@@ -188,9 +201,9 @@ body{background-color:#f4f6f9}
   <div id="lista-notif"></div>
 </div>
 
-<nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
+<nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
-<div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100000;width:100%;max-width:420px;margin-bottom:72px"></div>
+<div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100005;width:100%;max-width:420px;margin-bottom:72px"></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -352,13 +365,13 @@ function iniciarSessaoAluno() {
     bn.textContent = d.banner || ''; bn.style.display = (d.banner && noPeriodo) ? 'block' : 'none';
     palavrasProibidas = Array.isArray(d.palavrasProibidas) ? d.palavrasProibidas : [];
     const rec = d.recursos || {};
-    ['avisos', 'enquetes', 'pautas', 'materiais', 'eventos', 'jogos', 'videos', 'ajuda', 'sugestoes'].forEach(k => {
+    ['avisos', 'enquetes', 'pautas', 'materiais', 'eventos', 'jogos', 'videos', 'estudos', 'ajuda', 'sugestoes'].forEach(k => {
       const off = rec[k] === false;
       const card = document.getElementById('sec-' + k); if (card) card.style.display = off ? 'none' : '';
       const btn = document.querySelector('#bottom-nav [data-alvo="sec-' + k + '"]'); if (btn) btn.style.display = off ? 'none' : '';
     });
   });
-  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarJogos(); carregarClassificacao(); carregarVideos(); carregarMeusChamados(); carregarMinhasSugestoes();
+  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarJogos(); carregarClassificacao(); carregarVideos(); carregarEstudos(); carregarMeusChamados(); carregarMinhasSugestoes();
 }
 
 /* ---------- Mural ---------- */
@@ -524,6 +537,56 @@ function carregarEventos() {
     }).join('') + '</div>';
   });
 }
+/* ---------- aba de estudos ---------- */
+let estudosCache = [];
+function carregarEstudos() {
+  ouvir(db.collection('estudos').orderBy('criadoEm', 'desc'), snap => {
+    estudosCache = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    novidades.estudos = estudosCache; renderNotificacoes();
+    const sel = document.getElementById('est-disc'), atual = sel.value;
+    const discs = [...new Set(estudosCache.map(e => e.disciplina).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+    sel.innerHTML = '<option value="">Todas as disciplinas</option>' + discs.map(d => `<option>${esc(d)}</option>`).join('');
+    sel.value = discs.includes(atual) ? atual : '';
+    renderEstudos();
+  });
+  ouvir(db.collection('provas').orderBy('dataISO'), snap => {
+    const c = document.getElementById('lista-provas-aluno');
+    const hoje = hojeISO();
+    const prox = snap.docs.map(d => d.data()).filter(p => p.dataISO && p.dataISO >= hoje);
+    if (!prox.length) { c.innerHTML = ''; return; }
+    const dias = iso => Math.round((new Date(iso + 'T00:00:00') - new Date(hoje + 'T00:00:00')) / 864e5);
+    const quando = n => (n === 0 ? 'hoje' : n === 1 ? 'amanhã' : 'em ' + n + ' dias');
+    c.innerHTML = '<h6 class="fw-bold text-danger mb-2">📅 Próximas provas</h6><div class="list-group">' + prox.slice(0, 8).map(p => `
+      <div class="list-group-item d-flex justify-content-between align-items-start">
+        <div><strong class="text-dark">${esc(p.disciplina)}</strong>${p.turma ? ` <span class="badge bg-light text-muted border">${esc(p.turma)}</span>` : ''}<br>
+        <small class="text-muted">${esc(p.conteudo || '')}</small></div>
+        <span class="badge ${dias(p.dataISO) <= 2 ? 'bg-danger' : 'bg-warning text-dark'} ms-2" style="white-space:nowrap">${esc(dataBR(p.dataISO))} • ${quando(dias(p.dataISO))}</span>
+      </div>`).join('') + '</div>';
+  });
+}
+function renderEstudos() {
+  const c = document.getElementById('lista-estudos-aluno');
+  const disc = document.getElementById('est-disc').value, tipo = document.getElementById('est-tipo').value;
+  const t = document.getElementById('est-busca').value.trim().toLowerCase();
+  const lista = estudosCache.filter(e => (!disc || e.disciplina === disc) && (!tipo || e.tipo === tipo) &&
+    (!t || `${e.titulo} ${e.descricao || ''} ${e.disciplina || ''}`.toLowerCase().includes(t)));
+  if (!lista.length) { c.innerHTML = `<p class="text-muted small mb-0">${estudosCache.length ? 'Nada encontrado com esses filtros.' : 'Ainda não há materiais publicados.'}</p>`; return; }
+  const cor = { 'Resumo': 'bg-primary', 'Lista de exercícios': 'bg-success', 'Prova antiga': 'bg-danger', 'Vídeo': 'bg-info text-dark', 'Link': 'bg-secondary' };
+  c.innerHTML = '<div class="list-group">' + lista.map(e => {
+    const ok = /^https:\/\//i.test(e.link || '');
+    return `
+    <div class="list-group-item">
+      <div class="d-flex justify-content-between align-items-start mb-1">
+        <h6 class="fw-bold text-success mb-0">${esc(e.titulo)}</h6>
+        <span class="badge ${cor[e.tipo] || 'bg-secondary'} ms-2" style="white-space:nowrap">${esc(e.tipo || 'Link')}</span>
+      </div>
+      ${e.disciplina ? `<small class="text-muted d-block mb-1">${esc(e.disciplina)}</small>` : ''}
+      ${e.descricao ? `<p class="mb-2 small text-dark" style="white-space:pre-wrap">${esc(e.descricao)}</p>` : ''}
+      ${ok ? playerHTML(e.link) : ''}
+      ${ok ? `<a href="${esc(e.link)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-ifce fw-bold mt-2">Abrir material ↗</a>` : ''}
+    </div>`;
+  }).join('') + '</div>';
+}
 function embedDe(url) {
   url = String(url || '').trim();
   let m = url.match(/^https:\/\/(?:www\.|m\.)?(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{6,15})/i);
@@ -612,7 +675,7 @@ function enviarSugestao() {
 }
 
 /* ---------- status das pautas, minhas sugestões e novidades ---------- */
-const novidades = { avisos: [], eventos: [], enquetes: [], pautas: [], sugestoes: [], videos: [], chamados: [] };
+const novidades = { avisos: [], eventos: [], enquetes: [], pautas: [], sugestoes: [], videos: [], chamados: [], estudos: [] };
 const ganchosNovidades = { 'lista-avisos-aluno': 'avisos', 'lista-eventos-aluno': 'eventos', 'lista-enquetes-aluno': 'enquetes', 'lista-reivindicacoes-aluno': 'pautas', 'lista-videos-aluno': 'videos' };
 function badgeStatus(p) {
   const st = p.status || 'Em análise';
@@ -650,6 +713,7 @@ function renderNotificacoes() {
   const visto = ultimoVisto(), itens = [];
   novidades.avisos.forEach(a => { if (msDe(a.criadoEm) > visto) itens.push({ t: msDe(a.criadoEm), txt: `📢 Novo aviso: ${a.titulo}`, alvo: 'sec-avisos' }); });
   novidades.eventos.forEach(e => { if (msDe(e.criadoEm) > visto) itens.push({ t: msDe(e.criadoEm), txt: `📅 Novo evento: ${e.titulo}`, alvo: 'sec-eventos' }); });
+  novidades.estudos.forEach(e => { if (msDe(e.criadoEm) > visto) itens.push({ t: msDe(e.criadoEm), txt: `📚 Novo material de estudo: ${e.titulo}`, alvo: 'sec-estudos' }); });
   novidades.videos.forEach(v => { if (msDe(v.criadoEm) > visto) itens.push({ t: msDe(v.criadoEm), txt: `🎬 Novo vídeo: ${v.titulo}`, alvo: 'sec-videos' }); });
   novidades.chamados.forEach(c => { if (msDe(c.respondidoEm) > visto) itens.push({ t: msDe(c.respondidoEm), txt: '🛠️ O TI respondeu o seu pedido de ajuda', alvo: 'sec-ajuda' }); });
   novidades.enquetes.forEach(e => { if (e.ativa && msDe(e.criadoEm) > visto) itens.push({ t: msDe(e.criadoEm), txt: `📊 Nova enquete: ${e.titulo}`, alvo: 'sec-enquetes' }); });
@@ -702,8 +766,11 @@ async function verificarTermo() {
 }
 function aceitarTermo() {
   db.collection('aceites').doc(usuarioAtual.email).set({ versao: termoAtual.versao, em: TS(), nome: usuarioAtual.nome || '' })
-    .then(() => { aceiteVersao = termoAtual.versao; verificarTermo(); })
-    .catch(() => aviso('Não foi possível registrar o aceite. Tente de novo.', 'danger'));
+    .then(() => { aceiteVersao = termoAtual.versao; document.getElementById('termo-erro').textContent = ''; verificarTermo(); })
+    .catch(err => {
+      const cod = err && err.code ? err.code : 'erro';
+      document.getElementById('termo-erro').textContent = 'Não foi possível registrar o aceite (' + cod + '). ' + (cod === 'permission-denied' ? 'Avise o TI: as regras do banco precisam ser atualizadas.' : 'Tente de novo.');
+    });
 }
 
 /* ---------- app instalável, filtro de palavras e pedidos de ajuda do aluno ---------- */
@@ -730,7 +797,7 @@ function criarChamadoAluno() {
     categoria: document.getElementById('aj-cat').value, descricao, autorEmail: usuarioAtual.email, autorNome: usuarioAtual.nome || 'Aluno',
     cargo: 'Aluno', status: 'Aberto', criadoEm: TS()
   }).then(() => { aviso('Pedido enviado! ✅', 'success'); document.getElementById('aj-desc').value = ''; })
-    .catch(() => aviso('Não foi possível enviar o pedido.', 'danger'));
+    .catch(err => aviso('Não foi possível enviar o pedido (' + (err && err.code ? err.code : 'erro') + ').', 'danger'));
 }
 function carregarMeusChamados() {
   ouvir(db.collection('chamados').where('autorEmail', '==', usuarioAtual.email), snap => {
