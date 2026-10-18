@@ -150,6 +150,17 @@ body{background-color:#f4f6f9}
     <div id="lista-estudos-aluno"><p class="text-muted small">Carregando materiais...</p></div>
   </div>
 
+  <div id="sec-quiz" class="card card-custom p-4 mb-4">
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🧠 Quiz de estudo</h5>
+    <p class="text-muted small mb-3">Responda 5 questões e veja a explicação na hora. Suas respostas não são guardadas.</p>
+    <div class="row g-2 mb-2">
+      <div class="col-8"><select id="quiz-disc" class="form-select form-select-sm"><option value="">Todas as disciplinas</option></select></div>
+      <div class="col-4"><button onclick="quizIniciar()" class="btn btn-ifce btn-sm fw-bold w-100">Começar</button></div>
+    </div>
+    <small id="quiz-info" class="text-muted d-block mb-2"></small>
+    <div id="quiz-box"></div>
+  </div>
+
   <div id="sec-videos" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🎬 Vídeos de Aula Prática</h5>
     <p class="text-muted small mb-3">Reveja as aulas práticas do laboratório quando quiser.</p>
@@ -205,7 +216,7 @@ body{background-color:#f4f6f9}
   <div id="lista-notif"></div>
 </div>
 
-<nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
+<nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-quiz"><span>🧠</span>Quiz</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
 <div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.17-d</div>
 
@@ -378,7 +389,7 @@ function iniciarSessaoAluno() {
       const btn = document.querySelector('#bottom-nav [data-alvo="sec-' + k + '"]'); if (btn) btn.style.display = off ? 'none' : '';
     });
   });
-  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarJogos(); carregarClassificacao(); carregarVideos(); carregarEstudos(); carregarMeusChamados(); carregarMinhasSugestoes();
+  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarJogos(); carregarClassificacao(); carregarVideos(); carregarEstudos(); carregarQuestoes(); carregarMeusChamados(); carregarMinhasSugestoes();
 }
 
 /* ---------- Mural ---------- */
@@ -833,6 +844,67 @@ function carregarMeusChamados() {
       </div>`).join('') + '</div>';
   });
 }
+
+/* ---------- quiz de estudo (respostas não são guardadas) ---------- */
+let questoesBanco = [], quiz = null;
+function carregarQuestoes() {
+  ouvir(db.collection('questoes').orderBy('criadoEm', 'desc'), snap => {
+    questoesBanco = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const sel = document.getElementById('quiz-disc'), atual = sel.value;
+    const discs = [...new Set(questoesBanco.map(q => q.disciplina).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+    sel.innerHTML = '<option value="">Todas as disciplinas</option>' + discs.map(d => `<option>${esc(d)}</option>`).join('');
+    sel.value = discs.includes(atual) ? atual : '';
+    document.getElementById('quiz-info').textContent = questoesBanco.length ? `${questoesBanco.length} questão(ões) no banco.` : 'Ainda não há questões cadastradas.';
+  });
+}
+function quizIniciar() {
+  const disc = document.getElementById('quiz-disc').value;
+  const pool = questoesBanco.filter(q => !disc || q.disciplina === disc);
+  if (!pool.length) { aviso('Não há questões para esta disciplina ainda.', 'warning'); return; }
+  const fila = pool.map(q => ({ q, t: Math.random() })).sort((a, b) => a.t - b.t).slice(0, 5).map(x => x.q);
+  quiz = { fila, i: 0, acertos: 0, respondida: false };
+  quizMostrar();
+}
+function quizMostrar() {
+  const box = document.getElementById('quiz-box');
+  if (quiz.i >= quiz.fila.length) {
+    box.innerHTML = `<div class="text-center">
+      <h6 class="fw-bold">Você acertou ${quiz.acertos} de ${quiz.fila.length}!</h6>
+      <p class="text-muted small">Suas respostas não são guardadas. Quer tentar de novo?</p>
+      <button data-quiz="novo" class="btn btn-ifce btn-sm fw-bold">Novo quiz</button></div>`;
+    return;
+  }
+  const q = quiz.fila[quiz.i];
+  box.innerHTML = `<div class="small text-muted mb-1">Questão ${quiz.i + 1} de ${quiz.fila.length} • ${esc(q.disciplina || '')}</div>
+    <p class="fw-bold">${esc(q.enunciado)}</p>
+    <div class="list-group mb-2">${(q.alternativas || []).map((t, k) => `<button type="button" class="list-group-item list-group-item-action" data-quiz="resp" data-opcao="${k}">${'ABCD'[k]}) ${esc(t)}</button>`).join('')}</div>
+    <div id="quiz-feed"></div>`;
+}
+function responderQuiz(k) {
+  if (!quiz || quiz.respondida) return;
+  quiz.respondida = true;
+  const q = quiz.fila[quiz.i], certa = k === Number(q.correta);
+  if (certa) quiz.acertos++;
+  document.querySelectorAll('#quiz-box [data-quiz="resp"]').forEach((b, idx) => {
+    b.disabled = true;
+    if (idx === Number(q.correta)) b.classList.add('list-group-item-success');
+    else if (idx === k) b.classList.add('list-group-item-danger');
+  });
+  document.getElementById('quiz-feed').innerHTML = `<div class="alert ${certa ? 'alert-success' : 'alert-danger'} py-2 small fw-bold">${certa ? 'Isso mesmo! ✅' : 'Quase! A resposta certa está em verde. ❌'}</div>
+    ${q.explicacao ? `<p class="small text-dark" style="white-space:pre-wrap">${esc(q.explicacao)}</p>` : ''}
+    <button data-quiz="prox" class="btn btn-ifce btn-sm fw-bold">${quiz.i + 1 < quiz.fila.length ? 'Próxima' : 'Ver resultado'}</button>`;
+}
+function proximaQuestao() {
+  if (!quiz) return;
+  quiz.i++; quiz.respondida = false; quizMostrar();
+}
+document.getElementById('quiz-box').addEventListener('click', e => {
+  const b = e.target.closest('[data-quiz]');
+  if (!b || b.disabled) return;
+  if (b.dataset.quiz === 'resp') responderQuiz(Number(b.dataset.opcao));
+  else if (b.dataset.quiz === 'prox') proximaQuestao();
+  else if (b.dataset.quiz === 'novo') quizIniciar();
+});
 
 /* ---------- relatório automático de erros (o TI vê no painel) ---------- */
 let errosEnviados = 0;

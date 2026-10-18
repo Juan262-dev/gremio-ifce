@@ -317,6 +317,23 @@
                 <div id="lista-divulgacao"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
+            <div id="secao-questoes" data-niveis="admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">🧠 Banco de questões (quiz)</h5>
+                <p class="text-muted-custom small mb-3">Cadastre questões de múltipla escolha. Os alunos fazem um quiz de 5 questões no portal e veem a explicação depois de cada resposta.</p>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" id="q-disc" list="q-disc-lista" class="form-control" maxlength="60" placeholder="Disciplina (Ex: Química Geral)"><datalist id="q-disc-lista"></datalist></div>
+                    <div class="col-md-6"><select id="q-corr" class="form-select"><option value="0">Resposta certa: A</option><option value="1">Resposta certa: B</option><option value="2">Resposta certa: C</option><option value="3">Resposta certa: D</option></select></div>
+                    <div class="col-12"><textarea id="q-enun" class="form-control" rows="2" maxlength="400" placeholder="Enunciado da questão"></textarea></div>
+                    <div class="col-md-6"><input type="text" id="q-alt0" class="form-control" maxlength="200" placeholder="Alternativa A"></div>
+                    <div class="col-md-6"><input type="text" id="q-alt1" class="form-control" maxlength="200" placeholder="Alternativa B"></div>
+                    <div class="col-md-6"><input type="text" id="q-alt2" class="form-control" maxlength="200" placeholder="Alternativa C"></div>
+                    <div class="col-md-6"><input type="text" id="q-alt3" class="form-control" maxlength="200" placeholder="Alternativa D"></div>
+                    <div class="col-12"><textarea id="q-expl" class="form-control" rows="2" maxlength="600" placeholder="Explicação (aparece para o aluno depois de responder)"></textarea></div>
+                </div>
+                <button onclick="criarQuestao()" class="btn btn-ifce mb-3">Publicar questão</button>
+                <div id="lista-questoes-admin"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
             <div id="secao-estudos" data-niveis="admin" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Estudos e Provas</h5>
                 <p class="text-muted-custom small mb-3">Publique materiais para os alunos estudarem e avise as datas das provas. Aparece na aba "Estudos" do portal.</p>
@@ -1186,6 +1203,7 @@
             { id: 'secao-relatorio-mensal', label: 'Relatório do Mês', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['admin'] },
             { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial'] },
             { id: 'secao-divulgacao', label: 'Calendário de Divulgação', icon: 'bi-calendar2-week', niveisPermitidos: ['marketing'] },
+            { id: 'secao-questoes', label: 'Banco de questões', icon: 'bi-patch-question', niveisPermitidos: ['admin'] },
             { id: 'secao-estudos', label: 'Estudos e Provas', icon: 'bi-journal-bookmark', niveisPermitidos: ['admin'] },
             { id: 'secao-videos', label: 'Vídeos de Aula Prática', icon: 'bi-camera-video', niveisPermitidos: ['marketing'] },
             { id: 'secao-caixa', label: 'Caixa do Grêmio', icon: 'bi-cash-coin', niveisPermitidos: ['tesouraria'] },
@@ -1413,7 +1431,7 @@
             const ver = id => { const c = document.getElementById(id); return !!c && c.style.display === 'block'; };
             [
                 ['secao-resumo', carregarResumo], ['secao-tarefas', carregarMinhasTarefas], ['secao-tarefas-admin', carregarTarefasAdmin],
-                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-caixa', carregarCaixa], ['secao-cultura', () => carregarAtividades('cultura')], ['secao-racial', () => { carregarAtividades('racial'); carregarPautasRacial(); }], ['secao-tes-orc', carregarOrcamentos], ['secao-tes-contas', carregarContas], ['secao-racial-enc', carregarEncaminhamentos], ['secao-racial-apoio', carregarApoio], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin],
+                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-caixa', carregarCaixa], ['secao-cultura', () => carregarAtividades('cultura')], ['secao-racial', () => { carregarAtividades('racial'); carregarPautasRacial(); }], ['secao-tes-orc', carregarOrcamentos], ['secao-tes-contas', carregarContas], ['secao-racial-enc', carregarEncaminhamentos], ['secao-racial-apoio', carregarApoio], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin], ['secao-questoes', carregarQuestoesAdmin],
                 ['secao-mural', carregarAvisosAdmin], ['secao-enquetes-lista', carregarEnquetesAdmin],
                 ['secao-alunos-lista', carregarAlunos], ['secao-sugestoes', carregarSugestoesAdmin], ['secao-pautas', carregarPautasAdmin],
                 ['secao-punicoes', carregarMembrosPunidosAdmin], ['secao-auditoria', carregarAuditoria], ['secao-diretoria', carregarDiretoria],
@@ -3716,6 +3734,37 @@
             } catch (e) { erroDB(e, 'relatorioCargo'); }
         }
 
+        /* ================= BANCO DE QUESTÕES (quiz do portal) ================= */
+
+        let cacheQuestoes = [];
+        function criarQuestao() {
+            const g = id => document.getElementById(id).value.trim();
+            const disciplina = g('q-disc'), enunciado = g('q-enun'), explicacao = g('q-expl');
+            const alternativas = [0, 1, 2, 3].map(i => g('q-alt' + i));
+            const correta = Number(document.getElementById('q-corr').value);
+            if (!disciplina || enunciado.length < 5) { toast('Preencha a disciplina e o enunciado.', 'warning'); return; }
+            if (alternativas.some(a => !a)) { toast('Preencha as quatro alternativas.', 'warning'); return; }
+            db.collection('questoes').add({ disciplina, enunciado, alternativas, correta, explicacao, criadoPorEmail: emailLogado, criadoEm: TS() })
+                .then(() => {
+                    toast('Questão publicada no quiz. ✅');
+                    registrarAcao('Questão publicada', disciplina);
+                    ['q-disc', 'q-enun', 'q-alt0', 'q-alt1', 'q-alt2', 'q-alt3', 'q-expl'].forEach(i => document.getElementById(i).value = '');
+                }).catch(e => erroDB(e, 'criarQuestao'));
+        }
+        function carregarQuestoesAdmin() {
+            ouvir(db.collection('questoes').orderBy('criadoEm', 'desc').limit(200), snap => {
+                const c = document.getElementById('lista-questoes-admin');
+                cacheQuestoes = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                document.getElementById('q-disc-lista').innerHTML = [...new Set(cacheQuestoes.map(q => q.disciplina).filter(Boolean))].sort().map(d => `<option value="${esc(d)}">`).join('');
+                if (!cacheQuestoes.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma questão ainda. Cadastre a primeira acima; ela aparece no quiz do portal.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + cacheQuestoes.map(q => `
+                    <div class="list-group-item d-flex justify-content-between align-items-start gap-2">
+                        <div><strong class="text-white">${esc(q.enunciado)}</strong><br><small class="text-muted-custom">${esc(q.disciplina)} • resposta certa: ${'ABCD'[q.correta]}</small></div>
+                        <button data-acao="excluirQuestao" data-id="${esc(q.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                    </div>`).join('') + '</div>';
+            });
+        }
+
         /* ================= TI: SUPORTE, ALUNOS E PORTAL ================= */
 
         async function fichaUsuario() {
@@ -4291,6 +4340,7 @@
             excluirApoio: async id => { if (await confirmar('Excluir este material da aba Estudos?')) db.collection('estudos').doc(id).delete().catch(e => erroDB(e, 'excluirApoio')); },
             abrirPresenca: id => abrirPresenca(id),
             salvarPresenca: id => salvarPresenca(id),
+            excluirQuestao: async id => { if (await confirmar('Excluir esta questão do quiz?')) db.collection('questoes').doc(id).delete().then(() => registrarAcao('Questão excluída', id)).catch(e => erroDB(e, 'excluirQuestao')); },
             excluirSugestao: async id => { if (await confirmar("Apagar esta sugestão?")) db.collection('sugestoes').doc(id).delete().catch(e => erroDB(e, 'excluirSugestao')); },
             excluirPauta: async id => { if (await confirmar("Excluir esta pauta?")) db.collection('reivindicacoes').doc(id).delete().then(() => registrarAcao('Pauta excluída', id)).catch(e => erroDB(e, 'excluirPauta')); },
             removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(e => erroDB(e, 'removerPunicao')); },
@@ -4340,7 +4390,7 @@
         /* ================= ABAS DO PAINEL ================= */
         const ABAS = [
             ['inicio', 'Início', ['secao-resumo', 'secao-tarefas', 'secao-tarefas-admin', 'secao-novidades', 'secao-ajuda', 'secao-guia']],
-            ['comunicacao', 'Comunicação', ['secao-mural', 'secao-divulgacao', 'secao-artes', 'secao-enquetes-criar', 'secao-enquetes-lista', 'secao-videos', 'secao-estudos', 'secao-pautas', 'secao-sugestoes']],
+            ['comunicacao', 'Comunicação', ['secao-mural', 'secao-divulgacao', 'secao-artes', 'secao-enquetes-criar', 'secao-enquetes-lista', 'secao-videos', 'secao-estudos', 'secao-questoes', 'secao-pautas', 'secao-sugestoes']],
             ['alunos', 'Alunos', ['secao-alunos-cadastrar', 'secao-alunos-massa', 'secao-alunos-lista', 'secao-punicoes']],
             ['atividades', 'Atividades', ['secao-eventos', 'secao-jogos', 'secao-materiais', 'secao-cultura', 'secao-racial', 'secao-racial-enc', 'secao-racial-apoio', 'secao-rel-cult', 'secao-rel-racial']],
             ['financeiro', 'Financeiro', ['secao-caixa', 'secao-tes-orc', 'secao-tes-contas', 'secao-rel-tes']],
