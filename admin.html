@@ -226,7 +226,7 @@
                             <li><strong>Caixa:</strong> registre cada entrada e saída com valor, data e categoria.</li>
                             <li><strong>Comprovantes:</strong> toda saída precisa de um link https:// (foto ou Drive).</li>
                             <li><strong>Prestação de contas:</strong> escolha o mês e toque em PDF para entregar à presidência.</li>
-                            <li><strong>Erros:</strong> só a Presidência exclui um lançamento; avise se errar algo.</li>
+                            <li><strong>Erros:</strong> você corrige ou exclui o lançamento errado; o painel registra a alteração no log.</li>
                         </ul>
                     </details>
                 </div>
@@ -357,7 +357,7 @@
                 <div id="lista-videos-admin"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-caixa" data-niveis="tesouraria,admin" class="card card-custom p-4 mb-4">
+            <div id="secao-caixa" data-niveis="tesouraria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Caixa do Grêmio</h5>
                 <p class="text-muted-custom small mb-3">Registre cada entrada e saída. Este painel só anota: o dinheiro continua no caixa ou na conta do Grêmio. Toda saída precisa de um link de comprovante (foto ou Drive).</p>
                 <div class="row g-2 mb-3">
@@ -391,7 +391,7 @@
                 <div id="lista-caixa"></div>
             </div>
 
-            <div id="secao-cultura" data-niveis="cultura,admin" class="card card-custom p-4 mb-4">
+            <div id="secao-cultura" data-niveis="cultura" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Atividades Culturais</h5>
                 <p class="text-muted-custom small mb-3">Publique uma atividade: ela aparece na aba <strong>Eventos</strong> do portal dos alunos, com inscrição. Depois do evento, cole o link das fotos e gere o relatório em PDF.</p>
                 <div class="row g-2 mb-3">
@@ -406,7 +406,7 @@
                 <div id="lista-atividades-cultura"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-racial" data-niveis="racial,admin" class="card card-custom p-4 mb-4">
+            <div id="secao-racial" data-niveis="racial" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Igualdade Racial</h5>
                 <div class="p-3 rounded mb-3" style="background:#121a14;border:1px solid var(--ifce-card-border)"><small class="text-white">📅 <strong>Datas para lembrar:</strong> 21 de março (Dia Internacional para a Eliminação da Discriminação Racial) e 20 de novembro (Dia Nacional de Zumbi e da Consciência Negra).</small></div>
                 <p class="text-muted-custom small mb-3">Publique rodas de conversa, palestras e ações. Elas aparecem na aba <strong>Eventos</strong> do portal, com inscrição.</p>
@@ -426,7 +426,7 @@
                 <div id="lista-pautas-racial"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-tes-orc" data-niveis="tesouraria,admin" class="card card-custom p-4 mb-4">
+            <div id="secao-tes-orc" data-niveis="tesouraria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Orçamento por evento</h5>
                 <p class="text-muted-custom small mb-3">Defina um teto para cada evento ou projeto. Ao lançar uma saída no caixa, escolha o orçamento: a barra mostra quanto já foi gasto e avisa quando passa de 80%.</p>
                 <div class="row g-2 mb-3">
@@ -437,7 +437,7 @@
                 <div id="lista-orcamentos"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-tes-contas" data-niveis="tesouraria,admin" class="card card-custom p-4 mb-4">
+            <div id="secao-tes-contas" data-niveis="tesouraria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">⏰ Contas a pagar</h5>
                 <p class="text-muted-custom small mb-3">Cadastre as contas com vencimento. O painel marca as que vencem em até 7 dias e as atrasadas. Quando pagar, marque como paga.</p>
                 <div class="row g-2 mb-3">
@@ -449,7 +449,7 @@
                 <div id="lista-contas"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-racial-enc" data-niveis="racial,admin" class="card card-custom p-4 mb-4">
+            <div id="secao-racial-enc" data-niveis="racial" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Encaminhamentos à direção</h5>
                 <p class="text-muted-custom small mb-3">Registre o que foi levado à direção: o assunto, a quem foi encaminhado e a data. Marque como concluído quando houver resposta.</p>
                 <div class="row g-2 mb-3">
@@ -462,7 +462,7 @@
                 <div id="lista-encaminhamentos"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-racial-apoio" data-niveis="racial,admin" class="card card-custom p-4 mb-4">
+            <div id="secao-racial-apoio" data-niveis="racial" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Material de apoio</h5>
                 <p class="text-muted-custom small mb-3">Publique textos e vídeos sobre o tema. Eles aparecem na aba <strong>Estudos</strong> do portal, na disciplina "Igualdade Racial".</p>
                 <div class="row g-2 mb-3">
@@ -476,7 +476,7 @@
                 <div id="lista-apoio"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-rel-tes" data-niveis="tesouraria,admin" class="card card-custom p-4 mb-4">
+            <div id="secao-rel-tes" data-niveis="tesouraria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Relatório mensal da Tesouraria</h5>
                 <p class="text-muted-custom small mb-3">Resumo do mês para entregar à presidência: entradas, saídas, saldo, gasto por orçamento e contas do mês.</p>
                 <div class="input-group">
@@ -485,7 +485,7 @@
                 </div>
             </div>
 
-            <div id="secao-rel-cult" data-niveis="cultura,admin" class="card card-custom p-4 mb-4">
+            <div id="secao-rel-cult" data-niveis="cultura" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Relatório mensal da Cultura</h5>
                 <p class="text-muted-custom small mb-3">Resumo do mês: atividades realizadas, inscritos, presenças e atividades sem registro de fotos.</p>
                 <div class="input-group">
@@ -494,7 +494,7 @@
                 </div>
             </div>
 
-            <div id="secao-rel-racial" data-niveis="racial,admin" class="card card-custom p-4 mb-4">
+            <div id="secao-rel-racial" data-niveis="racial" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Relatório mensal da Igualdade Racial</h5>
                 <p class="text-muted-custom small mb-3">Resumo do mês: ações, presenças, encaminhamentos feitos e concluídos e materiais publicados.</p>
                 <div class="input-group">
@@ -1127,7 +1127,7 @@
                 <div id="lista-sugestoes-admin"><p class="text-muted-custom small">Nenhuma sugestão enviada.</p></div>
             </div>
 
-            <div id="secao-auditoria" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
+            <div id="secao-auditoria" data-niveis="ninguem" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">Log de Auditoria</h5>
                 <p class="text-muted-custom small mb-3">Últimas 30 ações administrativas (inclui histórico de punições).</p>
                 <div id="lista-auditoria-admin"><p class="text-muted-custom small">Nenhuma ação registrada.</p></div>
@@ -1188,17 +1188,17 @@
             { id: 'secao-divulgacao', label: 'Calendário de Divulgação', icon: 'bi-calendar2-week', niveisPermitidos: ['marketing'] },
             { id: 'secao-estudos', label: 'Estudos e Provas', icon: 'bi-journal-bookmark', niveisPermitidos: ['admin'] },
             { id: 'secao-videos', label: 'Vídeos de Aula Prática', icon: 'bi-camera-video', niveisPermitidos: ['marketing'] },
-            { id: 'secao-caixa', label: 'Caixa do Grêmio', icon: 'bi-cash-coin', niveisPermitidos: ['tesouraria', 'admin'] },
-            { id: 'secao-cultura', label: 'Atividades Culturais', icon: 'bi-palette', niveisPermitidos: ['cultura', 'admin'] },
-            { id: 'secao-racial', label: 'Igualdade Racial', icon: 'bi-balance-scale', niveisPermitidos: ['racial', 'admin'] },
-            { id: 'secao-tes-orc', label: 'Orçamento por evento', icon: 'bi-wallet2', niveisPermitidos: ['tesouraria', 'admin'] },
-            { id: 'secao-tes-contas', label: 'Contas a pagar', icon: 'bi-receipt', niveisPermitidos: ['tesouraria', 'admin'] },
-            { id: 'secao-racial-enc', label: 'Encaminhamentos', icon: 'bi-send', niveisPermitidos: ['racial', 'admin'] },
-            { id: 'secao-racial-apoio', label: 'Material de apoio', icon: 'bi-journal-text', niveisPermitidos: ['racial', 'admin'] },
+            { id: 'secao-caixa', label: 'Caixa do Grêmio', icon: 'bi-cash-coin', niveisPermitidos: ['tesouraria'] },
+            { id: 'secao-cultura', label: 'Atividades Culturais', icon: 'bi-palette', niveisPermitidos: ['cultura'] },
+            { id: 'secao-racial', label: 'Igualdade Racial', icon: 'bi-balance-scale', niveisPermitidos: ['racial'] },
+            { id: 'secao-tes-orc', label: 'Orçamento por evento', icon: 'bi-wallet2', niveisPermitidos: ['tesouraria'] },
+            { id: 'secao-tes-contas', label: 'Contas a pagar', icon: 'bi-receipt', niveisPermitidos: ['tesouraria'] },
+            { id: 'secao-racial-enc', label: 'Encaminhamentos', icon: 'bi-send', niveisPermitidos: ['racial'] },
+            { id: 'secao-racial-apoio', label: 'Material de apoio', icon: 'bi-journal-text', niveisPermitidos: ['racial'] },
             { id: 'secao-ti-monitor', label: 'TI: Monitoramento', icon: 'bi-activity', niveisPermitidos: ['admin'], soRaiz: true },
-            { id: 'secao-rel-tes', label: 'Relatório da Tesouraria', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['tesouraria', 'admin'] },
-            { id: 'secao-rel-cult', label: 'Relatório da Cultura', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['cultura', 'admin'] },
-            { id: 'secao-rel-racial', label: 'Relatório Racial', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['racial', 'admin'] },
+            { id: 'secao-rel-tes', label: 'Relatório da Tesouraria', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['tesouraria'] },
+            { id: 'secao-rel-cult', label: 'Relatório da Cultura', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['cultura'] },
+            { id: 'secao-rel-racial', label: 'Relatório Racial', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['racial'] },
             { id: 'secao-artes', label: 'Banco de Artes', icon: 'bi-images', niveisPermitidos: ['marketing'] },
             { id: 'secao-mural', label: 'Mural de Avisos & Vídeos', icon: 'bi-megaphone', niveisPermitidos: ['admin', 'marketing'] },
             { id: 'secao-enquetes-criar', label: 'Criar Enquete', icon: 'bi-bar-chart-plus', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial'] },
@@ -1212,7 +1212,7 @@
             { id: 'secao-pautas', label: 'Pautas e Reivindicações', icon: 'bi-signpost-split', niveisPermitidos: ['admin'] },
             { id: 'secao-punicoes', label: 'Aplicar Punições', icon: 'bi-shield-exclamation', niveisPermitidos: ['admin'] },
             { id: 'secao-diretoria', label: 'Diretoria e Cargos', icon: 'bi-person-badge', niveisPermitidos: ['admin'] },
-            { id: 'secao-auditoria', label: 'Log de Auditoria', icon: 'bi-journal-text', niveisPermitidos: ['admin'] },
+            { id: 'secao-auditoria', label: 'Log de Auditoria', icon: 'bi-journal-text', niveisPermitidos: [] },
             { id: 'secao-ajuda', label: 'Preciso de ajuda', icon: 'bi-life-preserver', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial'] },
             { id: 'secao-guia', label: 'Guia rápido', icon: 'bi-book', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial'] },
             { id: 'secao-novidades', label: 'Novidades do sistema', icon: 'bi-stars', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial'] },
@@ -3274,7 +3274,7 @@
             document.getElementById('cx-alerta').textContent = alertas.join(' • ');
             const c = document.getElementById('lista-caixa');
             if (!doMes.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum lançamento neste mês.</p>'; return; }
-            const podeExcluir = nivelDoPainel === 'admin';
+            const podeExcluir = true;
             c.innerHTML = '<div class="list-group">' + doMes.map(x => `
                 <div class="list-group-item d-flex justify-content-between align-items-center gap-2">
                     <div>
