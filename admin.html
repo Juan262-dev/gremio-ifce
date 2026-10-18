@@ -528,7 +528,7 @@
                 <button onclick="publicarAviso()" class="btn btn-ifce">Publicar no Mural</button>
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <h6 class="fw-bold mb-3 text-white">Avisos Publicados</h6>
-                <div id="lista-avisos-admin"><p class="text-muted-custom small">Nenhum aviso publicado.</p></div>
+                <div id="lista-avisos-admin"><p class="text-muted-custom small">Nenhum aviso publicado ainda. Os avisos aparecem aqui e no mural dos alunos.</p></div>
             </div>
 
             <div id="secao-enquetes-criar" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
@@ -1024,7 +1024,7 @@
                     <button data-acao="exportarPautas" class="btn btn-outline-light btn-sm" style="border-radius: 8px;">⬇️ Exportar CSV</button>
                 </div>
                 <p class="text-muted-custom small mb-3">Ordenadas pelo número de apoios. Defina o andamento de cada pauta.</p>
-                <div id="lista-pautas-admin"><p class="text-muted-custom small">Nenhuma pauta cadastrada.</p></div>
+                <div id="lista-pautas-admin"><p class="text-muted-custom small">Nenhuma pauta ainda. Quando os alunos criarem reivindicações, elas aparecem aqui, ordenadas pelos apoios.</p></div>
             </div>
 
             <div id="secao-materiais" data-niveis="membro" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
@@ -1042,7 +1042,7 @@
                 <button onclick="cadastrarMaterial()" class="btn btn-ifce">Cadastrar Material</button>
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <h6 class="fw-bold mb-3 text-white">Materiais Cadastrados</h6>
-                <div id="lista-materiais-admin"><p class="text-muted-custom small">Nenhum material cadastrado.</p></div>
+                <div id="lista-materiais-admin"><p class="text-muted-custom small">Nenhum material cadastrado. Cadastre bolas, jogos e equipamentos para os alunos pedirem emprestado.</p></div>
             </div>
 
             <div id="secao-eventos" data-niveis="admin,membro" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
@@ -1064,7 +1064,7 @@
                 <button onclick="criarEvento()" class="btn btn-ifce">Publicar Evento</button>
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <h6 class="fw-bold mb-3 text-white">Eventos Programados</h6>
-                <div id="lista-eventos-admin"><p class="text-muted-custom small">Nenhum evento cadastrado.</p></div>
+                <div id="lista-eventos-admin"><p class="text-muted-custom small">Nenhum evento ainda. Crie um evento ou torneio e os alunos poderão se inscrever pelo portal.</p></div>
             </div>
 
             <div id="secao-jogos" data-niveis="membro" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
@@ -1078,12 +1078,12 @@
                 <button onclick="criarJogo()" class="btn btn-ifce">Adicionar Jogo</button>
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <div id="classificacao-admin"></div>
-                <div id="lista-jogos-admin"><p class="text-muted-custom small">Nenhum jogo cadastrado.</p></div>
+                <div id="lista-jogos-admin"><p class="text-muted-custom small">Nenhum jogo ainda. Adicione os jogos do torneio para acompanhar o placar e a classificação.</p></div>
             </div>
 
             <div id="secao-enquetes-lista" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Enquetes Ativas e Encerradas</h5>
-                <div id="lista-enquetes-admin"><p class="text-muted-custom small">Nenhuma enquete cadastrada.</p></div>
+                <div id="lista-enquetes-admin"><p class="text-muted-custom small">Nenhuma enquete ainda. Crie uma pergunta com pelo menos duas opções para os alunos votarem.</p></div>
             </div>
 
             <div id="secao-punicoes" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral" style="border-color: #dc3545;">
@@ -1112,25 +1112,25 @@
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <h6 class="fw-bold mb-3 text-white">Membros Punidos Ativos</h6>
                 <input type="search" id="busca-punidos" class="form-control mb-3" placeholder="🔍 Buscar por e-mail, punição ou motivo..." oninput="renderPunidos()">
-                <div id="lista-membros-punidos-admin"><p class="text-muted-custom small">Nenhum membro punido.</p></div>
+                <div id="lista-membros-punidos-admin"><p class="text-muted-custom small">Nenhum membro punido no momento.</p></div>
             </div>
 
             <div id="secao-alunos-lista" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">Alunos Cadastrados</h5>
                 <input type="search" id="busca-alunos" class="form-control mb-3" placeholder="🔍 Buscar por nome ou e-mail..." oninput="renderAlunos()">
-                <div id="lista-alunos-admin"><p class="text-muted-custom small">Nenhum aluno cadastrado.</p></div>
+                <div id="lista-alunos-admin"><p class="text-muted-custom small">Nenhum aluno cadastrado ainda. Use "Cadastrar Aluno" ou o cadastro em massa.</p></div>
             </div>
 
             <div id="secao-sugestoes" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">Sugestões dos Alunos</h5>
                 <input type="search" id="busca-sugestoes" class="form-control mb-3" placeholder="🔍 Buscar nas sugestões..." oninput="renderSugestoes()">
-                <div id="lista-sugestoes-admin"><p class="text-muted-custom small">Nenhuma sugestão enviada.</p></div>
+                <div id="lista-sugestoes-admin"><p class="text-muted-custom small">Nenhuma sugestão por enquanto. As sugestões dos alunos chegam aqui.</p></div>
             </div>
 
             <div id="secao-auditoria" data-niveis="ninguem" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">Log de Auditoria</h5>
                 <p class="text-muted-custom small mb-3">Últimas 30 ações administrativas (inclui histórico de punições).</p>
-                <div id="lista-auditoria-admin"><p class="text-muted-custom small">Nenhuma ação registrada.</p></div>
+                <div id="lista-auditoria-admin"><p class="text-muted-custom small">Nenhuma ação registrada ainda.</p></div>
             </div>
 
         </div>
@@ -1257,7 +1257,12 @@
             new bootstrap.Toast(el, { delay: 3500 }).show();
         }
         const mostrarAlertaSucesso = msg => toast(msg, 'success');
-        const erroDB = (e, onde) => { console.error(onde, e); toast('Operação não permitida ou falhou (' + (e && e.code ? e.code : 'erro') + (onde ? ' em ' + onde : '') + '). Tente novamente.', 'danger'); };
+        const erroDB = (e, onde) => {
+            console.error(onde, e);
+            const cod = e && e.code ? e.code : '';
+            const extra = (emailLogado === ROOT_EMAIL && cod) ? ` (${cod}${onde ? ' em ' + onde : ''})` : '';
+            toast('Não foi possível concluir agora. Tente de novo.' + extra, 'danger');
+        };
 
         function confirmar(msg) {
             return new Promise(resolve => {
@@ -1294,7 +1299,7 @@
                 if (painelCongelado) return;
                 let onde = '';
                 try { onde = query._delegate._query.path.canonicalString(); } catch (_) {}
-                toast('Sem permissão ou erro ao carregar dados (' + (err && err.code ? err.code : 'erro') + (onde ? ' em ' + onde : '') + ').', 'danger');
+                toast('Não foi possível carregar estes dados agora.' + (emailLogado === ROOT_EMAIL && err && err.code ? ' (' + err.code + ')' : ''), 'danger');
             }));
         }
         function limparListeners() {
@@ -1534,7 +1539,7 @@
             doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 20, 50);
             doc.line(20, 55, 190, 55);
             doc.text(doc.splitTextToSize(texto, 170), 20, 65);
-            doc.save(`relatorio_${nome.toLowerCase().replace(/\s+/g, '_')}.pdf`);
+            pdfFinalizar(doc, `relatorio_${nome.toLowerCase().replace(/\s+/g, '_')}.pdf`);
         }
 
         function enviarWhatsAppRelatorio() {
@@ -1593,7 +1598,7 @@
         function carregarEnquetesAdmin() {
             ouvir(db.collection('enquetes').orderBy('criadoEm', 'desc'), snapshot => {
                 const container = document.getElementById('lista-enquetes-admin');
-                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma enquete cadastrada.</p>'; return; }
+                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma enquete ainda. Crie uma pergunta com pelo menos duas opções para os alunos votarem.</p>'; return; }
                 let html = '';
                 snapshot.forEach(doc => {
                     const e = doc.data();
@@ -1641,7 +1646,7 @@
         function carregarAvisosAdmin() {
             ouvir(db.collection('mural').orderBy('criadoEm', 'desc'), snapshot => {
                 const container = document.getElementById('lista-avisos-admin');
-                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum aviso publicado.</p>'; return; }
+                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum aviso publicado ainda. Os avisos aparecem aqui e no mural dos alunos.</p>'; return; }
                 let html = '<div class="list-group">';
                 snapshot.forEach(doc => {
                     const a = doc.data();
@@ -1703,7 +1708,7 @@
             const container = document.getElementById('lista-alunos-admin');
             const termo = document.getElementById('busca-alunos').value.trim().toLowerCase();
             const lista = cacheAlunos.filter(a => !termo || (a.nome || '').toLowerCase().includes(termo) || (a.email || '').toLowerCase().includes(termo));
-            if (!lista.length) { container.innerHTML = `<p class="text-muted-custom small mb-0">${termo ? 'Nenhum resultado.' : 'Nenhum aluno cadastrado.'}</p>`; return; }
+            if (!lista.length) { container.innerHTML = `<p class="text-muted-custom small mb-0">${termo ? 'Nenhum resultado.' : 'Nenhum aluno cadastrado ainda. Use "Cadastrar Aluno" ou o cadastro em massa.'}</p>`; return; }
             let html = `<p class="small text-muted-custom">${lista.length} aluno(s)</p><ul class="list-group">`;
             lista.forEach(a => {
                 html += `
@@ -1736,7 +1741,7 @@
             const container = document.getElementById('lista-sugestoes-admin');
             const termo = document.getElementById('busca-sugestoes').value.trim().toLowerCase();
             const lista = cacheSugestoes.filter(s => !termo || `${s.nome} ${s.email} ${s.texto}`.toLowerCase().includes(termo));
-            if (!lista.length) { container.innerHTML = `<p class="text-muted-custom small mb-0">${termo ? 'Nenhum resultado.' : 'Nenhuma sugestão enviada.'}</p>`; return; }
+            if (!lista.length) { container.innerHTML = `<p class="text-muted-custom small mb-0">${termo ? 'Nenhum resultado.' : 'Nenhuma sugestão por enquanto. As sugestões dos alunos chegam aqui.'}</p>`; return; }
             let html = '<div class="list-group">';
             lista.forEach(s => {
                 const dh = fmtData(s.criadoEm);
@@ -1769,7 +1774,7 @@
                 cachePautas = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
                     .sort((a, b) => (b.apoios ? b.apoios.length : 0) - (a.apoios ? a.apoios.length : 0));
                 const container = document.getElementById('lista-pautas-admin');
-                if (!cachePautas.length) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma pauta cadastrada.</p>'; return; }
+                if (!cachePautas.length) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma pauta ainda. Quando os alunos criarem reivindicações, elas aparecem aqui, ordenadas pelos apoios.</p>'; return; }
                 let html = '<div class="list-group">';
                 cachePautas.forEach(p => {
                     const n = p.apoios ? p.apoios.length : 0;
@@ -1830,7 +1835,7 @@
             // Ignora punições já vencidas
             const lista = cachePunidos.filter(p => p.expiraEm && p.expiraEm.toMillis() > agora)
                 .filter(p => !termo || `${p.email} ${p.punicao} ${p.motivo}`.toLowerCase().includes(termo));
-            if (!lista.length) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum membro punido.</p>'; return; }
+            if (!lista.length) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum membro punido no momento.</p>'; return; }
             let html = '<ul class="list-group">';
             lista.forEach(p => {
                 html += `
@@ -1871,7 +1876,7 @@
         function carregarMateriaisAdmin() {
             ouvir(db.collection('materiais').orderBy('criadoEm', 'desc'), snapshot => {
                 const container = document.getElementById('lista-materiais-admin');
-                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum material cadastrado.</p>'; return; }
+                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum material cadastrado. Cadastre bolas, jogos e equipamentos para os alunos pedirem emprestado.</p>'; return; }
                 const hoje = hojeISO();
                 const prazoPadrao = new Date(Date.now() + 2 * 864e5 - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
                 container.innerHTML = '<ul class="list-group">' + snapshot.docs.map(doc => {
@@ -1919,7 +1924,7 @@
         function carregarJogosAdmin() {
             ouvir(db.collection('jogos').orderBy('criadoEm', 'desc'), snap => {
                 const c = document.getElementById('lista-jogos-admin');
-                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum jogo cadastrado.</p>'; return; }
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum jogo ainda. Adicione os jogos do torneio para acompanhar o placar e a classificação.</p>'; return; }
                 c.innerHTML = '<div class="list-group">' + snap.docs.map(d => {
                     const j = d.data(), id = esc(d.id);
                     return `
@@ -2029,7 +2034,7 @@
                 const c = document.getElementById('lista-minhas-tarefas');
                 const docs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
                     .sort((a, b) => (a.status === b.status ? 0 : a.status === 'Pendente' ? -1 : 1) || (a.prazo || '9999').localeCompare(b.prazo || '9999'));
-                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma tarefa para você. 🎉</p>'; return; }
+                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma tarefa para você no momento.</p>'; return; }
                 const hoje = hojeISO();
                 c.innerHTML = '<div class="list-group">' + docs.map(t => {
                     const feita = t.status === 'Concluída', atras = !feita && t.prazo && t.prazo < hoje;
@@ -2057,7 +2062,7 @@
             });
             ouvir(db.collection('tarefas').orderBy('criadoEm', 'desc').limit(100), snap => {
                 const c = document.getElementById('lista-tarefas-admin');
-                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma tarefa atribuída.</p>'; return; }
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma tarefa atribuída ainda. Use "Atribuir Tarefas" para distribuir uma tarefa entre os diretores.</p>'; return; }
                 const hoje = hojeISO();
                 const docs = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.status === b.status ? 0 : a.status === 'Pendente' ? -1 : 1));
                 c.innerHTML = '<div class="list-group">' + docs.map(t => {
@@ -2112,7 +2117,7 @@
             ouvir(db.collection('atas').orderBy('criadoEm', 'desc').limit(50), snap => {
                 const c = document.getElementById('lista-atas-admin');
                 cacheAtas = {};
-                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma ata registrada.</p>'; return; }
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma ata registrada ainda. Registre a reunião com presentes, pauta e decisões.</p>'; return; }
                 c.innerHTML = '<div class="list-group">' + snap.docs.map(d => {
                     const a = d.data(); cacheAtas[d.id] = a;
                     const bloco = (t, v) => v ? `<div class="mb-2"><strong class="small" style="color: var(--ifce-accent-green);">${t}</strong><div class="small text-white" style="white-space: pre-wrap;">${esc(v)}</div></div>` : '';
@@ -2141,7 +2146,7 @@
                 if (!v) return; y += 3; doc.setFont('Helvetica', 'bold'); linha(t); doc.setFont('Helvetica', 'normal'); linha(v);
             });
             y += 6; linha('Registrada por: ' + (a.criadaPor || '-'));
-            doc.save(`ata_${(a.data || 'sem-data')}.pdf`);
+            pdfFinalizar(doc, `ata_${(a.data || 'sem-data')}.pdf`);
         }
 
         async function gerarRelatorioMensal() {
@@ -2186,7 +2191,7 @@
                 linha(`Concluídas no mês: ${ta.filter(x => noMes(x.concluidaEm)).length} | Pendentes agora: ${ta.filter(x => x.status === 'Pendente').length}`);
                 titulo('Ações registradas');
                 Object.keys(porAcao).length ? Object.entries(porAcao).sort((a, b) => b[1] - a[1]).forEach(([k, v]) => linha(`- ${k}: ${v}`)) : linha('Nenhuma ação.');
-                doc.save(`relatorio_gremio_${mes}.pdf`);
+                pdfFinalizar(doc, `relatorio_gremio_${mes}.pdf`);
                 registrarAcao('Relatório mensal gerado', mes);
             } catch (e) { erroDB(e, 'relatorioMensal'); }
         }
@@ -2408,7 +2413,7 @@
                 const c = document.getElementById('lista-chamados-ti');
                 const docs = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (a.status === 'Resolvido') - (b.status === 'Resolvido'));
                 document.getElementById('ti-chamados-qtd').textContent = docs.filter(x => x.status !== 'Resolvido').length + ' em aberto';
-                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum pedido. 🎉</p>'; return; }
+                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum pedido de ajuda no momento.</p>'; return; }
                 c.innerHTML = '<div class="list-group">' + docs.map(x => `
                     <div class="list-group-item">
                         <div class="d-flex justify-content-between align-items-start">
@@ -2624,7 +2629,7 @@
                 const cont = {};
                 snap.docs.forEach(d => { const k = String(d.data().msg || '').slice(0, 100); cont[k] = cont[k] || { n: 0, pessoas: new Set() }; cont[k].n++; cont[k].pessoas.add(d.data().email); });
                 const lista = Object.entries(cont).sort((a, b) => b[1].n - a[1].n);
-                out.innerHTML = lista.length ? '<ul class="list-group">' + lista.map(([k, v]) => `<li class="list-group-item small"><span class="badge bg-warning text-dark me-1">${v.n}×</span> <span class="text-warning">${esc(k)}</span><br><small class="text-muted-custom">${v.pessoas.size} pessoa(s)</small></li>`).join('') + '</ul>' : '<p class="text-success mb-0">Nenhum erro registrado. 🎉</p>';
+                out.innerHTML = lista.length ? '<ul class="list-group">' + lista.map(([k, v]) => `<li class="list-group-item small"><span class="badge bg-warning text-dark me-1">${v.n}×</span> <span class="text-warning">${esc(k)}</span><br><small class="text-muted-custom">${v.pessoas.size} pessoa(s)</small></li>`).join('') + '</ul>' : '<p class="text-success mb-0">Nenhum erro registrado no portal.</p>';
             } catch (e) { erroDB(e, 'resumoErros'); }
         }
 
@@ -2983,7 +2988,7 @@
                 linha(`Enquetes: ${en.length} (votos: ${en.reduce((t, e) => t + (e.votosAlunos || []).length, 0)}) | Jogos registrados: ${jo.length}`);
                 titulo('Organização interna');
                 linha(`Tarefas: ${ta.length} (concluídas: ${ta.filter(t => t.status === 'Concluída').length}) | Atas: ${at.length} | Vídeos: ${vi.length}`);
-                doc.save(`balanco_gremio_${hojeISO()}.pdf`);
+                pdfFinalizar(doc, `balanco_gremio_${hojeISO()}.pdf`);
                 registrarAcao('Balanço da gestão gerado', '');
             } catch (e) { erroDB(e, 'balanco'); }
         }
@@ -3033,7 +3038,7 @@
                 const lista = (doc.exists && doc.data().novidades) || [];
                 const c = document.getElementById('lista-novidades');
                 c.innerHTML = lista.length ? '<ul class="list-unstyled mb-0">' + lista.slice(0, 6).map(n => `<li class="mb-2 small text-white">🆕 ${esc(n.texto)} <span class="text-muted-custom" style="font-size: 11px;">(${esc(new Date(n.em).toLocaleDateString('pt-BR'))})</span></li>`).join('') + '</ul>'
-                    : '<p class="text-muted-custom small mb-0">Nenhuma novidade por enquanto.</p>';
+                    : '<p class="text-muted-custom small mb-0">Nenhuma novidade no momento.</p>';
                 const t = document.getElementById('lista-novidades-ti');
                 if (t) t.innerHTML = lista.map((n, i) => `<div class="d-flex justify-content-between align-items-center mb-1"><span class="text-white">${esc(n.texto)}</span><button data-acao="excluirNovidade" data-id="${i}" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Excluir</button></div>`).join('');
             });
@@ -3202,6 +3207,22 @@
             db.collection('ti_privado').doc('checklist').set({ feitos: { [c.dataset.chk]: c.checked }, atualizadoEm: TS() }, { merge: true }).catch(err => erroDB(err, 'checklist'));
         });
 
+        /* ================= PDF: RODAPÉ PADRÃO ================= */
+        function pdfFinalizar(doc, arquivo) {
+            const total = doc.getNumberOfPages();
+            const hoje = new Date().toLocaleDateString('pt-BR');
+            for (let i = 1; i <= total; i++) {
+                doc.setPage(i);
+                doc.setFont('Helvetica', 'normal');
+                doc.setFontSize(9);
+                doc.setTextColor(110);
+                doc.text(`Grêmio Estudantil IFCE Crateús · gerado em ${hoje}`, 20, 290);
+                doc.text(`Página ${i} de ${total}`, 190, 290, { align: 'right' });
+                doc.setTextColor(0);
+            }
+            doc.save(arquivo);
+        }
+
         /* ================= TESOURARIA, CULTURA E IGUALDADE RACIAL ================= */
 
         const moeda = v => (Number(v) || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }).replace(/\u00a0/g, ' ');
@@ -3273,7 +3294,7 @@
             if (saldoMinimo !== null && soma(cacheCaixa, 'Entrada') - soma(cacheCaixa, 'Saída') < saldoMinimo) alertas.push(`🔴 Saldo abaixo do mínimo (${moeda(saldoMinimo)})`);
             document.getElementById('cx-alerta').textContent = alertas.join(' • ');
             const c = document.getElementById('lista-caixa');
-            if (!doMes.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum lançamento neste mês.</p>'; return; }
+            if (!doMes.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum lançamento neste mês. Use o formulário acima para registrar uma entrada ou saída.</p>'; return; }
             const podeExcluir = true;
             c.innerHTML = '<div class="list-group">' + doMes.map(x => `
                 <div class="list-group-item d-flex justify-content-between align-items-center gap-2">
@@ -3305,7 +3326,7 @@
             y += 8;
             linha('Responsável pelo caixa: ' + document.getElementById('user-name-display').textContent);
             linha('Assinatura: ______________________________');
-            doc.save(`prestacao_contas_${mes}.pdf`);
+            pdfFinalizar(doc, `prestacao_contas_${mes}.pdf`);
             registrarAcao('Prestação de contas gerada', mes);
         }
         function baixarCaixaCSV() {
@@ -3339,7 +3360,7 @@
                 const docs = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => x.eixo === EIXO[p])
                     .sort((a, b) => (b.dataISO || '').localeCompare(a.dataISO || ''));
                 cacheAtividades[p] = docs;
-                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma publicada ainda.</p>'; return; }
+                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma atividade publicada ainda. Publique a primeira acima.</p>'; return; }
                 c.innerHTML = '<div class="list-group">' + docs.map(x => {
                     const semRegistro = x.dataISO && x.dataISO < hoje && !x.registroLink;
                     const presentes = (x.presentes || []).length;
@@ -3398,7 +3419,7 @@
             y += 3; linha(x.descricao || '(sem descrição)');
             if (x.registroLink) { y += 3; linha('Registros (fotos e materiais): ' + x.registroLink); }
             y += 6; linha('Responsável: ' + (x.criadoPor || '-'));
-            doc.save(`relatorio_${(x.eixo || 'atividade').toLowerCase().replace(/\s+/g, '_')}_${x.dataISO || 'sem-data'}.pdf`);
+            pdfFinalizar(doc, `relatorio_${(x.eixo || 'atividade').toLowerCase().replace(/\s+/g, '_')}_${x.dataISO || 'sem-data'}.pdf`);
             registrarAcao('Relatório de atividade gerado', x.titulo);
         }
 
@@ -3448,7 +3469,7 @@
             }
             const c = document.getElementById('lista-orcamentos');
             if (!c) return;
-            if (!cacheOrc.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum orçamento criado ainda.</p>'; return; }
+            if (!cacheOrc.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum orçamento ainda. Crie um teto para o evento e ele aparece aqui com o quanto já foi gasto.</p>'; return; }
             c.innerHTML = '<div class="list-group">' + cacheOrc.map(o => {
                 const gasto = cacheCaixa.filter(x => x.tipo === 'Saída' && x.orcamento === o.nome).reduce((s, x) => s + (Number(x.valor) || 0), 0);
                 const pct = o.teto > 0 ? Math.min(100, Math.round(gasto / o.teto * 100)) : 0;
@@ -3487,7 +3508,7 @@
         function renderContas() {
             const c = document.getElementById('lista-contas');
             if (!c) return;
-            if (!cacheContas.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma conta cadastrada.</p>'; return; }
+            if (!cacheContas.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma conta cadastrada. Cadastre as contas com vencimento para receber o aviso antes de vencer.</p>'; return; }
             const hoje = hojeISO();
             const em7 = new Date(Date.now() + 7 * 864e5 - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
             c.innerHTML = '<div class="list-group">' + cacheContas.map(k => {
@@ -3524,7 +3545,7 @@
             ouvir(db.collection('encaminhamentos').orderBy('criadoEm', 'desc').limit(100), snap => {
                 cacheEnc = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 const c = document.getElementById('lista-encaminhamentos');
-                if (!cacheEnc.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum encaminhamento registrado.</p>'; return; }
+                if (!cacheEnc.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum encaminhamento ainda. Registre aqui o que foi levado à direção.</p>'; return; }
                 c.innerHTML = '<div class="list-group">' + cacheEnc.map(x => `
                     <div class="list-group-item">
                         <div class="d-flex justify-content-between align-items-start gap-2">
@@ -3562,7 +3583,7 @@
             ouvir(db.collection('estudos').where('criadoPorEmail', '==', emailLogado), snap => {
                 const c = document.getElementById('lista-apoio');
                 const docs = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.criadoEm ? b.criadoEm.toMillis() : 0) - (a.criadoEm ? a.criadoEm.toMillis() : 0));
-                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum material publicado por você ainda.</p>'; return; }
+                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum material publicado ainda. O que você publicar aparece na aba Estudos do portal.</p>'; return; }
                 c.innerHTML = '<div class="list-group">' + docs.map(x => `
                     <div class="list-group-item d-flex justify-content-between align-items-center gap-2">
                         <div><strong class="text-white">${esc(x.titulo)}</strong> <span class="badge bg-secondary">${esc(x.tipo || '')}</span><br>
@@ -3690,7 +3711,7 @@
                     linha(`Publicados no mês: ${mats.length}`);
                     mats.forEach(m => linha(`- ${m.titulo} (${m.tipo || '-'})`));
                 }
-                doc.save(`relatorio_${nivel}_${mes}.pdf`);
+                pdfFinalizar(doc, `relatorio_${nivel}_${mes}.pdf`);
                 registrarAcao('Relatório mensal gerado', `${rotulo} ${mes}`);
             } catch (e) { erroDB(e, 'relatorioCargo'); }
         }
@@ -3778,7 +3799,7 @@
             const out = document.getElementById('ti-erros');
             try {
                 const snap = await db.collection('erros_app').orderBy('em', 'desc').limit(50).get();
-                out.innerHTML = snap.empty ? '<p class="text-success mb-0">Nenhum erro registrado. 🎉</p>'
+                out.innerHTML = snap.empty ? '<p class="text-success mb-0">Nenhum erro registrado no portal.</p>'
                     : '<ul class="list-group">' + snap.docs.map(d => { const x = d.data(); return `<li class="list-group-item small"><span class="text-warning">${esc(x.msg)}</span><br><small class="text-muted-custom" style="font-size: 11px;">${esc(x.email)} • ${esc(fmtData(x.em))}<br>${esc(x.ua)}</small></li>`; }).join('') + '</ul>';
             } catch (e) { erroDB(e, 'errosPortal'); }
         }
@@ -4105,7 +4126,7 @@
             ouvir(db.collection('eventos').orderBy('criadoEm', 'desc'), snapshot => {
                 const container = document.getElementById('lista-eventos-admin');
                 cacheEventos = {};
-                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum evento cadastrado.</p>'; return; }
+                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum evento ainda. Crie um evento ou torneio e os alunos poderão se inscrever pelo portal.</p>'; return; }
                 let html = '<div class="list-group">';
                 snapshot.forEach(doc => {
                     const ev = doc.data();
@@ -4133,7 +4154,7 @@
         function carregarAuditoria() {
             ouvir(db.collection('acoes_admin').orderBy('em', 'desc').limit(30), snapshot => {
                 const container = document.getElementById('lista-auditoria-admin');
-                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma ação registrada.</p>'; return; }
+                if (snapshot.empty) { container.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma ação registrada ainda.</p>'; return; }
                 let html = '<ul class="list-group">';
                 snapshot.forEach(doc => {
                     const a = doc.data();

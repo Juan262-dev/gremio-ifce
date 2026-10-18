@@ -207,6 +207,8 @@ body{background-color:#f4f6f9}
 
 <nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
+<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.17-d</div>
+
 <div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100005;width:100%;max-width:420px;margin-bottom:72px"></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -385,7 +387,7 @@ function carregarAvisos() {
     const todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     novidades.avisos = todos; renderNotificacoes();
     const c = document.getElementById('lista-avisos-aluno');
-    if (!todos.length) { c.innerHTML = '<p class="text-muted small mb-0">Nenhum aviso no momento.</p>'; return; }
+    if (!todos.length) { c.innerHTML = '<p class="text-muted small mb-0">Nenhum aviso por enquanto. Quando o grêmio publicar um recado, ele aparece aqui.</p>'; return; }
     const ordenados = [...todos.filter(a => a.fixado), ...todos.filter(a => !a.fixado)];
     c.innerHTML = '<div class="list-group">' + ordenados.map(a => `
       <div class="list-group-item" ${a.fixado ? 'style="border-left:4px solid #ffc107"' : ''}>
@@ -398,7 +400,7 @@ function carregarAvisos() {
 
 /* ---------- Enquetes ---------- */
 function carregarEnquetes() {
-  lista('lista-enquetes-aluno', db.collection('enquetes').orderBy('criadoEm', 'desc'), 'Nenhuma enquete no momento.', (e, id) => {
+  lista('lista-enquetes-aluno', db.collection('enquetes').orderBy('criadoEm', 'desc'), 'Nenhuma enquete por enquanto. Quando houver uma votação, ela aparece aqui.', (e, id) => {
     const jaVotou = (e.votosAlunos || []).some(v => (typeof v === 'string' ? v : v && v.email) === usuarioAtual.email);
     const msg = !e.ativa ? '<p class="text-muted small mb-2">Esta enquete já foi encerrada.</p>'
       : jaVotou ? '<div class="alert alert-info py-2 mb-2 small fw-bold text-center">✅ Você já votou nesta enquete!</div>'
@@ -459,7 +461,7 @@ function criarReivindicacao() {
   }).catch(() => aviso("Erro ao publicar reivindicação.", 'danger'));
 }
 function carregarReivindicacoes() {
-  lista('lista-reivindicacoes-aluno', db.collection('reivindicacoes').orderBy('criadoEm', 'desc'), 'Nenhuma reivindicação no momento.', (p, id) => {
+  lista('lista-reivindicacoes-aluno', db.collection('reivindicacoes').orderBy('criadoEm', 'desc'), 'Nenhuma reivindicação por enquanto. Seja o primeiro a criar uma acima.', (p, id) => {
     const apoios = p.apoios || [];
     const ja = apoios.includes(usuarioAtual.email);
     return `
@@ -488,7 +490,7 @@ function apoiarPauta(id) {
 const hojeISO = () => new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
 const dataBR = iso => (iso ? iso.split('-').reverse().join('/') : '');
 function carregarMateriais() {
-  lista('lista-materiais-aluno', db.collection('materiais').orderBy('criadoEm', 'desc'), 'Nenhum material cadastrado para empréstimo.', (m, id) => {
+  lista('lista-materiais-aluno', db.collection('materiais').orderBy('criadoEm', 'desc'), 'Nenhum material disponível para empréstimo no momento.', (m, id) => {
     const meu = (m.emprestadoPara || '').includes(usuarioAtual.email);
     const hoje = hojeISO();
     let acao;
@@ -522,7 +524,7 @@ function carregarEventos() {
     const todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     novidades.eventos = todos; renderNotificacoes();
     const c = document.getElementById('lista-eventos-aluno');
-    if (!todos.length) { c.innerHTML = '<p class="text-muted small mb-0">Nenhum evento programado no momento.</p>'; return; }
+    if (!todos.length) { c.innerHTML = '<p class="text-muted small mb-0">Nenhum evento programado por enquanto. Eles aparecem aqui quando forem publicados.</p>'; return; }
     const hoje = hojeISO();
     const proximos = todos.filter(e => e.dataISO && e.dataISO >= hoje).sort((a, b) => a.dataISO.localeCompare(b.dataISO));
     const semData = todos.filter(e => !e.dataISO);
@@ -606,7 +608,7 @@ function playerHTML(url) {
   return `<div style="position:relative;padding-top:56.25%;border-radius:8px;overflow:hidden;background:#000"><iframe src="${e.src}" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe></div>`;
 }
 function carregarVideos() {
-  lista('lista-videos-aluno', db.collection('videos').orderBy('criadoEm', 'desc'), 'Nenhum vídeo publicado ainda.', v => `
+  lista('lista-videos-aluno', db.collection('videos').orderBy('criadoEm', 'desc'), 'Nenhum vídeo publicado por enquanto. As aulas práticas aparecem aqui.', v => `
     <div class="list-group-item">
       <h6 class="fw-bold text-success mb-1">${esc(v.titulo)}</h6>
       ${v.descricao ? `<p class="mb-2 small text-dark" style="white-space:pre-wrap">${esc(v.descricao)}</p>` : ''}
@@ -634,7 +636,7 @@ function carregarClassificacao() {
   });
 }
 function carregarJogos() {
-  lista('lista-jogos-aluno', db.collection('jogos').orderBy('criadoEm', 'desc'), 'Nenhum jogo cadastrado.', j => {
+  lista('lista-jogos-aluno', db.collection('jogos').orderBy('criadoEm', 'desc'), 'Nenhum jogo cadastrado por enquanto. O placar aparece aqui quando os jogos forem marcados.', j => {
     const cor = { 'Agendado': 'bg-secondary', 'Em andamento': 'bg-warning text-dark', 'Encerrado': 'bg-success' }[j.status] || 'bg-secondary';
     return `
     <div class="list-group-item">
@@ -774,10 +776,8 @@ document.querySelectorAll('.versao-portal').forEach(e => e.textContent = VERSAO_
 // Se o servidor não responder em 10 s, avisa em vez de ficar parado sem dizer nada.
 const comTimeout = (p, ms = 10000) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej({ code: 'timeout' }), ms))]);
 function msgErroEnvio(err) {
-  const cod = err && err.code ? err.code : 'erro';
-  if (cod === 'timeout') return 'O servidor não respondeu. Verifique a internet e tente de novo.';
-  if (cod === 'permission-denied') return 'Sem permissão (permission-denied). Avise o TI: as regras do banco precisam ser atualizadas.';
-  return 'Não foi possível enviar (' + cod + '). Tente de novo.';
+  console.error(err);
+  return 'Não foi possível concluir agora. Tente de novo.';
 }
 function aceitarTermo() {
   const btn = document.getElementById('btn-aceitar-termo'), erro = document.getElementById('termo-erro');
