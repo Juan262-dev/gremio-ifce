@@ -150,6 +150,20 @@ body{background-color:#f4f6f9}
     <div id="lista-estudos-aluno"><p class="text-muted small">Carregando materiais...</p></div>
   </div>
 
+  <div id="sec-tutor" class="card card-custom p-4 mb-4">
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🤖 Tutor de estudo</h5>
+    <p class="text-muted small mb-2">Tire dúvidas de matérias do ensino médio, passo a passo. Ele explica o caminho, mas não faz a lição nem a prova por você.</p>
+    <p class="text-muted mb-3" style="font-size:12px">A IA pode errar: confirme com o professor. Suas perguntas são enviadas ao serviço de IA para gerar a resposta, mas não ficam guardadas no sistema do grêmio.</p>
+    <div id="tutor-breve" class="text-muted small" style="display:none">O tutor ainda não está disponível. Em breve!</div>
+    <div id="tutor-form" style="display:none">
+      <div id="tutor-chat" class="border rounded p-2 mb-2" style="height:260px;overflow-y:auto;background:#fafafa"></div>
+      <div class="input-group">
+        <textarea id="tutor-txt" class="form-control" rows="2" maxlength="800" placeholder="Escreva sua dúvida..." onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();tutorEnviar();}"></textarea>
+        <button id="tutor-btn" onclick="tutorEnviar()" class="btn btn-ifce fw-bold">Enviar</button>
+      </div>
+    </div>
+  </div>
+
   <div id="sec-quiz" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🧠 Quiz de estudo</h5>
     <p class="text-muted small mb-3">Responda 5 questões e veja a explicação na hora. Suas respostas não são guardadas.</p>
@@ -905,6 +919,53 @@ document.getElementById('quiz-box').addEventListener('click', e => {
   else if (b.dataset.quiz === 'prox') proximaQuestao();
   else if (b.dataset.quiz === 'novo') quizIniciar();
 });
+
+/* ---------- tutor de estudo com IA (passa pelo serviço seguro do grêmio) ---------- */
+// Cole aqui a URL do Worker depois de publicar (ver tutor-worker.js). Enquanto estiver vazio, o tutor fica "Em breve".
+const TUTOR_URL = 'https://tutor-gremio.juankevenalvesdasilva.workers.dev';
+let tutorHist = [];
+function tutorAtualizarEstado() {
+  const ok = !!TUTOR_URL;
+  document.getElementById('tutor-form').style.display = ok ? '' : 'none';
+  document.getElementById('tutor-breve').style.display = ok ? 'none' : '';
+}
+function tutorMostrar(msg, quem) {
+  const box = document.getElementById('tutor-chat');
+  const d = document.createElement('div');
+  d.className = quem === 'eu' ? 'text-end mb-2' : 'mb-2';
+  d.innerHTML = `<span class="d-inline-block px-3 py-2 rounded ${quem === 'eu' ? 'bg-success text-white' : 'bg-white border'}" style="max-width:85%;white-space:pre-wrap;text-align:left;font-size:14px">${esc(msg)}</span>`;
+  box.appendChild(d);
+  box.scrollTop = box.scrollHeight;
+}
+async function tutorEnviar() {
+  const campo = document.getElementById('tutor-txt'), btn = document.getElementById('tutor-btn');
+  const txt = campo.value.trim();
+  if (!txt || btn.disabled) return;
+  if (!auth.currentUser) { aviso('Entre no portal para usar o tutor.', 'warning'); return; }
+  tutorHist.push({ role: 'user', content: txt });
+  while (tutorHist.length > 10 || (tutorHist.length && tutorHist[0].role !== 'user')) tutorHist.shift();
+  tutorMostrar(txt, 'eu');
+  campo.value = '';
+  btn.disabled = true; btn.textContent = 'Pensando...';
+  try {
+    const token = await auth.currentUser.getIdToken();
+    const r = await fetch(TUTOR_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+      body: JSON.stringify({ mensagens: tutorHist })
+    });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.erro || 'Não foi possível responder agora. Tente de novo.');
+    tutorHist.push({ role: 'assistant', content: d.resposta });
+    tutorMostrar(d.resposta, 'tutor');
+  } catch (e) {
+    tutorHist.pop();
+    tutorMostrar(e.message || 'Não foi possível responder agora. Tente de novo.', 'tutor');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Enviar';
+  }
+}
+tutorAtualizarEstado();
 
 /* ---------- relatório automático de erros (o TI vê no painel) ---------- */
 let errosEnviados = 0;
