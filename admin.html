@@ -371,6 +371,7 @@
                     <div class="col-md-3"><input type="number" id="cx-valor" class="form-control" min="0.01" step="0.01" placeholder="Valor (R$)"></div>
                     <div class="col-md-3"><input type="date" id="cx-data" class="form-control"></div>
                     <div class="col-md-3"><select id="cx-categoria" class="form-select"><option>Arrecadação</option><option>Evento</option><option>Material</option><option>Compra</option><option>Transporte</option><option>Outros</option></select></div>
+                    <div class="col-12"><select id="cx-orc" class="form-select"><option value="">Sem orçamento</option></select></div>
                     <div class="col-12"><input type="text" id="cx-desc" class="form-control" maxlength="150" placeholder="Descrição (ex.: bolas de futsal para o interclasses)"></div>
                     <div class="col-12"><input type="url" id="cx-comp" class="form-control" placeholder="Link do comprovante https://... (obrigatório em saídas)"></div>
                 </div>
@@ -418,6 +419,56 @@
                 <h6 class="fw-bold text-white">Pautas sobre o tema (só leitura)</h6>
                 <p class="text-muted-custom small mb-2">Pautas dos alunos que falam de racismo, cotas, igualdade ou diversidade. Você acompanha; quem muda o status é a Presidência.</p>
                 <div id="lista-pautas-racial"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-tes-orc" data-niveis="tesouraria,admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">🧾 Orçamento por evento</h5>
+                <p class="text-muted-custom small mb-3">Defina um teto para cada evento ou projeto. Ao lançar uma saída no caixa, escolha o orçamento: a barra mostra quanto já foi gasto e avisa quando passa de 80%.</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-7"><input type="text" id="orc-nome" class="form-control" maxlength="80" placeholder="Ex: Interclasses de Futsal"></div>
+                    <div class="col-md-3"><input type="number" id="orc-teto" class="form-control" min="0.01" step="0.01" placeholder="Teto (R$)"></div>
+                    <div class="col-md-2"><button onclick="criarOrcamento()" class="btn btn-ifce w-100">Criar</button></div>
+                </div>
+                <div id="lista-orcamentos"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-tes-contas" data-niveis="tesouraria,admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">⏰ Contas a pagar</h5>
+                <p class="text-muted-custom small mb-3">Cadastre as contas com vencimento. O painel marca as que vencem em até 7 dias e as atrasadas. Quando pagar, marque como paga.</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-5"><input type="text" id="conta-desc" class="form-control" maxlength="120" placeholder="Ex: Conta de gráfica (cartazes)"></div>
+                    <div class="col-md-3"><input type="number" id="conta-valor" class="form-control" min="0.01" step="0.01" placeholder="Valor (R$)"></div>
+                    <div class="col-md-2"><input type="date" id="conta-venc" class="form-control"></div>
+                    <div class="col-md-2"><button onclick="criarContaPagar()" class="btn btn-ifce w-100">Cadastrar</button></div>
+                </div>
+                <div id="lista-contas"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-racial-enc" data-niveis="racial,admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">📌 Encaminhamentos à direção</h5>
+                <p class="text-muted-custom small mb-3">Registre o que foi levado à direção: o assunto, a quem foi encaminhado e a data. Marque como concluído quando houver resposta.</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6"><input type="text" id="enc-titulo" class="form-control" maxlength="120" placeholder="Assunto (Ex: Pedido de palestra em novembro)"></div>
+                    <div class="col-md-3"><input type="text" id="enc-dest" class="form-control" maxlength="80" placeholder="Para quem"></div>
+                    <div class="col-md-3"><input type="date" id="enc-data" class="form-control"></div>
+                    <div class="col-12"><textarea id="enc-desc" class="form-control" rows="2" maxlength="600" placeholder="Detalhes (opcional)"></textarea></div>
+                </div>
+                <button onclick="criarEncaminhamento()" class="btn btn-ifce mb-3">Registrar encaminhamento</button>
+                <div id="lista-encaminhamentos"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-racial-apoio" data-niveis="racial,admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">📚 Material de apoio</h5>
+                <p class="text-muted-custom small mb-3">Publique textos e vídeos sobre o tema. Eles aparecem na aba <strong>Estudos</strong> do portal, na disciplina "Igualdade Racial".</p>
+                <div class="row g-2 mb-3">
+                    <div class="col-12"><input type="text" id="apoio-titulo" class="form-control" maxlength="120" placeholder="Título (Ex: Texto sobre cotas raciais)"></div>
+                    <div class="col-md-6"><input type="url" id="apoio-link" class="form-control" placeholder="Link https://... (Drive ou YouTube)"></div>
+                    <div class="col-md-6"><select id="apoio-tipo" class="form-select"><option>Link</option><option>Resumo</option><option>Vídeo</option><option>Lista de exercícios</option><option>Prova antiga</option></select></div>
+                    <div class="col-12"><textarea id="apoio-desc" class="form-control" rows="2" maxlength="400" placeholder="Descrição (opcional)"></textarea></div>
+                </div>
+                <button onclick="criarApoio()" class="btn btn-ifce mb-3">Publicar material</button>
+                <h6 class="fw-bold text-white">Publicados por você</h6>
+                <div id="lista-apoio"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
             <div id="secao-artes" data-niveis="marketing" class="card card-custom p-4 mb-4">
@@ -633,6 +684,13 @@
                         Restrinja a apiKey ao domínio do site (Google Cloud > Credenciais). Não guarde senhas em lugar nenhum do painel. Mantenha 2 ou mais donos no Firebase e no GitHub (um professor orientador). Combine com a escola o uso de imagem e dados dos alunos e mantenha o termo de uso atualizado.
                     </div></details>
                 </div>
+            </div>
+
+            <div id="secao-ti-monitor" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">📊 Monitoramento dos cargos novos <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <p class="text-muted-custom small mb-3">Mostra, por pessoa, o último acesso ao painel, as ações no log e os números de cada cargo. Em amarelo ou vermelho, algo pede atenção.</p>
+                <button onclick="monitorarCargosNovos()" class="btn btn-outline-info btn-sm fw-bold">▶ Atualizar</button>
+                <div id="ti-monitor" class="mt-3 small" style="overflow-x: auto;"></div>
             </div>
 
             <div id="secao-ti-analise" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
@@ -1101,6 +1159,11 @@
             { id: 'secao-caixa', label: 'Caixa do Grêmio', icon: 'bi-cash-coin', niveisPermitidos: ['tesouraria', 'admin'] },
             { id: 'secao-cultura', label: 'Atividades Culturais', icon: 'bi-palette', niveisPermitidos: ['cultura', 'admin'] },
             { id: 'secao-racial', label: 'Igualdade Racial', icon: 'bi-balance-scale', niveisPermitidos: ['racial', 'admin'] },
+            { id: 'secao-tes-orc', label: 'Orçamento por evento', icon: 'bi-wallet2', niveisPermitidos: ['tesouraria', 'admin'] },
+            { id: 'secao-tes-contas', label: 'Contas a pagar', icon: 'bi-receipt', niveisPermitidos: ['tesouraria', 'admin'] },
+            { id: 'secao-racial-enc', label: 'Encaminhamentos', icon: 'bi-send', niveisPermitidos: ['racial', 'admin'] },
+            { id: 'secao-racial-apoio', label: 'Material de apoio', icon: 'bi-journal-text', niveisPermitidos: ['racial', 'admin'] },
+            { id: 'secao-ti-monitor', label: 'TI: Monitoramento', icon: 'bi-activity', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-artes', label: 'Banco de Artes', icon: 'bi-images', niveisPermitidos: ['marketing'] },
             { id: 'secao-mural', label: 'Mural de Avisos & Vídeos', icon: 'bi-megaphone', niveisPermitidos: ['admin', 'marketing'] },
             { id: 'secao-enquetes-criar', label: 'Criar Enquete', icon: 'bi-bar-chart-plus', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial'] },
@@ -1309,7 +1372,7 @@
             const ver = id => { const c = document.getElementById(id); return !!c && c.style.display === 'block'; };
             [
                 ['secao-resumo', carregarResumo], ['secao-tarefas', carregarMinhasTarefas], ['secao-tarefas-admin', carregarTarefasAdmin],
-                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-caixa', carregarCaixa], ['secao-cultura', () => carregarAtividades('cultura')], ['secao-racial', () => { carregarAtividades('racial'); carregarPautasRacial(); }], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin],
+                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-caixa', carregarCaixa], ['secao-cultura', () => carregarAtividades('cultura')], ['secao-racial', () => { carregarAtividades('racial'); carregarPautasRacial(); }], ['secao-tes-orc', carregarOrcamentos], ['secao-tes-contas', carregarContas], ['secao-racial-enc', carregarEncaminhamentos], ['secao-racial-apoio', carregarApoio], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin],
                 ['secao-mural', carregarAvisosAdmin], ['secao-enquetes-lista', carregarEnquetesAdmin],
                 ['secao-alunos-lista', carregarAlunos], ['secao-sugestoes', carregarSugestoesAdmin], ['secao-pautas', carregarPautasAdmin],
                 ['secao-punicoes', carregarMembrosPunidosAdmin], ['secao-auditoria', carregarAuditoria], ['secao-diretoria', carregarDiretoria],
@@ -3121,7 +3184,7 @@
             if (tipo === 'Saída' && !/^https:\/\//i.test(comprovante)) { toast('Toda saída precisa de um link de comprovante (https://).', 'warning'); return; }
             if (comprovante && !/^https:\/\//i.test(comprovante)) { toast('O comprovante precisa começar com https://', 'warning'); return; }
             db.collection('caixa').add({
-                tipo, valor: Math.round(valor * 100) / 100, data, categoria, descricao, comprovante: comprovante || '',
+                tipo, valor: Math.round(valor * 100) / 100, data, categoria, descricao, comprovante: comprovante || '', orcamento: document.getElementById('cx-orc').value || '',
                 lancadoPor: emailLogado, criadoEm: TS()
             }).then(() => {
                 toast('Lançamento registrado.');
@@ -3134,7 +3197,7 @@
             if (!mes.value) mes.value = hojeISO().slice(0, 7);
             ouvir(db.collection('caixa').orderBy('data', 'desc').limit(1000), snap => {
                 cacheCaixa = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderCaixa();
+                renderCaixa(); renderOrcamentos();
             });
         }
         function renderCaixa() {
@@ -3211,26 +3274,55 @@
         function carregarAtividades(p) {
             ouvir(db.collection('eventos').where('criadoPorEmail', '==', emailLogado), snap => {
                 const c = document.getElementById(`lista-atividades-${p}`);
+                const hoje = hojeISO();
                 const docs = snap.docs.map(d => ({ id: d.id, ...d.data() })).filter(x => x.eixo === EIXO[p])
                     .sort((a, b) => (b.dataISO || '').localeCompare(a.dataISO || ''));
                 cacheAtividades[p] = docs;
                 if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma publicada ainda.</p>'; return; }
-                c.innerHTML = '<div class="list-group">' + docs.map(x => `
+                c.innerHTML = '<div class="list-group">' + docs.map(x => {
+                    const semRegistro = x.dataISO && x.dataISO < hoje && !x.registroLink;
+                    const presentes = (x.presentes || []).length;
+                    return `
                     <div class="list-group-item">
                         <div class="d-flex justify-content-between align-items-start gap-2">
-                            <div><strong class="text-white">${esc(x.titulo)}</strong><br><small class="text-muted-custom">${esc(x.data || '')} • ${(x.inscritos || []).length} inscrito(s)</small></div>
-                            <div class="d-flex gap-1">
+                            <div>
+                                <strong class="text-white">${esc(x.titulo)}</strong>
+                                ${semRegistro ? ' <span class="badge bg-warning text-dark">sem registro</span>' : ''}<br>
+                                <small class="text-muted-custom">${esc(x.data || '')} • ${(x.inscritos || []).length} inscrito(s) • ${presentes} presente(s)</small>
+                            </div>
+                            <div class="d-flex gap-1 flex-wrap justify-content-end">
+                                <button data-acao="abrirPresenca" data-id="${esc(x.id)}" class="btn btn-outline-info btn-sm py-0" style="font-size: 11px;">✔ Presença</button>
                                 <button data-acao="relatorioAtividade" data-id="${esc(x.id)}" data-p="${p}" class="btn btn-outline-light btn-sm py-0" style="font-size: 11px;">📄 Relatório</button>
                                 <button data-acao="excluirAtividade" data-id="${esc(x.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
                             </div>
                         </div>
+                        <div id="pres-${esc(x.id)}" class="mt-2"></div>
                         <div class="input-group input-group-sm mt-2">
                             <input type="url" class="form-control" data-link="${esc(x.id)}" value="${esc(x.registroLink || '')}" placeholder="Link das fotos e registros (Drive)">
                             <button data-acao="salvarRegistro" data-id="${esc(x.id)}" class="btn btn-outline-success">Salvar link</button>
                         </div>
-                    </div>`).join('') + '</div>';
+                    </div>`;
+                }).join('') + '</div>';
             });
         }
+        function abrirPresenca(id) {
+            const x = Object.values(cacheAtividades).flat().find(a => a.id === id);
+            const box = document.getElementById('pres-' + id);
+            if (!x || !box) return;
+            if (!(x.inscritos || []).length) { box.innerHTML = '<small class="text-muted-custom">Ainda não há inscritos nesta atividade.</small>'; return; }
+            const presentes = new Set(x.presentes || []);
+            box.innerHTML = '<div class="p-2 rounded" style="background: #121a14; border: 1px solid var(--ifce-card-border);">' +
+                '<div class="small text-muted-custom mb-1">Marque quem compareceu:</div>' +
+                x.inscritos.map((e, i) => `<div class="form-check"><input class="form-check-input" type="checkbox" id="pr-${esc(id)}-${i}" data-pres="${esc(id)}" value="${esc(e)}" ${presentes.has(e) ? 'checked' : ''}><label class="form-check-label small" for="pr-${esc(id)}-${i}">${esc(e)}</label></div>`).join('') +
+                `<button data-acao="salvarPresenca" data-id="${esc(id)}" class="btn btn-success btn-sm py-0 mt-2" style="font-size: 11px;">Salvar presença</button></div>`;
+        }
+        function salvarPresenca(id) {
+            const marcados = [...document.querySelectorAll(`[data-pres="${CSS.escape(id)}"]:checked`)].map(c => c.value);
+            db.collection('eventos').doc(id).update({ presentes: marcados })
+                .then(() => { toast(`Presença salva (${marcados.length} presente(s)).`); registrarAcao('Presença registrada', id); })
+                .catch(e => erroDB(e, 'salvarPresenca'));
+        }
+
         function gerarRelatorioAtividade(id) {
             const x = Object.values(cacheAtividades).flat().find(a => a.id === id);
             if (!x) return;
@@ -3263,6 +3355,226 @@
                         <p class="small text-muted-custom mb-0 mt-1">${esc(p.descricao || '')}</p>
                     </div>`).join('') + '</div>';
             });
+        }
+
+        /* ================= FUNÇÕES NOVAS: TESOURARIA, CULTURA, IGUALDADE RACIAL E MONITORAMENTO ================= */
+
+        /* ---- orçamento por evento ---- */
+        let cacheOrc = [];
+        function criarOrcamento() {
+            const nome = document.getElementById('orc-nome').value.trim();
+            const teto = parseFloat(document.getElementById('orc-teto').value);
+            if (!nome || !(teto > 0)) { toast('Informe o nome e um teto maior que zero.', 'warning'); return; }
+            db.collection('orcamentos').add({ nome, teto: Math.round(teto * 100) / 100, criadoPorEmail: emailLogado, criadoEm: TS() })
+                .then(() => {
+                    toast('Orçamento criado.');
+                    registrarAcao('Orçamento criado', `${nome} (${moeda(teto)})`);
+                    document.getElementById('orc-nome').value = ''; document.getElementById('orc-teto').value = '';
+                }).catch(e => erroDB(e, 'criarOrcamento'));
+        }
+        function carregarOrcamentos() {
+            ouvir(db.collection('orcamentos').orderBy('criadoEm', 'desc'), snap => {
+                cacheOrc = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderOrcamentos();
+            });
+        }
+        function renderOrcamentos() {
+            const sel = document.getElementById('cx-orc');
+            const atual = sel ? sel.value : '';
+            if (sel) {
+                sel.innerHTML = '<option value="">Sem orçamento</option>' + cacheOrc.map(o => `<option value="${esc(o.nome)}">${esc(o.nome)}</option>`).join('');
+                if (cacheOrc.some(o => o.nome === atual)) sel.value = atual;
+            }
+            const c = document.getElementById('lista-orcamentos');
+            if (!c) return;
+            if (!cacheOrc.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum orçamento criado ainda.</p>'; return; }
+            c.innerHTML = '<div class="list-group">' + cacheOrc.map(o => {
+                const gasto = cacheCaixa.filter(x => x.tipo === 'Saída' && x.orcamento === o.nome).reduce((s, x) => s + (Number(x.valor) || 0), 0);
+                const pct = o.teto > 0 ? Math.min(100, Math.round(gasto / o.teto * 100)) : 0;
+                const cor = gasto > o.teto ? 'bg-danger' : pct >= 80 ? 'bg-warning' : 'bg-success';
+                return `<div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <strong class="text-white">${esc(o.nome)}</strong>
+                        <button data-acao="excluirOrcamento" data-id="${esc(o.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                    </div>
+                    <small class="text-muted-custom">Gasto ${moeda(gasto)} de ${moeda(o.teto)}${gasto > o.teto ? ' — <span class="text-danger fw-bold">estourado</span>' : ''}</small>
+                    <div class="progress mt-1" style="height: 8px;"><div class="progress-bar ${cor}" style="width: ${pct}%;"></div></div>
+                </div>`;
+            }).join('') + '</div>';
+        }
+
+        /* ---- contas a pagar ---- */
+        let cacheContas = [];
+        function criarContaPagar() {
+            const descricao = document.getElementById('conta-desc').value.trim();
+            const valor = parseFloat(document.getElementById('conta-valor').value);
+            const vencimento = document.getElementById('conta-venc').value;
+            if (!descricao || !(valor > 0) || !vencimento) { toast('Preencha a descrição, o valor e o vencimento.', 'warning'); return; }
+            db.collection('contas').add({ descricao, valor: Math.round(valor * 100) / 100, vencimento, pago: false, criadoPorEmail: emailLogado, criadoEm: TS() })
+                .then(() => {
+                    toast('Conta cadastrada.');
+                    registrarAcao('Conta a pagar cadastrada', `${descricao} (${moeda(valor)}) vence ${dataBR(vencimento)}`);
+                    ['conta-desc', 'conta-valor', 'conta-venc'].forEach(i => document.getElementById(i).value = '');
+                }).catch(e => erroDB(e, 'criarConta'));
+        }
+        function carregarContas() {
+            ouvir(db.collection('contas').orderBy('vencimento'), snap => {
+                cacheContas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderContas();
+            });
+        }
+        function renderContas() {
+            const c = document.getElementById('lista-contas');
+            if (!c) return;
+            if (!cacheContas.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma conta cadastrada.</p>'; return; }
+            const hoje = hojeISO();
+            const em7 = new Date(Date.now() + 7 * 864e5 - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+            c.innerHTML = '<div class="list-group">' + cacheContas.map(k => {
+                const st = k.pago ? '<span class="badge bg-success">Paga</span>'
+                    : k.vencimento < hoje ? '<span class="badge bg-danger">Atrasada</span>'
+                    : k.vencimento <= em7 ? '<span class="badge bg-warning text-dark">Vence em até 7 dias</span>'
+                    : '<span class="badge bg-secondary">Em dia</span>';
+                return `<div class="list-group-item d-flex justify-content-between align-items-center gap-2" style="${k.pago ? 'opacity: .6;' : ''}">
+                    <div><strong class="text-white">${esc(k.descricao)}</strong> ${st}<br><small class="text-muted-custom">${moeda(k.valor)} • vence ${esc(dataBR(k.vencimento))}</small></div>
+                    <div class="d-flex gap-1">
+                        ${k.pago ? '' : `<button data-acao="pagarConta" data-id="${esc(k.id)}" class="btn btn-outline-success btn-sm py-0" style="font-size: 11px;">Marcar paga</button>`}
+                        <button data-acao="excluirConta" data-id="${esc(k.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                    </div>
+                </div>`;
+            }).join('') + '</div>';
+        }
+
+        /* ---- encaminhamentos à direção (igualdade racial) ---- */
+        let cacheEnc = [];
+        function criarEncaminhamento() {
+            const g = id => document.getElementById(id).value.trim();
+            const titulo = g('enc-titulo'), destinatario = g('enc-dest'), data = document.getElementById('enc-data').value, descricao = g('enc-desc');
+            if (!titulo || !destinatario) { toast('Informe o assunto e a quem foi encaminhado.', 'warning'); return; }
+            db.collection('encaminhamentos').add({
+                titulo, destinatario, data, descricao, status: 'Aberto', autorEmail: emailLogado,
+                autorNome: document.getElementById('user-name-display').textContent, criadoEm: TS()
+            }).then(() => {
+                toast('Encaminhamento registrado.');
+                registrarAcao('Encaminhamento registrado', `${titulo} → ${destinatario}`);
+                ['enc-titulo', 'enc-dest', 'enc-data', 'enc-desc'].forEach(i => document.getElementById(i).value = '');
+            }).catch(e => erroDB(e, 'criarEncaminhamento'));
+        }
+        function carregarEncaminhamentos() {
+            ouvir(db.collection('encaminhamentos').orderBy('criadoEm', 'desc').limit(100), snap => {
+                cacheEnc = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                const c = document.getElementById('lista-encaminhamentos');
+                if (!cacheEnc.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum encaminhamento registrado.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + cacheEnc.map(x => `
+                    <div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <div>
+                                <strong class="text-white">${esc(x.titulo)}</strong>
+                                <span class="badge ${x.status === 'Concluído' ? 'bg-success' : 'bg-warning text-dark'} ms-1">${esc(x.status)}</span><br>
+                                <small class="text-muted-custom">Para: ${esc(x.destinatario)}${x.data ? ' • ' + esc(dataBR(x.data)) : ''} • por ${esc(x.autorNome || '')}</small>
+                                ${x.descricao ? `<p class="small text-white mb-0 mt-1" style="white-space: pre-wrap;">${esc(x.descricao)}</p>` : ''}
+                            </div>
+                            <div class="d-flex gap-1 flex-wrap justify-content-end">
+                                <button data-acao="alternarEnc" data-id="${esc(x.id)}" data-status="${x.status === 'Concluído' ? 'Aberto' : 'Concluído'}" class="btn btn-outline-success btn-sm py-0" style="font-size: 11px;">${x.status === 'Concluído' ? 'Reabrir' : 'Marcar concluído'}</button>
+                                <button data-acao="excluirEnc" data-id="${esc(x.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                            </div>
+                        </div>
+                    </div>`).join('') + '</div>';
+            });
+        }
+
+        /* ---- material de apoio (publicado na aba Estudos do portal) ---- */
+        function criarApoio() {
+            const g = id => document.getElementById(id).value.trim();
+            const titulo = g('apoio-titulo'), link = g('apoio-link');
+            if (!titulo) { toast('Dê um título ao material.', 'warning'); return; }
+            if (!/^https:\/\//i.test(link)) { toast('Cole um link que comece com https://', 'warning'); return; }
+            db.collection('estudos').add({
+                titulo, disciplina: 'Igualdade Racial', tipo: document.getElementById('apoio-tipo').value, link, descricao: g('apoio-desc'),
+                autor: document.getElementById('user-name-display').textContent, criadoPorEmail: emailLogado, criadoEm: TS()
+            }).then(() => {
+                toast('Material publicado na aba Estudos do portal. 📚');
+                registrarAcao('Material de apoio publicado', titulo);
+                ['apoio-titulo', 'apoio-link', 'apoio-desc'].forEach(i => document.getElementById(i).value = '');
+            }).catch(e => erroDB(e, 'criarApoio'));
+        }
+        function carregarApoio() {
+            ouvir(db.collection('estudos').where('criadoPorEmail', '==', emailLogado), snap => {
+                const c = document.getElementById('lista-apoio');
+                const docs = snap.docs.map(d => ({ id: d.id, ...d.data() })).sort((a, b) => (b.criadoEm ? b.criadoEm.toMillis() : 0) - (a.criadoEm ? a.criadoEm.toMillis() : 0));
+                if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum material publicado por você ainda.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + docs.map(x => `
+                    <div class="list-group-item d-flex justify-content-between align-items-center gap-2">
+                        <div><strong class="text-white">${esc(x.titulo)}</strong> <span class="badge bg-secondary">${esc(x.tipo || '')}</span><br>
+                        <small class="text-muted-custom">${esc(fmtData(x.criadoEm))}</small></div>
+                        <button data-acao="excluirApoio" data-id="${esc(x.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                    </div>`).join('') + '</div>';
+            });
+        }
+
+        /* ---- monitoramento dos cargos novos (só o e-mail raiz) ---- */
+        async function monitorarCargosNovos() {
+            if (!soRaiz()) return;
+            const out = document.getElementById('ti-monitor');
+            out.textContent = 'Lendo dados...';
+            try {
+                const [ca, ap, lg, cx, ct, ev, enc, rv, es, or] = await Promise.all([
+                    db.collection('cargos').get(), db.collection('acessos_painel').get(),
+                    db.collection('acoes_admin').orderBy('em', 'desc').limit(500).get(),
+                    db.collection('caixa').orderBy('data', 'desc').limit(1000).get(),
+                    db.collection('contas').get(), db.collection('eventos').get(),
+                    db.collection('encaminhamentos').get(), db.collection('reivindicacoes').get(),
+                    db.collection('estudos').get(), db.collection('orcamentos').get()
+                ]);
+                const hoje = hojeISO(), mes = hoje.slice(0, 7), agora = Date.now();
+                const acesso = {}; ap.docs.forEach(d => acesso[d.id] = d.data());
+                const acoes = {}; lg.docs.forEach(d => { const a = d.data().autor; acoes[a] = (acoes[a] || 0) + 1; });
+                const caixa = cx.docs.map(d => d.data()), contas = ct.docs.map(d => d.data());
+                const evs = ev.docs.map(d => ({ id: d.id, ...d.data() })), encs = enc.docs.map(d => d.data());
+                const est = es.docs.map(d => d.data()), orcs = or.docs.map(d => d.data());
+                const temaQtd = rv.docs.map(d => d.data()).filter(p => PALAVRAS_RACIAIS.test(`${p.titulo || ''} ${p.descricao || ''}`)).length;
+                const cargos = ca.docs.map(d => ({ email: d.id, ...d.data() }));
+
+                const dias = e => { const a = acesso[e]; return a && a.ultimoAcesso ? Math.floor((agora - a.ultimoAcesso.toMillis()) / 864e5) : null; };
+                const fmtDias = n => n === null ? '<span class="text-warning">nunca</span>' : n === 0 ? 'hoje' : n > 14 ? `<span class="text-warning">${n} d</span>` : `${n} d`;
+                const bloco = (titulo, nivel, colunas, metricas, rodape) => {
+                    const pessoas = cargos.filter(c => c.nivel === nivel);
+                    let html = `<h6 class="fw-bold text-white mt-3">${titulo}</h6>`;
+                    if (!pessoas.length) return html + '<p class="text-muted-custom small mb-0">Nenhuma pessoa neste cargo ainda.</p>';
+                    html += '<table class="table table-sm table-dark mb-1"><thead><tr><th>Pessoa</th><th>Último acesso</th><th>Ações (log)</th>' + colunas.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>';
+                    html += pessoas.map(c => `<tr><td>${esc(c.nome)}<br><small class="text-muted-custom">${esc(c.cargo)}</small></td><td>${fmtDias(dias(c.email))}</td><td>${acoes[c.email] || 0}</td>${metricas(c).map(v => `<td>${v}</td>`).join('')}</tr>`).join('');
+                    html += '</tbody></table>';
+                    return html + (rodape ? `<div class="text-muted-custom" style="font-size: 11px;">${rodape()}</div>` : '');
+                };
+                const tes = c => {
+                    const doMes = caixa.filter(x => x.lancadoPor === c.email && (x.data || '').startsWith(mes));
+                    const semComp = caixa.filter(x => x.tipo === 'Saída' && !x.comprovante && (x.data || '').startsWith(mes) && x.lancadoPor === c.email).length;
+                    const vencidas = contas.filter(k => !k.pago && k.vencimento < hoje && k.criadoPorEmail === c.email).length;
+                    return [doMes.length, semComp ? `<span class="text-warning">${semComp}</span>` : 0, vencidas ? `<span class="text-danger">${vencidas}</span>` : 0];
+                };
+                const cult = c => {
+                    const atv = evs.filter(e => e.criadoPorEmail === c.email);
+                    const inscritos = atv.reduce((t, e) => t + (e.inscritos || []).length, 0);
+                    const comPresenca = atv.filter(e => (e.presentes || []).length).length;
+                    const semReg = atv.filter(e => e.dataISO && e.dataISO < hoje && !e.registroLink).length;
+                    return [atv.length, inscritos, comPresenca, semReg ? `<span class="text-warning">${semReg}</span>` : 0];
+                };
+                const rac = c => {
+                    const atv = evs.filter(e => e.criadoPorEmail === c.email).length;
+                    const abertos = encs.filter(e => e.autorEmail === c.email && e.status === 'Aberto').length;
+                    const apoio = est.filter(e => e.criadoPorEmail === c.email).length;
+                    return [atv, abertos ? `<span class="text-warning">${abertos}</span>` : 0, apoio];
+                };
+                const estourados = orcs.filter(o => caixa.filter(x => x.tipo === 'Saída' && x.orcamento === o.nome).reduce((s, x) => s + (Number(x.valor) || 0), 0) > o.teto).length;
+                const saldoMes = caixa.filter(x => (x.data || '').startsWith(mes)).reduce((s, x) => s + (x.tipo === 'Entrada' ? 1 : -1) * (Number(x.valor) || 0), 0);
+
+                out.innerHTML =
+                    bloco('💰 Tesouraria', 'tesouraria', ['Lançamentos no mês', 'Saídas sem comprovante', 'Contas atrasadas'], tes,
+                        () => `Saldo do mês (todo o caixa): ${moeda(saldoMes)} • Orçamentos estourados: ${estourados} • Contas atrasadas: ${contas.filter(k => !k.pago && k.vencimento < hoje).length}`) +
+                    bloco('🎭 Cultura', 'cultura', ['Atividades', 'Inscritos', 'Com presença', 'Passadas sem registro'], cult, null) +
+                    bloco('✊🏾 Igualdade Racial', 'racial', ['Ações', 'Encaminhamentos abertos', 'Materiais de apoio'], rac,
+                        () => `Pautas sobre o tema no sistema: ${temaQtd}`) +
+                    '<div class="text-muted-custom mt-3" style="font-size: 11px;">"Ações (log)" conta as últimas 500 ações. Último acesso em amarelo = mais de 14 dias sem entrar.</div>';
+            } catch (e) { out.textContent = ''; erroDB(e, 'monitorarCargos'); }
         }
 
         /* ================= TI: SUPORTE, ALUNOS E PORTAL ================= */
@@ -3831,6 +4143,15 @@
             },
             excluirAtividade: async id => { if (await confirmar('Excluir esta atividade? Os inscritos perdem a inscrição.')) db.collection('eventos').doc(id).delete().then(() => registrarAcao('Atividade excluída', id)).catch(e => erroDB(e, 'excluirAtividade')); },
             relatorioAtividade: id => gerarRelatorioAtividade(id),
+            excluirOrcamento: async id => { if (await confirmar('Excluir este orçamento? Os lançamentos continuam, mas perdem o vínculo.')) db.collection('orcamentos').doc(id).delete().catch(e => erroDB(e, 'excluirOrcamento')); },
+            pagarConta: id => db.collection('contas').doc(id).update({ pago: true, pagoEm: TS() }).then(() => registrarAcao('Conta marcada como paga', id)).catch(e => erroDB(e, 'pagarConta')),
+            excluirConta: async id => { if (await confirmar('Excluir esta conta?')) db.collection('contas').doc(id).delete().catch(e => erroDB(e, 'excluirConta')); },
+            alternarEnc: (id, el) => db.collection('encaminhamentos').doc(id).update({ status: el.dataset.status, concluidoEm: el.dataset.status === 'Concluído' ? TS() : firebase.firestore.FieldValue.delete() })
+                .then(() => registrarAcao('Encaminhamento: ' + el.dataset.status, id)).catch(e => erroDB(e, 'alternarEnc')),
+            excluirEnc: async id => { if (await confirmar('Excluir este encaminhamento?')) db.collection('encaminhamentos').doc(id).delete().catch(e => erroDB(e, 'excluirEnc')); },
+            excluirApoio: async id => { if (await confirmar('Excluir este material da aba Estudos?')) db.collection('estudos').doc(id).delete().catch(e => erroDB(e, 'excluirApoio')); },
+            abrirPresenca: id => abrirPresenca(id),
+            salvarPresenca: id => salvarPresenca(id),
             excluirSugestao: async id => { if (await confirmar("Apagar esta sugestão?")) db.collection('sugestoes').doc(id).delete().catch(e => erroDB(e, 'excluirSugestao')); },
             excluirPauta: async id => { if (await confirmar("Excluir esta pauta?")) db.collection('reivindicacoes').doc(id).delete().then(() => registrarAcao('Pauta excluída', id)).catch(e => erroDB(e, 'excluirPauta')); },
             removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(e => erroDB(e, 'removerPunicao')); },
