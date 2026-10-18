@@ -383,6 +383,11 @@
                     <button onclick="baixarCaixaCSV()" class="btn btn-outline-light btn-sm">⬇️ CSV do mês</button>
                     <span id="cx-alerta" class="small text-warning"></span>
                 </div>
+                <div class="input-group input-group-sm mb-2">
+                    <span class="input-group-text">Alertar se o saldo cair abaixo de (R$)</span>
+                    <input type="number" id="cx-min" class="form-control" min="0" step="0.01" placeholder="Ex: 100">
+                    <button onclick="salvarSaldoMinimo()" class="btn btn-outline-light">Salvar</button>
+                </div>
                 <div id="lista-caixa"></div>
             </div>
 
@@ -469,6 +474,33 @@
                 <button onclick="criarApoio()" class="btn btn-ifce mb-3">Publicar material</button>
                 <h6 class="fw-bold text-white">Publicados por você</h6>
                 <div id="lista-apoio"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-rel-tes" data-niveis="tesouraria,admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">📑 Relatório mensal da Tesouraria</h5>
+                <p class="text-muted-custom small mb-3">Resumo do mês para entregar à presidência: entradas, saídas, saldo, gasto por orçamento e contas do mês.</p>
+                <div class="input-group">
+                    <input type="month" id="rel-tesouraria-mes" class="form-control">
+                    <button onclick="gerarRelatorioCargo('tesouraria')" class="btn btn-pdf fw-bold">📄 Gerar PDF</button>
+                </div>
+            </div>
+
+            <div id="secao-rel-cult" data-niveis="cultura,admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">📑 Relatório mensal da Cultura</h5>
+                <p class="text-muted-custom small mb-3">Resumo do mês: atividades realizadas, inscritos, presenças e atividades sem registro de fotos.</p>
+                <div class="input-group">
+                    <input type="month" id="rel-cultura-mes" class="form-control">
+                    <button onclick="gerarRelatorioCargo('cultura')" class="btn btn-pdf fw-bold">📄 Gerar PDF</button>
+                </div>
+            </div>
+
+            <div id="secao-rel-racial" data-niveis="racial,admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">📑 Relatório mensal da Igualdade Racial</h5>
+                <p class="text-muted-custom small mb-3">Resumo do mês: ações, presenças, encaminhamentos feitos e concluídos e materiais publicados.</p>
+                <div class="input-group">
+                    <input type="month" id="rel-racial-mes" class="form-control">
+                    <button onclick="gerarRelatorioCargo('racial')" class="btn btn-pdf fw-bold">📄 Gerar PDF</button>
+                </div>
             </div>
 
             <div id="secao-artes" data-niveis="marketing" class="card card-custom p-4 mb-4">
@@ -1164,6 +1196,9 @@
             { id: 'secao-racial-enc', label: 'Encaminhamentos', icon: 'bi-send', niveisPermitidos: ['racial', 'admin'] },
             { id: 'secao-racial-apoio', label: 'Material de apoio', icon: 'bi-journal-text', niveisPermitidos: ['racial', 'admin'] },
             { id: 'secao-ti-monitor', label: 'TI: Monitoramento', icon: 'bi-activity', niveisPermitidos: ['admin'], soRaiz: true },
+            { id: 'secao-rel-tes', label: 'Relatório da Tesouraria', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['tesouraria', 'admin'] },
+            { id: 'secao-rel-cult', label: 'Relatório da Cultura', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['cultura', 'admin'] },
+            { id: 'secao-rel-racial', label: 'Relatório Racial', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['racial', 'admin'] },
             { id: 'secao-artes', label: 'Banco de Artes', icon: 'bi-images', niveisPermitidos: ['marketing'] },
             { id: 'secao-mural', label: 'Mural de Avisos & Vídeos', icon: 'bi-megaphone', niveisPermitidos: ['admin', 'marketing'] },
             { id: 'secao-enquetes-criar', label: 'Criar Enquete', icon: 'bi-bar-chart-plus', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial'] },
@@ -3192,7 +3227,27 @@
                 ['cx-valor', 'cx-desc', 'cx-comp'].forEach(i => document.getElementById(i).value = '');
             }).catch(e => erroDB(e, 'criarLancamento'));
         }
+        let saldoMinimo = null;
+        function carregarSaldoMinimo() {
+            ouvir(db.collection('caixa_config').doc('tesouraria'), doc => {
+                const v = doc.exists ? doc.data().saldoMinimo : null;
+                saldoMinimo = typeof v === 'number' ? v : null;
+                const campo = document.getElementById('cx-min');
+                if (campo && document.activeElement !== campo) campo.value = saldoMinimo !== null ? saldoMinimo : '';
+                renderCaixa();
+            });
+        }
+        function salvarSaldoMinimo() {
+            const v = document.getElementById('cx-min').value.trim();
+            const n = v === '' ? null : parseFloat(v);
+            if (n !== null && (isNaN(n) || n < 0)) { toast('Informe um valor igual ou maior que zero.', 'warning'); return; }
+            if (n === null) { toast('Deixe um valor para ativar o alerta.', 'warning'); return; }
+            db.collection('caixa_config').doc('tesouraria').set({ saldoMinimo: Math.round(n * 100) / 100, atualizadoEm: TS() })
+                .then(() => { toast('Alerta de saldo salvo.'); registrarAcao('Saldo mínimo do caixa definido', moeda(n)); })
+                .catch(e => erroDB(e, 'salvarSaldoMinimo'));
+        }
         function carregarCaixa() {
+            carregarSaldoMinimo();
             const mes = document.getElementById('cx-mes');
             if (!mes.value) mes.value = hojeISO().slice(0, 7);
             ouvir(db.collection('caixa').orderBy('data', 'desc').limit(1000), snap => {
@@ -3210,7 +3265,10 @@
             document.getElementById('cx-ent-mes').textContent = moeda(ent);
             document.getElementById('cx-sai-mes').textContent = moeda(sai);
             const semComp = doMes.filter(x => x.tipo === 'Saída' && !x.comprovante).length;
-            document.getElementById('cx-alerta').textContent = semComp ? `⚠️ ${semComp} saída(s) sem comprovante` : '';
+            const alertas = [];
+            if (semComp) alertas.push(`⚠️ ${semComp} saída(s) sem comprovante`);
+            if (saldoMinimo !== null && soma(cacheCaixa, 'Entrada') - soma(cacheCaixa, 'Saída') < saldoMinimo) alertas.push(`🔴 Saldo abaixo do mínimo (${moeda(saldoMinimo)})`);
+            document.getElementById('cx-alerta').textContent = alertas.join(' • ');
             const c = document.getElementById('lista-caixa');
             if (!doMes.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum lançamento neste mês.</p>'; return; }
             const podeExcluir = nivelDoPainel === 'admin';
@@ -3575,6 +3633,63 @@
                         () => `Pautas sobre o tema no sistema: ${temaQtd}`) +
                     '<div class="text-muted-custom mt-3" style="font-size: 11px;">"Ações (log)" conta as últimas 500 ações. Último acesso em amarelo = mais de 14 dias sem entrar.</div>';
             } catch (e) { out.textContent = ''; erroDB(e, 'monitorarCargos'); }
+        }
+
+        /* ================= RELATÓRIO MENSAL DE CADA CARGO NOVO ================= */
+
+        async function gerarRelatorioCargo(nivel) {
+            const mes = document.getElementById(`rel-${nivel}-mes`).value || hojeISO().slice(0, 7);
+            const noMes = d => (d || '').startsWith(mes);
+            const mesDeTs = ts => ts && ts.toDate ? new Date(ts.toDate().getTime() - ts.toDate().getTimezoneOffset() * 60000).toISOString().slice(0, 7) : '';
+            const soma = (lista, f) => lista.reduce((s, x) => s + (Number(f(x)) || 0), 0);
+            const { jsPDF } = window.jspdf; const doc = new jsPDF(); let y = 20;
+            const linha = t => doc.splitTextToSize(String(t), 170).forEach(p => { if (y > 280) { doc.addPage(); y = 20; } doc.text(p, 20, y); y += 6; });
+            const titulo = t => { if (y > 270) { doc.addPage(); y = 20; } y += 3; doc.setFont('Helvetica', 'bold'); doc.setFontSize(12); doc.text(t, 20, y); y += 7; doc.setFont('Helvetica', 'normal'); doc.setFontSize(11); };
+            const rotulo = { tesouraria: 'Tesouraria', cultura: 'Cultura', racial: 'Igualdade Racial' }[nivel];
+            doc.setFont('Helvetica', 'bold'); doc.setFontSize(15); doc.text('Grêmio Estudantil - IFCE Crateús', 20, y); y += 9;
+            doc.setFontSize(12); doc.text(`Relatório mensal - ${rotulo} - ${mes.split('-').reverse().join('/')}`, 20, y); y += 8;
+            doc.setFont('Helvetica', 'normal'); doc.setFontSize(11);
+            linha('Responsável: ' + document.getElementById('user-name-display').textContent + ' (' + document.getElementById('user-role-display').textContent + ')');
+            try {
+                if (nivel === 'tesouraria') {
+                    const lanc = cacheCaixa.filter(x => noMes(x.data));
+                    const ent = soma(lanc.filter(x => x.tipo === 'Entrada'), x => x.valor), sai = soma(lanc.filter(x => x.tipo === 'Saída'), x => x.valor);
+                    titulo('Caixa do mês');
+                    linha(`Entradas: ${moeda(ent)} | Saídas: ${moeda(sai)} | Saldo do mês: ${moeda(ent - sai)}`);
+                    linha(`Lançamentos: ${lanc.length} | Saídas sem comprovante: ${lanc.filter(x => x.tipo === 'Saída' && !x.comprovante).length}`);
+                    titulo('Gasto por orçamento');
+                    if (!cacheOrc.length) linha('Nenhum orçamento cadastrado.');
+                    cacheOrc.forEach(o => {
+                        const g = soma(lanc.filter(x => x.tipo === 'Saída' && x.orcamento === o.nome), x => x.valor);
+                        linha(`- ${o.nome}: ${moeda(g)} de ${moeda(o.teto)}${g > o.teto ? ' (estourado)' : ''}`);
+                    });
+                    titulo('Contas com vencimento no mês');
+                    const cs = cacheContas.filter(k => noMes(k.vencimento));
+                    linha(`Total: ${cs.length} | Pagas: ${cs.filter(k => k.pago).length} | Pendentes: ${cs.filter(k => !k.pago).length}`);
+                } else if (nivel === 'cultura') {
+                    const atv = (cacheAtividades.cultura || []).filter(x => noMes(x.dataISO));
+                    titulo('Atividades do mês');
+                    linha(`Atividades: ${atv.length} | Inscritos: ${soma(atv, x => (x.inscritos || []).length)} | Com lista de presença: ${atv.filter(x => (x.presentes || []).length).length}`);
+                    atv.forEach(x => linha(`- ${x.titulo} (${x.data || '-'}): ${(x.inscritos || []).length} inscrito(s), ${(x.presentes || []).length} presente(s)${x.registroLink ? '' : ' — sem registro de fotos'}`));
+                    if (!atv.length) linha('Nenhuma atividade publicada neste mês.');
+                } else if (nivel === 'racial') {
+                    const atv = (cacheAtividades.racial || []).filter(x => noMes(x.dataISO));
+                    titulo('Ações do mês');
+                    linha(`Ações: ${atv.length} | Inscritos: ${soma(atv, x => (x.inscritos || []).length)} | Com lista de presença: ${atv.filter(x => (x.presentes || []).length).length}`);
+                    atv.forEach(x => linha(`- ${x.titulo} (${x.data || '-'}): ${(x.inscritos || []).length} inscrito(s)`));
+                    titulo('Encaminhamentos à direção');
+                    const enc = cacheEnc.filter(e => noMes(e.data) || mesDeTs(e.criadoEm) === mes);
+                    linha(`Registrados: ${enc.length} | Concluídos: ${enc.filter(e => e.status === 'Concluído').length} | Abertos: ${enc.filter(e => e.status !== 'Concluído').length}`);
+                    enc.forEach(e => linha(`- ${e.titulo} → ${e.destinatario}: ${e.status}`));
+                    titulo('Materiais de apoio publicados');
+                    const snap = await db.collection('estudos').where('criadoPorEmail', '==', emailLogado).get();
+                    const mats = snap.docs.map(d => d.data()).filter(m => mesDeTs(m.criadoEm) === mes);
+                    linha(`Publicados no mês: ${mats.length}`);
+                    mats.forEach(m => linha(`- ${m.titulo} (${m.tipo || '-'})`));
+                }
+                doc.save(`relatorio_${nivel}_${mes}.pdf`);
+                registrarAcao('Relatório mensal gerado', `${rotulo} ${mes}`);
+            } catch (e) { erroDB(e, 'relatorioCargo'); }
         }
 
         /* ================= TI: SUPORTE, ALUNOS E PORTAL ================= */
