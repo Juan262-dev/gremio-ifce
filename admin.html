@@ -100,7 +100,7 @@
     <!-- MENU LATERAL -->
     <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel" style="background-color: var(--ifce-dark); border-right: 1px solid var(--ifce-card-border);">
         <div class="offcanvas-header border-bottom border-secondary">
-            <h5 class="offcanvas-title fw-bold" id="sidebarMenuLabel" style="color: var(--ifce-accent-green);">🧭 Navegação Rápida</h5>
+            <h5 class="offcanvas-title fw-bold" id="sidebarMenuLabel" style="color: var(--ifce-accent-green);">Navegação Rápida</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body p-3">
@@ -164,14 +164,14 @@
 
             <div id="secao-resumo" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="card-title-chem m-0">📌 Resumo do Grêmio</h5>
+                    <h5 class="card-title-chem m-0">Resumo do Grêmio</h5>
                     <button onclick="carregarResumo()" class="btn btn-outline-light btn-sm">↻ Atualizar</button>
                 </div>
                 <div id="resumo-grid" class="row g-2"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
             <div id="secao-ajuda" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">🆘 Preciso de ajuda</h5>
+                <h5 class="card-title-chem mb-2">Preciso de ajuda</h5>
                 <p class="text-muted-custom small mb-3">Algo não funciona ou você quer uma função nova? Conte aqui que o TI responde.</p>
                 <select id="aj-cat" class="form-select mb-2"><option>Algo não funciona</option><option>Não consigo entrar / acessar</option><option>Dúvida de como usar</option><option>Quero uma função nova</option><option>Outro</option></select>
                 <textarea id="aj-desc" class="form-control mb-2" rows="3" maxlength="800" placeholder="Descreva o que aconteceu (em qual tela, o que você tocou, o que apareceu)..."></textarea>
@@ -182,12 +182,12 @@
             </div>
 
             <div id="secao-novidades" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-3">🆕 Novidades do sistema</h5>
+                <h5 class="card-title-chem mb-3">Novidades do sistema</h5>
                 <div id="lista-novidades"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
             <div id="secao-guia" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-3">📖 Guia rápido do seu cargo</h5>
+                <h5 class="card-title-chem mb-3">Guia rápido do seu cargo</h5>
                 <div data-niveis="admin">
                     <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Presidência (presidente e vice)</summary>
                         <ul class="small text-muted-custom mt-2 mb-0">
@@ -251,12 +251,12 @@
             </div>
 
             <div id="secao-tarefas" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-3">✅ Minhas Tarefas</h5>
+                <h5 class="card-title-chem mb-3">Minhas Tarefas</h5>
                 <div id="lista-minhas-tarefas"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
             <div id="secao-tarefas-admin" data-niveis="admin" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">📋 Atribuir Tarefas</h5>
+                <h5 class="card-title-chem mb-2">Atribuir Tarefas</h5>
                 <p class="text-muted-custom small mb-3">Cada diretor vê só as tarefas dele e marca quando concluir.</p>
                 <div class="row g-2 mb-3">
                     <div class="col-md-8"><label class="form-label fw-bold">Tarefa</label><input type="text" id="tar-titulo" class="form-control" maxlength="120" placeholder="Ex: Divulgar o Interclasses"></div>
@@ -270,7 +270,7 @@
             </div>
 
             <div id="secao-atas" data-niveis="admin" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-3">📝 Atas de Reunião</h5>
+                <h5 class="card-title-chem mb-3">Atas de Reunião</h5>
                 <div class="row g-2 mb-3">
                     <div class="col-md-8"><label class="form-label fw-bold">Título</label><input type="text" id="ata-titulo" class="form-control" maxlength="120" placeholder="Ex: Reunião de planejamento"></div>
                     <div class="col-md-4"><label class="form-label fw-bold">Data</label><input type="date" id="ata-data" class="form-control"></div>
@@ -284,7 +284,7 @@
             </div>
 
             <div id="secao-relatorio-mensal" data-niveis="admin" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">📊 Relatório do Mês</h5>
+                <h5 class="card-title-chem mb-2">Relatório do Mês</h5>
                 <p class="text-muted-custom small mb-3">Junta ações, eventos, pautas, sugestões e tarefas do mês em um PDF para entregar à direção.</p>
                 <div class="input-group">
                     <input type="month" id="rel-mes" class="form-control">
@@ -293,7 +293,7 @@
             </div>
 
             <div id="secao-relatorio" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-3">📝 Escrever Relatório de Atividades</h5>
+                <h5 class="card-title-chem mb-3">Escrever Relatório de Atividades</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Conteúdo do Relatório</label>
                     <textarea id="texto-relatorio" class="form-control" rows="3" placeholder="Digite aqui o relatório das suas atividades no grêmio..."></textarea>
@@ -305,7 +305,7 @@
             </div>
 
             <div id="secao-divulgacao" data-niveis="marketing" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-3">📅 Calendário de Divulgação</h5>
+                <h5 class="card-title-chem mb-3">Calendário de Divulgação</h5>
                 <div class="row g-2 mb-3">
                     <div class="col-md-8"><label class="form-label fw-bold">O que divulgar</label><input type="text" id="div-titulo" class="form-control" maxlength="120" placeholder="Ex: Cartaz do Interclasses"></div>
                     <div class="col-md-4"><label class="form-label fw-bold">Data</label><input type="date" id="div-data" class="form-control"></div>
@@ -318,7 +318,7 @@
             </div>
 
             <div id="secao-estudos" data-niveis="admin" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">📚 Estudos e Provas</h5>
+                <h5 class="card-title-chem mb-2">Estudos e Provas</h5>
                 <p class="text-muted-custom small mb-3">Publique materiais para os alunos estudarem e avise as datas das provas. Aparece na aba "Estudos" do portal.</p>
 
                 <h6 class="fw-bold text-white">Novo material</h6>
@@ -345,7 +345,7 @@
             </div>
 
             <div id="secao-videos" data-niveis="marketing" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">🎬 Vídeos de Aula Prática</h5>
+                <h5 class="card-title-chem mb-2">Vídeos de Aula Prática</h5>
                 <p class="text-muted-custom small mb-2">Grátis e sem limite de tamanho: <strong>1)</strong> envie o vídeo pelo app do YouTube (toque no "+", "Enviar vídeo") e em "Visibilidade" escolha <strong>Não listado</strong>; <strong>2)</strong> copie o link e cole aqui. O vídeo toca dentro do portal dos alunos. Também funciona com link do Google Drive (compartilhado como "qualquer pessoa com o link").</p>
                 <div class="row g-2 mb-3">
                     <div class="col-12"><label class="form-label fw-bold">Título</label><input type="text" id="vid-titulo" class="form-control" maxlength="120" placeholder="Ex: Titulação ácido-base"></div>
@@ -358,7 +358,7 @@
             </div>
 
             <div id="secao-caixa" data-niveis="tesouraria,admin" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">💰 Caixa do Grêmio</h5>
+                <h5 class="card-title-chem mb-2">Caixa do Grêmio</h5>
                 <p class="text-muted-custom small mb-3">Registre cada entrada e saída. Este painel só anota: o dinheiro continua no caixa ou na conta do Grêmio. Toda saída precisa de um link de comprovante (foto ou Drive).</p>
                 <div class="row g-2 mb-3">
                     <div class="col-6 col-md-3"><div class="p-2 rounded text-center" style="background:#121a14;border:1px solid var(--ifce-card-border)"><div class="text-muted-custom" style="font-size:11px">Saldo geral</div><div class="fw-bold" id="cx-saldo-geral">R$ 0,00</div></div></div>
@@ -392,7 +392,7 @@
             </div>
 
             <div id="secao-cultura" data-niveis="cultura,admin" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">🎭 Atividades Culturais</h5>
+                <h5 class="card-title-chem mb-2">Atividades Culturais</h5>
                 <p class="text-muted-custom small mb-3">Publique uma atividade: ela aparece na aba <strong>Eventos</strong> do portal dos alunos, com inscrição. Depois do evento, cole o link das fotos e gere o relatório em PDF.</p>
                 <div class="row g-2 mb-3">
                     <div class="col-12"><label class="form-label fw-bold">Título</label><input type="text" id="cultura-titulo" class="form-control" maxlength="120" placeholder="Ex: Roda de conversa"></div>
@@ -407,7 +407,7 @@
             </div>
 
             <div id="secao-racial" data-niveis="racial,admin" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">✊🏾 Igualdade Racial</h5>
+                <h5 class="card-title-chem mb-2">Igualdade Racial</h5>
                 <div class="p-3 rounded mb-3" style="background:#121a14;border:1px solid var(--ifce-card-border)"><small class="text-white">📅 <strong>Datas para lembrar:</strong> 21 de março (Dia Internacional para a Eliminação da Discriminação Racial) e 20 de novembro (Dia Nacional de Zumbi e da Consciência Negra).</small></div>
                 <p class="text-muted-custom small mb-3">Publique rodas de conversa, palestras e ações. Elas aparecem na aba <strong>Eventos</strong> do portal, com inscrição.</p>
                 <div class="row g-2 mb-3">
@@ -427,7 +427,7 @@
             </div>
 
             <div id="secao-tes-orc" data-niveis="tesouraria,admin" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">🧾 Orçamento por evento</h5>
+                <h5 class="card-title-chem mb-2">Orçamento por evento</h5>
                 <p class="text-muted-custom small mb-3">Defina um teto para cada evento ou projeto. Ao lançar uma saída no caixa, escolha o orçamento: a barra mostra quanto já foi gasto e avisa quando passa de 80%.</p>
                 <div class="row g-2 mb-3">
                     <div class="col-md-7"><input type="text" id="orc-nome" class="form-control" maxlength="80" placeholder="Ex: Interclasses de Futsal"></div>
@@ -450,7 +450,7 @@
             </div>
 
             <div id="secao-racial-enc" data-niveis="racial,admin" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">📌 Encaminhamentos à direção</h5>
+                <h5 class="card-title-chem mb-2">Encaminhamentos à direção</h5>
                 <p class="text-muted-custom small mb-3">Registre o que foi levado à direção: o assunto, a quem foi encaminhado e a data. Marque como concluído quando houver resposta.</p>
                 <div class="row g-2 mb-3">
                     <div class="col-md-6"><input type="text" id="enc-titulo" class="form-control" maxlength="120" placeholder="Assunto (Ex: Pedido de palestra em novembro)"></div>
@@ -463,7 +463,7 @@
             </div>
 
             <div id="secao-racial-apoio" data-niveis="racial,admin" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">📚 Material de apoio</h5>
+                <h5 class="card-title-chem mb-2">Material de apoio</h5>
                 <p class="text-muted-custom small mb-3">Publique textos e vídeos sobre o tema. Eles aparecem na aba <strong>Estudos</strong> do portal, na disciplina "Igualdade Racial".</p>
                 <div class="row g-2 mb-3">
                     <div class="col-12"><input type="text" id="apoio-titulo" class="form-control" maxlength="120" placeholder="Título (Ex: Texto sobre cotas raciais)"></div>
@@ -477,7 +477,7 @@
             </div>
 
             <div id="secao-rel-tes" data-niveis="tesouraria,admin" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">📑 Relatório mensal da Tesouraria</h5>
+                <h5 class="card-title-chem mb-2">Relatório mensal da Tesouraria</h5>
                 <p class="text-muted-custom small mb-3">Resumo do mês para entregar à presidência: entradas, saídas, saldo, gasto por orçamento e contas do mês.</p>
                 <div class="input-group">
                     <input type="month" id="rel-tesouraria-mes" class="form-control">
@@ -486,7 +486,7 @@
             </div>
 
             <div id="secao-rel-cult" data-niveis="cultura,admin" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">📑 Relatório mensal da Cultura</h5>
+                <h5 class="card-title-chem mb-2">Relatório mensal da Cultura</h5>
                 <p class="text-muted-custom small mb-3">Resumo do mês: atividades realizadas, inscritos, presenças e atividades sem registro de fotos.</p>
                 <div class="input-group">
                     <input type="month" id="rel-cultura-mes" class="form-control">
@@ -495,7 +495,7 @@
             </div>
 
             <div id="secao-rel-racial" data-niveis="racial,admin" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">📑 Relatório mensal da Igualdade Racial</h5>
+                <h5 class="card-title-chem mb-2">Relatório mensal da Igualdade Racial</h5>
                 <p class="text-muted-custom small mb-3">Resumo do mês: ações, presenças, encaminhamentos feitos e concluídos e materiais publicados.</p>
                 <div class="input-group">
                     <input type="month" id="rel-racial-mes" class="form-control">
@@ -504,7 +504,7 @@
             </div>
 
             <div id="secao-artes" data-niveis="marketing" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-2">🎨 Banco de Artes</h5>
+                <h5 class="card-title-chem mb-2">Banco de Artes</h5>
                 <p class="text-muted-custom small mb-3">Guarde aqui os links (Drive, Canva) de cartazes, logos e modelos para a próxima gestão reaproveitar.</p>
                 <div class="row g-2 mb-3">
                     <div class="col-md-5"><input type="text" id="arte-nome" class="form-control" maxlength="80" placeholder="Nome (Ex: Logo do Grêmio)"></div>
@@ -516,7 +516,7 @@
             </div>
 
             <div id="secao-mural" data-niveis="admin,marketing" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-3">📢 Mural de Avisos e Vídeos</h5>
+                <h5 class="card-title-chem mb-3">Mural de Avisos e Vídeos</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Título do Aviso / Vídeo</label>
                     <input type="text" id="aviso-titulo" class="form-control" placeholder="Ex: Divulgação do Evento ou Reunião">
@@ -532,7 +532,7 @@
             </div>
 
             <div id="secao-enquetes-criar" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-3">📊 Criar Nova Enquete</h5>
+                <h5 class="card-title-chem mb-3">Criar Nova Enquete</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Pergunta / Título da Enquete</label>
                     <input type="text" id="enquete-titulo" class="form-control" placeholder="Ex: Qual tema do próximo evento?">
@@ -547,7 +547,7 @@
 
             <div id="secao-ti-alertas" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
                 <div class="d-flex justify-content-between align-items-center mb-2">
-                    <h5 class="card-title-chem m-0" style="color: #0dcaf0;">🚨 Central de alertas <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                    <h5 class="card-title-chem m-0" style="color: #0dcaf0;">Central de alertas <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
                     <button onclick="carregarAlertasTI()" class="btn btn-outline-info btn-sm">↻</button>
                 </div>
                 <div id="ti-alertas" class="small">Verificando...</div>
@@ -566,7 +566,7 @@
             </div>
 
             <div id="secao-ti-utilitarios" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🧩 Utilitários <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Utilitários <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
 
                 <h6 class="fw-bold text-white mt-3">1. Pendências do TI</h6>
                 <p class="text-muted-custom small mb-2">Sua lista pessoal de coisas a fazer no sistema. As vencidas aparecem na Central de alertas.</p>
@@ -607,7 +607,7 @@
             </div>
 
             <div id="secao-ti-dados" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🗄️ Dados e conformidade <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Dados e conformidade <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
 
                 <h6 class="fw-bold text-white mt-3">1. Editor de documentos (emergência)</h6>
                 <p class="text-muted-custom small mb-2">Abre qualquer documento do banco como texto para você corrigir um dado na mão. <strong>Cuidado:</strong> salvar substitui o documento inteiro. Datas aparecem como <code>{"__ts": "..."}</code>; não mexa nesse formato.</p>
@@ -635,7 +635,7 @@
                 <p class="text-muted-custom small mb-2">Para quando o aluno (ou o responsável) pedir a exclusão. Remove cadastro, sugestões, acessos e aceite do termo, e tira o nome das inscrições, apoios e votos (os votos ficam anônimos para a contagem não mudar). Depois apague também a conta no Firebase > Authentication.</p>
                 <div class="input-group">
                     <input type="email" id="ti-lgpd-email" class="form-control" placeholder="aluno@aluno.ifce.edu.br">
-                    <button onclick="apagarDadosAluno()" class="btn btn-outline-danger">Apagar dados</button>
+                    <button onclick="apagarDadosAluno()" class="btn btn-outline-danger">Excluir dados</button>
                 </div>
                 <div id="ti-lgpd-out" class="mt-2 small"></div>
 
@@ -651,7 +651,7 @@
             </div>
 
             <div id="secao-ti-controle" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🧭 Controle do painel <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Controle do painel <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
 
                 <h6 class="fw-bold text-white mt-3">1. Atividade da diretoria</h6>
                 <p class="text-muted-custom small mb-2">Para cada diretor: último acesso ao painel, quantos acessos fez, quantas ações tem no log e quantas tarefas pendentes. Em amarelo quem está há mais de 14 dias sem entrar.</p>
@@ -680,14 +680,14 @@
             </div>
 
             <div id="secao-ti-testes" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🧪 Roteiro de testes <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span> <span id="ti-roteiro-prog" class="badge bg-secondary ms-1" style="font-size: 10px;">0/0</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Roteiro de testes <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span> <span id="ti-roteiro-prog" class="badge bg-secondary ms-1" style="font-size: 10px;">0/0</span></h5>
                 <p class="text-muted-custom small mb-3">Passo a passo para testar tudo no celular, cargo por cargo. Use contas de teste (um aluno e um diretor de cada nível). As marcações ficam salvas.</p>
                 <div id="ti-roteiro"></div>
                 <button onclick="limparRoteiro()" class="btn btn-outline-light btn-sm mt-2">Limpar marcações</button>
             </div>
 
             <div id="secao-ti-manual" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">📘 Manual do TI <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Manual do TI <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
                 <p class="text-muted-custom small mb-3">Tudo que a próxima pessoa precisa para assumir o sistema. Versão <strong id="ti-versao"></strong>.</p>
                 <button onclick="baixarManual()" class="btn btn-outline-light btn-sm mb-3">⬇️ Baixar manual (.txt)</button>
                 <div id="ti-manual-corpo">
@@ -719,14 +719,14 @@
             </div>
 
             <div id="secao-ti-monitor" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">📊 Monitoramento dos cargos novos <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Monitoramento dos cargos novos <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
                 <p class="text-muted-custom small mb-3">Mostra, por pessoa, o último acesso ao painel, as ações no log e os números de cada cargo. Em amarelo ou vermelho, algo pede atenção.</p>
                 <button onclick="monitorarCargosNovos()" class="btn btn-outline-info btn-sm fw-bold">▶ Atualizar</button>
                 <div id="ti-monitor" class="mt-3 small" style="overflow-x: auto;"></div>
             </div>
 
             <div id="secao-ti-analise" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">📈 Análise e relatórios <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Análise e relatórios <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
 
                 <h6 class="fw-bold text-white mt-3">1. Adoção do portal</h6>
                 <p class="text-muted-custom small mb-2">Mostra quantos alunos já entraram no portal, quantos usaram na última semana e quem nunca entrou (com lista em CSV para o Grêmio chamar).</p>
@@ -749,7 +749,7 @@
             </div>
 
             <div id="secao-ti-comunic" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">📣 Comunicação e conformidade <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Comunicação e conformidade <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
 
                 <h6 class="fw-bold text-white mt-3">1. Termo de uso e privacidade</h6>
                 <p class="text-muted-custom small mb-2">O texto abaixo aparece para cada aluno no próximo acesso, e ele só continua depois de tocar em "Li e aceito". Ao publicar uma nova versão, todos precisam aceitar de novo. Combine o texto com a escola.</p>
@@ -783,7 +783,7 @@
             </div>
 
             <div id="secao-ti-avancado" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🔧 Manutenção avançada <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Manutenção avançada <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
 
                 <h6 class="fw-bold text-white mt-3">1. Verificador de integridade</h6>
                 <p class="text-muted-custom small mb-2">Procura dados esquisitos (cadastros incompletos, punições vencidas, tarefas de quem saiu, votos que não batem) e corrige o que dá com um toque.</p>
@@ -810,13 +810,13 @@
             </div>
 
             <div id="secao-ti-chamados" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">📨 Pedidos de ajuda <span id="ti-chamados-qtd" class="badge bg-warning text-dark ms-1" style="font-size: 10px;">0</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Pedidos de ajuda <span id="ti-chamados-qtd" class="badge bg-warning text-dark ms-1" style="font-size: 10px;">0</span></h5>
                 <p class="text-muted-custom small mb-3">Pedidos que os diretores enviam pelo "Preciso de ajuda". O que você responder aparece para eles.</p>
                 <div id="lista-chamados-ti"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
             <div id="secao-ti-ajuda" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🤝 Ajudar os cargos <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Ajudar os cargos <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
 
                 <h6 class="fw-bold text-white mt-3">1. Ver o painel como outro cargo</h6>
                 <p class="text-muted-custom small mb-2">Mostra a tela exatamente como aquele cargo enxerga, para você achar o problema quando disserem "não aparece para mim". É só visual; você continua logado como você.</p>
@@ -837,7 +837,7 @@
             </div>
 
             <div id="secao-ti" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🛠️ Ferramentas de TI <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Ferramentas de TI <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
                 <p class="text-muted-custom small mb-3">Manutenção do sistema. Aparece apenas para o e-mail raiz.</p>
 
                 <h6 class="fw-bold text-white">1. Diagnóstico do sistema</h6>
@@ -868,7 +868,7 @@
             </div>
 
             <div id="secao-ti-suporte" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🧰 Suporte e Monitoramento <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Suporte e Monitoramento <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
                 <p class="text-muted-custom small mb-3">Para atender dúvidas e achar problemas.</p>
 
                 <h6 class="fw-bold text-white">1. Ficha de um usuário</h6>
@@ -887,7 +887,7 @@
                 <div class="input-group input-group-sm mb-2">
                     <span class="input-group-text">Apagar log com mais de</span>
                     <select id="ti-log-dias" class="form-select"><option value="30">30 dias</option><option value="60">60 dias</option><option value="90" selected>90 dias</option><option value="180">180 dias</option><option value="0">todos</option></select>
-                    <button onclick="apagarLogAntigo()" class="btn btn-outline-danger">Apagar</button>
+                    <button onclick="apagarLogAntigo()" class="btn btn-outline-danger">Excluir</button>
                 </div>
                 <input type="search" id="ti-log-busca" class="form-control mb-2" placeholder="🔍 Filtrar por pessoa, ação ou detalhe..." oninput="renderLogCompleto()">
                 <div id="ti-log" class="small"></div>
@@ -910,7 +910,7 @@
             </div>
 
             <div id="secao-ti-portal" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🎓 Alunos e Portal <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Alunos e Portal <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
                 <p class="text-muted-custom small mb-3">Ferramentas de começo de ano e controle do portal.</p>
 
                 <h6 class="fw-bold text-white">1. Cadastro de alunos em massa</h6>
@@ -946,7 +946,7 @@
             </div>
 
             <div id="secao-nova-gestao" class="card card-custom p-4 mb-4 card-root" style="border-color: #f0ad4e;">
-                <h5 class="card-title-chem mb-1" style="color: #f0ad4e;">🔄 Nova Gestão <span class="badge bg-warning text-dark ms-1" style="font-size: 10px;">só você</span></h5>
+                <h5 class="card-title-chem mb-1" style="color: #f0ad4e;">Nova Gestão <span class="badge bg-warning text-dark ms-1" style="font-size: 10px;">só você</span></h5>
                 <p class="text-muted-custom small mb-3">Ferramentas de virada de gestão. Aparecem apenas para o e-mail raiz do sistema.</p>
 
                 <h6 class="fw-bold text-white">1. Trocar a diretoria</h6>
@@ -980,7 +980,7 @@
             </div>
 
             <div id="secao-diretoria" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
-                <h5 class="card-title-chem mb-2">🧑‍💼 Diretoria e Cargos</h5>
+                <h5 class="card-title-chem mb-2">Diretoria e Cargos</h5>
                 <p class="text-muted-custom small mb-3">Quem está aqui entra no painel. Cada nível vê só o que precisa: <strong>Presidência</strong> (presidente e vice: alunos, pautas, sugestões, punições, diretoria, atas, tarefas), <strong>Esportes/Eventos</strong> (jogos, eventos, materiais) e <strong>Marketing</strong> (mural, calendário de divulgação, banco de artes), <strong>Tesouraria</strong> (caixa), <strong>Cultura</strong> (atividades culturais) e <strong>Igualdade Racial</strong> (ações e pautas do tema). Para criar a conta de login, preencha a senha (6+ caracteres); se a pessoa já tem conta, deixe em branco.</p>
                 <div class="row g-2 mb-3">
                     <div class="col-md-6"><label class="form-label fw-bold">Nome</label><input type="text" id="dir-nome" class="form-control" placeholder="Nome do diretor"></div>
@@ -998,7 +998,7 @@
             </div>
 
             <div id="secao-alunos-cadastrar" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
-                <h5 class="card-title-chem mb-3">👤 Cadastrar Aluno</h5>
+                <h5 class="card-title-chem mb-3">Cadastrar Aluno</h5>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">Nome Completo</label>
@@ -1020,7 +1020,7 @@
 
             <div id="secao-pautas" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
                 <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
-                    <h5 class="card-title-chem m-0">✊ Pautas e Reivindicações</h5>
+                    <h5 class="card-title-chem m-0">Pautas e Reivindicações</h5>
                     <button data-acao="exportarPautas" class="btn btn-outline-light btn-sm" style="border-radius: 8px;">⬇️ Exportar CSV</button>
                 </div>
                 <p class="text-muted-custom small mb-3">Ordenadas pelo número de apoios. Defina o andamento de cada pauta.</p>
@@ -1028,7 +1028,7 @@
             </div>
 
             <div id="secao-materiais" data-niveis="membro" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
-                <h5 class="card-title-chem mb-3">🎲 Gerenciar Materiais do Grêmio</h5>
+                <h5 class="card-title-chem mb-3">Gerenciar Materiais do Grêmio</h5>
                 <div class="row g-2 mb-3">
                     <div class="col-md-8">
                         <label class="form-label fw-bold">Material</label>
@@ -1046,7 +1046,7 @@
             </div>
 
             <div id="secao-eventos" data-niveis="admin,membro" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
-                <h5 class="card-title-chem mb-3">📅 Criar Evento ou Torneio</h5>
+                <h5 class="card-title-chem mb-3">Criar Evento ou Torneio</h5>
                 <div class="row g-2 mb-3">
                     <div class="col-md-8">
                         <label class="form-label fw-bold">Título do Evento</label>
@@ -1068,7 +1068,7 @@
             </div>
 
             <div id="secao-jogos" data-niveis="membro" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
-                <h5 class="card-title-chem mb-3">🏆 Placar dos Jogos</h5>
+                <h5 class="card-title-chem mb-3">Placar dos Jogos</h5>
                 <div class="row g-2 mb-3">
                     <div class="col-md-6"><label class="form-label fw-bold">Torneio / Modalidade</label><input type="text" id="jogo-torneio" class="form-control" placeholder="Ex: Interclasses de Futsal"></div>
                     <div class="col-md-6"><label class="form-label fw-bold">Data / Hora</label><input type="text" id="jogo-data" class="form-control" placeholder="Ex: 15/10 - 14h"></div>
@@ -1082,12 +1082,12 @@
             </div>
 
             <div id="secao-enquetes-lista" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
-                <h5 class="card-title-chem mb-3">📈 Enquetes Ativas e Encerradas</h5>
+                <h5 class="card-title-chem mb-3">Enquetes Ativas e Encerradas</h5>
                 <div id="lista-enquetes-admin"><p class="text-muted-custom small">Nenhuma enquete cadastrada.</p></div>
             </div>
 
             <div id="secao-punicoes" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral" style="border-color: #dc3545;">
-                <h5 class="card-title-chem mb-3" style="color: #ff6b6b;">⚠️ Aplicar Punição / Bloqueio a Membro</h5>
+                <h5 class="card-title-chem mb-3" style="color: #ff6b6b;">Aplicar Punição / Bloqueio a Membro</h5>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">E-mail do Membro / Aluno</label>
@@ -1116,19 +1116,19 @@
             </div>
 
             <div id="secao-alunos-lista" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
-                <h5 class="card-title-chem mb-3">🎓 Alunos Cadastrados</h5>
+                <h5 class="card-title-chem mb-3">Alunos Cadastrados</h5>
                 <input type="search" id="busca-alunos" class="form-control mb-3" placeholder="🔍 Buscar por nome ou e-mail..." oninput="renderAlunos()">
                 <div id="lista-alunos-admin"><p class="text-muted-custom small">Nenhum aluno cadastrado.</p></div>
             </div>
 
             <div id="secao-sugestoes" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
-                <h5 class="card-title-chem mb-3">💡 Sugestões dos Alunos</h5>
+                <h5 class="card-title-chem mb-3">Sugestões dos Alunos</h5>
                 <input type="search" id="busca-sugestoes" class="form-control mb-3" placeholder="🔍 Buscar nas sugestões..." oninput="renderSugestoes()">
                 <div id="lista-sugestoes-admin"><p class="text-muted-custom small">Nenhuma sugestão enviada.</p></div>
             </div>
 
             <div id="secao-auditoria" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
-                <h5 class="card-title-chem mb-3">🧾 Log de Auditoria</h5>
+                <h5 class="card-title-chem mb-3">Log de Auditoria</h5>
                 <p class="text-muted-custom small mb-3">Últimas 30 ações administrativas (inclui histórico de punições).</p>
                 <div id="lista-auditoria-admin"><p class="text-muted-custom small">Nenhuma ação registrada.</p></div>
             </div>
@@ -1404,6 +1404,7 @@
                 c.style.display = (raiz || c.dataset.niveis.split(',').includes(nivel)) ? 'block' : 'none';
             });
             carregarAvisoTI();
+            atualizarAbas();
             const ver = id => { const c = document.getElementById(id); return !!c && c.style.display === 'block'; };
             [
                 ['secao-resumo', carregarResumo], ['secao-tarefas', carregarMinhasTarefas], ['secao-tarefas-admin', carregarTarefasAdmin],
@@ -1447,7 +1448,7 @@
                 const b = document.createElement('button');
                 b.type = 'button'; b.dataset.alvo = id;
                 b.innerHTML = `<i class="bi ${m.icon}"></i><span>${esc(nomesCurtos[id] || m.label)}</span>`;
-                b.onclick = () => el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                b.onclick = () => irPara(id);
                 bar.appendChild(b);
                 observadorBarra.observe(el);
             });
@@ -1470,7 +1471,7 @@
                 a.onclick = e => {
                     e.preventDefault();
                     const el = document.getElementById(modulo.id);
-                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    if (el) irPara(m.id);
                     const inst = bootstrap.Offcanvas.getInstance(document.getElementById('sidebarMenu'));
                     if (inst) inst.hide();
                 };
@@ -1753,7 +1754,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button data-acao="excluirSugestao" data-id="${esc(s.id)}" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Apagar</button>
+                        <button data-acao="excluirSugestao" data-id="${esc(s.id)}" class="btn btn-outline-danger btn-sm py-0 ms-2" style="font-size: 11px;">Excluir</button>
                     </div>`;
             });
             container.innerHTML = html + '</div>';
@@ -2431,6 +2432,7 @@
             nivelPreview = nivel || null;
             aplicarVisibilidade();
             document.querySelectorAll('.card-root').forEach(c => c.style.display = nivelPreview ? 'none' : 'block');
+            atualizarAbas();
             renderizarMenuLateral({ nivel: nivelPreview || 'admin' });
             renderizarBarraInferior(nivelPreview || 'admin');
             document.getElementById('banner-preview').classList.toggle('d-none', !nivelPreview);
@@ -2470,7 +2472,8 @@
 
         /* ================= CENTRAL DE ALERTAS E UTILITÁRIOS (só o e-mail raiz) ================= */
 
-        const VERSAO_SISTEMA = '2026.10.16';
+        const VERSAO_SISTEMA = '2026.10.18';
+        const DATA_ULTIMA_ATUALIZACAO = '18/10/2026';
         let nivelReal = null, travas = {};
         function aplicarVisibilidade() {
             if (!nivelReal) return;
@@ -4312,6 +4315,82 @@
                     .then(() => registrarAcao('Nível de cargo alterado', `${nv.dataset.id} → ${nv.value}`)).catch(err => erroDB(err, 'nivelCargo'));
             }
         });
-    </script>
+    
+        /* ================= ABAS DO PAINEL ================= */
+        const ABAS = [
+            ['inicio', 'Início', ['secao-resumo', 'secao-tarefas', 'secao-tarefas-admin', 'secao-novidades', 'secao-ajuda', 'secao-guia']],
+            ['comunicacao', 'Comunicação', ['secao-mural', 'secao-divulgacao', 'secao-artes', 'secao-enquetes-criar', 'secao-enquetes-lista', 'secao-videos', 'secao-estudos', 'secao-pautas', 'secao-sugestoes']],
+            ['alunos', 'Alunos', ['secao-alunos-cadastrar', 'secao-alunos-massa', 'secao-alunos-lista', 'secao-punicoes']],
+            ['atividades', 'Atividades', ['secao-eventos', 'secao-jogos', 'secao-materiais', 'secao-cultura', 'secao-racial', 'secao-racial-enc', 'secao-racial-apoio', 'secao-rel-cult', 'secao-rel-racial']],
+            ['financeiro', 'Financeiro', ['secao-caixa', 'secao-tes-orc', 'secao-tes-contas', 'secao-rel-tes']],
+            ['diretoria', 'Diretoria', ['secao-diretoria', 'secao-atas', 'secao-relatorio-mensal', 'secao-relatorio', 'secao-auditoria']],
+            ['ti', 'TI', []],
+            ['outros', 'Outros', []]
+        ];
+
+        function montarAbas() {
+            const cont = document.getElementById('conteudo-painel-geral');
+            if (!cont || document.getElementById('abas-painel')) return;
+            const nav = document.createElement('div');
+            nav.id = 'abas-painel';
+            nav.className = 'd-flex gap-2 flex-wrap mb-4';
+            cont.insertBefore(nav, cont.firstChild);
+            ABAS.forEach(([key, rotulo, ids]) => {
+                const pane = document.createElement('div');
+                pane.dataset.abaPane = key;
+                pane.style.display = 'none';
+                ids.forEach(id => { const el = document.getElementById(id); if (el) pane.appendChild(el); });
+                cont.appendChild(pane);
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-sm btn-outline-light';
+                btn.dataset.abaBtn = key;
+                btn.textContent = rotulo;
+                btn.style.display = 'none';
+                btn.onclick = () => mostrarAba(key, true);
+                nav.appendChild(btn);
+            });
+            // cartões que ainda não têm aba: os de TI vão para a aba TI; os demais para "Outros"
+            [...cont.children].filter(el => el.id && el.id.startsWith('secao-')).forEach(el => {
+                const destino = el.classList.contains('card-root') ? 'ti' : 'outros';
+                cont.querySelector(`[data-aba-pane="${destino}"]`).appendChild(el);
+            });
+            const rodape = document.createElement('div');
+            rodape.id = 'rodape-painel';
+            rodape.className = 'text-center text-muted-custom small mt-4 mb-2';
+            rodape.textContent = `Grêmio Estudantil IFCE Crateús · versão ${VERSAO_SISTEMA} · última atualização ${DATA_ULTIMA_ATUALIZACAO}`;
+            cont.appendChild(rodape);
+        }
+        function mostrarAba(key, rolar) {
+            document.querySelectorAll('[data-aba-pane]').forEach(p => p.style.display = p.dataset.abaPane === key ? 'block' : 'none');
+            document.querySelectorAll('[data-aba-btn]').forEach(b => {
+                const ativo = b.dataset.abaBtn === key;
+                b.classList.toggle('btn-success', ativo);
+                b.classList.toggle('btn-outline-light', !ativo);
+            });
+            if (rolar) document.getElementById('abas-painel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        function atualizarAbas() {
+            if (!document.getElementById('abas-painel')) return;
+            let primeira = null;
+            document.querySelectorAll('[data-aba-btn]').forEach(b => {
+                const pane = document.querySelector(`[data-aba-pane="${b.dataset.abaBtn}"]`);
+                const visiveis = pane ? [...pane.children].filter(c => getComputedStyle(c).display !== 'none').length : 0;
+                b.style.display = visiveis ? '' : 'none';
+                if (visiveis && !primeira) primeira = b.dataset.abaBtn;
+            });
+            const atual = document.querySelector('[data-aba-btn].btn-success');
+            if (atual && atual.style.display !== 'none') mostrarAba(atual.dataset.abaBtn, false);
+            else if (primeira) mostrarAba(primeira, false);
+        }
+        function irPara(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const pane = el.closest('[data-aba-pane]');
+            if (pane && pane.style.display === 'none') mostrarAba(pane.dataset.abaPane, false);
+            setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
+        }
+        montarAbas();
+</script>
 </body>
 </html>
