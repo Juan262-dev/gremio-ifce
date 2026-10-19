@@ -151,12 +151,13 @@ body{background-color:#f4f6f9}
   </div>
 
   <div id="sec-quiz" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🧠 Quiz de estudo</h5>
-    <p class="text-muted small mb-3">Escolha o modo e responda. Suas respostas não são guardadas.</p>
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🧠 Quiz e prova sob medida</h5>
+    <p class="text-muted small mb-2">Escolha as matérias, quantas questões quer e o modo. As questões são sorteadas na hora. Suas respostas não são guardadas.</p>
+    <div id="quiz-discs" class="mb-2"></div>
     <div class="row g-2 mb-2">
-      <div class="col-6"><select id="quiz-disc" class="form-select form-select-sm"><option value="">Todas as disciplinas</option></select></div>
-      <div class="col-6"><select id="quiz-modo" class="form-select form-select-sm"><option value="treino">Treino (resposta na hora)</option><option value="prova">Prova (10 minutos)</option></select></div>
-      <div class="col-12"><button onclick="quizIniciar()" class="btn btn-ifce btn-sm fw-bold w-100">Começar</button></div>
+      <div class="col-4"><select id="quiz-qtd" class="form-select form-select-sm"><option value="5">5 questões</option><option value="10">10 questões</option><option value="15">15 questões</option></select></div>
+      <div class="col-8"><select id="quiz-modo" class="form-select form-select-sm"><option value="treino">Treino (resposta na hora)</option><option value="prova">Prova simulada (2 min por questão)</option></select></div>
+      <div class="col-12"><button onclick="quizIniciar()" class="btn btn-ifce btn-sm fw-bold w-100">Gerar e começar</button></div>
     </div>
     <small id="quiz-info" class="text-muted d-block mb-2"></small>
     <div id="quiz-box"></div>
@@ -857,25 +858,607 @@ function carregarMeusChamados() {
   });
 }
 
+/* ---------- questões do 1º ano: geradas na hora (contas com gabarito calculado) ---------- */
+const aleat = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const escolhe = arr => arr[Math.floor(Math.random() * arr.length)];
+const formatarNum = v => (Math.round(v * 100) / 100).toString().replace('.', ',');
+function montarQuestao(disciplina, enunciado, certa, errados, explicacao, formatar) {
+  const fmt = formatar || formatarNum;
+  const todas = [fmt(certa)];
+  errados.forEach(v => { const t = fmt(v); if (todas.length < 4 && !todas.includes(t)) todas.push(t); });
+  let k = 1;
+  while (todas.length < 4) { const t = fmt(certa + k * 3); if (!todas.includes(t)) todas.push(t); k++; }
+  const ordem = todas.map((t, i) => ({ t, i })).sort(() => Math.random() - 0.5);
+  return { disciplina, enunciado, alternativas: ordem.map(o => o.t), correta: ordem.findIndex(o => o.i === 0), explicacao };
+}
+function misturar(q) {
+  const ordem = q.alternativas.map((t, i) => ({ t, i })).sort(() => Math.random() - 0.5);
+  return { ...q, alternativas: ordem.map(o => o.t), correta: ordem.findIndex(o => o.i === Number(q.correta)) };
+}
+/* ---------- código genético (tabela de códons da aula de Biologia I) ---------- */
+const CODONS = {
+  UUU: 'Fenilalanina', UUC: 'Fenilalanina', UUA: 'Leucina', UUG: 'Leucina',
+  UCU: 'Serina', UCC: 'Serina', UCA: 'Serina', UCG: 'Serina',
+  UAU: 'Tirosina', UAC: 'Tirosina', UAA: 'Stop', UAG: 'Stop',
+  UGU: 'Cisteína', UGC: 'Cisteína', UGA: 'Stop', UGG: 'Triptofano',
+  CUU: 'Leucina', CUC: 'Leucina', CUA: 'Leucina', CUG: 'Leucina',
+  CCU: 'Prolina', CCC: 'Prolina', CCA: 'Prolina', CCG: 'Prolina',
+  CAU: 'Histidina', CAC: 'Histidina', CAA: 'Glutamina', CAG: 'Glutamina',
+  CGU: 'Arginina', CGC: 'Arginina', CGA: 'Arginina', CGG: 'Arginina',
+  AUU: 'Isoleucina', AUC: 'Isoleucina', AUA: 'Isoleucina', AUG: 'Metionina',
+  ACU: 'Treonina', ACC: 'Treonina', ACA: 'Treonina', ACG: 'Treonina',
+  AAU: 'Asparagina', AAC: 'Asparagina', AAA: 'Lisina', AAG: 'Lisina',
+  AGU: 'Serina', AGC: 'Serina', AGA: 'Arginina', AGG: 'Arginina',
+  GUU: 'Valina', GUC: 'Valina', GUA: 'Valina', GUG: 'Valina',
+  GCU: 'Alanina', GCC: 'Alanina', GCA: 'Alanina', GCG: 'Alanina',
+  GAU: 'Ácido aspártico', GAC: 'Ácido aspártico', GAA: 'Ácido glutâmico', GAG: 'Ácido glutâmico',
+  GGU: 'Glicina', GGC: 'Glicina', GGA: 'Glicina', GGG: 'Glicina'
+};
+function sortear(lista, n) { return [...lista].sort(() => Math.random() - 0.5).slice(0, n); }
+const COMP_DNA = { A: 'T', T: 'A', C: 'G', G: 'C' };
+const COMP_RNA_DE_DNA = { A: 'U', T: 'A', C: 'G', G: 'C' };
+const GERADORES_BIO = [
+  { disciplina: 'Biologia I', gerar: () => {
+      const fita = Array.from({ length: 6 }, () => escolhe(['A', 'T', 'C', 'G'])).join('');
+      const i = aleat(0, 5), certa = COMP_DNA[fita[i]];
+      return montarQuestao('Biologia I', `Em uma molécula de DNA, a fita 1 tem a sequência ${fita}. Qual base está pareada com a base da posição ${i + 1} dessa fita?`, certa, ['A', 'T', 'C', 'G'].filter(b => b !== certa), `Pareamento: A com T, e C com G. A base ${fita[i]} pareia com ${certa}.`, v => String(v));
+  } },
+  { disciplina: 'Biologia I', gerar: () => {
+      const fita = Array.from({ length: 6 }, () => escolhe(['A', 'T', 'C', 'G'])).join('');
+      const certa = fita.split('').map(b => COMP_RNA_DE_DNA[b]).join('');
+      const outros = new Set();
+      [fita.split('').map(b => COMP_DNA[b]).join(''), certa.split('').reverse().join('')].forEach(c => { if (c !== certa) outros.add(c); });
+      while (outros.size < 3) { const r = Array.from({ length: 6 }, () => escolhe(['A', 'U', 'C', 'G'])).join(''); if (r !== certa) outros.add(r); }
+      return montarQuestao('Biologia I', `Uma fita de DNA molde tem a sequência ${fita}. Qual é a sequência do RNA mensageiro transcrito a partir dela?`, certa, [...outros].slice(0, 3), `Na transcrição, cada base do DNA gera a complementar no RNA: A→U, T→A, C→G, G→C. Resultado: ${certa}.`, v => String(v));
+  } },
+  { disciplina: 'Biologia I', gerar: () => {
+      const codons = Object.keys(CODONS).filter(c => CODONS[c] !== 'Stop');
+      const c = escolhe(codons), aa = CODONS[c];
+      const outros = [...new Set(Object.values(CODONS).filter(v => v !== 'Stop' && v !== aa))];
+      return montarQuestao('Biologia I', `Qual aminoácido é codificado pelo códon ${c} do RNA mensageiro?`, aa, sortear(outros, 3), `Na tabela de códons, ${c} corresponde a ${aa}.`, v => String(v));
+  } },
+  { disciplina: 'Biologia I', gerar: () => {
+      const cod = escolhe(Object.keys(CODONS).filter(c => CODONS[c] !== 'Stop'));
+      const comp = cod.split('').map(b => ({ A: 'U', U: 'A', G: 'C', C: 'G' })[b]).join('');
+      const outros = new Set([cod]);
+      outros.add(comp.split('').reverse().join('')).delete(comp);
+      while (outros.size < 3) { const r = Array.from({ length: 3 }, () => escolhe(['A', 'U', 'C', 'G'])).join(''); if (r !== comp) outros.add(r); }
+      return montarQuestao('Biologia I', `No RNA mensageiro, um códon é ${cod} (lido de 5' para 3'). Qual é o anticódon do tRNA que se liga a ele, escrito de 3' para 5'?`, comp, [...outros].slice(0, 3), `O anticódon é complementar ao códon: A→U, U→A, G→C, C→G. Escrito de 3' para 5', fica ${comp}.`, v => String(v));
+  } }
+];
+const GERADORES = [
+  { disciplina: 'Química Básica', gerar: () => {
+      const [nome, f, M] = escolhe([['água', 'H₂O', 18], ['gás carbônico', 'CO₂', 44], ['hidróxido de sódio', 'NaOH', 40], ['ácido sulfúrico', 'H₂SO₄', 98], ['carbonato de cálcio', 'CaCO₃', 100], ['oxigênio', 'O₂', 32], ['glicose', 'C₆H₁₂O₆', 180]]);
+      return montarQuestao('Química Básica', `Qual é a massa molar, em g/mol, do(a) ${nome} (${f})?`, M, [M + 2, M - 2, M * 2], `A massa molar é a soma das massas atômicas dos átomos de ${f}: ${M} g/mol.`);
+  } },
+  { disciplina: 'Química Básica', gerar: () => {
+      const [nome, f, M] = escolhe([['água', 'H₂O', 18], ['gás carbônico', 'CO₂', 44], ['hidróxido de sódio', 'NaOH', 40], ['oxigênio', 'O₂', 32], ['glicose', 'C₆H₁₂O₆', 180]]);
+      const n = aleat(1, 6), m = n * M;
+      return montarQuestao('Química Básica', `Quantos mols existem em ${m} g de ${nome} (${f})? Massa molar = ${M} g/mol.`, n, [n + 1, n + 2, n * 2], `n = m / M = ${m} / ${M} = ${n} mol.`);
+  } },
+  { disciplina: 'Química Básica', gerar: () => {
+      const V = aleat(2, 10), k = aleat(2, 20), m = V * k;
+      return montarQuestao('Química Básica', `Foram dissolvidos ${m} g de soluto em água até completar ${V} L de solução. Qual é a concentração comum, em g/L?`, k, [k + 1, k * 2, k + 5], `C = m / V = ${m} / ${V} = ${k} g/L.`);
+  } },
+  { disciplina: 'Química Básica', gerar: () => {
+      const C1 = aleat(2, 10) * 2, fator = escolhe([2, 4, 5]), C2 = C1 / fator, V1 = aleat(1, 10) * 10, V2 = V1 * fator;
+      return montarQuestao('Química Básica', `Para diluir ${V1} mL de uma solução de ${formatarNum(C1)} g/L até ${formatarNum(C2)} g/L, qual deve ser o volume final, em mL?`, V2, [V1 + fator, V2 + 10, V2 / 2], `C1·V1 = C2·V2  →  ${C1}·${V1} = ${formatarNum(C2)}·V2  →  V2 = ${V2} mL.`);
+  } },
+  { disciplina: 'Química Básica', gerar: () => {
+      const D = aleat(2, 10), k = aleat(2, 12), m = D * k;
+      return montarQuestao('Química Básica', `Um objeto tem massa ${m} g e volume ${D} cm³. Qual é a densidade, em g/cm³?`, k, [k + 1, k * 2, D], `d = m / V = ${m} / ${D} = ${k} g/cm³.`);
+  } },
+  { disciplina: 'Matemática I', gerar: () => {
+      const a = escolhe([2, 3, 4, 5, -2, -3]), x0 = aleat(-5, 8), b = -a * x0;
+      const sinal = b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`;
+      return montarQuestao('Matemática I', `Qual é a raiz da função f(x) = ${a}x ${sinal}?`, x0, [x0 + 1, -x0, x0 - 2], `f(x) = 0  →  ${a}x = ${-b}  →  x = ${x0}.`);
+  } },
+  { disciplina: 'Matemática I', gerar: () => {
+      const p = escolhe([5, 10, 15, 20, 25, 30, 40, 50, 75]), N = aleat(2, 40) * 20, r = p * N / 100;
+      return montarQuestao('Matemática I', `Quanto é ${p}% de ${N}?`, r, [r + 10, r / 2, p * N / 10], `${p}% de ${N} = ${p}/100 · ${N} = ${r}.`);
+  } },
+  { disciplina: 'Matemática I', gerar: () => {
+      const q1 = escolhe([2, 3, 4, 5]), p = aleat(2, 15), total = q1 * p, m = aleat(5, 20), certa = m * p;
+      return montarQuestao('Matemática I', `Se ${q1} cadernos iguais custam R$ ${total}, quanto custam ${m} cadernos iguais?`, certa, [certa + p, total, certa * 2], `Cada caderno custa R$ ${p}. Logo, ${m} cadernos custam ${m} · ${p} = R$ ${certa}.`, v => 'R$ ' + formatarNum(v));
+  } },
+  { disciplina: 'Matemática I', gerar: () => {
+      const b = aleat(2, 12), h = aleat(2, 12);
+      return montarQuestao('Matemática I', `Um retângulo tem base ${b} cm e altura ${h} cm. Qual é a área, em cm²?`, b * h, [2 * (b + h), b + h, b * h + b], `A área é base × altura = ${b} × ${h} = ${b * h} cm².`);
+  } },
+  { disciplina: 'Física I', gerar: () => {
+      const v = aleat(2, 20) * 5, t = aleat(2, 10), s0 = aleat(0, 5) * 10, s = s0 + v * t;
+      return montarQuestao('Física I', `Um carro se move em movimento uniforme, com posição inicial ${s0} m e velocidade ${v} m/s. Qual é a posição após ${t} s?`, s, [v * t, s0 + v + t, s + 10], `s = s₀ + v·t = ${s0} + ${v}·${t} = ${s} m.`);
+  } },
+  { disciplina: 'Física I', gerar: () => {
+      const dt = aleat(2, 10), k = aleat(2, 15), ds = dt * k;
+      return montarQuestao('Física I', `Um ciclista percorre ${ds} m em ${dt} s, em velocidade constante. Qual é a velocidade média, em m/s?`, k, [k + 2, k * 2, dt], `v = Δs / Δt = ${ds} / ${dt} = ${k} m/s.`);
+  } },
+  { disciplina: 'Física I', gerar: () => {
+      const x = aleat(2, 30), kmh = Math.round(x * 3.6 * 10) / 10;
+      return montarQuestao('Física I', `Um veículo anda a ${formatarNum(kmh)} km/h. Qual é a velocidade em m/s?`, x, [x + 3, x * 2, kmh], `Para converter km/h em m/s, divide-se por 3,6: ${formatarNum(kmh)} / 3,6 = ${x} m/s.`);
+  } },
+  ...GERADORES_BIO
+];
+const ENEM2025 = [
+  {
+    "disciplina": "Língua Portuguesa I",
+    "enunciado": "A diferença entre briga e luta é a existência de juízes e medalhas? A briga desumaniza o outro e pode até matá-lo. Já na luta, as intenções do outro são consideradas sua proposta combativa e suas habilidades, enfim, sua meta de vencer. Na luta, o desenvolvimento passa pelo contato com a agressividade, a raiva, a frustração, o orgulho, a determinação e a fraqueza. Esse texto apresenta as diferenças entre briga e luta, na medida em que aponta o(a):",
+    "alternativas": [
+      "superação pessoal na luta.",
+      "violência evidenciada na luta.",
+      "predomínio de regras na briga.",
+      "desafio externo presente na luta."
+    ],
+    "correta": 0,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 27 (INEP)."
+  },
+  {
+    "disciplina": "Língua Portuguesa I",
+    "enunciado": "Com todas as atenções voltadas para o outro asteroide, o que passou de raspão, o asteroide da Sibéria entrou pela porta dos fundos sem ser detectado. A desculpa é que era pequeno demais para chamar a atenção e por isso os alarmes não funcionaram. Com base na organização coesiva desse texto, o(a):",
+    "alternativas": [
+      "palavra “isso” remete ao segmento textual posterior “os alarmes não funcionaram”.",
+      "expressão “sua trajetória” refere-se ao elemento textual “qualquer detrito espacial”.",
+      "oração “que passou de raspão” refere-se ao “meteoro que cruzou o céu da Sibéria”.",
+      "pronome “o” em “o que nos daria tempo” remete a “ou usar nossos cartões de crédito”."
+    ],
+    "correta": 1,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 38 (INEP)."
+  },
+  {
+    "disciplina": "Filosofia I",
+    "enunciado": "A credulidade dos ouvintes aumenta o descaramento do narrador, e o descaramento deste conquista-lhes a credulidade. A eloquência, quando levada a seu patamar mais alto, deixa pouco lugar à razão ou à reflexão, mas, dirigindo-se inteiramente à imaginação e aos afetos, cativa os ouvintes condescendentes e subjuga-lhes o entendimento. No contexto do século XVIII, o autor propõe uma reflexão radical acerca da arte da eloquência, restringindo-a ao:",
+    "alternativas": [
+      "domínio da lógica, consoante a compreensão aristotélica nos Analíticos.",
+      "sistema de crenças, conforme a proposta kantiana de objetividade do conhecimento.",
+      "âmbito da persuasão, análogo às críticas platônicas aos sofistas.",
+      "campo dos absolutos, semelhante ao entendimento medieval dos Universais."
+    ],
+    "correta": 2,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 48 (INEP)."
+  },
+  {
+    "disciplina": "Filosofia I",
+    "enunciado": "O direito não é a justiça. O direito é o elemento do cálculo, é justo que haja um direito, mas a justiça é incalculável, ela exige que se calcule o incalculável; e as experiências aporéticas são experiências tão improváveis quanto necessárias da justiça, isto é, são momentos em que a decisão entre o justo e o injusto nunca é garantida por uma regra. De acordo com o texto, ainda que estejam em desconformidade com o ordenamento jurídico, são exemplos de ação justa:",
+    "alternativas": [
+      "casos de desobediência civil.",
+      "manifestações do movimento sindical.",
+      "repressões do aparato estatal.",
+      "mobilizações de agremiações estudantis."
+    ],
+    "correta": 0,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 50 (INEP)."
+  },
+  {
+    "disciplina": "Filosofia I",
+    "enunciado": "O corpo de cidadãos é o poder supremo dos Estados. A supremacia pode residir ou num homem, ou na minoria, ou em todos. Sempre que o Um, ou a Minoria, ou Todos governam, tendo em vista o bem-estar comum, essas constituições são justas; mas se procuram apenas o benefício de uma das partes, seja ela o Um, a Minoria ou Todos, estabelece-se um desvio. No excerto encontra-se a base da teoria clássica das três formas de governo representadas pela:",
+    "alternativas": [
+      "ditadura, autocracia e anarquia.",
+      "plutocracia, tecnocracia e demagogia.",
+      "monarquia, aristocracia e democracia.",
+      "burocracia, autarquia e império."
+    ],
+    "correta": 2,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 61 (INEP)."
+  },
+  {
+    "disciplina": "Filosofia I",
+    "enunciado": "Para que a utopia nasça, é preciso duas condições. A primeira é a forte sensação de que o mundo não está funcionando adequadamente e deve ter seus fundamentos revistos para que se reajuste. A segunda condição é a existência de uma confiança no potencial humano à altura da tarefa de reformar o mundo. De acordo com o autor, qual é a função da utopia no contexto das transformações sociais?",
+    "alternativas": [
+      "perpetuar paradigmas científicos.",
+      "legitimar experiências pretéritas.",
+      "apontar alternativas possíveis.",
+      "habilitar memórias afetivas."
+    ],
+    "correta": 2,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 62 (INEP)."
+  },
+  {
+    "disciplina": "Filosofia I",
+    "enunciado": "Um nome para o que sou, importa muito pouco. Importa o que eu gostaria de ser. O que eu gostaria de ser era uma lutadora. Quero dizer, uma pessoa que luta pelo bem dos outros. Isso desde pequena eu quis. A reflexão contida no texto faz referência aos pressupostos de uma doutrina ética representada pelo:",
+    "alternativas": [
+      "pensamento altruísta.",
+      "referencial hedonista.",
+      "estado eudaimônico.",
+      "movimento antiespecista."
+    ],
+    "correta": 0,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 65 (INEP)."
+  },
+  {
+    "disciplina": "Filosofia I",
+    "enunciado": "TEXTO I: Em conjunto: todo e não todo, unido e separado, em consonância e em dissonância. De todos um e de um todos. (Fragmento B10) TEXTO II: Deus é dia-noite, inverno-verão, guerra-paz, saciedade-fome. (Fragmento B67) A característica do pensamento do filósofo Heráclito, registrada nos fragmentos mencionados, é a ênfase na:",
+    "alternativas": [
+      "qualidade imperecível do mundo.",
+      "desordem incontornável das coisas.",
+      "imobilidade imanente do universo.",
+      "distribuição dicotômica do cosmos."
+    ],
+    "correta": 3,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 72 (INEP)."
+  },
+  {
+    "disciplina": "Filosofia I",
+    "enunciado": "A missão dos governantes consiste em promover a felicidade da sociedade, punindo e recompensando. A parte da missão de governo que consiste em punir constitui mais particularmente o objeto da lei penal. A obrigatoriedade ou necessidade de punir uma ação é proporcional à medida que tal ação tende a perturbar a felicidade. A felicidade consiste naquilo que já vimos, ou seja, em desfrutar prazeres e em estar isento de dores. Qual perspectiva de justiça emerge da relação, estabelecida no texto, entre punição e felicidade?",
+    "alternativas": [
+      "aplicação de meios para atingir um fim.",
+      "sobreposição de princípios para fundamentar um direito.",
+      "criação de parâmetros para reconhecer uma prescrição.",
+      "imposição de regras para estabelecer um dever."
+    ],
+    "correta": 0,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 79 (INEP)."
+  },
+  {
+    "disciplina": "Filosofia I",
+    "enunciado": "A cidade justa é governada pelos filósofos, administrada pelos cientistas, protegida pelos guerreiros e mantida pelos produtores. Cada classe cumprirá sua função para o bem da pólis, racionalmente dirigida pelos filósofos. Em contrapartida, a cidade injusta é aquela onde o governo está nas mãos dos proprietários. O texto apresenta a estrutura de governo da cidade ideal pensada por Platão, que postula uma indissociabilidade entre:",
+    "alternativas": [
+      "ética e exercício do poder.",
+      "mitologia e teorias cosmogônicas.",
+      "cidadania e primazia da retórica.",
+      "cognoscência e relação intersubjetiva."
+    ],
+    "correta": 0,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 82 (INEP)."
+  },
+  {
+    "disciplina": "Sociologia I",
+    "enunciado": "Independência de pensamento, autonomia e direito à oposição política estão perdendo sua função crítica básica numa sociedade que parece cada vez mais capaz de atender às necessidades dos indivíduos através da forma pela qual é organizada. Qual é a característica da sociedade industrial do século XX apresentada no texto?",
+    "alternativas": [
+      "desobediência civil.",
+      "relativismo moral.",
+      "gestão integrada.",
+      "realidade unidimensional."
+    ],
+    "correta": 3,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 66 (INEP)."
+  },
+  {
+    "disciplina": "Sociologia I",
+    "enunciado": "Fragmentada em pequenos grupos, fragilizada pela ausência de algum tipo de organização ampla, tendo que carregar o peso do preconceito racial que se transfere do negro para a cultura negra, a religião dos orixás tem poucas chances de se sair melhor na competição com outras religiões. No processo de invisibilização dos cultos afro-brasileiros, o texto associa os seguintes elementos essenciais:",
+    "alternativas": [
+      "insuficiência de estruturas decisórias e exclusão da dialogicidade.",
+      "inexistência de direitos constitucionais e negação do ecumenismo.",
+      "ausência de soluções partidárias e rejeição da laicidade.",
+      "precariedade de coesão representativa e recusa da alteridade."
+    ],
+    "correta": 3,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 74 (INEP)."
+  },
+  {
+    "disciplina": "Sociologia I",
+    "enunciado": "Os direitos do homem constituem uma classe variável, como a história destes últimos séculos demonstra suficientemente. O elenco dos direitos do homem se modificou, e continua a se modificar, com a mudança das condições históricas, ou seja, dos carecimentos e dos interesses, das classes no poder, dos meios disponíveis para a realização dos mesmos. Os argumentos apresentados no texto sustentam que os direitos humanos são variáveis porque os considera como:",
+    "alternativas": [
+      "convenções coletivas.",
+      "resquícios religiosos.",
+      "fenômenos espontâneos.",
+      "conquistas atemporais."
+    ],
+    "correta": 0,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 76 (INEP)."
+  },
+  {
+    "disciplina": "Sociologia I",
+    "enunciado": "Em decorrência da naturalização da inferioridade social da mulher e da concepção de justiça do Estado, baseada na igualdade abstratamente concebida, torna-se possível convencer o Estado burguês a conceber e implementar políticas públicas cujo conteúdo se define pela discriminação positiva de mulheres. No contexto atual, qual medida atende ao tipo de política pública abordada no texto?",
+    "alternativas": [
+      "criação de delegacia especializada.",
+      "diminuição da jornada de trabalho.",
+      "ampliação do sufrágio universal.",
+      "extinção do crime de feminicídio."
+    ],
+    "correta": 0,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 81 (INEP)."
+  },
+  {
+    "disciplina": "História I",
+    "enunciado": "Não há consenso em torno do nome dado à pandemia, tendo, desde o seu início, sido chamada de gripe espanhola provavelmente por causa da desinformação em torno da notícia sobre sua origem. Uma das hipóteses deriva da neutralidade espanhola na Primeira Guerra Mundial e a consequente liberdade de imprensa naquele país. De acordo com o texto, a denominação recebida pela pandemia do começo do século XX foi determinada pelo(a):",
+    "alternativas": [
+      "emprego de armas biológicas em confrontos transnacionais.",
+      "precariedade dos conhecimentos da medicina militar.",
+      "controle dos relatos oriundos de campos de batalha.",
+      "retaliação da tríplice aliança aos soldados desertores."
+    ],
+    "correta": 2,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 52 (INEP)."
+  },
+  {
+    "disciplina": "História I",
+    "enunciado": "Em 1872, havia mais de 1 milhão de votantes, correspondentes a 13% da população livre. Em 1886, votaram nas eleições parlamentares pouco mais de 100 mil eleitores, ou 0,8% da população total. Houve um corte de quase 90% do eleitorado. De acordo com o texto, a participação no processo eleitoral brasileiro após a Reforma de 1881 sofreu uma variação que se explica pela:",
+    "alternativas": [
+      "comprovação de domicílio.",
+      "exclusão de imigrantes.",
+      "exigência da alfabetização.",
+      "restrição de gênero."
+    ],
+    "correta": 2,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 58 (INEP)."
+  },
+  {
+    "disciplina": "História I",
+    "enunciado": "Em toda a sua carreira política, Getúlio Vargas sempre contara com o seu talento pessoal de persuasão e poder de manipulação. Agora, porém, seus amigos começavam a perceber que ele parecia envelhecido e cansado. A principal figura da oposição era o belicoso jornalista Carlos Lacerda. Esses seguidores decidiram tomar o assunto em suas próprias mãos com o atentado da Rua Tonelero. Nesse contexto, a ação dos aliados de Getúlio Vargas teve como consequência imediata o(a):",
+    "alternativas": [
+      "mobilização da sociedade na defesa do governo.",
+      "intervenção dos sindicatos no conflito partidário.",
+      "intensificação dos ataques do grupo udenista.",
+      "abandono da censura aos meios de comunicação."
+    ],
+    "correta": 2,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 64 (INEP)."
+  },
+  {
+    "disciplina": "História I",
+    "enunciado": "A difusão pelos cônegos do ideal apostólico, bem como a influência dos eremitas e dos pregadores errantes que na sua esteira propagavam temas evangélicos, contribuíram para fazer nascer, entre os fiéis, o desejo de obterem a sua salvação. Pela primeira vez, a Igreja entreabria as portas da graça em benefício da totalidade dos fiéis, colocando, como única condição, a sua partida para o Oriente. Conforme o texto, no imaginário dos fiéis cristãos do período medieval, a salvação era alcançada por meio das:",
+    "alternativas": [
+      "palavras escritas.",
+      "práticas litúrgicas.",
+      "ideias messiânicas.",
+      "ações voluntárias."
+    ],
+    "correta": 3,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 69 (INEP)."
+  },
+  {
+    "disciplina": "História I",
+    "enunciado": "Moradores de Berlim protestaram contra a demolição de um trecho do muro que dividiu a cidade durante quase três décadas. Tratado como patrimônio cultural e histórico da cidade, o East Side Gallery, repleto de grafites emblemáticos, está na mira de uma construtora que pretende levantar um condomínio de luxo. A demolição do símbolo histórico mencionado representa uma:",
+    "alternativas": [
+      "alteração das fronteiras políticas.",
+      "violação da memória coletiva.",
+      "negação das influências orientais.",
+      "adesão à arquitetura neoclássica."
+    ],
+    "correta": 1,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 71 (INEP)."
+  },
+  {
+    "disciplina": "História I",
+    "enunciado": "Entre esses preconceitos estava o canibalismo. A prática não era, porém, uma mentira, uma invenção europeia, mas um ritual controlado por regras. Entre os tupis, por exemplo, os guerreiros se sentiam honrados quando morriam em um banquete canibal. Para os europeus, no entanto, comer carne humana era abominável. No texto, europeus e ameríndios atribuíram à prática relatada, respectivamente, o significado de:",
+    "alternativas": [
+      "intolerância — violência.",
+      "impetuosidade — resistência.",
+      "selvageria — empoderamento.",
+      "fanatismo — humilhação."
+    ],
+    "correta": 2,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 73 (INEP)."
+  },
+  {
+    "disciplina": "História I",
+    "enunciado": "A Roda dos Expostos de Salvador (Bahia) data de 1726 e foi uma das instituições implantadas com o objetivo de acolher e prover um encaminhamento para a criança recém-nascida abandonada. Essa assistência fundamentava-se em práticas caritativas, paternalistas e imediatistas que visavam ao cuidado básico da criança e, especialmente, à salvação da sua alma, via batismo. A instituição apresentada no texto justificava-se pelo(a):",
+    "alternativas": [
+      "reconhecimento de vínculos familiares.",
+      "discurso de cunho técnico-científico.",
+      "preceito de natureza sociorreligiosa.",
+      "defesa de direitos humanos."
+    ],
+    "correta": 2,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 78 (INEP)."
+  },
+  {
+    "disciplina": "História I",
+    "enunciado": "A Impressão Régia do Rio de Janeiro foi criada pelo decreto de 13 de maio de 1808 para dar continuidade à nova sede do império português. A nova tipografia é criada em um momento no qual o projeto de reforma do império se transforma em um projeto de construção de um novo império português na América. Frente às tensões políticas que essa nova situação criava, a tipografia atuou na legitimação e sustentação daquele projeto político. A função política da tecnologia mencionada no texto favoreceu a nova sede do Império português por:",
+    "alternativas": [
+      "propagar as diretrizes administrativas às capitanias.",
+      "integrar as regiões territoriais ao poder central.",
+      "estabelecer as normativas ideológicas aos periódicos.",
+      "divulgar as conquistas às metrópoles europeias."
+    ],
+    "correta": 1,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 83 (INEP)."
+  },
+  {
+    "disciplina": "História I",
+    "enunciado": "Durante a realeza, e nos primeiros anos republicanos, as leis eram transmitidas oralmente de uma geração para outra. A ausência de uma legislação escrita permitia aos patrícios manipular a justiça conforme seus interesses. A conjuntura sociopolítica da Roma Antiga, conforme apresentada no texto, foi contestada pelos:",
+    "alternativas": [
+      "camponeses, que aspiravam diminuir a jornada de trabalho.",
+      "plebeus, que almejavam participar da vida política.",
+      "nobres, que desejavam superar a relação de dependência.",
+      "monarcas, que queriam expandir o código jurídico."
+    ],
+    "correta": 1,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 87 (INEP)."
+  },
+  {
+    "disciplina": "História I",
+    "enunciado": "Em 1914, uma expedição estudantil saiu da Rússia em direção à América do Sul, sendo considerada a segunda campanha científica da Rússia no continente depois da longa viagem do barão Langsdorff pelo interior do Brasil. O empreendimento foi enviado pelo Museu de Antropologia e Etnografia de São Petersburgo. Além do significado científico, o evento mencionado conectava-se a um projeto nacionalista de caráter:",
+    "alternativas": [
+      "mercantil e predatório.",
+      "imperialista e colonizador.",
+      "lúdico e filantrópico.",
+      "militar e disciplinador."
+    ],
+    "correta": 1,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 90 (INEP)."
+  },
+  {
+    "disciplina": "Geografia I",
+    "enunciado": "Entrou em vigor, em 2019, o acordo que determina a mudança de nome da Macedônia para Macedônia do Norte. A troca põe fim, ao menos por enquanto, no impasse entre essa antiga república da Iugoslávia e a vizinha Grécia. Para o país originado da antiga Iugoslávia, a mudança de nome é uma estratégia política para:",
+    "alternativas": [
+      "proteger a cultura local.",
+      "expandir o território nacional.",
+      "criar a moeda própria.",
+      "intensificar a integração regional."
+    ],
+    "correta": 3,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 46 (INEP)."
+  },
+  {
+    "disciplina": "Geografia I",
+    "enunciado": "A ideia de êxodo urbano assume ares caricaturais. Pega a mais reduzida parte da pirâmide social e projeta para todos seus desejos defensivos. Se o êxodo urbano for compreendido como aquisição de uma segunda residência, então não estamos, de fato, falando de êxodo, mas da reversão de um excedente de renda de uma pequena fração da elite para as franjas metropolitanas. A crítica apresentada no texto evidencia uma dinâmica socioespacial marcada pela:",
+    "alternativas": [
+      "seletividade de deslocamentos populacionais.",
+      "redução de plantações agrícolas.",
+      "estagnação de atividades comerciais.",
+      "valorização de tradições rurais."
+    ],
+    "correta": 0,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 54 (INEP)."
+  },
+  {
+    "disciplina": "Geografia I",
+    "enunciado": "Por séculos, o Rio Reno tem sido uma rota de navegação confiável, ajudando a criar gigantes fabris ao longo de suas margens. No entanto, esses dias parecem estar no fim, pois o nível da água tem diminuído regularmente, o que impede a navegação fluvial do final do verão até o outono. Isso mostra como a crise climática atinge as economias dos países ricos. Qual é o efeito econômico do problema ambiental apresentado no texto?",
+    "alternativas": [
+      "inviabilização da agricultura de subsistência.",
+      "intensificação da atividade de pesca.",
+      "supressão da extração de minério.",
+      "encarecimento da logística de transporte."
+    ],
+    "correta": 3,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 56 (INEP)."
+  },
+  {
+    "disciplina": "Geografia I",
+    "enunciado": "Pela falta de chuvas, a geração de energia eólica, solar e térmica atingiu níveis recordes em agosto de 2021, quando as hidrelétricas ficaram com cerca de 50% do total. Se você diminui a floresta, diminui a quantidade de água que vai para a atmosfera. De acordo com o texto, a dificuldade na produção de energia é causada pela alteração da(s):",
+    "alternativas": [
+      "demandas em regiões industriais.",
+      "metas em acordos climáticos.",
+      "paisagem em locais estratégicos.",
+      "variável em pesquisas meteorológicas."
+    ],
+    "correta": 2,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 59 (INEP)."
+  },
+  {
+    "disciplina": "Geografia I",
+    "enunciado": "Nos Estados Unidos, um hotel perto de um parque foi engolido por uma enorme cratera. Os afundamentos são um fenômeno comum na Flórida por causa das formações de calcário e argila no subsolo, mas às vezes chuvas fortes, ou a drenagem do solo para construção, acabam contribuindo para o surgimento desses buracos. A situação de desmoronamento do solo descrita no texto origina-se da:",
+    "alternativas": [
+      "acumulação de sedimentos orgânicos.",
+      "recomposição da mata ciliar.",
+      "cristalização da estrutura geológica.",
+      "ação do intemperismo químico."
+    ],
+    "correta": 3,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 70 (INEP)."
+  },
+  {
+    "disciplina": "Geografia I",
+    "enunciado": "A partir do século XIX e, principalmente, no século XX, iniciou-se o uso de produtos sintéticos na agricultura. No Brasil, a partir da década de 1960 e, posteriormente, nos anos 1970, os inseticidas ampliam sua fatia no mercado dos defensivos agrícolas. Nos espaços agrícolas, a mudança técnica descrita provocou a diminuição da:",
+    "alternativas": [
+      "diversidade de polinizadores naturais.",
+      "desagregação de camadas pedológicas.",
+      "contaminação de lençóis freáticos.",
+      "produtividade da terra cultivada."
+    ],
+    "correta": 0,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 75 (INEP)."
+  },
+  {
+    "disciplina": "Geografia I",
+    "enunciado": "Cidade sustentável é o assentamento humano constituído por uma sociedade com consciência de seu papel de agente transformador dos espaços e cuja relação não se dá pela razão natureza-objeto, e sim por uma ação sinérgica entre prudência ecológica, eficiência energética e equidade socioespacial. Uma medida pública que contradiz o modelo de cidade exposto no texto é a:",
+    "alternativas": [
+      "canalização dos cursos hídricos.",
+      "arborização das avenidas centrais.",
+      "coleta seletiva de lixo.",
+      "reutilização das águas pluviais."
+    ],
+    "correta": 0,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 80 (INEP)."
+  },
+  {
+    "disciplina": "Geografia I",
+    "enunciado": "Com o objetivo de auxiliar a prevenção e o combate a incêndios no Cerrado, o Centro de Sensoriamento Remoto da Universidade Federal de Minas Gerais desenvolveu um modelo computacional capaz de prever o comportamento do fogo. Essa tecnologia integra o projeto Monitoramento do Cerrado, do qual também participa o Instituto Nacional de Pesquisas Espaciais. Em relação à causa ambiental, o uso da tecnologia mencionada indica a:",
+    "alternativas": [
+      "significância da cosmologia nativa.",
+      "influência da produção orgânica.",
+      "importância de pesquisas acadêmicas.",
+      "relevância da infraestrutura viária."
+    ],
+    "correta": 2,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 84 (INEP)."
+  },
+  {
+    "disciplina": "Geografia I",
+    "enunciado": "Pela primeira vez na história, o Brasil terá um prédio que usa energia do solo para climatizar seus ambientes. A energia geotérmica é aquela encontrada dentro da crosta terrestre, seja no solo, nas rochas ou mesmo na água, sendo identificada pela temperatura. Para o sistema elétrico brasileiro, a expansão de tecnologias como a descrita no texto representa uma tendência de:",
+    "alternativas": [
+      "estagnação do consumo em unidades industriais.",
+      "homogeneização da oferta da matriz produtiva.",
+      "ampliação do consumo em unidades residenciais.",
+      "redução da pressão sobre as usinas hidrelétricas."
+    ],
+    "correta": 3,
+    "explicacao": "Gabarito oficial do ENEM 2025 · 1º dia · caderno 1 (azul) · questão 86 (INEP)."
+  }
+];
+const BANCO_1ANO = [
+  { disciplina: 'Biologia I', enunciado: 'Qual organela é responsável pela respiração celular e pela produção de ATP?', alternativas: ['Mitocôndria', 'Ribossomo', 'Complexo de Golgi', 'Lisossomo'], correta: 0, explicacao: 'A mitocôndria realiza a respiração celular, que gera ATP, a principal fonte de energia da célula.' },
+  { disciplina: 'Biologia I', enunciado: 'Organismos que produzem o próprio alimento por fotossíntese são chamados de:', alternativas: ['Autótrofos', 'Heterótrofos', 'Decompositores', 'Consumidores primários'], correta: 0, explicacao: 'Autótrofos (como as plantas) fabricam o próprio alimento a partir de luz, água e gás carbônico.' },
+  { disciplina: 'Biologia I', enunciado: 'Qual é a unidade básica estrutural e funcional dos seres vivos?', alternativas: ['Célula', 'Tecido', 'Órgão', 'Molécula'], correta: 0, explicacao: 'A célula é a menor unidade capaz de realizar todas as funções vitais.' },
+  { disciplina: 'Biologia I', enunciado: 'Na cadeia alimentar, o nível trófico que ocupa a base é o dos:', alternativas: ['Produtores', 'Consumidores secundários', 'Decompositores', 'Consumidores terciários'], correta: 0, explicacao: 'Os produtores (plantas, algas e cianobactérias) fornecem energia para todos os outros níveis.' },
+  { disciplina: 'Biologia I', enunciado: 'Na célula eucarionte, qual estrutura guarda o material genético (DNA)?', alternativas: ['Núcleo', 'Vacúolo', 'Parede celular', 'Centríolo'], correta: 0, explicacao: 'O DNA fica no núcleo, separado do citoplasma por um envoltório nuclear.' },
+  { disciplina: 'História I', enunciado: 'Qual povo da Antiguidade criou a escrita cuneiforme?', alternativas: ['Sumérios', 'Egípcios', 'Romanos', 'Gregos'], correta: 0, explicacao: 'Os sumérios, na Mesopotâmia, desenvolveram a escrita cuneiforme, feita em tábuas de argila.' },
+  { disciplina: 'História I', enunciado: 'Em qual sistema político os cidadãos de Atenas participavam diretamente das decisões?', alternativas: ['Democracia', 'Monarquia absolutista', 'Feudalismo', 'Teocracia'], correta: 0, explicacao: 'Na democracia ateniense, os cidadãos (homens livres) votavam diretamente nas assembleias.' },
+  { disciplina: 'História I', enunciado: 'Qual era o principal sistema econômico e social da Europa medieval?', alternativas: ['Feudalismo', 'Capitalismo industrial', 'Socialismo', 'Mercantilismo'], correta: 0, explicacao: 'No feudalismo, a economia era baseada na terra, com servos trabalhando para senhores feudais.' },
+  { disciplina: 'História I', enunciado: 'Em que ano é tradicionalmente marcado o fim do Império Romano do Ocidente?', alternativas: ['476 d.C.', '1453', '1789', '1500'], correta: 0, explicacao: 'Em 476 d.C., Odoacro depôs o último imperador romano do Ocidente, Rômulo Augusto.' },
+  { disciplina: 'Geografia I', enunciado: 'Qual é o maior bioma brasileiro em extensão?', alternativas: ['Amazônia', 'Cerrado', 'Mata Atlântica', 'Caatinga'], correta: 0, explicacao: 'A Amazônia ocupa a maior parte do território brasileiro, com a maior floresta tropical do mundo.' },
+  { disciplina: 'Geografia I', enunciado: 'Qual bioma predomina no estado do Ceará?', alternativas: ['Caatinga', 'Amazônia', 'Pantanal', 'Mata Atlântica'], correta: 0, explicacao: 'A caatinga é o bioma típico do semiárido nordestino, presente em grande parte do Ceará.' },
+  { disciplina: 'Geografia I', enunciado: 'Qual é a principal fonte de energia elétrica do Brasil?', alternativas: ['Hidrelétrica', 'Nuclear', 'Eólica', 'Carvão mineral'], correta: 0, explicacao: 'A energia hidrelétrica responde pela maior parte da eletricidade gerada no país.' },
+  { disciplina: 'Língua Portuguesa I', enunciado: 'Em "Os alunos estudaram para a prova", o termo "Os alunos" exerce a função de:', alternativas: ['Sujeito', 'Objeto direto', 'Predicado', 'Adjunto adnominal'], correta: 0, explicacao: 'O sujeito é quem pratica a ação do verbo; aqui, "os alunos" estudaram.' },
+  { disciplina: 'Língua Portuguesa I', enunciado: 'Qual é o plural de "cidadão"?', alternativas: ['Cidadãos', 'Cidadões', 'Cidadães', 'Cidadãs'], correta: 0, explicacao: 'Palavras terminadas em -ão podem formar o plural em -ãos (cidadão → cidadãos).' },
+  { disciplina: 'Língua Portuguesa I', enunciado: 'Qual figura de linguagem atribui características humanas a seres inanimados?', alternativas: ['Personificação', 'Metáfora', 'Hipérbole', 'Ironia'], correta: 0, explicacao: 'Na personificação, objetos ou ideias agem como pessoas, por exemplo: "o vento sussurrou".' },
+  { disciplina: 'Língua Portuguesa I', enunciado: 'Na frase "Ela correu rapidamente", a palavra "rapidamente" é classificada como:', alternativas: ['Advérbio', 'Adjetivo', 'Substantivo', 'Pronome'], correta: 0, explicacao: 'O advérbio modifica o verbo, indicando como a ação aconteceu.' },
+  { disciplina: 'Filosofia I', enunciado: 'Qual filósofo grego ficou conhecido pelo método de perguntas que leva o interlocutor a refletir, chamado maiêutica?', alternativas: ['Sócrates', 'Platão', 'Aristóteles', 'Epicuro'], correta: 0, explicacao: 'Sócrates conduzia diálogos com perguntas, ajudando as pessoas a chegarem às próprias conclusões.' },
+  { disciplina: 'Filosofia I', enunciado: 'Qual é a área da filosofia que estuda a moral e a conduta humana?', alternativas: ['Ética', 'Estética', 'Lógica', 'Ontologia'], correta: 0, explicacao: 'A ética reflete sobre o que é certo e errado e sobre como devemos agir.' },
+  { disciplina: 'Filosofia I', enunciado: 'Qual pensador escreveu "O Príncipe", obra sobre o exercício do poder político?', alternativas: ['Maquiavel', 'Rousseau', 'Hobbes', 'Locke'], correta: 0, explicacao: 'Maquiavel escreveu O Príncipe no início do século XVI, analisando a política de forma realista.' },
+  { disciplina: 'Filosofia I', enunciado: 'Qual frase está associada a René Descartes e ao método da dúvida?', alternativas: ['Penso, logo existo', 'Conhece-te a ti mesmo', 'Só sei que nada sei', 'Dize-me com quem andas'], correta: 0, explicacao: 'Descartes buscou uma certeza inabalável e concluiu que o próprio ato de pensar prova a existência do sujeito.' },
+  { disciplina: 'Sociologia I', enunciado: 'Qual cientista social estudou a divisão do trabalho e a coesão social?', alternativas: ['Émile Durkheim', 'Max Weber', 'Karl Marx', 'Auguste Comte'], correta: 0, explicacao: 'Durkheim analisou como a divisão do trabalho cria laços de solidariedade entre as pessoas.' },
+  { disciplina: 'Sociologia I', enunciado: 'Qual autor é associado ao conceito de mais-valia e à análise das classes sociais?', alternativas: ['Karl Marx', 'Émile Durkheim', 'Max Weber', 'Auguste Comte'], correta: 0, explicacao: 'Marx explicou a exploração do trabalho pela mais-valia, o valor produzido além do salário pago.' },
+  { disciplina: 'Sociologia I', enunciado: 'Qual é o nome dado ao conjunto de regras e comportamentos esperados em um grupo social?', alternativas: ['Normas sociais', 'Leis da física', 'Estatísticas oficiais', 'Mercado financeiro'], correta: 0, explicacao: 'As normas sociais orientam o comportamento das pessoas dentro de uma sociedade ou grupo.' },
+  { disciplina: 'Introdução ao Curso Técnico em Química', enunciado: 'Qual equipamento de proteção individual protege os olhos em um laboratório?', alternativas: ['Óculos de proteção', 'Protetor auricular', 'Touca descartável', 'Avental de algodão'], correta: 0, explicacao: 'Os óculos de proteção evitam que respingos químicos atinjam os olhos.' },
+  { disciplina: 'Introdução ao Curso Técnico em Química', enunciado: 'Ao preparar uma solução diluída de um ácido concentrado, qual procedimento é correto?', alternativas: ['Adicionar o ácido lentamente à água', 'Adicionar a água ao ácido', 'Misturar os dois de uma vez', 'Aquecer o ácido antes de diluir'], correta: 0, explicacao: 'O ácido deve ser adicionado à água, aos poucos. Fazer o contrário pode causar aquecimento violento e respingos.' },
+  { disciplina: 'Introdução ao Curso Técnico em Química', enunciado: 'Qual vidraria é a mais indicada para medir um volume com precisão?', alternativas: ['Pipeta volumétrica', 'Béquer', 'Erlenmeyer', 'Funil de vidro'], correta: 0, explicacao: 'A pipeta volumétrica é calibrada para fornecer um volume exato.' },
+  { disciplina: 'Introdução ao Curso Técnico em Química', enunciado: 'Como os resíduos de laboratório devem ser tratados?', alternativas: ['Descartados conforme as normas de cada tipo de resíduo', 'Jogados na pia sem tratamento', 'Guardados em recipientes sem rótulo', 'Misturados para diminuir o volume'], correta: 0, explicacao: 'Cada resíduo tem um destino próprio. Misturar ou descartar sem critério pode causar acidentes e poluição.' },
+  { disciplina: 'Introdução à Informática', enunciado: 'Qual é a menor unidade de informação usada pelos computadores?', alternativas: ['Bit', 'Byte', 'Pixel', 'Megabyte'], correta: 0, explicacao: 'O bit guarda um único valor, 0 ou 1. Oito bits formam um byte.' },
+  { disciplina: 'Introdução à Informática', enunciado: 'Quantos bits formam um byte?', alternativas: ['8', '4', '16', '10'], correta: 0, explicacao: 'Um byte é formado por 8 bits.' },
+  { disciplina: 'Introdução à Informática', enunciado: 'Qual componente é considerado o "cérebro" do computador?', alternativas: ['Processador (CPU)', 'Memória RAM', 'Placa de vídeo', 'Fonte de alimentação'], correta: 0, explicacao: 'O processador executa as instruções dos programas e coordena o funcionamento do computador.' },
+  { disciplina: 'Introdução à Informática', enunciado: 'Qual sistema operacional é de código aberto?', alternativas: ['Linux', 'Windows', 'macOS', 'iOS'], correta: 0, explicacao: 'O Linux tem código-fonte aberto e pode ser estudado e modificado livremente.' },
+  { disciplina: 'Biologia I', enunciado: 'Qual açúcar forma a molécula de DNA?', alternativas: ['Desoxirribose', 'Ribose', 'Glicose', 'Frutose'], correta: 0, explicacao: 'O DNA tem desoxirribose; o RNA tem ribose. A diferença é a falta de um oxigênio na desoxirribose.' },
+  { disciplina: 'Biologia I', enunciado: 'Qual base nitrogenada existe no RNA e substitui a timina?', alternativas: ['Uracila', 'Citosina', 'Guanina', 'Adenina'], correta: 0, explicacao: 'No RNA, a uracila (U) pareia com a adenina (A) no lugar da timina.' },
+  { disciplina: 'Biologia I', enunciado: 'Qual tipo de RNA carrega a sequência de bases que será usada na síntese de proteínas?', alternativas: ['RNA mensageiro', 'RNA transportador', 'RNA ribossômico', 'RNA polimerase'], correta: 0, explicacao: 'O RNA mensageiro (mRNA) leva a informação do DNA até o ribossomo.' },
+  { disciplina: 'Biologia I', enunciado: 'Qual tipo de RNA transporta os aminoácidos e lê o códon do mRNA?', alternativas: ['RNA transportador (tRNA)', 'RNA mensageiro', 'RNA ribossômico', 'DNA polimerase'], correta: 0, explicacao: 'O tRNA tem um anticódon que se encaixa no códon do mRNA e carrega o aminoácido correspondente.' },
+  { disciplina: 'Biologia I', enunciado: 'Em qual estrutura da célula acontece a tradução?', alternativas: ['Ribossomo', 'Núcleo', 'Complexo de Golgi', 'Lisossomo'], correta: 0, explicacao: 'O ribossomo, formado por rRNA e proteínas, é o local da síntese proteica.' },
+  { disciplina: 'Biologia I', enunciado: 'Qual enzima realiza a transcrição, formando o RNA a partir do DNA?', alternativas: ['RNA-polimerase', 'DNA-polimerase', 'Ligase', 'Ribossomo'], correta: 0, explicacao: 'A RNA-polimerase lê a fita molde do DNA e monta o RNA transcrito.' },
+  { disciplina: 'Biologia I', enunciado: 'Quantas pontes de hidrogênio formam o par G-C?', alternativas: ['3', '2', '1', '4'], correta: 0, explicacao: 'G e C se ligam por três pontes de hidrogênio; A e T, por duas.' },
+  { disciplina: 'Biologia I', enunciado: 'Quantas bases nitrogenadas formam um códon?', alternativas: ['3', '2', '4', '6'], correta: 0, explicacao: 'Cada códon é uma sequência de três bases, e cada um codifica um aminoácido ou um sinal de parada.' },
+  { disciplina: 'Biologia I', enunciado: 'Qual códon indica o início da tradução?', alternativas: ['AUG', 'UAA', 'UAG', 'UGA'], correta: 0, explicacao: 'AUG é o códon de início (start codon) e codifica a metionina.' },
+  { disciplina: 'Biologia I', enunciado: 'Qual dos códons abaixo é um códon de parada (stop)?', alternativas: ['UGA', 'AUG', 'GGC', 'UUU'], correta: 0, explicacao: 'Os códons de parada são UAA, UAG e UGA: não codificam aminoácido e encerram a tradução.' },
+  { disciplina: 'Biologia I', enunciado: 'Qual é o nome da ligação que une os nucleotídeos entre o carbono 3\' de um e o carbono 5\' do seguinte?', alternativas: ['Fosfodiéster', 'Peptídica', 'Iônica', 'Glicosídica'], correta: 0, explicacao: 'A ligação 3\'-5\' fosfodiéster forma o esqueleto açúcar-fosfato da cadeia de DNA e de RNA.' },
+  ...ENEM2025
+];
+
+function montarProva(escolhidas, qtd) {
+  const ok = d => !escolhidas.length || escolhidas.includes(d);
+  const fixas = [...BANCO_1ANO.filter(q => ok(q.disciplina)), ...questoesBanco.filter(q => ok(q.disciplina))];
+  const geradores = GERADORES.filter(g => ok(g.disciplina));
+  const itens = [...fixas.map(q => ({ fixa: q })), ...geradores.map(g => ({ gera: g }))];
+  const fila = [];
+  const sorteio = itens.map(i => ({ i, t: Math.random() })).sort((a, b) => a.t - b.t).map(x => x.i);
+  while (fila.length < qtd && sorteio.length) {
+    const it = sorteio.shift();
+    fila.push(it.fixa ? misturar(it.fixa) : it.gera.gerar());
+  }
+  while (fila.length < qtd && geradores.length) fila.push(escolhe(geradores).gerar());
+  return fila;
+}
+
 /* ---------- quiz de estudo e cartões de revisão (respostas não são guardadas) ---------- */
 let questoesBanco = [], quiz = null, flashcardsBanco = [], cartoes = { fila: [], i: 0, virado: false };
 function carregarQuestoes() {
   ouvir(db.collection('questoes').orderBy('criadoEm', 'desc'), snap => {
     questoesBanco = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    const sel = document.getElementById('quiz-disc'), atual = sel.value;
-    const discs = [...new Set(questoesBanco.map(q => q.disciplina).filter(Boolean))].sort((a, b) => a.localeCompare(b));
-    sel.innerHTML = '<option value="">Todas as disciplinas</option>' + discs.map(d => `<option>${esc(d)}</option>`).join('');
-    sel.value = discs.includes(atual) ? atual : '';
-    document.getElementById('quiz-info').textContent = questoesBanco.length ? `${questoesBanco.length} questão(ões) no banco.` : 'Ainda não há questões cadastradas.';
+    const marcadas = new Set([...document.querySelectorAll('[data-qdisc]:checked')].map(c => c.value));
+    const discs = [...new Set([...GERADORES.map(g => g.disciplina), ...BANCO_1ANO.map(q => q.disciplina), ...questoesBanco.map(q => q.disciplina)].filter(Boolean))]
+      .sort((a, b) => a.localeCompare(b));
+    document.getElementById('quiz-discs').innerHTML = discs.map((d, i) => `<div class="form-check form-check-inline"><input class="form-check-input" type="checkbox" data-qdisc value="${esc(d)}" id="qd-${i}" ${marcadas.has(d) ? 'checked' : ''}><label class="form-check-label small" for="qd-${i}">${esc(d)}</label></div>`).join('');
+    document.getElementById('quiz-info').textContent = 'Questões sorteadas na hora, do conteúdo de 1º ano. Marque as matérias que quer estudar (sem marcar nenhuma, entram todas).';
   });
 }
 function quizIniciar() {
-  const disc = document.getElementById('quiz-disc').value, modo = document.getElementById('quiz-modo').value;
-  const pool = questoesBanco.filter(q => !disc || q.disciplina === disc);
-  if (!pool.length) { aviso('Não há questões para esta disciplina ainda.', 'warning'); return; }
+  const escolhidas = [...document.querySelectorAll('[data-qdisc]:checked')].map(c => c.value);
+  const pedidas = Number(document.getElementById('quiz-qtd').value) || 5;
+  const modo = document.getElementById('quiz-modo').value;
+  const fila = montarProva(escolhidas, pedidas);
+  if (!fila.length) { aviso('Não há questões nessas matérias ainda.', 'warning'); return; }
+  if (fila.length < pedidas) aviso(`Só consegui montar ${fila.length} questão(ões) nessas matérias.`, 'warning');
   if (quiz && quiz.timer) clearInterval(quiz.timer);
-  const fila = pool.map(q => ({ q, t: Math.random() })).sort((a, b) => a.t - b.t).slice(0, 5).map(x => x.q);
-  quiz = { fila, i: 0, respostas: [], respondida: false, modo, timer: null, fim: modo === 'prova' ? Date.now() + 10 * 60000 : 0 };
+  quiz = { fila, i: 0, respostas: [], respondida: false, modo, timer: null, fim: modo === 'prova' ? Date.now() + fila.length * 2 * 60000 : 0 };
   if (modo === 'prova') quiz.timer = setInterval(quizTique, 1000);
   quizMostrar();
 }
