@@ -340,6 +340,7 @@
                     <div class="col-md-6"><input type="text" id="q-alt1" class="form-control" maxlength="200" placeholder="Alternativa B"></div>
                     <div class="col-md-6"><input type="text" id="q-alt2" class="form-control" maxlength="200" placeholder="Alternativa C"></div>
                     <div class="col-md-6"><input type="text" id="q-alt3" class="form-control" maxlength="200" placeholder="Alternativa D"></div>
+                    <div class="col-12"><input type="text" id="q-img" class="form-control" maxlength="300" placeholder="Imagem (opcional): link https://... ou caminho imagens/arquivo.png"></div>
                     <div class="col-12"><textarea id="q-expl" class="form-control" rows="2" maxlength="600" placeholder="Explicação (aparece para o aluno depois de responder)"></textarea></div>
                 </div>
                 <button onclick="criarQuestao()" class="btn btn-ifce mb-3">Publicar questão</button>
@@ -3786,11 +3787,13 @@
             const correta = Number(document.getElementById('q-corr').value);
             if (!disciplina || enunciado.length < 5) { toast('Preencha a disciplina e o enunciado.', 'warning'); return; }
             if (alternativas.some(a => !a)) { toast('Preencha as quatro alternativas.', 'warning'); return; }
-            db.collection('questoes').add({ disciplina, enunciado, alternativas, correta, explicacao, criadoPorEmail: emailLogado, criadoEm: TS() })
+            const imagem = document.getElementById('q-img').value.trim();
+            if (imagem && !/^(https:\/\/|imagens\/)/i.test(imagem)) { toast('A imagem precisa ser um link https:// ou um caminho imagens/...', 'warning'); return; }
+            db.collection('questoes').add({ disciplina, enunciado, alternativas, correta, explicacao, ...(imagem ? { imagem } : {}), criadoPorEmail: emailLogado, criadoEm: TS() })
                 .then(() => {
                     toast('Questão publicada no quiz. ✅');
                     registrarAcao('Questão publicada', disciplina);
-                    ['q-disc', 'q-enun', 'q-alt0', 'q-alt1', 'q-alt2', 'q-alt3', 'q-expl'].forEach(i => document.getElementById(i).value = '');
+                    ['q-disc', 'q-enun', 'q-alt0', 'q-alt1', 'q-alt2', 'q-alt3', 'q-expl', 'q-img'].forEach(i => document.getElementById(i).value = '');
                 }).catch(e => erroDB(e, 'criarQuestao'));
         }
         function carregarQuestoesAdmin() {
