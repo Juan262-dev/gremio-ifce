@@ -317,6 +317,18 @@
                 <div id="lista-divulgacao"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
+            <div id="secao-flashcards" data-niveis="admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">🃏 Cartões de revisão</h5>
+                <p class="text-muted-custom small mb-3">Pergunta de um lado e resposta do outro. O aluno vira o cartão para conferir. Aparecem na aba Quiz do portal.</p>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" id="fc-disc" list="fc-disc-lista" class="form-control" maxlength="60" placeholder="Disciplina"><datalist id="fc-disc-lista"></datalist></div>
+                    <div class="col-md-6"><input type="text" id="fc-frente" class="form-control" maxlength="200" placeholder="Frente (pergunta)"></div>
+                    <div class="col-12"><textarea id="fc-verso" class="form-control" rows="2" maxlength="400" placeholder="Verso (resposta)"></textarea></div>
+                </div>
+                <button onclick="criarFlashcard()" class="btn btn-ifce mb-3">Adicionar cartão</button>
+                <div id="lista-flashcards-admin"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
             <div id="secao-questoes" data-niveis="admin" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">🧠 Banco de questões (quiz)</h5>
                 <p class="text-muted-custom small mb-3">Cadastre questões de múltipla escolha. Os alunos fazem um quiz de 5 questões no portal e veem a explicação depois de cada resposta.</p>
@@ -799,13 +811,6 @@
                 <div id="ti-qr" class="p-2 bg-white d-inline-block rounded" style="min-height: 10px;"></div>
             </div>
 
-            <div id="secao-ti-tutor" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
-                <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">🤖 Tutor de IA <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
-                <p class="text-muted-custom small mb-3">Liga ou pausa o tutor de estudo dos alunos. Em pausa, os alunos veem "O tutor está em pausa" e nenhuma pergunta é enviada à IA.</p>
-                <div class="mb-2 small">Status: <span id="ti-tutor-status">...</span></div>
-                <button id="ti-tutor-btn" onclick="alternarTutor()" class="btn btn-outline-info btn-sm fw-bold">...</button>
-            </div>
-
             <div id="secao-ti-avancado" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
                 <h5 class="card-title-chem mb-1" style="color: #0dcaf0;">Manutenção avançada <span class="badge bg-info text-dark ms-1" style="font-size: 10px;">só você</span></h5>
 
@@ -1210,6 +1215,7 @@
             { id: 'secao-relatorio-mensal', label: 'Relatório do Mês', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['admin'] },
             { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial'] },
             { id: 'secao-divulgacao', label: 'Calendário de Divulgação', icon: 'bi-calendar2-week', niveisPermitidos: ['marketing'] },
+            { id: 'secao-flashcards', label: 'Cartões de revisão', icon: 'bi-card-text', niveisPermitidos: ['admin'] },
             { id: 'secao-questoes', label: 'Banco de questões', icon: 'bi-patch-question', niveisPermitidos: ['admin'] },
             { id: 'secao-estudos', label: 'Estudos e Provas', icon: 'bi-journal-bookmark', niveisPermitidos: ['admin'] },
             { id: 'secao-videos', label: 'Vídeos de Aula Prática', icon: 'bi-camera-video', niveisPermitidos: ['marketing'] },
@@ -1249,7 +1255,6 @@
             { id: 'secao-ti-controle', label: 'TI: Controle do painel', icon: 'bi-toggles', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-analise', label: 'TI: Análise e relatórios', icon: 'bi-graph-up-arrow', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-comunic', label: 'TI: Comunicação e termo', icon: 'bi-megaphone', niveisPermitidos: ['admin'], soRaiz: true },
-            { id: 'secao-ti-tutor', label: 'TI: Tutor de IA', icon: 'bi-robot', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-avancado', label: 'TI: Manutenção avançada', icon: 'bi-wrench-adjustable', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-chamados', label: 'TI: Pedidos de ajuda', icon: 'bi-envelope-paper', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-ajuda', label: 'TI: Ajudar os cargos', icon: 'bi-people', niveisPermitidos: ['admin'], soRaiz: true },
@@ -1426,7 +1431,7 @@
             resetarOpcoes();
 
             const nivel = dadosUsuario.nivel;
-            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); carregarTermoTI(); carregarRoteiroTI(); preencherEditor(); carregarTutorTI(); carregarAlertasTI(); carregarPendenciasTI(); carregarTravasUI(); }
+            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); carregarTermoTI(); carregarRoteiroTI(); preencherEditor(); carregarAlertasTI(); carregarPendenciasTI(); carregarTravasUI(); }
             // Cada cargo vê só o que precisa; o e-mail raiz (TI) vê tudo.
             nivelDoPainel = nivel;
             const raiz = emailUsuario === ROOT_EMAIL;
@@ -1439,7 +1444,7 @@
             const ver = id => { const c = document.getElementById(id); return !!c && c.style.display === 'block'; };
             [
                 ['secao-resumo', carregarResumo], ['secao-tarefas', carregarMinhasTarefas], ['secao-tarefas-admin', carregarTarefasAdmin],
-                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-caixa', carregarCaixa], ['secao-cultura', () => carregarAtividades('cultura')], ['secao-racial', () => { carregarAtividades('racial'); carregarPautasRacial(); }], ['secao-tes-orc', carregarOrcamentos], ['secao-tes-contas', carregarContas], ['secao-racial-enc', carregarEncaminhamentos], ['secao-racial-apoio', carregarApoio], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin], ['secao-questoes', carregarQuestoesAdmin],
+                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-caixa', carregarCaixa], ['secao-cultura', () => carregarAtividades('cultura')], ['secao-racial', () => { carregarAtividades('racial'); carregarPautasRacial(); }], ['secao-tes-orc', carregarOrcamentos], ['secao-tes-contas', carregarContas], ['secao-racial-enc', carregarEncaminhamentos], ['secao-racial-apoio', carregarApoio], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin], ['secao-questoes', carregarQuestoesAdmin], ['secao-flashcards', carregarFlashcardsAdmin],
                 ['secao-mural', carregarAvisosAdmin], ['secao-enquetes-lista', carregarEnquetesAdmin],
                 ['secao-alunos-lista', carregarAlunos], ['secao-sugestoes', carregarSugestoesAdmin], ['secao-pautas', carregarPautasAdmin],
                 ['secao-punicoes', carregarMembrosPunidosAdmin], ['secao-auditoria', carregarAuditoria], ['secao-diretoria', carregarDiretoria],
@@ -3742,6 +3747,35 @@
             } catch (e) { erroDB(e, 'relatorioCargo'); }
         }
 
+        /* ================= CARTÕES DE REVISÃO (quiz do portal) ================= */
+
+        let cacheFlashcards = [];
+        function criarFlashcard() {
+            const disciplina = document.getElementById('fc-disc').value.trim();
+            const frente = document.getElementById('fc-frente').value.trim();
+            const verso = document.getElementById('fc-verso').value.trim();
+            if (!disciplina || !frente || !verso) { toast('Preencha a disciplina, a frente e o verso.', 'warning'); return; }
+            db.collection('flashcards').add({ disciplina, frente, verso, criadoPorEmail: emailLogado, criadoEm: TS() })
+                .then(() => {
+                    toast('Cartão adicionado. ✅');
+                    registrarAcao('Cartão de revisão adicionado', disciplina);
+                    ['fc-frente', 'fc-verso'].forEach(i => document.getElementById(i).value = '');
+                }).catch(e => erroDB(e, 'criarFlashcard'));
+        }
+        function carregarFlashcardsAdmin() {
+            ouvir(db.collection('flashcards').orderBy('criadoEm', 'desc').limit(300), snap => {
+                const c = document.getElementById('lista-flashcards-admin');
+                cacheFlashcards = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                document.getElementById('fc-disc-lista').innerHTML = [...new Set(cacheFlashcards.map(f => f.disciplina).filter(Boolean))].sort().map(d => `<option value="${esc(d)}">`).join('');
+                if (!cacheFlashcards.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum cartão ainda. Adicione o primeiro acima.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + cacheFlashcards.map(f => `
+                    <div class="list-group-item d-flex justify-content-between align-items-start gap-2">
+                        <div><strong class="text-white">${esc(f.frente)}</strong><br><small class="text-muted-custom">${esc(f.disciplina)} • resposta: ${esc(f.verso)}</small></div>
+                        <button data-acao="excluirFlashcard" data-id="${esc(f.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                    </div>`).join('') + '</div>';
+            });
+        }
+
         /* ================= BANCO DE QUESTÕES (quiz do portal) ================= */
 
         let cacheQuestoes = [];
@@ -3771,27 +3805,6 @@
                         <button data-acao="excluirQuestao" data-id="${esc(q.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
                     </div>`).join('') + '</div>';
             });
-        }
-
-        /* ================= TUTOR DE IA (só o e-mail raiz liga/pausa) ================= */
-
-        function carregarTutorTI() {
-            ouvir(db.collection('config').doc('sistema'), doc => {
-                const ativo = !(doc.exists && doc.data().tutorAtivo === false);
-                document.getElementById('ti-tutor-status').innerHTML = ativo ? '🟢 ligado' : '🔴 em pausa';
-                document.getElementById('ti-tutor-btn').textContent = ativo ? 'Pausar tutor' : 'Ligar tutor';
-            });
-        }
-        async function alternarTutor() {
-            if (!soRaiz()) return;
-            try {
-                const ref = db.collection('config').doc('sistema');
-                const snap = await ref.get();
-                const ligar = !!(snap.exists && snap.data().tutorAtivo === false);
-                if (!(await confirmar(ligar ? 'Ligar o tutor de IA para os alunos?' : 'Pausar o tutor de IA? Os alunos não poderão usar até você ligar de novo.'))) return;
-                await ref.set({ tutorAtivo: ligar }, { merge: true });
-                registrarAcao(ligar ? 'Tutor de IA ligado' : 'Tutor de IA pausado', '');
-            } catch (e) { erroDB(e, 'alternarTutor'); }
         }
 
         /* ================= TI: SUPORTE, ALUNOS E PORTAL ================= */
@@ -4369,6 +4382,7 @@
             excluirApoio: async id => { if (await confirmar('Excluir este material da aba Estudos?')) db.collection('estudos').doc(id).delete().catch(e => erroDB(e, 'excluirApoio')); },
             abrirPresenca: id => abrirPresenca(id),
             salvarPresenca: id => salvarPresenca(id),
+            excluirFlashcard: async id => { if (await confirmar('Excluir este cartão?')) db.collection('flashcards').doc(id).delete().then(() => registrarAcao('Cartão de revisão excluído', id)).catch(e => erroDB(e, 'excluirFlashcard')); },
             excluirQuestao: async id => { if (await confirmar('Excluir esta questão do quiz?')) db.collection('questoes').doc(id).delete().then(() => registrarAcao('Questão excluída', id)).catch(e => erroDB(e, 'excluirQuestao')); },
             excluirSugestao: async id => { if (await confirmar("Apagar esta sugestão?")) db.collection('sugestoes').doc(id).delete().catch(e => erroDB(e, 'excluirSugestao')); },
             excluirPauta: async id => { if (await confirmar("Excluir esta pauta?")) db.collection('reivindicacoes').doc(id).delete().then(() => registrarAcao('Pauta excluída', id)).catch(e => erroDB(e, 'excluirPauta')); },
@@ -4419,7 +4433,7 @@
         /* ================= ABAS DO PAINEL ================= */
         const ABAS = [
             ['inicio', 'Início', ['secao-resumo', 'secao-tarefas', 'secao-tarefas-admin', 'secao-novidades', 'secao-ajuda', 'secao-guia']],
-            ['comunicacao', 'Comunicação', ['secao-mural', 'secao-divulgacao', 'secao-artes', 'secao-enquetes-criar', 'secao-enquetes-lista', 'secao-videos', 'secao-estudos', 'secao-questoes', 'secao-pautas', 'secao-sugestoes']],
+            ['comunicacao', 'Comunicação', ['secao-mural', 'secao-divulgacao', 'secao-artes', 'secao-enquetes-criar', 'secao-enquetes-lista', 'secao-videos', 'secao-estudos', 'secao-questoes', 'secao-flashcards', 'secao-pautas', 'secao-sugestoes']],
             ['alunos', 'Alunos', ['secao-alunos-cadastrar', 'secao-alunos-massa', 'secao-alunos-lista', 'secao-punicoes']],
             ['atividades', 'Atividades', ['secao-eventos', 'secao-jogos', 'secao-materiais', 'secao-cultura', 'secao-racial', 'secao-racial-enc', 'secao-racial-apoio', 'secao-rel-cult', 'secao-rel-racial']],
             ['financeiro', 'Financeiro', ['secao-caixa', 'secao-tes-orc', 'secao-tes-contas', 'secao-rel-tes']],

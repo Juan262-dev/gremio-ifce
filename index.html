@@ -150,29 +150,23 @@ body{background-color:#f4f6f9}
     <div id="lista-estudos-aluno"><p class="text-muted small">Carregando materiais...</p></div>
   </div>
 
-  <div id="sec-tutor" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🤖 Tutor de estudo</h5>
-    <p class="text-muted small mb-2">Tire dúvidas de matérias do ensino médio, passo a passo. Ele explica o caminho, mas não faz a lição nem a prova por você.</p>
-    <p class="text-muted mb-3" style="font-size:12px">A IA pode errar: confirme com o professor. Suas perguntas são enviadas ao serviço de IA para gerar a resposta, mas não ficam guardadas no sistema do grêmio.</p>
-    <div id="tutor-breve" class="text-muted small" style="display:none">O tutor ainda não está disponível. Em breve!</div>
-    <div id="tutor-form" style="display:none">
-      <div id="tutor-chat" class="border rounded p-2 mb-2" style="height:260px;overflow-y:auto;background:#fafafa"></div>
-      <div class="input-group">
-        <textarea id="tutor-txt" class="form-control" rows="2" maxlength="800" placeholder="Escreva sua dúvida..." onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();tutorEnviar();}"></textarea>
-        <button id="tutor-btn" onclick="tutorEnviar()" class="btn btn-ifce fw-bold">Enviar</button>
-      </div>
-    </div>
-  </div>
-
   <div id="sec-quiz" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🧠 Quiz de estudo</h5>
-    <p class="text-muted small mb-3">Responda 5 questões e veja a explicação na hora. Suas respostas não são guardadas.</p>
+    <p class="text-muted small mb-3">Escolha o modo e responda. Suas respostas não são guardadas.</p>
     <div class="row g-2 mb-2">
-      <div class="col-8"><select id="quiz-disc" class="form-select form-select-sm"><option value="">Todas as disciplinas</option></select></div>
-      <div class="col-4"><button onclick="quizIniciar()" class="btn btn-ifce btn-sm fw-bold w-100">Começar</button></div>
+      <div class="col-6"><select id="quiz-disc" class="form-select form-select-sm"><option value="">Todas as disciplinas</option></select></div>
+      <div class="col-6"><select id="quiz-modo" class="form-select form-select-sm"><option value="treino">Treino (resposta na hora)</option><option value="prova">Prova (10 minutos)</option></select></div>
+      <div class="col-12"><button onclick="quizIniciar()" class="btn btn-ifce btn-sm fw-bold w-100">Começar</button></div>
     </div>
     <small id="quiz-info" class="text-muted d-block mb-2"></small>
     <div id="quiz-box"></div>
+  </div>
+
+  <div id="sec-cartoes" class="card card-custom p-4 mb-4">
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🃏 Cartões de revisão</h5>
+    <p class="text-muted small mb-3">Pense na resposta antes e depois toque em Virar para conferir.</p>
+    <div class="mb-2"><select id="cards-disc" class="form-select form-select-sm" onchange="cartoesIniciar()"><option value="">Todas as disciplinas</option></select></div>
+    <div id="cards-box"></div>
   </div>
 
   <div id="sec-videos" class="card card-custom p-4 mb-4">
@@ -403,7 +397,7 @@ function iniciarSessaoAluno() {
       const btn = document.querySelector('#bottom-nav [data-alvo="sec-' + k + '"]'); if (btn) btn.style.display = off ? 'none' : '';
     });
   });
-  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarJogos(); carregarClassificacao(); carregarVideos(); carregarEstudos(); carregarQuestoes(); carregarMeusChamados(); carregarMinhasSugestoes();
+  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarJogos(); carregarClassificacao(); carregarVideos(); carregarEstudos(); carregarQuestoes(); carregarFlashcards(); carregarMeusChamados(); carregarMinhasSugestoes();
 }
 
 /* ---------- Mural ---------- */
@@ -603,8 +597,9 @@ function renderEstudos() {
   const lista = estudosCache.filter(e => (!disc || e.disciplina === disc) && (!tipo || e.tipo === tipo) &&
     (!t || `${e.titulo} ${e.descricao || ''} ${e.disciplina || ''}`.toLowerCase().includes(t)));
   if (!lista.length) { c.innerHTML = `<p class="text-muted small mb-0">${estudosCache.length ? 'Nada encontrado com esses filtros.' : 'Ainda não há materiais publicados.'}</p>`; return; }
+  const ordem = ['Resumo', 'Lista de exercícios', 'Prova antiga', 'Vídeo', 'Link'];
   const cor = { 'Resumo': 'bg-primary', 'Lista de exercícios': 'bg-success', 'Prova antiga': 'bg-danger', 'Vídeo': 'bg-info text-dark', 'Link': 'bg-secondary' };
-  c.innerHTML = '<div class="list-group">' + lista.map(e => {
+  const card = e => {
     const ok = /^https:\/\//i.test(e.link || '');
     return `
     <div class="list-group-item">
@@ -612,12 +607,15 @@ function renderEstudos() {
         <h6 class="fw-bold text-success mb-0">${esc(e.titulo)}</h6>
         <span class="badge ${cor[e.tipo] || 'bg-secondary'} ms-2" style="white-space:nowrap">${esc(e.tipo || 'Link')}</span>
       </div>
-      ${e.disciplina ? `<small class="text-muted d-block mb-1">${esc(e.disciplina)}</small>` : ''}
       ${e.descricao ? `<p class="mb-2 small text-dark" style="white-space:pre-wrap">${esc(e.descricao)}</p>` : ''}
       ${ok ? playerHTML(e.link) : ''}
       ${ok ? `<a href="${esc(e.link)}" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-ifce fw-bold mt-2">Abrir material ↗</a>` : ''}
     </div>`;
-  }).join('') + '</div>';
+  };
+  const ord = [...lista].sort((a, b) => (a.disciplina || 'Sem disciplina').localeCompare(b.disciplina || 'Sem disciplina') || ordem.indexOf(a.tipo) - ordem.indexOf(b.tipo));
+  const grupos = {};
+  ord.forEach(e => { const d = e.disciplina || 'Sem disciplina'; (grupos[d] = grupos[d] || []).push(e); });
+  c.innerHTML = Object.keys(grupos).map(d => `${disc ? '' : `<h6 class="fw-bold mt-3 mb-2" style="color:var(--ifce-green)">📘 ${esc(d)}</h6>`}<div class="list-group mb-2">${grupos[d].map(card).join('')}</div>`).join('');
 }
 function embedDe(url) {
   url = String(url || '').trim();
@@ -859,8 +857,8 @@ function carregarMeusChamados() {
   });
 }
 
-/* ---------- quiz de estudo (respostas não são guardadas) ---------- */
-let questoesBanco = [], quiz = null;
+/* ---------- quiz de estudo e cartões de revisão (respostas não são guardadas) ---------- */
+let questoesBanco = [], quiz = null, flashcardsBanco = [], cartoes = { fila: [], i: 0, virado: false };
 function carregarQuestoes() {
   ouvir(db.collection('questoes').orderBy('criadoEm', 'desc'), snap => {
     questoesBanco = snap.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -872,33 +870,39 @@ function carregarQuestoes() {
   });
 }
 function quizIniciar() {
-  const disc = document.getElementById('quiz-disc').value;
+  const disc = document.getElementById('quiz-disc').value, modo = document.getElementById('quiz-modo').value;
   const pool = questoesBanco.filter(q => !disc || q.disciplina === disc);
   if (!pool.length) { aviso('Não há questões para esta disciplina ainda.', 'warning'); return; }
+  if (quiz && quiz.timer) clearInterval(quiz.timer);
   const fila = pool.map(q => ({ q, t: Math.random() })).sort((a, b) => a.t - b.t).slice(0, 5).map(x => x.q);
-  quiz = { fila, i: 0, acertos: 0, respondida: false };
+  quiz = { fila, i: 0, respostas: [], respondida: false, modo, timer: null, fim: modo === 'prova' ? Date.now() + 10 * 60000 : 0 };
+  if (modo === 'prova') quiz.timer = setInterval(quizTique, 1000);
   quizMostrar();
+}
+function quizTique() {
+  if (!quiz) return;
+  const resta = quiz.fim - Date.now();
+  if (resta <= 0) { quizResultado(true); return; }
+  const el = document.getElementById('quiz-tempo');
+  if (el) el.textContent = 'Tempo: ' + String(Math.floor(resta / 60000)).padStart(2, '0') + ':' + String(Math.floor(resta % 60000 / 1000)).padStart(2, '0');
 }
 function quizMostrar() {
   const box = document.getElementById('quiz-box');
-  if (quiz.i >= quiz.fila.length) {
-    box.innerHTML = `<div class="text-center">
-      <h6 class="fw-bold">Você acertou ${quiz.acertos} de ${quiz.fila.length}!</h6>
-      <p class="text-muted small">Suas respostas não são guardadas. Quer tentar de novo?</p>
-      <button data-quiz="novo" class="btn btn-ifce btn-sm fw-bold">Novo quiz</button></div>`;
-    return;
-  }
+  if (quiz.i >= quiz.fila.length) { quizResultado(false); return; }
   const q = quiz.fila[quiz.i];
-  box.innerHTML = `<div class="small text-muted mb-1">Questão ${quiz.i + 1} de ${quiz.fila.length} • ${esc(q.disciplina || '')}</div>
+  const tempo = quiz.modo === 'prova' ? '<div id="quiz-tempo" class="small fw-bold text-danger mb-1"></div>' : '';
+  box.innerHTML = `${tempo}<div class="small text-muted mb-1">Questão ${quiz.i + 1} de ${quiz.fila.length} • ${esc(q.disciplina || '')}</div>
     <p class="fw-bold">${esc(q.enunciado)}</p>
     <div class="list-group mb-2">${(q.alternativas || []).map((t, k) => `<button type="button" class="list-group-item list-group-item-action" data-quiz="resp" data-opcao="${k}">${'ABCD'[k]}) ${esc(t)}</button>`).join('')}</div>
     <div id="quiz-feed"></div>`;
+  if (quiz.modo === 'prova') quizTique();
 }
 function responderQuiz(k) {
   if (!quiz || quiz.respondida) return;
   quiz.respondida = true;
+  quiz.respostas[quiz.i] = k;
+  if (quiz.modo === 'prova') { proximaQuestao(); return; }
   const q = quiz.fila[quiz.i], certa = k === Number(q.correta);
-  if (certa) quiz.acertos++;
   document.querySelectorAll('#quiz-box [data-quiz="resp"]').forEach((b, idx) => {
     b.disabled = true;
     if (idx === Number(q.correta)) b.classList.add('list-group-item-success');
@@ -912,60 +916,81 @@ function proximaQuestao() {
   if (!quiz) return;
   quiz.i++; quiz.respondida = false; quizMostrar();
 }
+function quizResultado(tempoEsgotado) {
+  if (!quiz) return;
+  if (quiz.timer) { clearInterval(quiz.timer); quiz.timer = null; }
+  quiz.erradas = quiz.fila.map((q, i) => i).filter(i => quiz.respostas[i] !== Number(quiz.fila[i].correta));
+  const acertos = quiz.fila.length - quiz.erradas.length;
+  document.getElementById('quiz-box').innerHTML = `<div class="text-center">
+    ${tempoEsgotado ? '<div class="alert alert-warning py-2 small">O tempo acabou. As questões sem resposta contam como erradas.</div>' : ''}
+    <h6 class="fw-bold">Você acertou ${acertos} de ${quiz.fila.length}!</h6>
+    <p class="text-muted small">Suas respostas não são guardadas.</p>
+    <div class="d-flex gap-2 justify-content-center flex-wrap">
+      ${quiz.erradas.length ? `<button data-quiz="revisar" class="btn btn-outline-success btn-sm fw-bold">Revisar ${quiz.erradas.length} erro(s)</button>` : ''}
+      <button data-quiz="novo" class="btn btn-ifce btn-sm fw-bold">Novo quiz</button>
+    </div></div>`;
+}
+function quizRevisar() {
+  if (!quiz) return;
+  document.getElementById('quiz-box').innerHTML = '<h6 class="fw-bold mb-2">Questões que você errou</h6>' + quiz.erradas.map(i => {
+    const q = quiz.fila[i], sua = quiz.respostas[i];
+    return `<div class="border rounded p-2 mb-2 bg-white">
+      <p class="fw-bold small mb-1">${esc(q.enunciado)}</p>
+      <div class="small">Sua resposta: <span class="text-danger">${sua === undefined ? '(não respondida)' : 'ABCD'[sua] + ') ' + esc(q.alternativas[sua])}</span></div>
+      <div class="small">Resposta certa: <span class="text-success">${'ABCD'[q.correta]}) ${esc(q.alternativas[q.correta])}</span></div>
+      ${q.explicacao ? `<p class="small text-dark mb-0 mt-1" style="white-space:pre-wrap">${esc(q.explicacao)}</p>` : ''}
+    </div>`;
+  }).join('') + '<button data-quiz="resultado" class="btn btn-outline-success btn-sm fw-bold mt-1">Voltar ao resultado</button>';
+}
 document.getElementById('quiz-box').addEventListener('click', e => {
   const b = e.target.closest('[data-quiz]');
   if (!b || b.disabled) return;
-  if (b.dataset.quiz === 'resp') responderQuiz(Number(b.dataset.opcao));
-  else if (b.dataset.quiz === 'prox') proximaQuestao();
-  else if (b.dataset.quiz === 'novo') quizIniciar();
+  const acao = b.dataset.quiz;
+  if (acao === 'resp') responderQuiz(Number(b.dataset.opcao));
+  else if (acao === 'prox') proximaQuestao();
+  else if (acao === 'novo') quizIniciar();
+  else if (acao === 'revisar') quizRevisar();
+  else if (acao === 'resultado') quizResultado(false);
 });
 
-/* ---------- tutor de estudo com IA (passa pelo serviço seguro do grêmio) ---------- */
-// Cole aqui a URL do Worker depois de publicar (ver tutor-worker.js). Enquanto estiver vazio, o tutor fica "Em breve".
-const TUTOR_URL = 'https://tutor-gremio.juankevenalvesdasilva.workers.dev';
-let tutorHist = [];
-function tutorAtualizarEstado() {
-  const ok = !!TUTOR_URL;
-  document.getElementById('tutor-form').style.display = ok ? '' : 'none';
-  document.getElementById('tutor-breve').style.display = ok ? 'none' : '';
+/* ---- cartões de revisão ---- */
+function carregarFlashcards() {
+  ouvir(db.collection('flashcards').orderBy('criadoEm', 'desc'), snap => {
+    flashcardsBanco = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const sel = document.getElementById('cards-disc'), atual = sel.value;
+    const discs = [...new Set(flashcardsBanco.map(c => c.disciplina).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+    sel.innerHTML = '<option value="">Todas as disciplinas</option>' + discs.map(d => `<option>${esc(d)}</option>`).join('');
+    sel.value = discs.includes(atual) ? atual : '';
+    cartoesIniciar();
+  });
 }
-function tutorMostrar(msg, quem) {
-  const box = document.getElementById('tutor-chat');
-  const d = document.createElement('div');
-  d.className = quem === 'eu' ? 'text-end mb-2' : 'mb-2';
-  d.innerHTML = `<span class="d-inline-block px-3 py-2 rounded ${quem === 'eu' ? 'bg-success text-white' : 'bg-white border'}" style="max-width:85%;white-space:pre-wrap;text-align:left;font-size:14px">${esc(msg)}</span>`;
-  box.appendChild(d);
-  box.scrollTop = box.scrollHeight;
+function cartoesIniciar() {
+  const disc = document.getElementById('cards-disc').value;
+  cartoes = { fila: flashcardsBanco.filter(c => !disc || c.disciplina === disc), i: 0, virado: false };
+  cartoesMostrar();
 }
-async function tutorEnviar() {
-  const campo = document.getElementById('tutor-txt'), btn = document.getElementById('tutor-btn');
-  const txt = campo.value.trim();
-  if (!txt || btn.disabled) return;
-  if (!auth.currentUser) { aviso('Entre no portal para usar o tutor.', 'warning'); return; }
-  tutorHist.push({ role: 'user', content: txt });
-  while (tutorHist.length > 10 || (tutorHist.length && tutorHist[0].role !== 'user')) tutorHist.shift();
-  tutorMostrar(txt, 'eu');
-  campo.value = '';
-  btn.disabled = true; btn.textContent = 'Pensando...';
-  try {
-    const token = await auth.currentUser.getIdToken();
-    const r = await fetch(TUTOR_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
-      body: JSON.stringify({ mensagens: tutorHist })
-    });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error(d.erro || 'Não foi possível responder agora. Tente de novo.');
-    tutorHist.push({ role: 'assistant', content: d.resposta });
-    tutorMostrar(d.resposta, 'tutor');
-  } catch (e) {
-    tutorHist.pop();
-    tutorMostrar(e.message || 'Não foi possível responder agora. Tente de novo.', 'tutor');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Enviar';
-  }
+function cartoesMostrar() {
+  const box = document.getElementById('cards-box');
+  if (!cartoes.fila.length) { box.innerHTML = '<p class="text-muted small mb-0">Nenhum cartão ainda. Quando a presidência cadastrar, eles aparecem aqui.</p>'; return; }
+  const c = cartoes.fila[cartoes.i];
+  box.innerHTML = `<div class="small text-muted mb-2 text-center">Cartão ${cartoes.i + 1} de ${cartoes.fila.length} • ${esc(c.disciplina || '')}</div>
+    <div class="p-4 rounded text-center mb-2" style="min-height:140px;background:${cartoes.virado ? '#e6f4ea' : '#ffffff'};border:2px solid var(--ifce-green);display:flex;align-items:center;justify-content:center;">
+      <p class="fw-bold mb-0" style="white-space:pre-wrap">${esc(cartoes.virado ? c.verso : c.frente)}</p>
+    </div>
+    <div class="d-flex gap-2 justify-content-between">
+      <button data-cartao="ant" class="btn btn-outline-secondary btn-sm" ${cartoes.i === 0 ? 'disabled' : ''}>← Anterior</button>
+      <button data-cartao="virar" class="btn btn-ifce btn-sm fw-bold">${cartoes.virado ? 'Ver pergunta' : 'Virar'}</button>
+      <button data-cartao="prox" class="btn btn-outline-secondary btn-sm" ${cartoes.i >= cartoes.fila.length - 1 ? 'disabled' : ''}>Próximo →</button>
+    </div>`;
 }
-tutorAtualizarEstado();
+document.getElementById('cards-box').addEventListener('click', e => {
+  const b = e.target.closest('[data-cartao]');
+  if (!b || b.disabled) return;
+  if (b.dataset.cartao === 'virar') cartoes.virado = !cartoes.virado;
+  if (b.dataset.cartao === 'prox' && cartoes.i < cartoes.fila.length - 1) { cartoes.i++; cartoes.virado = false; }
+  if (b.dataset.cartao === 'ant' && cartoes.i > 0) { cartoes.i--; cartoes.virado = false; }
+  cartoesMostrar();
+});
 
 /* ---------- relatório automático de erros (o TI vê no painel) ---------- */
 let errosEnviados = 0;
