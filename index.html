@@ -1951,5 +1951,45 @@ window.addEventListener('unhandledrejection', e => relatarErro(e.reason && e.rea
   nav.querySelectorAll('button').forEach(b => obs.observe(document.getElementById(b.dataset.alvo)));
 })();
 </script>
+
+<style>
+@keyframes eggCai { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+.egg-confete { position: fixed; top: -20px; width: 10px; height: 14px; z-index: 99999; pointer-events: none; animation: eggCai linear forwards; }
+</style>
+<script>
+(function () {
+  const rodape = document.getElementById('rodape-portal');
+  if (!rodape) return;
+  const cores = ['#00e676', '#2d8647', '#ffc107', '#4dabf7'];
+  const curiosidades = [
+    'Você sabia? A água é a única substância que existe naturalmente nos três estados no dia a dia da Terra. 💧',
+    'Curiosidade de Química: o diamante e o grafite são feitos do mesmo elemento, o carbono. ✏️',
+    'Curiosidade de Biologia: você tem cerca de 37 trilhões de células no corpo. 🧬',
+    'Curiosidade de Matemática: o zero demorou muito para ser aceito como número. 0️⃣'
+  ];
+  let toques = 0, zera = null;
+  rodape.style.cursor = 'pointer';
+  rodape.addEventListener('click', () => {
+    toques++;
+    clearTimeout(zera);
+    zera = setTimeout(() => toques = 0, 2000);
+    if (toques >= 3) {
+      toques = 0;
+      for (let i = 0; i < 60; i++) {
+        const p = document.createElement('div');
+        p.className = 'egg-confete';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.background = cores[i % cores.length];
+        p.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+        p.style.animationDelay = (Math.random() * 0.6) + 's';
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 5000);
+      }
+      const c = curiosidades[Math.floor(Math.random() * curiosidades.length)];
+      if (typeof aviso === 'function') aviso(c, 'info'); else alert(c);
+    }
+  });
+})();
+</script>
 </body>
 </html>
