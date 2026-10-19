@@ -4509,5 +4509,44 @@
         }
         montarAbas();
 </script>
+
+<style>
+@keyframes eggCai { to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }
+.egg-confete { position: fixed; top: -20px; width: 10px; height: 14px; z-index: 99999; pointer-events: none; animation: eggCai linear forwards; }
+</style>
+<script>
+(function () {
+  const marca = document.querySelector('.navbar-brand-chem');
+  if (!marca) return;
+  const cores = ['#00e676', '#ffc107', '#ff6b6b', '#4dabf7', '#e599f7'];
+  const frases = [
+    'Vocês fazem o Grêmio acontecer. Obrigado, equipe! 🧪',
+    'Gestão boa é gestão que se cuida. Bom trabalho! 🚀',
+    'Tem gente que sonha com o campus melhor. Vocês constroem! 💚'
+  ];
+  let toques = 0, zera = null;
+  marca.style.cursor = 'pointer';
+  marca.addEventListener('click', () => {
+    toques++;
+    clearTimeout(zera);
+    zera = setTimeout(() => toques = 0, 2000);
+    if (toques >= 5) { toques = 0; festa(); }
+  });
+  function festa() {
+    for (let i = 0; i < 90; i++) {
+      const p = document.createElement('div');
+      p.className = 'egg-confete';
+      p.style.left = Math.random() * 100 + 'vw';
+      p.style.background = cores[i % cores.length];
+      p.style.animationDuration = (2.5 + Math.random() * 2) + 's';
+      p.style.animationDelay = (Math.random() * 0.6) + 's';
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 5000);
+    }
+    const frase = frases[Math.floor(Math.random() * frases.length)];
+    if (typeof toast === 'function') toast(frase); else alert(frase);
+  }
+})();
+</script>
 </body>
 </html>
