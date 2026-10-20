@@ -273,7 +273,7 @@
                 <h5 class="card-title-chem mb-2">Atividades e presença</h5>
                 <p class="text-muted-custom small mb-3">Rodas, debates, formações e campanhas, com a lista de quem participou.</p>
                 <div class="row g-2 mb-2">
-                    <div class="col-md-4"><label class="form-label fw-bold">Área</label><select id="div-ati-area" class="form-select" onchange="renderAtividadesDiv()"><option value="mulheres">Diretoria de Mulheres</option><option value="generos">Diretoria de Gêneros</option></select></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">Área</label><select id="div-ati-area" class="form-select" onchange="assinarAtividadesDiv(this.value); renderAtividadesDiv()"><option value="mulheres">Diretoria de Mulheres</option><option value="generos">Diretoria de Gêneros</option></select></div>
                     <div class="col-md-8"><label class="form-label fw-bold">Título</label><input type="text" id="div-ati-titulo" class="form-control" maxlength="150" placeholder="Nome da atividade"></div>
                     <div class="col-md-4"><input type="date" id="div-ati-data" class="form-control"></div>
                     <div class="col-md-2"><input type="time" id="div-ati-hora" class="form-control"></div>
@@ -289,7 +289,7 @@
                 <h5 class="card-title-chem mb-2">Materiais de apoio</h5>
                 <p class="text-muted-custom small mb-3">Textos, vídeos e links de estudo da área.</p>
                 <div class="row g-2 mb-2">
-                    <div class="col-md-4"><select id="div-mat-area" class="form-select" onchange="renderMateriaisDiv()"><option value="mulheres">Diretoria de Mulheres</option><option value="generos">Diretoria de Gêneros</option></select></div>
+                    <div class="col-md-4"><select id="div-mat-area" class="form-select" onchange="assinarMateriaisDiv(this.value); renderMateriaisDiv()"><option value="mulheres">Diretoria de Mulheres</option><option value="generos">Diretoria de Gêneros</option></select></div>
                     <div class="col-md-8"><input type="text" id="div-mat-titulo" class="form-control" maxlength="150" placeholder="Título do material"></div>
                     <div class="col-12"><input type="url" id="div-mat-link" class="form-control" maxlength="400" placeholder="Link (https://...)"></div>
                     <div class="col-12"><textarea id="div-mat-desc" class="form-control" rows="2" maxlength="600" placeholder="Descrição (opcional)"></textarea></div>
@@ -419,7 +419,7 @@
                 <div id="lista-presencas"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-sec-alunos" data-niveis="admin,secretaria,mulheres,generos" class="card card-custom p-4 mb-4">
+            <div id="secao-sec-alunos" data-niveis="admin,secretaria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Alunos cadastrados</h5>
                 <p class="text-muted-custom small mb-2">Somente leitura. Para cadastrar, bloquear ou excluir, use o card de Alunos da presidência.</p>
                 <input type="text" id="sec-alunos-busca" class="form-control mb-2" maxlength="80" placeholder="Buscar por nome ou e-mail" oninput="renderSecAlunos()">
@@ -4191,7 +4191,7 @@
 
         /* ================= DIRETORIA DE MULHERES E DIRETORIA DE GÊNEROS ================= */
         const NOME_AREA = { mulheres: 'Diretoria de Mulheres', generos: 'Diretoria de Gêneros' };
-        let cacheAtiDiv = [], cacheMatDiv = [];
+        let cacheAtiDiv = {}, cacheMatDiv = {};
         function prepararAreaDiv(id) {
             const el = document.getElementById(id);
             if (!el) return;
@@ -4231,18 +4231,26 @@
                 .then(() => registrarAcao('Atividade excluída', id))
                 .catch(e => falhaSec(e, 'excluirAtividadeDiv'));
         }
-        function carregarAtividadesDiv() {
-            prepararAreaDiv('div-ati-area');
-            ouvir(db.collection('atividades_diversidade').orderBy('data', 'desc').limit(200), snap => {
-                cacheAtiDiv = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        const assinadosDiv = {};
+        function areaSelecionada(id) { const el = document.getElementById(id); return el ? el.value : 'mulheres'; }
+        function assinarAtividadesDiv(area) {
+            if (assinadosDiv['ati-' + area]) return;
+            assinadosDiv['ati-' + area] = true;
+            ouvir(db.collection('atividades_diversidade').where('area', '==', area).limit(300), snap => {
+                cacheAtiDiv[area] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderAtividadesDiv();
             });
+        }
+        function carregarAtividadesDiv() {
+            prepararAreaDiv('div-ati-area');
+            assinarAtividadesDiv(areaSelecionada('div-ati-area'));
+            renderAtividadesDiv();
         }
         function renderAtividadesDiv() {
             const c = document.getElementById('lista-div-atividades');
             if (!c) return;
             const area = document.getElementById('div-ati-area').value;
-            const lista = cacheAtiDiv.filter(x => x.area === area);
+            const lista = (cacheAtiDiv[area] || []).slice().sort((p, q) => String(q.data).localeCompare(String(p.data)));
             if (!lista.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma atividade registrada nesta área.</p>'; return; }
             c.innerHTML = '<div class="list-group">' + lista.map(x => `
                 <div class="list-group-item">
@@ -4280,18 +4288,24 @@
                 .then(() => registrarAcao('Material excluído', id))
                 .catch(e => falhaSec(e, 'excluirMaterialDiv'));
         }
-        function carregarMateriaisDiv() {
-            prepararAreaDiv('div-mat-area');
-            ouvir(db.collection('materiais_diversidade').orderBy('criadoEm', 'desc').limit(200), snap => {
-                cacheMatDiv = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        function assinarMateriaisDiv(area) {
+            if (assinadosDiv['mat-' + area]) return;
+            assinadosDiv['mat-' + area] = true;
+            ouvir(db.collection('materiais_diversidade').where('area', '==', area).limit(300), snap => {
+                cacheMatDiv[area] = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 renderMateriaisDiv();
             });
+        }
+        function carregarMateriaisDiv() {
+            prepararAreaDiv('div-mat-area');
+            assinarMateriaisDiv(areaSelecionada('div-mat-area'));
+            renderMateriaisDiv();
         }
         function renderMateriaisDiv() {
             const c = document.getElementById('lista-div-materiais');
             if (!c) return;
             const area = document.getElementById('div-mat-area').value;
-            const lista = cacheMatDiv.filter(x => x.area === area);
+            const lista = (cacheMatDiv[area] || []);
             if (!lista.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum material publicado nesta área.</p>'; return; }
             c.innerHTML = '<div class="list-group">' + lista.map(x => `
                 <div class="list-group-item d-flex justify-content-between align-items-start gap-2">
@@ -4310,11 +4324,11 @@
             const [ano, m] = mes.split('-');
             try {
                 const [atS, matS] = await Promise.all([
-                    db.collection('atividades_diversidade').where('data', '>=', `${mes}-01`).where('data', '<=', `${mes}-31`).get(),
-                    db.collection('materiais_diversidade').get()
+                    db.collection('atividades_diversidade').where('area', '==', area).get(),
+                    db.collection('materiais_diversidade').where('area', '==', area).get()
                 ]);
-                const atv = atS.docs.map(d => d.data()).filter(x => x.area === area).sort((p, q) => p.data.localeCompare(q.data));
-                const mats = matS.docs.map(d => d.data()).filter(x => x.area === area && noMesDiv(x.criadoEm, mes));
+                const atv = atS.docs.map(d => d.data()).filter(x => x.data && x.data.startsWith(mes)).sort((p, q) => p.data.localeCompare(q.data));
+                const mats = matS.docs.map(d => d.data()).filter(x => noMesDiv(x.criadoEm, mes));
                 const participantes = atv.reduce((s, x) => s + (x.total || (x.presentes || []).length), 0);
                 const br = iso => iso ? iso.split('-').reverse().join('/') : '—';
                 const { jsPDF } = window.jspdf;
@@ -4579,10 +4593,9 @@
             const out = document.getElementById(elId);
             out.innerHTML = '<p class="text-muted-custom small mb-0">Carregando...</p>';
             try {
-                const snap = await db.collection('atividades_diversidade')
-                    .where('data', '>=', `${ano}-01-01`).where('data', '<=', `${ano}-12-31`).get();
+                const snap = await db.collection('atividades_diversidade').where('area', '==', area).get();
                 const meses = Array.from({ length: 12 }, () => ({ ativ: 0, part: 0 }));
-                snap.docs.map(d => d.data()).filter(x => x.area === area).forEach(x => {
+                snap.docs.map(d => d.data()).filter(x => x.area === area && String(x.data).startsWith(ano)).forEach(x => {
                     const i = Number(x.data.slice(5, 7)) - 1;
                     meses[i].ativ++;
                     meses[i].part += (x.total || (x.presentes || []).length);
