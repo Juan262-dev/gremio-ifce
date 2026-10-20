@@ -170,7 +170,7 @@
                 <div id="resumo-grid" class="row g-2"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-ajuda" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
+            <div id="secao-ajuda" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Preciso de ajuda</h5>
                 <p class="text-muted-custom small mb-3">Algo não funciona ou você quer uma função nova? Conte aqui que o TI responde.</p>
                 <select id="aj-cat" class="form-select mb-2"><option>Algo não funciona</option><option>Não consigo entrar / acessar</option><option>Dúvida de como usar</option><option>Quero uma função nova</option><option>Outro</option></select>
@@ -181,12 +181,12 @@
                 <div id="lista-meus-chamados"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-novidades" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
+            <div id="secao-novidades" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Novidades do sistema</h5>
                 <div id="lista-novidades"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-guia" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
+            <div id="secao-guia" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Guia rápido do seu cargo</h5>
                 <div data-niveis="admin">
                     <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Presidência (presidente e vice)</summary>
@@ -250,7 +250,7 @@
                 <p class="small text-muted-custom mt-3 mb-0"><strong>Para todos:</strong> use "Minhas Tarefas" para marcar o que concluiu, o "Relatório de Atividades" para gerar PDF ou mandar no WhatsApp e "Preciso de ajuda" se travar em algo.</p>
             </div>
 
-            <div id="secao-tarefas" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
+            <div id="secao-tarefas" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Minhas Tarefas</h5>
                 <div id="lista-minhas-tarefas"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
@@ -269,7 +269,61 @@
                 <div id="lista-tarefas-admin"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-atas" data-niveis="admin" class="card card-custom p-4 mb-4">
+            <div id="secao-documentos" data-niveis="admin,secretaria" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-3">Documentos e ofícios</h5>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-4"><select id="doc-tipo" class="form-select"><option>Ofício</option><option>Requerimento</option><option>Declaração</option><option>Memorando</option><option>Outro</option></select></div>
+                    <div class="col-md-4"><select id="doc-sentido" class="form-select"><option>Recebido</option><option>Enviado</option></select></div>
+                    <div class="col-md-4"><input type="date" id="doc-data" class="form-control"></div>
+                    <div class="col-12"><input type="text" id="doc-assunto" class="form-control" maxlength="200" placeholder="Assunto ou resumo"></div>
+                    <div class="col-md-6"><input type="text" id="doc-origem" class="form-control" maxlength="120" placeholder="Origem ou destino (setor, pessoa ou órgão)"></div>
+                    <div class="col-md-6"><select id="doc-status" class="form-select"><option>Pendente</option><option>Respondido</option><option>Arquivado</option></select></div>
+                </div>
+                <button onclick="criarDocumento()" class="btn btn-ifce mb-3">Registrar documento</button>
+                <div id="lista-documentos"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-reunioes" data-niveis="admin,secretaria" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-3">Reuniões</h5>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-8"><input type="text" id="reu-titulo" class="form-control" maxlength="120" placeholder="Título da reunião"></div>
+                    <div class="col-md-2"><input type="date" id="reu-data" class="form-control"></div>
+                    <div class="col-md-2"><input type="time" id="reu-hora" class="form-control"></div>
+                    <div class="col-12"><input type="text" id="reu-local" class="form-control" maxlength="120" placeholder="Local"></div>
+                    <div class="col-12"><textarea id="reu-pauta" class="form-control" rows="3" maxlength="1500" placeholder="Pauta (um item por linha)"></textarea></div>
+                </div>
+                <button onclick="criarReuniao()" class="btn btn-ifce mb-3">Agendar reunião</button>
+                <div id="lista-reunioes"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-presenca" data-niveis="admin,secretaria" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-3">Lista de presença</h5>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-8"><input type="text" id="pres-evento" class="form-control" maxlength="120" placeholder="Reunião ou atividade"></div>
+                    <div class="col-md-4"><input type="date" id="pres-data" class="form-control"></div>
+                    <div class="col-12"><textarea id="pres-nomes" class="form-control" rows="4" maxlength="4000" placeholder="Nomes presentes (um por linha)"></textarea></div>
+                </div>
+                <button onclick="criarPresenca()" class="btn btn-ifce mb-3">Salvar lista de presença</button>
+                <div id="lista-presencas"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-sec-alunos" data-niveis="admin,secretaria" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">Alunos cadastrados</h5>
+                <p class="text-muted-custom small mb-2">Somente leitura. Para cadastrar, bloquear ou excluir, use o card de Alunos da presidência.</p>
+                <input type="text" id="sec-alunos-busca" class="form-control mb-2" maxlength="80" placeholder="Buscar por nome ou e-mail" oninput="renderSecAlunos()">
+                <div id="lista-sec-alunos"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-rel-sec" data-niveis="admin,secretaria" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">Relatório da secretaria</h5>
+                <p class="text-muted-custom small mb-3">Gera um PDF com as atas, reuniões, documentos e listas de presença do mês escolhido.</p>
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-6"><label class="form-label fw-bold">Mês</label><input type="month" id="rel-sec-mes" class="form-control"></div>
+                    <div class="col-md-6"><button onclick="gerarRelatorioSecretaria()" class="btn btn-pdf fw-bold w-100">Gerar PDF</button></div>
+                </div>
+            </div>
+
+            <div id="secao-atas" data-niveis="admin,secretaria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Atas de Reunião</h5>
                 <div class="row g-2 mb-3">
                     <div class="col-md-8"><label class="form-label fw-bold">Título</label><input type="text" id="ata-titulo" class="form-control" maxlength="120" placeholder="Ex: Reunião de planejamento"></div>
@@ -292,7 +346,7 @@
                 </div>
             </div>
 
-            <div id="secao-relatorio" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
+            <div id="secao-relatorio" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Escrever Relatório de Atividades</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Conteúdo do Relatório</label>
@@ -561,7 +615,7 @@
                 <div id="lista-avisos-admin"><p class="text-muted-custom small">Nenhum aviso publicado ainda. Os avisos aparecem aqui e no mural dos alunos.</p></div>
             </div>
 
-            <div id="secao-enquetes-criar" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
+            <div id="secao-enquetes-criar" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Criar Nova Enquete</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Pergunta / Título da Enquete</label>
@@ -1111,7 +1165,7 @@
                 <div id="lista-jogos-admin"><p class="text-muted-custom small">Nenhum jogo ainda. Adicione os jogos do torneio para acompanhar o placar e a classificação.</p></div>
             </div>
 
-            <div id="secao-enquetes-lista" data-niveis="admin,membro,marketing,tesouraria,cultura,racial" class="card card-custom p-4 mb-4">
+            <div id="secao-enquetes-lista" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Enquetes Ativas e Encerradas</h5>
                 <div id="lista-enquetes-admin"><p class="text-muted-custom small">Nenhuma enquete ainda. Crie uma pergunta com pelo menos duas opções para os alunos votarem.</p></div>
             </div>
@@ -1198,7 +1252,7 @@
         // precisa estar nas Firestore Security Rules (veja firestore.rules).
         const ROOT_EMAIL = 'kevin.silva10@aluno.ifce.edu.br';
         let nivelDoPainel = 'admin', painelCongelado = false;
-        const ROTULO_NIVEL = { admin: 'Presidência', membro: 'Esportes/Eventos', marketing: 'Marketing', tesouraria: 'Tesouraria', cultura: 'Cultura', racial: 'Igualdade Racial' };
+        const ROTULO_NIVEL = { secretaria: 'Secretaria', admin: 'Presidência', membro: 'Esportes/Eventos', marketing: 'Marketing', tesouraria: 'Tesouraria', cultura: 'Cultura', racial: 'Igualdade Racial' };
         const cargosIniciais = {
             "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
@@ -1210,11 +1264,16 @@
 
         const modulosSistema = [
             { id: 'secao-resumo', label: 'Resumo', icon: 'bi-speedometer2', niveisPermitidos: ['admin'] },
-            { id: 'secao-tarefas', label: 'Minhas Tarefas', icon: 'bi-check2-square', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial'] },
+            { id: 'secao-tarefas', label: 'Minhas Tarefas', icon: 'bi-check2-square', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria'] },
             { id: 'secao-tarefas-admin', label: 'Atribuir Tarefas', icon: 'bi-list-task', niveisPermitidos: ['admin'] },
-            { id: 'secao-atas', label: 'Atas de Reunião', icon: 'bi-journal-richtext', niveisPermitidos: ['admin'] },
+            { id: 'secao-documentos', label: 'Documentos e ofícios', icon: 'bi-folder2-open', niveisPermitidos: ['admin', 'secretaria'] },
+            { id: 'secao-reunioes', label: 'Reuniões', icon: 'bi-calendar2-week', niveisPermitidos: ['admin', 'secretaria'] },
+            { id: 'secao-presenca', label: 'Lista de presença', icon: 'bi-person-check', niveisPermitidos: ['admin', 'secretaria'] },
+            { id: 'secao-sec-alunos', label: 'Alunos (somente leitura)', icon: 'bi-people', niveisPermitidos: ['admin', 'secretaria'] },
+            { id: 'secao-rel-sec', label: 'Relatório da secretaria', icon: 'bi-file-earmark-pdf', niveisPermitidos: ['admin', 'secretaria'] },
+            { id: 'secao-atas', label: 'Atas de Reunião', icon: 'bi-journal-richtext', niveisPermitidos: ['admin', 'secretaria'] },
             { id: 'secao-relatorio-mensal', label: 'Relatório do Mês', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['admin'] },
-            { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial'] },
+            { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial', 'secretaria'] },
             { id: 'secao-divulgacao', label: 'Calendário de Divulgação', icon: 'bi-calendar2-week', niveisPermitidos: ['marketing'] },
             { id: 'secao-flashcards', label: 'Cartões de revisão', icon: 'bi-card-text', niveisPermitidos: ['admin'] },
             { id: 'secao-questoes', label: 'Banco de questões', icon: 'bi-patch-question', niveisPermitidos: ['admin'] },
@@ -1233,8 +1292,8 @@
             { id: 'secao-rel-racial', label: 'Relatório Racial', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['racial'] },
             { id: 'secao-artes', label: 'Banco de Artes', icon: 'bi-images', niveisPermitidos: ['marketing'] },
             { id: 'secao-mural', label: 'Mural de Avisos & Vídeos', icon: 'bi-megaphone', niveisPermitidos: ['admin', 'marketing'] },
-            { id: 'secao-enquetes-criar', label: 'Criar Enquete', icon: 'bi-bar-chart-plus', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial'] },
-            { id: 'secao-enquetes-lista', label: 'Ver Enquetes', icon: 'bi-graph-up', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial'] },
+            { id: 'secao-enquetes-criar', label: 'Criar Enquete', icon: 'bi-bar-chart-plus', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial', 'secretaria'] },
+            { id: 'secao-enquetes-lista', label: 'Ver Enquetes', icon: 'bi-graph-up', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial', 'secretaria'] },
             { id: 'secao-jogos', label: 'Placar e Classificação', icon: 'bi-trophy', niveisPermitidos: ['membro'] },
             { id: 'secao-eventos', label: 'Eventos e Torneios', icon: 'bi-calendar-event', niveisPermitidos: ['admin', 'membro'] },
             { id: 'secao-materiais', label: 'Gestão de Materiais', icon: 'bi-box-seam', niveisPermitidos: ['membro'] },
@@ -1245,9 +1304,9 @@
             { id: 'secao-punicoes', label: 'Aplicar Punições', icon: 'bi-shield-exclamation', niveisPermitidos: ['admin'] },
             { id: 'secao-diretoria', label: 'Diretoria e Cargos', icon: 'bi-person-badge', niveisPermitidos: ['admin'] },
             { id: 'secao-auditoria', label: 'Log de Auditoria', icon: 'bi-journal-text', niveisPermitidos: [] },
-            { id: 'secao-ajuda', label: 'Preciso de ajuda', icon: 'bi-life-preserver', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial'] },
-            { id: 'secao-guia', label: 'Guia rápido', icon: 'bi-book', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial'] },
-            { id: 'secao-novidades', label: 'Novidades do sistema', icon: 'bi-stars', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial'] },
+            { id: 'secao-ajuda', label: 'Preciso de ajuda', icon: 'bi-life-preserver', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria'] },
+            { id: 'secao-guia', label: 'Guia rápido', icon: 'bi-book', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria'] },
+            { id: 'secao-novidades', label: 'Novidades do sistema', icon: 'bi-stars', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria'] },
             { id: 'secao-ti-alertas', label: 'TI: Central de alertas', icon: 'bi-bell', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-utilitarios', label: 'TI: Utilitários', icon: 'bi-puzzle', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-dados', label: 'TI: Dados e conformidade', icon: 'bi-database', niveisPermitidos: ['admin'], soRaiz: true },
@@ -1445,7 +1504,7 @@
             const ver = id => { const c = document.getElementById(id); return !!c && c.style.display === 'block'; };
             [
                 ['secao-resumo', carregarResumo], ['secao-tarefas', carregarMinhasTarefas], ['secao-tarefas-admin', carregarTarefasAdmin],
-                ['secao-atas', carregarAtas], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-caixa', carregarCaixa], ['secao-cultura', () => carregarAtividades('cultura')], ['secao-racial', () => { carregarAtividades('racial'); carregarPautasRacial(); }], ['secao-tes-orc', carregarOrcamentos], ['secao-tes-contas', carregarContas], ['secao-racial-enc', carregarEncaminhamentos], ['secao-racial-apoio', carregarApoio], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin], ['secao-questoes', carregarQuestoesAdmin], ['secao-flashcards', carregarFlashcardsAdmin],
+                ['secao-atas', carregarAtas], ['secao-documentos', carregarDocumentos], ['secao-sec-alunos', carregarSecAlunos], ['secao-reunioes', carregarReunioes], ['secao-presenca', carregarPresenca], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-caixa', carregarCaixa], ['secao-cultura', () => carregarAtividades('cultura')], ['secao-racial', () => { carregarAtividades('racial'); carregarPautasRacial(); }], ['secao-tes-orc', carregarOrcamentos], ['secao-tes-contas', carregarContas], ['secao-racial-enc', carregarEncaminhamentos], ['secao-racial-apoio', carregarApoio], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin], ['secao-questoes', carregarQuestoesAdmin], ['secao-flashcards', carregarFlashcardsAdmin],
                 ['secao-mural', carregarAvisosAdmin], ['secao-enquetes-lista', carregarEnquetesAdmin],
                 ['secao-alunos-lista', carregarAlunos], ['secao-sugestoes', carregarSugestoesAdmin], ['secao-pautas', carregarPautasAdmin],
                 ['secao-punicoes', carregarMembrosPunidosAdmin], ['secao-auditoria', carregarAuditoria], ['secao-diretoria', carregarDiretoria],
@@ -2019,7 +2078,7 @@
                         <div><strong class="text-white">${esc(x.nome)}</strong> <small class="text-muted-custom">— ${esc(x.cargo)}</small><br><small class="text-muted-custom">${id}</small></div>
                         <div class="d-flex gap-1 align-items-center">
                             <select data-mudar="nivelCargo" data-id="${id}" class="form-select form-select-sm" style="width: auto;" ${raiz ? 'disabled' : ''}>
-                                ${['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial'].map(n => `<option value="${n}" ${n === x.nivel ? 'selected' : ''}>${ROTULO_NIVEL[n]}</option>`).join('')}
+                                ${['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria'].map(n => `<option value="${n}" ${n === x.nivel ? 'selected' : ''}>${ROTULO_NIVEL[n]}</option>`).join('')}
                             </select>
                             ${raiz ? '' : `<button data-acao="removerCargo" data-id="${id}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Remover</button>`}
                         </div>
@@ -3777,6 +3836,233 @@
             });
         }
 
+        /* ================= SECRETARIA: DOCUMENTOS, REUNIÕES E LISTA DE PRESENÇA ================= */
+        function falhaSec(e, onde) { console.error(onde, e); toast('Não foi possível salvar. Tente de novo.', 'danger'); }
+        function dataSec(iso) { if (!iso) return '—'; const [y, m, d] = iso.split('-'); return `${d}/${m}/${y}`; }
+
+        function criarDocumento() {
+            const assunto = document.getElementById('doc-assunto').value.trim();
+            const data = document.getElementById('doc-data').value;
+            if (!assunto || !data) { toast('Preencha o assunto e a data do documento.', 'warning'); return; }
+            const doc = {
+                tipo: document.getElementById('doc-tipo').value,
+                sentido: document.getElementById('doc-sentido').value,
+                data, assunto,
+                origem: document.getElementById('doc-origem').value.trim(),
+                status: document.getElementById('doc-status').value,
+                criadoEm: TS(), criadoPorEmail: emailLogado
+            };
+            db.collection('documentos').add(doc).then(() => {
+                toast('Documento registrado.');
+                registrarAcao('Documento registrado', assunto);
+                ['doc-assunto', 'doc-origem'].forEach(i => document.getElementById(i).value = '');
+            }).catch(e => falhaSec(e, 'criarDocumento'));
+        }
+        function alterarStatusDoc(id, status) {
+            db.collection('documentos').doc(id).update({ status })
+                .then(() => registrarAcao('Status de documento alterado', status))
+                .catch(e => falhaSec(e, 'alterarStatusDoc'));
+        }
+        async function excluirDocumento(id) {
+            if (!(await confirmar('Excluir este documento do registro?'))) return;
+            db.collection('documentos').doc(id).delete()
+                .then(() => registrarAcao('Documento excluído', id))
+                .catch(e => falhaSec(e, 'excluirDocumento'));
+        }
+        function carregarDocumentos() {
+            ouvir(db.collection('documentos').orderBy('criadoEm', 'desc').limit(200), snap => {
+                const c = document.getElementById('lista-documentos');
+                if (!c) return;
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum documento registrado.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + snap.docs.map(d => {
+                    const x = d.data();
+                    return `<div class="list-group-item d-flex justify-content-between align-items-start gap-2">
+                        <div><strong class="text-white">${esc(x.tipo)} • ${esc(x.sentido)}</strong><br>
+                        <small class="text-white">${esc(x.assunto)}</small><br>
+                        <small class="text-muted-custom">${esc(x.origem || 'Sem origem informada')} • ${esc(dataSec(x.data))}</small></div>
+                        <div class="d-flex flex-column gap-1">
+                            <select onchange="alterarStatusDoc('${d.id}', this.value)" class="form-select form-select-sm" style="font-size:11px">${['Pendente', 'Respondido', 'Arquivado'].map(s => `<option ${s === x.status ? 'selected' : ''}>${s}</option>`).join('')}</select>
+                            <button onclick="excluirDocumento('${d.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size:11px">Excluir</button>
+                        </div></div>`;
+                }).join('') + '</div>';
+            });
+        }
+
+        function criarReuniao() {
+            const titulo = document.getElementById('reu-titulo').value.trim();
+            const data = document.getElementById('reu-data').value;
+            if (!titulo || !data) { toast('Preencha o título e a data da reunião.', 'warning'); return; }
+            db.collection('reunioes').add({
+                titulo, data,
+                hora: document.getElementById('reu-hora').value || '',
+                local: document.getElementById('reu-local').value.trim(),
+                pauta: document.getElementById('reu-pauta').value.trim(),
+                criadoEm: TS(), criadoPorEmail: emailLogado
+            }).then(() => {
+                toast('Reunião agendada.');
+                registrarAcao('Reunião agendada', titulo);
+                ['reu-titulo', 'reu-local', 'reu-pauta', 'reu-hora'].forEach(i => document.getElementById(i).value = '');
+            }).catch(e => falhaSec(e, 'criarReuniao'));
+        }
+        async function excluirReuniao(id) {
+            if (!(await confirmar('Excluir esta reunião?'))) return;
+            db.collection('reunioes').doc(id).delete()
+                .then(() => registrarAcao('Reunião excluída', id))
+                .catch(e => falhaSec(e, 'excluirReuniao'));
+        }
+        function carregarReunioes() {
+            ouvir(db.collection('reunioes').orderBy('data', 'desc').limit(100), snap => {
+                const c = document.getElementById('lista-reunioes');
+                if (!c) return;
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma reunião agendada.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + snap.docs.map(d => {
+                    const x = d.data();
+                    return `<div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <div><strong class="text-white">${esc(x.titulo)}</strong><br>
+                            <small class="text-muted-custom">${esc(dataSec(x.data))}${x.hora ? ' às ' + esc(x.hora) : ''}${x.local ? ' • ' + esc(x.local) : ''}</small></div>
+                            <button onclick="excluirReuniao('${d.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size:11px">Excluir</button>
+                        </div>
+                        ${x.pauta ? `<p class="small text-white mt-2 mb-0" style="white-space:pre-wrap">${esc(x.pauta)}</p>` : ''}
+                    </div>`;
+                }).join('') + '</div>';
+            });
+        }
+
+        function criarPresenca() {
+            const evento = document.getElementById('pres-evento').value.trim();
+            const data = document.getElementById('pres-data').value;
+            const nomes = document.getElementById('pres-nomes').value.split('\n').map(n => n.trim()).filter(Boolean);
+            if (!evento || !data || !nomes.length) { toast('Preencha a atividade, a data e pelo menos um nome.', 'warning'); return; }
+            db.collection('listas_presenca').add({ evento, data, nomes, total: nomes.length, criadoEm: TS(), criadoPorEmail: emailLogado })
+                .then(() => {
+                    toast('Lista de presença salva.');
+                    registrarAcao('Lista de presença salva', evento);
+                    ['pres-evento', 'pres-nomes'].forEach(i => document.getElementById(i).value = '');
+                }).catch(e => falhaSec(e, 'criarPresenca'));
+        }
+        async function excluirPresenca(id) {
+            if (!(await confirmar('Excluir esta lista de presença?'))) return;
+            db.collection('listas_presenca').doc(id).delete()
+                .then(() => registrarAcao('Lista de presença excluída', id))
+                .catch(e => falhaSec(e, 'excluirPresenca'));
+        }
+        function carregarPresenca() {
+            ouvir(db.collection('listas_presenca').orderBy('criadoEm', 'desc').limit(100), snap => {
+                const c = document.getElementById('lista-presencas');
+                if (!c) return;
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma lista salva.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + snap.docs.map(d => {
+                    const x = d.data();
+                    return `<div class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-start gap-2">
+                            <div><strong class="text-white">${esc(x.evento)}</strong><br>
+                            <small class="text-muted-custom">${esc(dataSec(x.data))} • ${x.total || (x.nomes || []).length} presente(s)</small></div>
+                            <button onclick="excluirPresenca('${d.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size:11px">Excluir</button>
+                        </div>
+                        <details class="mt-2"><summary class="small text-muted-custom">Ver nomes</summary>
+                        <p class="small text-white mb-0 mt-1" style="white-space:pre-wrap">${esc((x.nomes || []).join('\n'))}</p></details>
+                    </div>`;
+                }).join('') + '</div>';
+            });
+        }
+
+        /* ================= SECRETARIA: ALUNOS (LEITURA) E RELATÓRIO EM PDF ================= */
+        let cacheSecAlunos = [];
+        function carregarSecAlunos() {
+            ouvir(db.collection('alunos'), snap => {
+                cacheSecAlunos = snap.docs.map(d => ({ email: d.id, ...d.data() }))
+                    .sort((x, y) => String(x.nome || '').localeCompare(String(y.nome || ''), 'pt-BR'));
+                renderSecAlunos();
+            });
+        }
+        function renderSecAlunos() {
+            const c = document.getElementById('lista-sec-alunos');
+            if (!c) return;
+            const t = (document.getElementById('sec-alunos-busca').value || '').trim().toLowerCase();
+            const lista = cacheSecAlunos.filter(a => !t || `${a.nome || ''} ${a.email || ''}`.toLowerCase().includes(t));
+            if (!lista.length) { c.innerHTML = `<p class="text-muted-custom small mb-0">${cacheSecAlunos.length ? 'Nenhum aluno com esse nome ou e-mail.' : 'Nenhum aluno cadastrado.'}</p>`; return; }
+            c.innerHTML = `<p class="text-muted-custom small mb-2">${lista.length} de ${cacheSecAlunos.length} aluno(s)</p><div class="list-group">` + lista.map(a => `
+                <div class="list-group-item d-flex justify-content-between align-items-center gap-2">
+                    <div><strong class="text-white">${esc(a.nome || 'Sem nome')}</strong><br><small class="text-muted-custom">${esc(a.email)}</small></div>
+                    <span class="badge ${a.ativo ? 'bg-success' : 'bg-danger'}">${a.ativo ? 'Ativo' : 'Bloqueado'}</span>
+                </div>`).join('') + '</div>';
+        }
+
+        async function gerarRelatorioSecretaria() {
+            const mes = document.getElementById('rel-sec-mes').value;
+            if (!mes) { toast('Escolha o mês do relatório.', 'warning'); return; }
+            const [ano, m] = mes.split('-');
+            const inicio = `${mes}-01`, fim = `${mes}-31`;
+            const noMes = dt => { if (!dt) return false; const d = dt.toDate ? dt.toDate() : new Date(dt); return d.getFullYear() == Number(ano) && d.getMonth() + 1 == Number(m); };
+            try {
+                const [atasS, reunS, docsS, presS, alunosS] = await Promise.all([
+                    db.collection('atas').get(),
+                    db.collection('reunioes').where('data', '>=', inicio).where('data', '<=', fim).get(),
+                    db.collection('documentos').where('data', '>=', inicio).where('data', '<=', fim).get(),
+                    db.collection('listas_presenca').where('data', '>=', inicio).where('data', '<=', fim).get(),
+                    db.collection('alunos').get()
+                ]);
+                const atas = atasS.docs.map(d => d.data()).filter(a => noMes(a.criadoEm));
+                const reunioes = reunS.docs.map(d => d.data()).sort((a, b) => a.data.localeCompare(b.data));
+                const docs = docsS.docs.map(d => d.data()).sort((a, b) => a.data.localeCompare(b.data));
+                const presencas = presS.docs.map(d => d.data()).sort((a, b) => a.data.localeCompare(b.data));
+                const alunos = alunosS.docs.map(d => d.data());
+                const porStatus = { Pendente: 0, Respondido: 0, Arquivado: 0 };
+                docs.forEach(d => { if (porStatus[d.status] !== undefined) porStatus[d.status]++; });
+                const br = iso => iso ? iso.split('-').reverse().join('/') : '—';
+
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                let y = 20;
+                const linha = (txt, tam = 10, negrito = false) => {
+                    pdf.setFont('Helvetica', negrito ? 'bold' : 'normal');
+                    pdf.setFontSize(tam);
+                    pdf.splitTextToSize(String(txt), 170).forEach(p => {
+                        if (y > 275) { pdf.addPage(); y = 20; pdf.setFont('Helvetica', negrito ? 'bold' : 'normal'); pdf.setFontSize(tam); }
+                        pdf.text(p, 20, y);
+                        y += tam * 0.45 + 2;
+                    });
+                };
+                const secao = t => { y += 4; linha(t, 12, true); y += 1; };
+
+                linha('Grêmio Estudantil IFCE Crateús', 16, true);
+                linha('Relatório da Secretaria', 12);
+                linha(`Mês de referência: ${m}/${ano}`);
+                linha(`Gerado por ${emailLogado} em ${new Date().toLocaleDateString('pt-BR')}`, 9);
+
+                secao(`Atas de reunião (${atas.length})`);
+                if (!atas.length) linha('Nenhuma ata registrada neste mês.');
+                atas.forEach(a => linha(`• ${a.titulo || 'Sem título'}`));
+
+                secao(`Reuniões (${reunioes.length})`);
+                if (!reunioes.length) linha('Nenhuma reunião agendada neste mês.');
+                reunioes.forEach(r => linha(`• ${br(r.data)}${r.hora ? ' às ' + r.hora : ''} – ${r.titulo}${r.local ? ' (' + r.local + ')' : ''}`));
+
+                secao(`Documentos e ofícios (${docs.length})`);
+                linha(`Pendentes: ${porStatus.Pendente} • Respondidos: ${porStatus.Respondido} • Arquivados: ${porStatus.Arquivado}`);
+                docs.forEach(d => linha(`• ${br(d.data)} – ${d.tipo} ${d.sentido.toLowerCase()}: ${d.assunto} [${d.status}]`));
+
+                secao(`Listas de presença (${presencas.length})`);
+                if (!presencas.length) linha('Nenhuma lista de presença salva neste mês.');
+                presencas.forEach(p => linha(`• ${br(p.data)} – ${p.evento}: ${p.total || (p.nomes || []).length} presente(s)`));
+
+                secao('Alunos');
+                linha(`Cadastrados: ${alunos.length} • Ativos: ${alunos.filter(a => a.ativo).length} • Bloqueados: ${alunos.filter(a => !a.ativo).length}`);
+
+                const paginas = pdf.getNumberOfPages();
+                for (let i = 1; i <= paginas; i++) {
+                    pdf.setPage(i); pdf.setFont('Helvetica', 'normal'); pdf.setFontSize(8);
+                    pdf.text(`Grêmio Estudantil IFCE Crateús · Página ${i} de ${paginas}`, 105, 290, { align: 'center' });
+                }
+                pdf.save(`relatorio_secretaria_${mes}.pdf`);
+                registrarAcao('Relatório da secretaria gerado', mes);
+            } catch (e) {
+                console.error('gerarRelatorioSecretaria', e);
+                toast('Não foi possível gerar o relatório. Tente de novo.', 'danger');
+            }
+        }
+
         /* ================= BANCO DE QUESTÕES (quiz do portal) ================= */
 
         let cacheQuestoes = [];
@@ -4440,7 +4726,7 @@
             ['alunos', 'Alunos', ['secao-alunos-cadastrar', 'secao-alunos-massa', 'secao-alunos-lista', 'secao-punicoes']],
             ['atividades', 'Atividades', ['secao-eventos', 'secao-jogos', 'secao-materiais', 'secao-cultura', 'secao-racial', 'secao-racial-enc', 'secao-racial-apoio', 'secao-rel-cult', 'secao-rel-racial']],
             ['financeiro', 'Financeiro', ['secao-caixa', 'secao-tes-orc', 'secao-tes-contas', 'secao-rel-tes']],
-            ['diretoria', 'Diretoria', ['secao-diretoria', 'secao-atas', 'secao-relatorio-mensal', 'secao-relatorio', 'secao-auditoria']],
+            ['diretoria', 'Diretoria', ['secao-diretoria', 'secao-sec-alunos', 'secao-rel-sec', 'secao-documentos', 'secao-reunioes', 'secao-presenca', 'secao-atas', 'secao-relatorio-mensal', 'secao-relatorio', 'secao-auditoria']],
             ['ti', 'TI', []],
             ['outros', 'Outros', []]
         ];
