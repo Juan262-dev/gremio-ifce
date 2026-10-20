@@ -170,7 +170,7 @@
                 <div id="resumo-grid" class="row g-2"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-ajuda" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria" class="card card-custom p-4 mb-4">
+            <div id="secao-ajuda" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria,mulheres,generos" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Preciso de ajuda</h5>
                 <p class="text-muted-custom small mb-3">Algo não funciona ou você quer uma função nova? Conte aqui que o TI responde.</p>
                 <select id="aj-cat" class="form-select mb-2"><option>Algo não funciona</option><option>Não consigo entrar / acessar</option><option>Dúvida de como usar</option><option>Quero uma função nova</option><option>Outro</option></select>
@@ -181,12 +181,12 @@
                 <div id="lista-meus-chamados"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-novidades" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria" class="card card-custom p-4 mb-4">
+            <div id="secao-novidades" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria,mulheres,generos" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Novidades do sistema</h5>
                 <div id="lista-novidades"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-guia" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria" class="card card-custom p-4 mb-4">
+            <div id="secao-guia" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria,mulheres,generos" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Guia rápido do seu cargo</h5>
                 <div data-niveis="admin">
                     <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Presidência (presidente e vice)</summary>
@@ -250,7 +250,7 @@
                 <p class="small text-muted-custom mt-3 mb-0"><strong>Para todos:</strong> use "Minhas Tarefas" para marcar o que concluiu, o "Relatório de Atividades" para gerar PDF ou mandar no WhatsApp e "Preciso de ajuda" se travar em algo.</p>
             </div>
 
-            <div id="secao-tarefas" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria" class="card card-custom p-4 mb-4">
+            <div id="secao-tarefas" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria,mulheres,generos" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Minhas Tarefas</h5>
                 <div id="lista-minhas-tarefas"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
@@ -267,6 +267,118 @@
                 <button onclick="criarTarefa()" class="btn btn-ifce">Atribuir</button>
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <div id="lista-tarefas-admin"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-div-atividades" data-niveis="admin,mulheres,generos" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">Atividades e presença</h5>
+                <p class="text-muted-custom small mb-3">Rodas, debates, formações e campanhas, com a lista de quem participou.</p>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-4"><label class="form-label fw-bold">Área</label><select id="div-ati-area" class="form-select" onchange="renderAtividadesDiv()"><option value="mulheres">Diretoria de Mulheres</option><option value="generos">Diretoria de Gêneros</option></select></div>
+                    <div class="col-md-8"><label class="form-label fw-bold">Título</label><input type="text" id="div-ati-titulo" class="form-control" maxlength="150" placeholder="Nome da atividade"></div>
+                    <div class="col-md-4"><input type="date" id="div-ati-data" class="form-control"></div>
+                    <div class="col-md-2"><input type="time" id="div-ati-hora" class="form-control"></div>
+                    <div class="col-md-6"><input type="text" id="div-ati-local" class="form-control" maxlength="120" placeholder="Local"></div>
+                    <div class="col-12"><textarea id="div-ati-desc" class="form-control" rows="2" maxlength="1000" placeholder="Descrição (opcional)"></textarea></div>
+                    <div class="col-12"><textarea id="div-ati-presentes" class="form-control" rows="4" maxlength="4000" placeholder="Participantes (um nome por linha)"></textarea></div>
+                </div>
+                <button onclick="criarAtividadeDiv()" class="btn btn-ifce mb-3">Registrar atividade</button>
+                <div id="lista-div-atividades"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-div-materiais" data-niveis="admin,mulheres,generos" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">Materiais de apoio</h5>
+                <p class="text-muted-custom small mb-3">Textos, vídeos e links de estudo da área.</p>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-4"><select id="div-mat-area" class="form-select" onchange="renderMateriaisDiv()"><option value="mulheres">Diretoria de Mulheres</option><option value="generos">Diretoria de Gêneros</option></select></div>
+                    <div class="col-md-8"><input type="text" id="div-mat-titulo" class="form-control" maxlength="150" placeholder="Título do material"></div>
+                    <div class="col-12"><input type="url" id="div-mat-link" class="form-control" maxlength="400" placeholder="Link (https://...)"></div>
+                    <div class="col-12"><textarea id="div-mat-desc" class="form-control" rows="2" maxlength="600" placeholder="Descrição (opcional)"></textarea></div>
+                </div>
+                <button onclick="criarMaterialDiv()" class="btn btn-ifce mb-3">Publicar material</button>
+                <div id="lista-div-materiais"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-div-rel" data-niveis="admin,mulheres,generos" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">Relatório mensal da diretoria</h5>
+                <p class="text-muted-custom small mb-3">PDF com as atividades, participantes e materiais do mês.</p>
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-4"><label class="form-label fw-bold">Área</label><select id="div-rel-area" class="form-select"><option value="mulheres">Diretoria de Mulheres</option><option value="generos">Diretoria de Gêneros</option></select></div>
+                    <div class="col-md-4"><label class="form-label fw-bold">Mês</label><input type="month" id="div-rel-mes" class="form-control"></div>
+                    <div class="col-md-4"><button onclick="gerarRelatorioDiv()" class="btn btn-pdf fw-bold w-100">Gerar PDF</button></div>
+                </div>
+            </div>
+
+            <div id="secao-mu-campanhas" data-niveis="admin,mulheres" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">Campanhas e ações</h5>
+                <p class="text-muted-custom small mb-3">Planeje as campanhas da área: período, responsável e andamento.</p>
+                <div class="row g-2 mb-2"><div class="col-md-6"><label class="form-label small text-muted-custom mb-1">Título da campanha</label><input type="text" id="mu-camp-titulo" class="form-control" maxlength="150"></div><div class="col-md-3"><label class="form-label small text-muted-custom mb-1">Início</label><input type="date" id="mu-camp-inicio" class="form-control"></div><div class="col-md-3"><label class="form-label small text-muted-custom mb-1">Fim</label><input type="date" id="mu-camp-fim" class="form-control"></div><div class="col-md-3"><label class="form-label small text-muted-custom mb-1">Situação</label><select id="mu-camp-status" class="form-select"><option>Planejada</option><option>Em andamento</option><option>Concluída</option></select></div><div class="col-md-3"><label class="form-label small text-muted-custom mb-1">Responsável</label><input type="text" id="mu-camp-resp" class="form-control" maxlength="100"></div><div class="col-12"><label class="form-label small text-muted-custom mb-1">Notas</label><textarea id="mu-camp-notas" class="form-control" rows="3" maxlength="800"></textarea></div></div>
+                <button onclick="salvarCrud('mu-campanhas')" class="btn btn-ifce mb-3">Cadastrar campanha</button>
+                <div id="lista-mu-campanhas"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-mu-calendario" data-niveis="admin,mulheres" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">Calendário de datas</h5>
+                <p class="text-muted-custom small mb-3">Datas importantes da área. As datas de referência já estão listadas abaixo; acrescente outras que precisar.</p>
+<div class="mb-3 small text-white"><strong>Datas de referência:</strong><br>8 de março – Dia Internacional da Mulher<br>28 de maio – Dia Internacional de Ação pela Saúde da Mulher<br>25 de novembro – Dia Internacional pela Eliminação da Violência contra as Mulheres</div>
+                <div class="row g-2 mb-2"><div class="col-md-3"><label class="form-label small text-muted-custom mb-1">Data</label><input type="date" id="mu-cal-data" class="form-control"></div><div class="col-md-9"><label class="form-label small text-muted-custom mb-1">Evento ou data</label><input type="text" id="mu-cal-evento" class="form-control" maxlength="150"></div><div class="col-12"><label class="form-label small text-muted-custom mb-1">Observação</label><textarea id="mu-cal-obs" class="form-control" rows="3" maxlength="400"></textarea></div></div>
+                <button onclick="salvarCrud('mu-calendario')" class="btn btn-ifce mb-3">Adicionar data</button>
+                <div id="lista-mu-calendario"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-ge-glossario" data-niveis="admin,generos" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">Glossário de gênero</h5>
+                <p class="text-muted-custom small mb-3">Termos e conceitos explicados de forma simples, para usar nas formações e nos debates.</p>
+                <div class="row g-2 mb-2"><div class="col-md-4"><label class="form-label small text-muted-custom mb-1">Termo</label><input type="text" id="ge-gl-termo" class="form-control" maxlength="80"></div><div class="col-md-8"><label class="form-label small text-muted-custom mb-1">Fonte (opcional)</label><input type="text" id="ge-gl-fonte" class="form-control" maxlength="150"></div><div class="col-12"><label class="form-label small text-muted-custom mb-1">Definição</label><textarea id="ge-gl-def" class="form-control" rows="3" maxlength="800"></textarea></div></div>
+                <button onclick="salvarCrud('ge-glossario')" class="btn btn-ifce mb-3">Adicionar termo</button>
+                <div id="lista-ge-glossario"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-ge-debates" data-niveis="admin,generos" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">Pauta de debates</h5>
+                <p class="text-muted-custom small mb-3">Temas planejados para os debates, com data, convidado e situação.</p>
+                <div class="row g-2 mb-2"><div class="col-md-8"><label class="form-label small text-muted-custom mb-1">Tema do debate</label><input type="text" id="ge-deb-tema" class="form-control" maxlength="150"></div><div class="col-md-4"><label class="form-label small text-muted-custom mb-1">Data</label><input type="date" id="ge-deb-data" class="form-control"></div><div class="col-md-6"><label class="form-label small text-muted-custom mb-1">Convidado(a)</label><input type="text" id="ge-deb-conv" class="form-control" maxlength="100"></div><div class="col-md-6"><label class="form-label small text-muted-custom mb-1">Situação</label><select id="ge-deb-status" class="form-select"><option>Planejado</option><option>Realizado</option><option>Cancelado</option></select></div><div class="col-12"><label class="form-label small text-muted-custom mb-1">Notas</label><textarea id="ge-deb-notas" class="form-control" rows="3" maxlength="800"></textarea></div></div>
+                <button onclick="salvarCrud('ge-debates')" class="btn btn-ifce mb-3">Cadastrar debate</button>
+                <div id="lista-ge-debates"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-ge-metas" data-niveis="admin,generos" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">Metas da área</h5>
+                <p class="text-muted-custom small mb-3">Metas do semestre com prazo e progresso, para acompanhar o que já foi feito.</p>
+                <div class="row g-2 mb-2"><div class="col-md-8"><label class="form-label small text-muted-custom mb-1">Meta</label><input type="text" id="ge-met-meta" class="form-control" maxlength="150"></div><div class="col-md-4"><label class="form-label small text-muted-custom mb-1">Prazo</label><input type="date" id="ge-met-prazo" class="form-control"></div><div class="col-md-4"><label class="form-label small text-muted-custom mb-1">Progresso (%)</label><input type="number" id="ge-met-prog" class="form-control" min="0" max="100" value="0"></div><div class="col-12"><label class="form-label small text-muted-custom mb-1">Responsável</label><input type="text" id="ge-met-resp" class="form-control" maxlength="100"></div></div>
+                <button onclick="salvarCrud('ge-metas')" class="btn btn-ifce mb-3">Cadastrar meta</button>
+                <div id="lista-ge-metas"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-mu-canais" data-niveis="admin,mulheres" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">Canais de apoio</h5>
+                <p class="text-muted-custom small mb-3">Números para orientar quem procura ajuda. Confira antes de repassar.</p>
+                <ul class="small text-white mb-0">
+                    <li><strong>180</strong> – Central de Atendimento à Mulher (orientação e denúncia, 24 horas)</li>
+                    <li><strong>190</strong> – Polícia Militar (emergências)</li>
+                    <li><strong>100</strong> – Disque Direitos Humanos</li>
+                    <li><strong>188</strong> – CVV (apoio emocional, 24 horas)</li>
+                </ul>
+                <p class="small text-muted-custom mt-2 mb-0">Se houver delegacia especializada de atendimento à mulher na cidade, indique também o endereço dela.</p>
+            </div>
+
+            <div id="secao-mu-indicadores" data-niveis="admin,mulheres" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">Participação por mês</h5>
+                <p class="text-muted-custom small mb-3">Quantas atividades e participações a área teve em cada mês do ano.</p>
+                <div class="row g-2 align-items-end mb-2">
+                    <div class="col-md-6"><label class="form-label small text-muted-custom mb-1">Ano</label><select id="mu-ind-ano" class="form-select"><option>2025</option><option selected>2026</option><option>2027</option></select></div>
+                    <div class="col-md-6"><button onclick="gerarIndicadores('mulheres','mu-ind-resultado','mu-ind-ano')" class="btn btn-ifce w-100 fw-bold">Atualizar</button></div>
+                </div>
+                <div id="mu-ind-resultado"><p class="text-muted-custom small mb-0">Escolha o ano e toque em Atualizar.</p></div>
+            </div>
+
+            <div id="secao-ge-indicadores" data-niveis="admin,generos" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">Participação por mês</h5>
+                <p class="text-muted-custom small mb-3">Quantas atividades e participações a área teve em cada mês do ano.</p>
+                <div class="row g-2 align-items-end mb-2">
+                    <div class="col-md-6"><label class="form-label small text-muted-custom mb-1">Ano</label><select id="ge-ind-ano" class="form-select"><option>2025</option><option selected>2026</option><option>2027</option></select></div>
+                    <div class="col-md-6"><button onclick="gerarIndicadores('generos','ge-ind-resultado','ge-ind-ano')" class="btn btn-ifce w-100 fw-bold">Atualizar</button></div>
+                </div>
+                <div id="ge-ind-resultado"><p class="text-muted-custom small mb-0">Escolha o ano e toque em Atualizar.</p></div>
             </div>
 
             <div id="secao-documentos" data-niveis="admin,secretaria" class="card card-custom p-4 mb-4">
@@ -307,7 +419,7 @@
                 <div id="lista-presencas"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-sec-alunos" data-niveis="admin,secretaria" class="card card-custom p-4 mb-4">
+            <div id="secao-sec-alunos" data-niveis="admin,secretaria,mulheres,generos" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Alunos cadastrados</h5>
                 <p class="text-muted-custom small mb-2">Somente leitura. Para cadastrar, bloquear ou excluir, use o card de Alunos da presidência.</p>
                 <input type="text" id="sec-alunos-busca" class="form-control mb-2" maxlength="80" placeholder="Buscar por nome ou e-mail" oninput="renderSecAlunos()">
@@ -346,7 +458,7 @@
                 </div>
             </div>
 
-            <div id="secao-relatorio" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria" class="card card-custom p-4 mb-4">
+            <div id="secao-relatorio" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria,mulheres,generos" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Escrever Relatório de Atividades</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Conteúdo do Relatório</label>
@@ -615,7 +727,7 @@
                 <div id="lista-avisos-admin"><p class="text-muted-custom small">Nenhum aviso publicado ainda. Os avisos aparecem aqui e no mural dos alunos.</p></div>
             </div>
 
-            <div id="secao-enquetes-criar" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria" class="card card-custom p-4 mb-4">
+            <div id="secao-enquetes-criar" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria,mulheres,generos" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Criar Nova Enquete</h5>
                 <div class="mb-3">
                     <label class="form-label fw-bold">Pergunta / Título da Enquete</label>
@@ -912,6 +1024,8 @@
                     <button onclick="verComo('cultura')" class="btn btn-outline-info btn-sm">Cultura</button>
                     <button onclick="verComo('racial')" class="btn btn-outline-info btn-sm">Igualdade Racial</button>
                     <button onclick="verComo('secretaria')" class="btn btn-outline-info btn-sm">Secretaria</button>
+                    <button onclick="verComo('mulheres')" class="btn btn-outline-info btn-sm">Diretora de Mulheres</button>
+                    <button onclick="verComo('generos')" class="btn btn-outline-info btn-sm">Diretor(a) de Gêneros</button>
                 </div>
 
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
@@ -1166,7 +1280,7 @@
                 <div id="lista-jogos-admin"><p class="text-muted-custom small">Nenhum jogo ainda. Adicione os jogos do torneio para acompanhar o placar e a classificação.</p></div>
             </div>
 
-            <div id="secao-enquetes-lista" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria" class="card card-custom p-4 mb-4">
+            <div id="secao-enquetes-lista" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria,mulheres,generos" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Enquetes Ativas e Encerradas</h5>
                 <div id="lista-enquetes-admin"><p class="text-muted-custom small">Nenhuma enquete ainda. Crie uma pergunta com pelo menos duas opções para os alunos votarem.</p></div>
             </div>
@@ -1253,7 +1367,7 @@
         // precisa estar nas Firestore Security Rules (veja firestore.rules).
         const ROOT_EMAIL = 'kevin.silva10@aluno.ifce.edu.br';
         let nivelDoPainel = 'admin', painelCongelado = false;
-        const ROTULO_NIVEL = { secretaria: 'Secretaria', admin: 'Presidência', membro: 'Esportes/Eventos', marketing: 'Marketing', tesouraria: 'Tesouraria', cultura: 'Cultura', racial: 'Igualdade Racial' };
+        const ROTULO_NIVEL = { secretaria: 'Secretaria', mulheres: 'Diretora de Mulheres', generos: 'Diretor(a) de Gêneros', admin: 'Presidência', membro: 'Esportes/Eventos', marketing: 'Marketing', tesouraria: 'Tesouraria', cultura: 'Cultura', racial: 'Igualdade Racial' };
         const cargosIniciais = {
             "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
@@ -1265,16 +1379,27 @@
 
         const modulosSistema = [
             { id: 'secao-resumo', label: 'Resumo', icon: 'bi-speedometer2', niveisPermitidos: ['admin'] },
-            { id: 'secao-tarefas', label: 'Minhas Tarefas', icon: 'bi-check2-square', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria'] },
+            { id: 'secao-tarefas', label: 'Minhas Tarefas', icon: 'bi-check2-square', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos'] },
             { id: 'secao-tarefas-admin', label: 'Atribuir Tarefas', icon: 'bi-list-task', niveisPermitidos: ['admin'] },
             { id: 'secao-documentos', label: 'Documentos e ofícios', icon: 'bi-folder2-open', niveisPermitidos: ['admin', 'secretaria'] },
             { id: 'secao-reunioes', label: 'Reuniões', icon: 'bi-calendar2-week', niveisPermitidos: ['admin', 'secretaria'] },
             { id: 'secao-presenca', label: 'Lista de presença', icon: 'bi-person-check', niveisPermitidos: ['admin', 'secretaria'] },
+            { id: 'secao-mu-campanhas', label: 'Campanhas e ações (mulheres)', icon: 'bi-clipboard-check', niveisPermitidos: ['admin', 'mulheres'] },
+            { id: 'secao-mu-calendario', label: 'Calendário de datas (mulheres)', icon: 'bi-clipboard-check', niveisPermitidos: ['admin', 'mulheres'] },
+            { id: 'secao-ge-glossario', label: 'Glossário de gênero', icon: 'bi-clipboard-check', niveisPermitidos: ['admin', 'generos'] },
+            { id: 'secao-ge-debates', label: 'Pauta de debates (gênero)', icon: 'bi-clipboard-check', niveisPermitidos: ['admin', 'generos'] },
+            { id: 'secao-ge-metas', label: 'Metas da área (gênero)', icon: 'bi-clipboard-check', niveisPermitidos: ['admin', 'generos'] },
+            { id: 'secao-mu-canais', label: 'Canais de apoio', icon: 'bi-clipboard-check', niveisPermitidos: ['admin', 'mulheres'] },
+            { id: 'secao-mu-indicadores', label: 'Participação por mês (mulheres)', icon: 'bi-clipboard-check', niveisPermitidos: ['admin', 'mulheres'] },
+            { id: 'secao-ge-indicadores', label: 'Participação por mês (gênero)', icon: 'bi-clipboard-check', niveisPermitidos: ['admin', 'generos'] },
+            { id: 'secao-div-atividades', label: 'Atividades e presença (diversidade)', icon: 'bi-people-fill', niveisPermitidos: ['admin', 'mulheres', 'generos'] },
+            { id: 'secao-div-materiais', label: 'Materiais de apoio (diversidade)', icon: 'bi-journal-bookmark', niveisPermitidos: ['admin', 'mulheres', 'generos'] },
+            { id: 'secao-div-rel', label: 'Relatório da diretoria (diversidade)', icon: 'bi-file-earmark-pdf', niveisPermitidos: ['admin', 'mulheres', 'generos'] },
             { id: 'secao-sec-alunos', label: 'Alunos (somente leitura)', icon: 'bi-people', niveisPermitidos: ['admin', 'secretaria'] },
             { id: 'secao-rel-sec', label: 'Relatório da secretaria', icon: 'bi-file-earmark-pdf', niveisPermitidos: ['admin', 'secretaria'] },
             { id: 'secao-atas', label: 'Atas de Reunião', icon: 'bi-journal-richtext', niveisPermitidos: ['admin', 'secretaria'] },
             { id: 'secao-relatorio-mensal', label: 'Relatório do Mês', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['admin'] },
-            { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial', 'secretaria'] },
+            { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos'] },
             { id: 'secao-divulgacao', label: 'Calendário de Divulgação', icon: 'bi-calendar2-week', niveisPermitidos: ['marketing'] },
             { id: 'secao-flashcards', label: 'Cartões de revisão', icon: 'bi-card-text', niveisPermitidos: ['admin'] },
             { id: 'secao-questoes', label: 'Banco de questões', icon: 'bi-patch-question', niveisPermitidos: ['admin'] },
@@ -1293,8 +1418,8 @@
             { id: 'secao-rel-racial', label: 'Relatório Racial', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['racial'] },
             { id: 'secao-artes', label: 'Banco de Artes', icon: 'bi-images', niveisPermitidos: ['marketing'] },
             { id: 'secao-mural', label: 'Mural de Avisos & Vídeos', icon: 'bi-megaphone', niveisPermitidos: ['admin', 'marketing'] },
-            { id: 'secao-enquetes-criar', label: 'Criar Enquete', icon: 'bi-bar-chart-plus', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial', 'secretaria'] },
-            { id: 'secao-enquetes-lista', label: 'Ver Enquetes', icon: 'bi-graph-up', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial', 'secretaria'] },
+            { id: 'secao-enquetes-criar', label: 'Criar Enquete', icon: 'bi-bar-chart-plus', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos'] },
+            { id: 'secao-enquetes-lista', label: 'Ver Enquetes', icon: 'bi-graph-up', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos'] },
             { id: 'secao-jogos', label: 'Placar e Classificação', icon: 'bi-trophy', niveisPermitidos: ['membro'] },
             { id: 'secao-eventos', label: 'Eventos e Torneios', icon: 'bi-calendar-event', niveisPermitidos: ['admin', 'membro'] },
             { id: 'secao-materiais', label: 'Gestão de Materiais', icon: 'bi-box-seam', niveisPermitidos: ['membro'] },
@@ -1305,9 +1430,9 @@
             { id: 'secao-punicoes', label: 'Aplicar Punições', icon: 'bi-shield-exclamation', niveisPermitidos: ['admin'] },
             { id: 'secao-diretoria', label: 'Diretoria e Cargos', icon: 'bi-person-badge', niveisPermitidos: ['admin'] },
             { id: 'secao-auditoria', label: 'Log de Auditoria', icon: 'bi-journal-text', niveisPermitidos: [] },
-            { id: 'secao-ajuda', label: 'Preciso de ajuda', icon: 'bi-life-preserver', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria'] },
-            { id: 'secao-guia', label: 'Guia rápido', icon: 'bi-book', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria'] },
-            { id: 'secao-novidades', label: 'Novidades do sistema', icon: 'bi-stars', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria'] },
+            { id: 'secao-ajuda', label: 'Preciso de ajuda', icon: 'bi-life-preserver', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos'] },
+            { id: 'secao-guia', label: 'Guia rápido', icon: 'bi-book', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos'] },
+            { id: 'secao-novidades', label: 'Novidades do sistema', icon: 'bi-stars', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos'] },
             { id: 'secao-ti-alertas', label: 'TI: Central de alertas', icon: 'bi-bell', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-utilitarios', label: 'TI: Utilitários', icon: 'bi-puzzle', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-ti-dados', label: 'TI: Dados e conformidade', icon: 'bi-database', niveisPermitidos: ['admin'], soRaiz: true },
@@ -1505,7 +1630,7 @@
             const ver = id => { const c = document.getElementById(id); return !!c && c.style.display === 'block'; };
             [
                 ['secao-resumo', carregarResumo], ['secao-tarefas', carregarMinhasTarefas], ['secao-tarefas-admin', carregarTarefasAdmin],
-                ['secao-atas', carregarAtas], ['secao-documentos', carregarDocumentos], ['secao-sec-alunos', carregarSecAlunos], ['secao-reunioes', carregarReunioes], ['secao-presenca', carregarPresenca], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-caixa', carregarCaixa], ['secao-cultura', () => carregarAtividades('cultura')], ['secao-racial', () => { carregarAtividades('racial'); carregarPautasRacial(); }], ['secao-tes-orc', carregarOrcamentos], ['secao-tes-contas', carregarContas], ['secao-racial-enc', carregarEncaminhamentos], ['secao-racial-apoio', carregarApoio], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin], ['secao-questoes', carregarQuestoesAdmin], ['secao-flashcards', carregarFlashcardsAdmin],
+                ['secao-atas', carregarAtas], ['secao-documentos', carregarDocumentos], ['secao-sec-alunos', carregarSecAlunos], ['secao-div-atividades', carregarAtividadesDiv], ['secao-div-materiais', carregarMateriaisDiv], ['secao-div-rel', prepararRelDiv], ['secao-mu-campanhas', () => carregarCrud('mu-campanhas')], ['secao-mu-calendario', () => carregarCrud('mu-calendario')], ['secao-ge-glossario', () => carregarCrud('ge-glossario')], ['secao-ge-debates', () => carregarCrud('ge-debates')], ['secao-ge-metas', () => carregarCrud('ge-metas')], ['secao-reunioes', carregarReunioes], ['secao-presenca', carregarPresenca], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-caixa', carregarCaixa], ['secao-cultura', () => carregarAtividades('cultura')], ['secao-racial', () => { carregarAtividades('racial'); carregarPautasRacial(); }], ['secao-tes-orc', carregarOrcamentos], ['secao-tes-contas', carregarContas], ['secao-racial-enc', carregarEncaminhamentos], ['secao-racial-apoio', carregarApoio], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin], ['secao-questoes', carregarQuestoesAdmin], ['secao-flashcards', carregarFlashcardsAdmin],
                 ['secao-mural', carregarAvisosAdmin], ['secao-enquetes-lista', carregarEnquetesAdmin],
                 ['secao-alunos-lista', carregarAlunos], ['secao-sugestoes', carregarSugestoesAdmin], ['secao-pautas', carregarPautasAdmin],
                 ['secao-punicoes', carregarMembrosPunidosAdmin], ['secao-auditoria', carregarAuditoria], ['secao-diretoria', carregarDiretoria],
@@ -2079,7 +2204,7 @@
                         <div><strong class="text-white">${esc(x.nome)}</strong> <small class="text-muted-custom">— ${esc(x.cargo)}</small><br><small class="text-muted-custom">${id}</small></div>
                         <div class="d-flex gap-1 align-items-center">
                             <select data-mudar="nivelCargo" data-id="${id}" class="form-select form-select-sm" style="width: auto;" ${raiz ? 'disabled' : ''}>
-                                ${['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria'].map(n => `<option value="${n}" ${n === x.nivel ? 'selected' : ''}>${ROTULO_NIVEL[n]}</option>`).join('')}
+                                ${['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos'].map(n => `<option value="${n}" ${n === x.nivel ? 'selected' : ''}>${ROTULO_NIVEL[n]}</option>`).join('')}
                             </select>
                             ${raiz ? '' : `<button data-acao="removerCargo" data-id="${id}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Remover</button>`}
                         </div>
@@ -4064,6 +4189,416 @@
             }
         }
 
+        /* ================= DIRETORIA DE MULHERES E DIRETORIA DE GÊNEROS ================= */
+        const NOME_AREA = { mulheres: 'Diretoria de Mulheres', generos: 'Diretoria de Gêneros' };
+        let cacheAtiDiv = [], cacheMatDiv = [];
+        function prepararAreaDiv(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            if (nivelReal === 'mulheres' || nivelReal === 'generos') { el.value = nivelReal; el.disabled = true; }
+            else if (!el.value) el.value = 'mulheres';
+        }
+        function prepararRelDiv() { prepararAreaDiv('div-rel-area'); }
+        function noMesDiv(dt, mes) {
+            if (!dt) return false;
+            const d = dt.toDate ? dt.toDate() : new Date(dt);
+            return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}` === mes;
+        }
+
+        /* atividades e presença */
+        function criarAtividadeDiv() {
+            const area = document.getElementById('div-ati-area').value;
+            const titulo = document.getElementById('div-ati-titulo').value.trim();
+            const data = document.getElementById('div-ati-data').value;
+            const presentes = document.getElementById('div-ati-presentes').value.split('\n').map(n => n.trim()).filter(Boolean);
+            if (!titulo || !data) { toast('Preencha o título e a data da atividade.', 'warning'); return; }
+            db.collection('atividades_diversidade').add({
+                area, titulo, data,
+                hora: document.getElementById('div-ati-hora').value || '',
+                local: document.getElementById('div-ati-local').value.trim(),
+                descricao: document.getElementById('div-ati-desc').value.trim(),
+                presentes, total: presentes.length,
+                criadoEm: TS(), criadoPorEmail: emailLogado
+            }).then(() => {
+                toast('Atividade registrada.');
+                registrarAcao('Atividade registrada (' + NOME_AREA[area] + ')', titulo);
+                ['div-ati-titulo', 'div-ati-local', 'div-ati-desc', 'div-ati-presentes', 'div-ati-hora'].forEach(i => document.getElementById(i).value = '');
+            }).catch(e => falhaSec(e, 'criarAtividadeDiv'));
+        }
+        async function excluirAtividadeDiv(id) {
+            if (!(await confirmar('Excluir esta atividade e a lista de participantes?'))) return;
+            db.collection('atividades_diversidade').doc(id).delete()
+                .then(() => registrarAcao('Atividade excluída', id))
+                .catch(e => falhaSec(e, 'excluirAtividadeDiv'));
+        }
+        function carregarAtividadesDiv() {
+            prepararAreaDiv('div-ati-area');
+            ouvir(db.collection('atividades_diversidade').orderBy('data', 'desc').limit(200), snap => {
+                cacheAtiDiv = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderAtividadesDiv();
+            });
+        }
+        function renderAtividadesDiv() {
+            const c = document.getElementById('lista-div-atividades');
+            if (!c) return;
+            const area = document.getElementById('div-ati-area').value;
+            const lista = cacheAtiDiv.filter(x => x.area === area);
+            if (!lista.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma atividade registrada nesta área.</p>'; return; }
+            c.innerHTML = '<div class="list-group">' + lista.map(x => `
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start gap-2">
+                        <div><strong class="text-white">${esc(x.titulo)}</strong><br>
+                        <small class="text-muted-custom">${esc(x.data.split('-').reverse().join('/'))}${x.hora ? ' às ' + esc(x.hora) : ''}${x.local ? ' • ' + esc(x.local) : ''} • ${x.total || (x.presentes || []).length} participante(s)</small></div>
+                        <button onclick="excluirAtividadeDiv('${x.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size:11px">Excluir</button>
+                    </div>
+                    ${x.descricao ? `<p class="small text-white mt-2 mb-1" style="white-space:pre-wrap">${esc(x.descricao)}</p>` : ''}
+                    <details class="mt-1"><summary class="small text-muted-custom">Ver participantes</summary>
+                    <p class="small text-white mb-0 mt-1" style="white-space:pre-wrap">${esc((x.presentes || []).join('\n') || 'Nenhum nome registrado.')}</p></details>
+                </div>`).join('') + '</div>';
+        }
+
+        /* materiais de apoio */
+        function criarMaterialDiv() {
+            const area = document.getElementById('div-mat-area').value;
+            const titulo = document.getElementById('div-mat-titulo').value.trim();
+            const link = document.getElementById('div-mat-link').value.trim();
+            if (!titulo || !link) { toast('Preencha o título e o link do material.', 'warning'); return; }
+            if (!/^https:\/\//i.test(link)) { toast('O link precisa começar com https://', 'warning'); return; }
+            db.collection('materiais_diversidade').add({
+                area, titulo, link,
+                descricao: document.getElementById('div-mat-desc').value.trim(),
+                criadoEm: TS(), criadoPorEmail: emailLogado
+            }).then(() => {
+                toast('Material publicado.');
+                registrarAcao('Material publicado (' + NOME_AREA[area] + ')', titulo);
+                ['div-mat-titulo', 'div-mat-link', 'div-mat-desc'].forEach(i => document.getElementById(i).value = '');
+            }).catch(e => falhaSec(e, 'criarMaterialDiv'));
+        }
+        async function excluirMaterialDiv(id) {
+            if (!(await confirmar('Excluir este material?'))) return;
+            db.collection('materiais_diversidade').doc(id).delete()
+                .then(() => registrarAcao('Material excluído', id))
+                .catch(e => falhaSec(e, 'excluirMaterialDiv'));
+        }
+        function carregarMateriaisDiv() {
+            prepararAreaDiv('div-mat-area');
+            ouvir(db.collection('materiais_diversidade').orderBy('criadoEm', 'desc').limit(200), snap => {
+                cacheMatDiv = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderMateriaisDiv();
+            });
+        }
+        function renderMateriaisDiv() {
+            const c = document.getElementById('lista-div-materiais');
+            if (!c) return;
+            const area = document.getElementById('div-mat-area').value;
+            const lista = cacheMatDiv.filter(x => x.area === area);
+            if (!lista.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum material publicado nesta área.</p>'; return; }
+            c.innerHTML = '<div class="list-group">' + lista.map(x => `
+                <div class="list-group-item d-flex justify-content-between align-items-start gap-2">
+                    <div><strong class="text-white">${esc(x.titulo)}</strong><br>
+                    <a href="${esc(x.link)}" target="_blank" rel="noopener noreferrer" class="small">Abrir link ↗</a>
+                    ${x.descricao ? `<p class="small text-muted-custom mb-0 mt-1">${esc(x.descricao)}</p>` : ''}</div>
+                    <button onclick="excluirMaterialDiv('${x.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size:11px">Excluir</button>
+                </div>`).join('') + '</div>';
+        }
+
+        /* relatório mensal da área */
+        async function gerarRelatorioDiv() {
+            const area = document.getElementById('div-rel-area').value;
+            const mes = document.getElementById('div-rel-mes').value;
+            if (!mes) { toast('Escolha o mês do relatório.', 'warning'); return; }
+            const [ano, m] = mes.split('-');
+            try {
+                const [atS, matS] = await Promise.all([
+                    db.collection('atividades_diversidade').where('data', '>=', `${mes}-01`).where('data', '<=', `${mes}-31`).get(),
+                    db.collection('materiais_diversidade').get()
+                ]);
+                const atv = atS.docs.map(d => d.data()).filter(x => x.area === area).sort((p, q) => p.data.localeCompare(q.data));
+                const mats = matS.docs.map(d => d.data()).filter(x => x.area === area && noMesDiv(x.criadoEm, mes));
+                const participantes = atv.reduce((s, x) => s + (x.total || (x.presentes || []).length), 0);
+                const br = iso => iso ? iso.split('-').reverse().join('/') : '—';
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+                let y = 20;
+                const linha = (txt, tam = 10, negrito = false) => {
+                    pdf.setFont('Helvetica', negrito ? 'bold' : 'normal');
+                    pdf.setFontSize(tam);
+                    pdf.splitTextToSize(String(txt), 170).forEach(p => {
+                        if (y > 275) { pdf.addPage(); y = 20; pdf.setFont('Helvetica', negrito ? 'bold' : 'normal'); pdf.setFontSize(tam); }
+                        pdf.text(p, 20, y);
+                        y += tam * 0.45 + 2;
+                    });
+                };
+                const secao = t => { y += 4; linha(t, 12, true); y += 1; };
+                linha('Grêmio Estudantil IFCE Crateús', 16, true);
+                linha(NOME_AREA[area] + ' · Relatório mensal', 12);
+                linha(`Mês de referência: ${m}/${ano}`);
+                linha(`Gerado por ${emailLogado} em ${new Date().toLocaleDateString('pt-BR')}`, 9);
+                secao(`Atividades (${atv.length})`);
+                if (!atv.length) linha('Nenhuma atividade registrada neste mês.');
+                atv.forEach(x => {
+                    linha(`• ${br(x.data)}${x.hora ? ' às ' + x.hora : ''} – ${x.titulo}${x.local ? ' (' + x.local + ')' : ''}: ${x.total || (x.presentes || []).length} participante(s)`);
+                    (x.presentes || []).forEach(n => linha('      ' + n, 9));
+                });
+                secao(`Materiais publicados (${mats.length})`);
+                if (!mats.length) linha('Nenhum material publicado neste mês.');
+                mats.forEach(x => linha(`• ${x.titulo}: ${x.link}`));
+                secao('Resumo');
+                linha(`Participações registradas no mês: ${participantes}`);
+                const paginas = pdf.getNumberOfPages();
+                for (let i = 1; i <= paginas; i++) {
+                    pdf.setPage(i); pdf.setFont('Helvetica', 'normal'); pdf.setFontSize(8);
+                    pdf.text(`Grêmio Estudantil IFCE Crateús · Página ${i} de ${paginas}`, 105, 290, { align: 'center' });
+                }
+                pdf.save(`relatorio_${area}_${mes}.pdf`);
+                registrarAcao('Relatório da diretoria gerado', `${area} ${mes}`);
+            } catch (e) {
+                console.error('gerarRelatorioDiv', e);
+                toast('Não foi possível gerar o relatório. Tente de novo.', 'danger');
+            }
+        }
+
+        /* ================= FUNÇÕES PRÓPRIAS: DIRETORIA DE MULHERES E DIRETORIA DE GÊNEROS ================= */
+        const CRUD_CFG = {
+  "mu-campanhas": {
+    "col": "campanhas_mulheres",
+    "lista": "lista-mu-campanhas",
+    "acao": "Campanha cadastrada",
+    "campos": [
+      [
+        "mu-camp-titulo",
+        "titulo",
+        "text"
+      ],
+      [
+        "mu-camp-inicio",
+        "inicio",
+        "date"
+      ],
+      [
+        "mu-camp-fim",
+        "fim",
+        "date"
+      ],
+      [
+        "mu-camp-status",
+        "status",
+        "select"
+      ],
+      [
+        "mu-camp-resp",
+        "responsavel",
+        "text"
+      ],
+      [
+        "mu-camp-notas",
+        "notas",
+        "textarea"
+      ]
+    ],
+    "obrig": [
+      "titulo"
+    ],
+    "numericos": []
+  },
+  "mu-calendario": {
+    "col": "calendario_mulheres",
+    "lista": "lista-mu-calendario",
+    "acao": "Data do calendário cadastrada",
+    "campos": [
+      [
+        "mu-cal-data",
+        "data",
+        "date"
+      ],
+      [
+        "mu-cal-evento",
+        "evento",
+        "text"
+      ],
+      [
+        "mu-cal-obs",
+        "obs",
+        "textarea"
+      ]
+    ],
+    "obrig": [
+      "evento"
+    ],
+    "numericos": []
+  },
+  "ge-glossario": {
+    "col": "glossario_generos",
+    "lista": "lista-ge-glossario",
+    "acao": "Termo cadastrado no glossário",
+    "campos": [
+      [
+        "ge-gl-termo",
+        "termo",
+        "text"
+      ],
+      [
+        "ge-gl-fonte",
+        "fonte",
+        "text"
+      ],
+      [
+        "ge-gl-def",
+        "definicao",
+        "textarea"
+      ]
+    ],
+    "obrig": [
+      "termo",
+      "definicao"
+    ],
+    "numericos": []
+  },
+  "ge-debates": {
+    "col": "debates_generos",
+    "lista": "lista-ge-debates",
+    "acao": "Debate cadastrado",
+    "campos": [
+      [
+        "ge-deb-tema",
+        "tema",
+        "text"
+      ],
+      [
+        "ge-deb-data",
+        "data",
+        "date"
+      ],
+      [
+        "ge-deb-conv",
+        "convidado",
+        "text"
+      ],
+      [
+        "ge-deb-status",
+        "status",
+        "select"
+      ],
+      [
+        "ge-deb-notas",
+        "notas",
+        "textarea"
+      ]
+    ],
+    "obrig": [
+      "tema"
+    ],
+    "numericos": []
+  },
+  "ge-metas": {
+    "col": "metas_generos",
+    "lista": "lista-ge-metas",
+    "acao": "Meta cadastrada",
+    "campos": [
+      [
+        "ge-met-meta",
+        "meta",
+        "text"
+      ],
+      [
+        "ge-met-prazo",
+        "prazo",
+        "date"
+      ],
+      [
+        "ge-met-prog",
+        "progresso",
+        "number"
+      ],
+      [
+        "ge-met-resp",
+        "responsavel",
+        "text"
+      ]
+    ],
+    "obrig": [
+      "meta"
+    ],
+    "numericos": [
+      "progresso"
+    ]
+  }
+};
+        const LINHA_CRUD = {
+            'mu-campanhas': x => `<strong class="text-white">${esc(x.titulo)}</strong> <span class="badge bg-secondary">${esc(x.status || 'Planejada')}</span><br><small class="text-muted-custom">${esc(dataSec(x.inicio))} a ${esc(dataSec(x.fim))} • ${esc(x.responsavel || 'sem responsável')}</small>${x.notas ? `<p class="small text-white mb-0 mt-1" style="white-space:pre-wrap">${esc(x.notas)}</p>` : ''}`,
+            'mu-calendario': x => `<strong class="text-white">${esc(x.evento)}</strong><br><small class="text-muted-custom">${esc(dataSec(x.data))}</small>${x.obs ? `<p class="small text-white mb-0 mt-1">${esc(x.obs)}</p>` : ''}`,
+            'ge-glossario': x => `<strong class="text-white">${esc(x.termo)}</strong>${x.fonte ? ` <small class="text-muted-custom">(${esc(x.fonte)})</small>` : ''}<p class="small text-white mb-0 mt-1" style="white-space:pre-wrap">${esc(x.definicao)}</p>`,
+            'ge-debates': x => `<strong class="text-white">${esc(x.tema)}</strong> <span class="badge bg-secondary">${esc(x.status || 'Planejado')}</span><br><small class="text-muted-custom">${esc(dataSec(x.data))}${x.convidado ? ' • ' + esc(x.convidado) : ''}</small>${x.notas ? `<p class="small text-white mb-0 mt-1" style="white-space:pre-wrap">${esc(x.notas)}</p>` : ''}`,
+            'ge-metas': x => `<strong class="text-white">${esc(x.meta)}</strong><br><small class="text-muted-custom">Prazo: ${esc(dataSec(x.prazo))}${x.responsavel ? ' • ' + esc(x.responsavel) : ''}</small><div class="progress mt-2" style="height:8px"><div class="progress-bar bg-success" style="width:${Math.min(100, Math.max(0, Number(x.progresso) || 0))}%"></div></div><small class="text-muted-custom">${Math.min(100, Math.max(0, Number(x.progresso) || 0))}% concluído</small>`
+        };
+        function salvarCrud(id) {
+            const cfg = CRUD_CFG[id];
+            const obj = {};
+            cfg.campos.forEach(([inp, key, tipo]) => {
+                let v = document.getElementById(inp).value;
+                v = typeof v === 'string' ? v.trim() : v;
+                if (cfg.numericos.includes(key)) v = Math.min(100, Math.max(0, Number(v) || 0));
+                obj[key] = v;
+            });
+            if (cfg.obrig.some(k => !obj[k])) { toast('Preencha os campos obrigatórios.', 'warning'); return; }
+            obj.criadoEm = TS();
+            obj.criadoPorEmail = emailLogado;
+            db.collection(cfg.col).add(obj).then(() => {
+                toast('Salvo com sucesso.');
+                registrarAcao(cfg.acao, String(obj[cfg.obrig[0]]));
+                cfg.campos.forEach(([inp, key, tipo]) => {
+                    const el = document.getElementById(inp);
+                    if (tipo === 'select') el.selectedIndex = 0;
+                    else if (tipo === 'number') el.value = 0;
+                    else el.value = '';
+                });
+            }).catch(e => falhaSec(e, 'salvarCrud'));
+        }
+        async function excluirCrud(id, docId) {
+            const cfg = CRUD_CFG[id];
+            if (!(await confirmar('Excluir este registro?'))) return;
+            db.collection(cfg.col).doc(docId).delete()
+                .then(() => registrarAcao('Registro excluído (' + cfg.col + ')', docId))
+                .catch(e => falhaSec(e, 'excluirCrud'));
+        }
+        function carregarCrud(id) {
+            const cfg = CRUD_CFG[id];
+            ouvir(db.collection(cfg.col).orderBy('criadoEm', 'desc').limit(200), snap => {
+                const c = document.getElementById(cfg.lista);
+                if (!c) return;
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nada cadastrado ainda.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + snap.docs.map(d => `
+                    <div class="list-group-item d-flex justify-content-between align-items-start gap-2">
+                        <div class="flex-grow-1">${LINHA_CRUD[id]({ id: d.id, ...d.data() })}</div>
+                        <button onclick="excluirCrud('${id}','${d.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size:11px">Excluir</button>
+                    </div>`).join('') + '</div>';
+            });
+        }
+        async function gerarIndicadores(area, elId, selId) {
+            const ano = document.getElementById(selId).value;
+            const out = document.getElementById(elId);
+            out.innerHTML = '<p class="text-muted-custom small mb-0">Carregando...</p>';
+            try {
+                const snap = await db.collection('atividades_diversidade')
+                    .where('data', '>=', `${ano}-01-01`).where('data', '<=', `${ano}-12-31`).get();
+                const meses = Array.from({ length: 12 }, () => ({ ativ: 0, part: 0 }));
+                snap.docs.map(d => d.data()).filter(x => x.area === area).forEach(x => {
+                    const i = Number(x.data.slice(5, 7)) - 1;
+                    meses[i].ativ++;
+                    meses[i].part += (x.total || (x.presentes || []).length);
+                });
+                const nomes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+                const tot = meses.reduce((s, m) => ({ ativ: s.ativ + m.ativ, part: s.part + m.part }), { ativ: 0, part: 0 });
+                out.innerHTML = `<div class="table-responsive"><table class="table table-dark table-sm align-middle mb-2">
+                    <thead><tr><th>Mês</th><th>Atividades</th><th>Participações</th></tr></thead>
+                    <tbody>${meses.map((m, i) => `<tr><td>${nomes[i]}</td><td>${m.ativ}</td><td>${m.part}</td></tr>`).join('')}</tbody></table></div>
+                    <p class="small text-muted-custom mb-0">Total em ${esc(ano)}: ${tot.ativ} atividade(s) e ${tot.part} participação(ões).</p>`;
+            } catch (e) {
+                console.error('gerarIndicadores', e);
+                out.innerHTML = '<p class="small text-danger mb-0">Não foi possível carregar. Tente de novo.</p>';
+            }
+        }
+
         /* ================= BANCO DE QUESTÕES (quiz do portal) ================= */
 
         let cacheQuestoes = [];
@@ -4727,7 +5262,7 @@
             ['alunos', 'Alunos', ['secao-alunos-cadastrar', 'secao-alunos-massa', 'secao-alunos-lista', 'secao-punicoes']],
             ['atividades', 'Atividades', ['secao-eventos', 'secao-jogos', 'secao-materiais', 'secao-cultura', 'secao-racial', 'secao-racial-enc', 'secao-racial-apoio', 'secao-rel-cult', 'secao-rel-racial']],
             ['financeiro', 'Financeiro', ['secao-caixa', 'secao-tes-orc', 'secao-tes-contas', 'secao-rel-tes']],
-            ['diretoria', 'Diretoria', ['secao-diretoria', 'secao-sec-alunos', 'secao-rel-sec', 'secao-documentos', 'secao-reunioes', 'secao-presenca', 'secao-atas', 'secao-relatorio-mensal', 'secao-relatorio', 'secao-auditoria']],
+            ['diretoria', 'Diretoria', ['secao-diretoria', 'secao-secao-mu-campanhas', 'secao-secao-mu-calendario', 'secao-secao-mu-canais', 'secao-secao-mu-indicadores', 'secao-secao-ge-glossario', 'secao-secao-ge-debates', 'secao-secao-ge-metas', 'secao-secao-ge-indicadores', 'secao-div-atividades', 'secao-div-materiais', 'secao-div-rel', 'secao-sec-alunos', 'secao-rel-sec', 'secao-documentos', 'secao-reunioes', 'secao-presenca', 'secao-atas', 'secao-relatorio-mensal', 'secao-relatorio', 'secao-auditoria']],
             ['ti', 'TI', []],
             ['outros', 'Outros', []]
         ];
