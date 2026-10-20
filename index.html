@@ -132,6 +132,12 @@ body{background-color:#f4f6f9}
     <div id="lista-eventos-aluno"><p class="text-muted small">Carregando eventos...</p></div>
   </div>
 
+  <div id="sec-realizacoes" class="card card-custom p-4 mb-4">
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">O que o grêmio já fez</h5>
+    <p class="text-muted small mb-3">Eventos e atividades que já aconteceram, com o número de participantes.</p>
+    <div id="lista-realizacoes"><p class="text-muted small mb-0">Carregando...</p></div>
+  </div>
+
   <div id="sec-jogos" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-3" style="color:var(--ifce-green)">🏆 Placar dos Jogos</h5>
     <div id="lista-jogos-aluno"><p class="text-muted small">Carregando jogos...</p></div>
@@ -225,9 +231,10 @@ body{background-color:#f4f6f9}
   <div id="lista-notif"></div>
 </div>
 
+<div id="aviso-offline" class="d-none text-center small fw-bold py-2 px-3" style="position:fixed;top:0;left:0;right:0;z-index:1080;background:#fff3cd;color:#664d03;border-bottom:1px solid #ffe69c">Sem conexão: você está vendo os dados guardados. Votos, inscrições e envios voltam quando a internet voltar.</div>
 <nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-quiz"><span>🧠</span>Quiz</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
-<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.17-d</div>
+<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.20-a</div>
 
 <div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100005;width:100%;max-width:420px;margin-bottom:72px"></div>
 
@@ -247,6 +254,7 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+db.enablePersistence({ synchronizeTabs: true }).catch(() => {});
 const TS = () => firebase.firestore.FieldValue.serverTimestamp();
 
 let usuarioAtual = null;
@@ -398,7 +406,7 @@ function iniciarSessaoAluno() {
       const btn = document.querySelector('#bottom-nav [data-alvo="sec-' + k + '"]'); if (btn) btn.style.display = off ? 'none' : '';
     });
   });
-  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarJogos(); carregarClassificacao(); carregarVideos(); carregarEstudos(); carregarQuestoes(); carregarFlashcards(); carregarMeusChamados(); carregarMinhasSugestoes();
+  carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarRealizacoes(); carregarJogos(); carregarClassificacao(); carregarVideos(); carregarEstudos(); carregarQuestoes(); carregarFlashcards(); carregarMeusChamados(); carregarMinhasSugestoes();
 }
 
 /* ---------- Mural ---------- */
@@ -2148,6 +2156,54 @@ window.addEventListener('unhandledrejection', e => relatarErro(e.reason && e.rea
       if (typeof aviso === 'function') aviso(c, 'info'); else alert(c);
     }
   });
+})();
+</script>
+
+<script>
+/* ---- O que o grêmio já fez ---- */
+function carregarRealizacoes() {
+  ouvir(db.collection('eventos'), snap => {
+    const c = document.getElementById('lista-realizacoes');
+    if (!c) return;
+    const hoje = hojeISO();
+    const passados = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+      .filter(e => e.dataISO && e.dataISO < hoje)
+      .sort((a, b) => b.dataISO.localeCompare(a.dataISO))
+      .slice(0, 8);
+    c.innerHTML = passados.length
+      ? '<div class="list-group">' + passados.map(e => `
+          <div class="list-group-item">
+            <div class="d-flex justify-content-between align-items-start gap-2">
+              <h6 class="fw-bold mb-1 text-success">${esc(e.titulo)}</h6>
+              <span class="badge bg-light text-muted border" style="white-space:nowrap">${esc(e.data || dataBR(e.dataISO))}</span>
+            </div>
+            ${e.descricao ? `<p class="small mb-1" style="white-space:pre-wrap">${esc(e.descricao)}</p>` : ''}
+            <small class="text-muted">${(e.inscritos || []).length} participante(s) inscrito(s)</small>
+          </div>`).join('') + '</div>'
+      : '<p class="text-muted small mb-0">Ainda não há atividades concluídas para mostrar.</p>';
+  });
+}
+</script>
+
+<script>
+/* ---- modo offline: aviso de conexão e bloqueio de envios sem internet ---- */
+(function () {
+  const banner = document.getElementById('aviso-offline');
+  function atualizarConexao() { if (banner) banner.classList.toggle('d-none', navigator.onLine); }
+  window.addEventListener('online', atualizarConexao);
+  window.addEventListener('offline', atualizarConexao);
+  atualizarConexao();
+  const ESCRITA = /votar|apoiar|inscrever|solicitar|criar|enviar|fazerLogin|salvar|publicar|confirmar/i;
+  document.addEventListener('click', e => {
+    if (navigator.onLine) return;
+    const b = e.target.closest('button, a');
+    if (!b) return;
+    if (ESCRITA.test(b.getAttribute('onclick') || '')) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      aviso('Sem conexão. Tente de novo quando a internet voltar.', 'warning');
+    }
+  }, true);
 })();
 </script>
 </body>
