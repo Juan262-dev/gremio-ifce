@@ -2257,7 +2257,7 @@ function carregarEleicaoPortal() {
           <div class="small" style="white-space:pre-wrap">${esc(ch.integrantes || '')}</div></label>`;
       }).join('');
     });
-  }).catch(() => {});
+  }).catch(e => console.error('eleicao portal', e));
 }
 function votarEleicao() {
   if (!eleicaoPortal) return;
@@ -2280,7 +2280,11 @@ function votarEleicao() {
     document.querySelectorAll('input[name="ele-chapa"]').forEach(x => x.disabled = true);
   }).catch(e => aviso(e.message || 'Não foi possível registrar o voto. Tente de novo.', 'warning'));
 }
-window.addEventListener('load', () => setTimeout(carregarEleicaoPortal, 1500));
+window.addEventListener('load', () => {
+  setTimeout(carregarEleicaoPortal, 1500);
+  setInterval(carregarEleicaoPortal, 60000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) carregarEleicaoPortal(); });
+});
 </script>
 </body>
 </html>
