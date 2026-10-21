@@ -4,7 +4,7 @@
   "short_name": "Painel Grêmio",
   "description": "Painel de gestão do Grêmio Estudantil do IFCE Crateús",
   "start_url": "./admin.html",
-  "scope": "./",
+  "scope": "./admin.html",
   "display": "standalone",
   "background_color": "#121814",
   "theme_color": "#2d8647",
