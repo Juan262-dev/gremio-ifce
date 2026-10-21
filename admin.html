@@ -381,6 +381,29 @@
                 <div id="ge-ind-resultado"><p class="text-muted-custom small mb-0">Escolha o ano e toque em Atualizar.</p></div>
             </div>
 
+            <div id="secao-avisos-wpp" class="card card-custom p-4 mb-4 card-root" style="border-color: #0dcaf0;">
+                <h5 class="card-title-chem mb-2">Avisos por WhatsApp</h5>
+                <p class="text-muted-custom small mb-3">Só recebe aviso quem tiver telefone cadastrado e tiver autorizado o recebimento.</p>
+                <h6 class="fw-bold text-white mb-2">Contatos dos cargos</h6>
+                <p class="text-muted-custom small mb-2">Telefone com DDI 55, DDD e número, só números. Exemplo: 5588999999999.</p>
+                <div id="lista-contatos-wpp"><p class="text-muted-custom small">Carregando...</p></div>
+                <hr style="border-color: var(--ifce-card-border);" class="my-4">
+                <h6 class="fw-bold text-white mb-2">Enviar aviso</h6>
+                <div class="row g-2 mb-2">
+                    <div class="col-12"><input type="text" id="wpp-titulo" class="form-control" maxlength="60" placeholder="Título do aviso (ex.: Reunião de diretoria)"></div>
+                    <div class="col-12"><textarea id="wpp-mensagem" class="form-control" rows="3" maxlength="500" placeholder="Mensagem"></textarea></div>
+                </div>
+                <div class="d-flex gap-2 mb-2"><button type="button" onclick="marcarTodosWpp(true)" class="btn btn-outline-light btn-sm">Marcar todos</button><button type="button" onclick="marcarTodosWpp(false)" class="btn btn-outline-light btn-sm">Desmarcar</button></div>
+                <div id="lista-destinatarios-wpp" class="mb-3"><p class="text-muted-custom small">Nenhum contato autorizado ainda.</p></div>
+                <button id="btn-enviar-wpp" onclick="enviarAvisoWpp()" class="btn btn-success fw-bold w-100">Enviar pelo WhatsApp</button>
+            </div>
+
+            <div id="secao-agenda" data-niveis="admin,membro,marketing,tesouraria,cultura,racial,secretaria,mulheres,generos" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">Agenda compartilhada</h5>
+                <p class="text-muted-custom small mb-3">Eventos e reuniões dos próximos 60 dias. Os alertas mostram dias com mais de uma atividade e atividades no mesmo local.</p>
+                <div id="lista-agenda"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
             <div id="secao-documentos" data-niveis="admin,secretaria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Documentos e ofícios</h5>
                 <div class="row g-2 mb-2">
@@ -1395,8 +1418,10 @@
             { id: 'secao-div-atividades', label: 'Atividades e presença (diversidade)', icon: 'bi-people-fill', niveisPermitidos: ['admin', 'mulheres', 'generos'] },
             { id: 'secao-div-materiais', label: 'Materiais de apoio (diversidade)', icon: 'bi-journal-bookmark', niveisPermitidos: ['admin', 'mulheres', 'generos'] },
             { id: 'secao-div-rel', label: 'Relatório da diretoria (diversidade)', icon: 'bi-file-earmark-pdf', niveisPermitidos: ['admin', 'mulheres', 'generos'] },
+            { id: 'secao-agenda', label: 'Agenda compartilhada', icon: 'bi-calendar3', niveisPermitidos: ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos'] },
             { id: 'secao-sec-alunos', label: 'Alunos (somente leitura)', icon: 'bi-people', niveisPermitidos: ['admin', 'secretaria'] },
             { id: 'secao-rel-sec', label: 'Relatório da secretaria', icon: 'bi-file-earmark-pdf', niveisPermitidos: ['admin', 'secretaria'] },
+            { id: 'secao-avisos-wpp', label: 'TI: Avisos por WhatsApp', icon: 'bi-whatsapp', niveisPermitidos: ['admin'], soRaiz: true },
             { id: 'secao-atas', label: 'Atas de Reunião', icon: 'bi-journal-richtext', niveisPermitidos: ['admin', 'secretaria'] },
             { id: 'secao-relatorio-mensal', label: 'Relatório do Mês', icon: 'bi-file-earmark-bar-graph', niveisPermitidos: ['admin'] },
             { id: 'secao-relatorio', label: 'Relatório de Atividades', icon: 'bi-file-text', niveisPermitidos: ['admin', 'marketing', 'membro', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos'] },
@@ -1630,7 +1655,7 @@
             const ver = id => { const c = document.getElementById(id); return !!c && c.style.display === 'block'; };
             [
                 ['secao-resumo', carregarResumo], ['secao-tarefas', carregarMinhasTarefas], ['secao-tarefas-admin', carregarTarefasAdmin],
-                ['secao-atas', carregarAtas], ['secao-documentos', carregarDocumentos], ['secao-sec-alunos', carregarSecAlunos], ['secao-div-atividades', carregarAtividadesDiv], ['secao-div-materiais', carregarMateriaisDiv], ['secao-div-rel', prepararRelDiv], ['secao-mu-campanhas', () => carregarCrud('mu-campanhas')], ['secao-mu-calendario', () => carregarCrud('mu-calendario')], ['secao-ge-glossario', () => carregarCrud('ge-glossario')], ['secao-ge-debates', () => carregarCrud('ge-debates')], ['secao-ge-metas', () => carregarCrud('ge-metas')], ['secao-reunioes', carregarReunioes], ['secao-presenca', carregarPresenca], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-caixa', carregarCaixa], ['secao-cultura', () => carregarAtividades('cultura')], ['secao-racial', () => { carregarAtividades('racial'); carregarPautasRacial(); }], ['secao-tes-orc', carregarOrcamentos], ['secao-tes-contas', carregarContas], ['secao-racial-enc', carregarEncaminhamentos], ['secao-racial-apoio', carregarApoio], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin], ['secao-questoes', carregarQuestoesAdmin], ['secao-flashcards', carregarFlashcardsAdmin],
+                ['secao-atas', carregarAtas], ['secao-documentos', carregarDocumentos], ['secao-sec-alunos', carregarSecAlunos], ['secao-agenda', carregarAgenda], ['secao-avisos-wpp', carregarAvisosWpp], ['secao-div-atividades', carregarAtividadesDiv], ['secao-div-materiais', carregarMateriaisDiv], ['secao-div-rel', prepararRelDiv], ['secao-mu-campanhas', () => carregarCrud('mu-campanhas')], ['secao-mu-calendario', () => carregarCrud('mu-calendario')], ['secao-ge-glossario', () => carregarCrud('ge-glossario')], ['secao-ge-debates', () => carregarCrud('ge-debates')], ['secao-ge-metas', () => carregarCrud('ge-metas')], ['secao-reunioes', carregarReunioes], ['secao-presenca', carregarPresenca], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-caixa', carregarCaixa], ['secao-cultura', () => carregarAtividades('cultura')], ['secao-racial', () => { carregarAtividades('racial'); carregarPautasRacial(); }], ['secao-tes-orc', carregarOrcamentos], ['secao-tes-contas', carregarContas], ['secao-racial-enc', carregarEncaminhamentos], ['secao-racial-apoio', carregarApoio], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin], ['secao-questoes', carregarQuestoesAdmin], ['secao-flashcards', carregarFlashcardsAdmin],
                 ['secao-mural', carregarAvisosAdmin], ['secao-enquetes-lista', carregarEnquetesAdmin],
                 ['secao-alunos-lista', carregarAlunos], ['secao-sugestoes', carregarSugestoesAdmin], ['secao-pautas', carregarPautasAdmin],
                 ['secao-punicoes', carregarMembrosPunidosAdmin], ['secao-auditoria', carregarAuditoria], ['secao-diretoria', carregarDiretoria],
@@ -4612,6 +4637,138 @@
             }
         }
 
+        /* ================= AVISOS POR WHATSAPP (serviço seguro; só a presidência) ================= */
+        const WHATSAPP_URL = ''; // cole aqui a URL do Worker de WhatsApp depois de publicar
+        let cacheContatosWpp = [];
+        let cacheCargosWpp = [], cacheAvisosWpp = {};
+        function montarContatosWpp() {
+            cacheContatosWpp = cacheCargosWpp.map(c => ({
+                ...c,
+                telefone: (cacheAvisosWpp[c.email] || {}).telefone || '',
+                whatsappOptIn: (cacheAvisosWpp[c.email] || {}).whatsappOptIn === true
+            }));
+            renderContatosWpp();
+            renderDestinatariosWpp();
+        }
+        function carregarAvisosWpp() {
+            ouvir(db.collection('cargos'), snap => {
+                cacheCargosWpp = snap.docs.map(d => ({ email: d.id, ...d.data() }))
+                    .sort((x, y) => String(x.nome || '').localeCompare(String(y.nome || ''), 'pt-BR'));
+                montarContatosWpp();
+            });
+            ouvir(db.collection('contatos_avisos'), snap => {
+                cacheAvisosWpp = {};
+                snap.docs.forEach(d => cacheAvisosWpp[d.id] = d.data());
+                montarContatosWpp();
+            });
+        }
+        function renderContatosWpp() {
+            const c = document.getElementById('lista-contatos-wpp');
+            if (!c) return;
+            if (!cacheContatosWpp.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum cargo cadastrado.</p>'; return; }
+            c.innerHTML = '<div class="list-group mb-3">' + cacheContatosWpp.map((x, i) => `
+                <div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+                        <div><strong class="text-white">${esc(x.nome || x.email)}</strong><br><small class="text-muted-custom">${esc(x.cargo || '')}</small></div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <input type="tel" id="wpp-tel-${i}" class="form-control form-control-sm" style="width:170px" maxlength="15" placeholder="5588999999999" value="${esc(x.telefone || '')}">
+                            <label class="small text-white d-flex align-items-center gap-1"><input type="checkbox" id="wpp-opt-${i}" ${x.whatsappOptIn ? 'checked' : ''}> Autoriza</label>
+                            <button onclick="salvarContatoWpp(${i})" class="btn btn-outline-success btn-sm py-0">Salvar</button>
+                        </div>
+                    </div>
+                </div>`).join('') + '</div>';
+        }
+        function salvarContatoWpp(i) {
+            const x = cacheContatosWpp[i];
+            const tel = document.getElementById('wpp-tel-' + i).value.replace(/\D/g, '');
+            const opt = document.getElementById('wpp-opt-' + i).checked;
+            if (tel && !/^\d{10,15}$/.test(tel)) { toast('Telefone inválido. Use DDI, DDD e número, só números.', 'warning'); return; }
+            if (opt && !tel) { toast('Para autorizar, informe o telefone.', 'warning'); return; }
+            db.collection('contatos_avisos').doc(x.email).set({ telefone: tel, whatsappOptIn: opt }, { merge: true })
+                .then(() => { toast('Contato salvo.'); registrarAcao('Contato de WhatsApp atualizado', x.email); })
+                .catch(e => falhaSec(e, 'salvarContatoWpp'));
+        }
+        function renderDestinatariosWpp() {
+            const c = document.getElementById('lista-destinatarios-wpp');
+            if (!c) return;
+            const aptos = cacheContatosWpp.filter(x => x.telefone && x.whatsappOptIn);
+            if (!aptos.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum contato autorizado ainda.</p>'; return; }
+            c.innerHTML = aptos.map(x => `
+                <div class="form-check"><input class="form-check-input wpp-dest" type="checkbox" value="${esc(x.email)}" checked id="wpp-d-${esc(x.email.replace(/[^a-z0-9]/gi, ''))}">
+                <label class="form-check-label small text-white" for="wpp-d-${esc(x.email.replace(/[^a-z0-9]/gi, ''))}">${esc(x.nome || x.email)} <span class="text-muted-custom">(${esc(x.cargo || '')})</span></label></div>`).join('');
+        }
+        function marcarTodosWpp(marcar) {
+            document.querySelectorAll('.wpp-dest').forEach(el => el.checked = marcar);
+        }
+        async function enviarAvisoWpp() {
+            if (!WHATSAPP_URL) { toast('O serviço de WhatsApp ainda não foi configurado.', 'warning'); return; }
+            const titulo = document.getElementById('wpp-titulo').value.trim();
+            const mensagem = document.getElementById('wpp-mensagem').value.trim();
+            const dest = [...document.querySelectorAll('.wpp-dest:checked')].map(el => el.value);
+            if (!titulo || !mensagem) { toast('Preencha o título e a mensagem.', 'warning'); return; }
+            if (!dest.length) { toast('Escolha pelo menos um destinatário.', 'warning'); return; }
+            if (!(await confirmar(`Enviar este aviso pelo WhatsApp para ${dest.length} pessoa(s)?`))) return;
+            const btn = document.getElementById('btn-enviar-wpp');
+            btn.disabled = true;
+            try {
+                const user = db.app.auth().currentUser;
+                const token = await user.getIdToken();
+                const r = await fetch(WHATSAPP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                    body: JSON.stringify({ template: 'aviso_gremio', destinatarios: dest, variaveis: [titulo, mensagem] })
+                });
+                const d = await r.json().catch(() => ({}));
+                if (!r.ok) throw new Error(d.erro || 'Falha no envio');
+                toast(`Enviado para ${d.enviados} de ${dest.length} pessoa(s).`);
+                registrarAcao('Aviso enviado pelo WhatsApp', titulo);
+            } catch (e) {
+                console.error('enviarAvisoWpp', e);
+                toast('Não foi possível enviar. Tente de novo.', 'danger');
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
+        /* ================= AGENDA COMPARTILHADA ================= */
+        let cacheAgendaEv = [], cacheAgendaReu = [];
+        function carregarAgenda() {
+            ouvir(db.collection('eventos').orderBy('dataISO').limit(300), snap => {
+                cacheAgendaEv = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderAgenda();
+            });
+            if (nivelReal === 'admin' || nivelReal === 'secretaria' || emailLogado === ROOT_EMAIL) {
+                db.collection('reunioes').orderBy('data').limit(300).get()
+                    .then(s => { cacheAgendaReu = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAgenda(); })
+                    .catch(e => console.error('agenda reunioes', e));
+            }
+        }
+        function renderAgenda() {
+            const c = document.getElementById('lista-agenda');
+            if (!c) return;
+            const iso = dt => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+            const hoje = new Date();
+            const hojeISO = iso(hoje), limiteISO = iso(new Date(hoje.getTime() + 60 * 86400000));
+            const itens = [
+                ...cacheAgendaEv.filter(e => e.dataISO).map(e => ({ tipo: 'Evento', data: e.dataISO, hora: '', titulo: e.titulo, local: e.local || '' })),
+                ...cacheAgendaReu.filter(r => r.data).map(r => ({ tipo: 'Reunião', data: r.data, hora: r.hora || '', titulo: r.titulo, local: r.local || '' }))
+            ].filter(x => x.data >= hojeISO && x.data <= limiteISO).sort((p, q) => (p.data + p.hora).localeCompare(q.data + q.hora));
+            if (!itens.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma atividade nos próximos 60 dias.</p>'; return; }
+            const porDia = {};
+            itens.forEach(x => porDia[x.data] = (porDia[x.data] || 0) + 1);
+            c.innerHTML = '<div class="list-group">' + itens.map(x => {
+                const alertas = [];
+                if (porDia[x.data] > 1) alertas.push('mais de uma atividade neste dia');
+                if (x.local && itens.some(o => o !== x && o.data === x.data && o.local === x.local)) alertas.push('mesmo local');
+                return `<div class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-start gap-2">
+                        <div><strong class="text-white">${esc(x.titulo)}</strong><br>
+                        <small class="text-muted-custom">${esc(x.tipo)} • ${esc(x.data.split('-').reverse().join('/'))}${x.hora ? ' às ' + esc(x.hora) : ''}${x.local ? ' • ' + esc(x.local) : ''}</small></div>
+                        ${alertas.length ? `<span class="badge bg-warning text-dark" style="white-space:normal">⚠ ${esc(alertas.join('; '))}</span>` : ''}
+                    </div></div>`;
+            }).join('') + '</div>';
+        }
+
         /* ================= BANCO DE QUESTÕES (quiz do portal) ================= */
 
         let cacheQuestoes = [];
@@ -5275,7 +5432,7 @@
             ['alunos', 'Alunos', ['secao-alunos-cadastrar', 'secao-alunos-massa', 'secao-alunos-lista', 'secao-punicoes']],
             ['atividades', 'Atividades', ['secao-eventos', 'secao-jogos', 'secao-materiais', 'secao-cultura', 'secao-racial', 'secao-racial-enc', 'secao-racial-apoio', 'secao-rel-cult', 'secao-rel-racial']],
             ['financeiro', 'Financeiro', ['secao-caixa', 'secao-tes-orc', 'secao-tes-contas', 'secao-rel-tes']],
-            ['diretoria', 'Diretoria', ['secao-diretoria', 'secao-secao-mu-campanhas', 'secao-secao-mu-calendario', 'secao-secao-mu-canais', 'secao-secao-mu-indicadores', 'secao-secao-ge-glossario', 'secao-secao-ge-debates', 'secao-secao-ge-metas', 'secao-secao-ge-indicadores', 'secao-div-atividades', 'secao-div-materiais', 'secao-div-rel', 'secao-sec-alunos', 'secao-rel-sec', 'secao-documentos', 'secao-reunioes', 'secao-presenca', 'secao-atas', 'secao-relatorio-mensal', 'secao-relatorio', 'secao-auditoria']],
+            ['diretoria', 'Diretoria', ['secao-diretoria', 'secao-agenda', 'secao-avisos-wpp', 'secao-secao-mu-campanhas', 'secao-secao-mu-calendario', 'secao-secao-mu-canais', 'secao-secao-mu-indicadores', 'secao-secao-ge-glossario', 'secao-secao-ge-debates', 'secao-secao-ge-metas', 'secao-secao-ge-indicadores', 'secao-div-atividades', 'secao-div-materiais', 'secao-div-rel', 'secao-sec-alunos', 'secao-rel-sec', 'secao-documentos', 'secao-reunioes', 'secao-presenca', 'secao-atas', 'secao-relatorio-mensal', 'secao-relatorio', 'secao-auditoria']],
             ['ti', 'TI', []],
             ['outros', 'Outros', []]
         ];

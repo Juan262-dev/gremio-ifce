@@ -339,7 +339,10 @@ function recuperarSenha() {
 
 function fazerLogoutAluno() {
   limparListeners();
-  auth.signOut();
+  db.terminate()
+    .then(() => db.clearPersistence())
+    .catch(() => {})
+    .finally(() => auth.signOut().finally(() => location.reload()));
 }
 
 // Roda ao abrir a página (sessão persistida pelo Firebase), no login e no logout
