@@ -824,14 +824,23 @@ function aceitarTermo() {
 }
 
 /* ---------- app instalável, filtro de palavras e pedidos de ajuda do aluno ---------- */
-let promptInstalar = null, palavrasProibidas = [];
-window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); promptInstalar = e; document.getElementById('btn-instalar').style.display = 'inline-block'; });
-window.addEventListener('appinstalled', () => { document.getElementById('btn-instalar').style.display = 'none'; });
-function instalarApp() {
-  if (!promptInstalar) return;
-  promptInstalar.prompt();
-  promptInstalar.userChoice.finally(() => { promptInstalar = null; document.getElementById('btn-instalar').style.display = 'none'; });
+let palavrasProibidas = [];
+const emModoApp = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+let promptInstalar = null;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); promptInstalar = e; });
+function mostrarBotaoInstalar() {
+  const b = document.getElementById('btn-instalar');
+  if (b) b.style.display = emModoApp() ? 'none' : 'inline-block';
 }
+function instalarApp() {
+  if (promptInstalar) {
+    promptInstalar.prompt();
+    promptInstalar.userChoice.finally(() => { promptInstalar = null; });
+    return;
+  }
+  alert('Para instalar: toque no menu do navegador (⋮) e escolha "Instalar aplicativo" ou "Adicionar à tela inicial".');
+}
+window.addEventListener('load', mostrarBotaoInstalar);
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 
 const normTxt = t => String(t || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();

@@ -5563,26 +5563,22 @@
 
 <script>
 /* ---- instalar o painel como aplicativo ---- */
+const emModoAppAdmin = () => window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 let promptInstalarAdmin = null;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  promptInstalarAdmin = e;
+window.addEventListener('beforeinstallprompt', e => { e.preventDefault(); promptInstalarAdmin = e; });
+function mostrarBotaoInstalarAdmin() {
   const b = document.getElementById('btn-instalar-admin');
-  if (b) b.style.display = 'inline-block';
-});
-window.addEventListener('appinstalled', () => {
-  const b = document.getElementById('btn-instalar-admin');
-  if (b) b.style.display = 'none';
-});
-function instalarAdmin() {
-  if (!promptInstalarAdmin) return;
-  promptInstalarAdmin.prompt();
-  promptInstalarAdmin.userChoice.finally(() => {
-    promptInstalarAdmin = null;
-    const b = document.getElementById('btn-instalar-admin');
-    if (b) b.style.display = 'none';
-  });
+  if (b) b.style.display = emModoAppAdmin() ? 'none' : 'inline-block';
 }
+function instalarAdmin() {
+  if (promptInstalarAdmin) {
+    promptInstalarAdmin.prompt();
+    promptInstalarAdmin.userChoice.finally(() => { promptInstalarAdmin = null; });
+    return;
+  }
+  alert('Para instalar: toque no menu do navegador (⋮) e escolha "Instalar aplicativo" ou "Adicionar à tela inicial".');
+}
+window.addEventListener('load', mostrarBotaoInstalarAdmin);
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 </script>
 </body>
