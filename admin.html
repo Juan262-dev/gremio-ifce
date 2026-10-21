@@ -424,6 +424,37 @@
                 <div id="lista-agenda"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
+            <div id="secao-eleicao" class="card card-custom p-4 mb-4 card-root" style="border-color:#ffc107;">
+                <h5 class="card-title-chem mb-2">Eleição do grêmio (somente você)</h5>
+                <p class="text-muted-custom small mb-3">Votação por chapa, para todos os alunos matriculados. Cada aluno recebe uma cédula com código de uso único. O resultado aparece só aqui.</p>
+                <div id="ele-atual"><p class="text-muted-custom small">Carregando...</p></div>
+                <hr style="border-color:var(--ifce-card-border);">
+                <h6 class="fw-bold text-white mb-2">1. Criar eleição</h6>
+                <div class="row g-2 mb-2">
+                    <div class="col-12"><input type="text" id="ele-nome" class="form-control" maxlength="120" placeholder="Nome da eleição (ex.: Eleição do Grêmio 2026)"></div>
+                    <div class="col-md-6"><label class="form-label small text-muted-custom mb-1">Início da votação</label><input type="datetime-local" id="ele-inicio" class="form-control"></div>
+                    <div class="col-md-6"><label class="form-label small text-muted-custom mb-1">Fim da votação</label><input type="datetime-local" id="ele-fim" class="form-control"></div>
+                </div>
+                <button onclick="criarEleicaoTI()" class="btn btn-ifce mb-3">Criar eleição</button>
+                <h6 class="fw-bold text-white mb-2">2. Chapas</h6>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="text" id="ele-chapa-nome" class="form-control" maxlength="80" placeholder="Nome da chapa"></div>
+                    <div class="col-md-6"><input type="text" id="ele-chapa-cargos" class="form-control" maxlength="200" placeholder="Cargos (ex.: Presidente, Vice, Secretário)"></div>
+                    <div class="col-12"><textarea id="ele-chapa-integrantes" class="form-control" rows="2" maxlength="800" placeholder="Integrantes (um por linha)"></textarea></div>
+                </div>
+                <button onclick="adicionarChapaTI()" class="btn btn-outline-light btn-sm mb-2">Adicionar chapa</button>
+                <div id="ele-chapas" class="mb-3"></div>
+                <h6 class="fw-bold text-white mb-2">3. Cédulas e abertura</h6>
+                <p class="text-muted-custom small mb-2">Gere as cédulas e guarde o PDF: os códigos aparecem só nele. Gerar de novo invalida os códigos anteriores.</p>
+                <div class="d-flex gap-2 flex-wrap mb-3">
+                    <button onclick="gerarCedulasTI()" class="btn btn-outline-warning btn-sm fw-bold">Gerar cédulas (PDF)</button>
+                    <button onclick="abrirEleicaoTI()" class="btn btn-success btn-sm fw-bold">Abrir votação</button>
+                    <button onclick="encerrarEleicaoTI()" class="btn btn-outline-danger btn-sm fw-bold">Encerrar votação</button>
+                </div>
+                <h6 class="fw-bold text-white mb-2">4. Apuração</h6>
+                <div id="ele-apuracao"><p class="text-muted-custom small">A apuração aparece aqui quando a eleição tiver votos.</p></div>
+            </div>
+
             <div id="secao-documentos" data-niveis="admin,secretaria" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-3">Documentos e ofícios</h5>
                 <div class="row g-2 mb-2">
@@ -1662,7 +1693,7 @@
             resetarOpcoes();
 
             const nivel = dadosUsuario.nivel;
-            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); carregarTermoTI(); carregarRoteiroTI(); preencherEditor(); carregarAlertasTI(); carregarPendenciasTI(); carregarTravasUI(); }
+            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); carregarTermoTI(); carregarRoteiroTI(); preencherEditor(); carregarEleicaoTI(); carregarAlertasTI(); carregarPendenciasTI(); carregarTravasUI(); }
             // Cada cargo vê só o que precisa; o e-mail raiz (TI) vê tudo.
             nivelDoPainel = nivel;
             const raiz = emailUsuario === ROOT_EMAIL;
@@ -4789,6 +4820,177 @@
             }).join('') + '</div>';
         }
 
+        /* ================= ELEIÇÃO DO GRÊMIO (somente o root) ================= */
+        let eleicaoTI = null, chapasTI = [];
+        const ALFABETO_CEDULA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+        function codigoCedula() {
+            const v = new Uint32Array(8); crypto.getRandomValues(v);
+            return Array.from(v, n => ALFABETO_CEDULA[n % ALFABETO_CEDULA.length]).join('');
+        }
+        async function sha256Hex(txt) {
+            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt));
+            return Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, '0')).join('');
+        }
+        function dataHoraEle(v) { return v ? firebase.firestore.Timestamp.fromDate(new Date(v)) : null; }
+        function fmtDataHora(ts) { if (!ts) return '—'; const d = ts.toDate ? ts.toDate() : new Date(ts); return d.toLocaleString('pt-BR'); }
+
+        function carregarEleicaoTI() {
+            ouvir(db.collection('eleicoes').orderBy('criadoEm', 'desc').limit(1), snap => {
+                eleicaoTI = snap.empty ? null : { id: snap.docs[0].id, ...snap.docs[0].data() };
+                renderEleicaoTI();
+                if (eleicaoTI) carregarChapasTI();
+            });
+        }
+        function carregarChapasTI() {
+            db.collection('eleicoes').doc(eleicaoTI.id).collection('chapas').get().then(s => {
+                chapasTI = s.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderChapasTI();
+            });
+        }
+        function renderEleicaoTI() {
+            const c = document.getElementById('ele-atual');
+            if (!c) return;
+            if (!eleicaoTI) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma eleição criada ainda.</p>'; return; }
+            const rot = { rascunho: 'Rascunho', aberta: 'Aberta', encerrada: 'Encerrada' };
+            c.innerHTML = `<div class="mb-2"><strong class="text-white">${esc(eleicaoTI.nome)}</strong> <span class="badge bg-secondary">${rot[eleicaoTI.status] || eleicaoTI.status}</span><br>
+                <small class="text-muted-custom">Votação de ${fmtDataHora(eleicaoTI.inicio)} até ${fmtDataHora(eleicaoTI.fim)} • Cédulas geradas: ${eleicaoTI.cedulasGeradas || 0}</small></div>`;
+            if (eleicaoTI.status === 'aberta') apurarEleicaoTI();
+        }
+        function renderChapasTI() {
+            const c = document.getElementById('ele-chapas');
+            if (!c) return;
+            if (!eleicaoTI) { c.innerHTML = ''; return; }
+            if (!chapasTI.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma chapa cadastrada.</p>'; return; }
+            c.innerHTML = '<div class="list-group">' + chapasTI.map(ch => `
+                <div class="list-group-item d-flex justify-content-between align-items-start gap-2">
+                    <div><strong class="text-white">${esc(ch.nome)}</strong><br>
+                    <small class="text-muted-custom">${esc(ch.cargos || '')}</small>
+                    <p class="small text-white mb-0 mt-1" style="white-space:pre-wrap">${esc(ch.integrantes || '')}</p></div>
+                    <button onclick="excluirChapaTI('${ch.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size:11px">Excluir</button>
+                </div>`).join('') + '</div>';
+        }
+        async function criarEleicaoTI() {
+            if (eleicaoTI && eleicaoTI.status !== 'encerrada') { toast('Já existe uma eleição em andamento. Encerre-a antes.', 'warning'); return; }
+            const nome = document.getElementById('ele-nome').value.trim();
+            const ini = dataHoraEle(document.getElementById('ele-inicio').value);
+            const fim = dataHoraEle(document.getElementById('ele-fim').value);
+            if (!nome || !ini || !fim) { toast('Preencha o nome, o início e o fim.', 'warning'); return; }
+            if (fim.toMillis() <= ini.toMillis()) { toast('O fim precisa ser depois do início.', 'warning'); return; }
+            db.collection('eleicoes').add({ nome, inicio: ini, fim, status: 'rascunho', cedulasGeradas: 0, criadoEm: TS(), criadoPorEmail: emailLogado })
+                .then(() => { toast('Eleição criada.'); registrarAcao('Eleição criada', nome); })
+                .catch(e => falhaSec(e, 'criarEleicaoTI'));
+        }
+        async function adicionarChapaTI() {
+            if (!eleicaoTI) { toast('Crie a eleição antes das chapas.', 'warning'); return; }
+            if (eleicaoTI.status !== 'rascunho') { toast('As chapas só podem ser mudadas antes da abertura.', 'warning'); return; }
+            const nome = document.getElementById('ele-chapa-nome').value.trim();
+            if (!nome) { toast('Dê um nome à chapa.', 'warning'); return; }
+            db.collection('eleicoes').doc(eleicaoTI.id).collection('chapas').add({
+                nome,
+                cargos: document.getElementById('ele-chapa-cargos').value.trim(),
+                integrantes: document.getElementById('ele-chapa-integrantes').value.trim(),
+                criadoEm: TS()
+            }).then(() => {
+                toast('Chapa adicionada.');
+                ['ele-chapa-nome', 'ele-chapa-cargos', 'ele-chapa-integrantes'].forEach(i => document.getElementById(i).value = '');
+                carregarChapasTI();
+            }).catch(e => falhaSec(e, 'adicionarChapaTI'));
+        }
+        async function excluirChapaTI(id) {
+            if (!(await confirmar('Excluir esta chapa?'))) return;
+            db.collection('eleicoes').doc(eleicaoTI.id).collection('chapas').doc(id).delete()
+                .then(() => carregarChapasTI()).catch(e => falhaSec(e, 'excluirChapaTI'));
+        }
+        async function gerarCedulasTI() {
+            if (!eleicaoTI) { toast('Crie a eleição primeiro.', 'warning'); return; }
+            if (eleicaoTI.status !== 'rascunho') { toast('As cédulas só podem ser geradas antes da abertura.', 'warning'); return; }
+            if (!chapasTI.length) { toast('Cadastre as chapas antes de gerar as cédulas.', 'warning'); return; }
+            const alunosS = await db.collection('alunos').where('ativo', '==', true).get();
+            if (alunosS.empty) { toast('Não há alunos ativos para receber cédula.', 'warning'); return; }
+            if ((eleicaoTI.cedulasGeradas || 0) > 0 && !(await confirmar('Já existem cédulas geradas. Gerar de novo invalida os códigos anteriores. Continuar?'))) return;
+            try {
+                // invalida as cédulas anteriores desta eleição
+                const antigas = await db.collection('cedulas').where('eleicao', '==', eleicaoTI.id).get();
+                for (let k = 0; k < antigas.docs.length; k += 400) {
+                    const lote = db.batch();
+                    antigas.docs.slice(k, k + 400).forEach(d => lote.delete(d.ref));
+                    await lote.commit();
+                }
+                // cria as novas: a chave é o hash do código, sem nome do aluno
+                const pares = [];
+                for (const d of alunosS.docs) {
+                    const codigo = codigoCedula();
+                    pares.push({ nome: d.data().nome || d.id, codigo, hash: await sha256Hex(codigo) });
+                }
+                for (let k = 0; k < pares.length; k += 400) {
+                    const lote = db.batch();
+                    pares.slice(k, k + 400).forEach(p => lote.set(db.collection('cedulas').doc(p.hash), { eleicao: eleicaoTI.id, usada: false }));
+                    await lote.commit();
+                }
+                await db.collection('eleicoes').doc(eleicaoTI.id).update({ cedulasGeradas: pares.length, cedulasEm: TS() });
+                gerarPdfCedulas(pares);
+                registrarAcao('Cédulas da eleição geradas', String(pares.length));
+                toast(`${pares.length} cédulas geradas. Guarde o PDF.`);
+            } catch (e) { falhaSec(e, 'gerarCedulasTI'); }
+        }
+        function gerarPdfCedulas(pares) {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+            let y = 20;
+            const linha = (t, tam = 10, b = false) => {
+                pdf.setFont('Helvetica', b ? 'bold' : 'normal'); pdf.setFontSize(tam);
+                pdf.splitTextToSize(String(t), 170).forEach(p => {
+                    if (y > 275) { pdf.addPage(); y = 20; }
+                    pdf.text(p, 20, y); y += tam * 0.45 + 2;
+                });
+            };
+            linha('Grêmio Estudantil IFCE Crateús', 15, true);
+            linha(`Cédulas da eleição: ${eleicaoTI.nome}`, 11, true);
+            linha('Guarde este documento com segurança. Cada código vale uma única vez. Os códigos não aparecem em nenhum outro lugar do sistema.', 9);
+            y += 3;
+            pares.forEach(p => linha(`${p.nome}  —  ${p.codigo}`, 10));
+            const n = pdf.getNumberOfPages();
+            for (let i = 1; i <= n; i++) { pdf.setPage(i); pdf.setFontSize(8); pdf.text(`Página ${i} de ${n}`, 105, 290, { align: 'center' }); }
+            pdf.save(`cedulas_${eleicaoTI.id}.pdf`);
+        }
+        async function abrirEleicaoTI() {
+            if (!eleicaoTI) return;
+            if (eleicaoTI.status !== 'rascunho') { toast('A eleição já foi aberta ou encerrada.', 'warning'); return; }
+            if (!chapasTI.length || !(eleicaoTI.cedulasGeradas > 0)) { toast('Cadastre as chapas e gere as cédulas antes de abrir.', 'warning'); return; }
+            if (!(await confirmar('Abrir a votação agora? Depois de aberta, as chapas e as cédulas não podem mais ser alteradas.'))) return;
+            db.collection('eleicoes').doc(eleicaoTI.id).update({ status: 'aberta' })
+                .then(() => registrarAcao('Votação aberta', eleicaoTI.nome))
+                .catch(e => falhaSec(e, 'abrirEleicaoTI'));
+        }
+        async function encerrarEleicaoTI() {
+            if (!eleicaoTI || eleicaoTI.status !== 'aberta') { toast('Só é possível encerrar uma votação aberta.', 'warning'); return; }
+            if (!(await confirmar('Encerrar a votação agora?'))) return;
+            db.collection('eleicoes').doc(eleicaoTI.id).update({ status: 'encerrada', encerradaEm: TS() })
+                .then(() => registrarAcao('Votação encerrada', eleicaoTI.nome))
+                .catch(e => falhaSec(e, 'encerrarEleicaoTI'));
+        }
+        async function apurarEleicaoTI() {
+            const c = document.getElementById('ele-apuracao');
+            if (!c || !eleicaoTI) return;
+            try {
+                const [votosS, cedS] = await Promise.all([
+                    db.collection('votos').where('eleicao', '==', eleicaoTI.id).get(),
+                    db.collection('cedulas').where('eleicao', '==', eleicaoTI.id).get()
+                ]);
+                const total = votosS.size;
+                const contagem = {};
+                votosS.docs.forEach(d => { const ch = d.data().chapa; contagem[ch] = (contagem[ch] || 0) + 1; });
+                const usadas = cedS.docs.filter(d => d.data().usada).length;
+                const linhas = chapasTI.map(ch => {
+                    const n = contagem[ch.id] || 0;
+                    const pct = total ? Math.round(n / total * 100) : 0;
+                    return `<tr><td>${esc(ch.nome)}</td><td>${n}</td><td>${pct}%</td></tr>`;
+                }).join('');
+                c.innerHTML = `<p class="small text-white mb-2">Cédulas usadas: ${usadas} de ${cedS.size} • Votos registrados: ${total}</p>
+                    <div class="table-responsive"><table class="table table-dark table-sm mb-0"><thead><tr><th>Chapa</th><th>Votos</th><th>%</th></tr></thead><tbody>${linhas}</tbody></table></div>`;
+            } catch (e) { console.error('apurarEleicaoTI', e); c.innerHTML = '<p class="small text-danger mb-0">Não foi possível carregar a apuração.</p>'; }
+        }
+
         /* ================= BANCO DE QUESTÕES (quiz do portal) ================= */
 
         let cacheQuestoes = [];
@@ -5453,7 +5655,7 @@
             ['atividades', 'Atividades', ['secao-eventos', 'secao-jogos', 'secao-materiais', 'secao-cultura', 'secao-racial', 'secao-racial-enc', 'secao-racial-apoio', 'secao-rel-cult', 'secao-rel-racial']],
             ['financeiro', 'Financeiro', ['secao-caixa', 'secao-tes-orc', 'secao-tes-contas', 'secao-rel-tes']],
             ['diretoria', 'Diretoria', ['secao-diretoria', 'secao-agenda', 'secao-avisos-wpp', 'secao-secao-mu-campanhas', 'secao-secao-mu-calendario', 'secao-secao-mu-canais', 'secao-secao-mu-indicadores', 'secao-secao-ge-glossario', 'secao-secao-ge-debates', 'secao-secao-ge-metas', 'secao-secao-ge-indicadores', 'secao-div-atividades', 'secao-div-materiais', 'secao-div-rel', 'secao-sec-alunos', 'secao-rel-sec', 'secao-documentos', 'secao-reunioes', 'secao-presenca', 'secao-atas', 'secao-relatorio-mensal', 'secao-relatorio', 'secao-auditoria']],
-            ['ti', 'TI', []],
+            ['ti', 'TI', ['secao-eleicao']],
             ['outros', 'Outros', []]
         ];
 

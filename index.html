@@ -156,6 +156,18 @@ body{background-color:#f4f6f9}
     <div id="lista-estudos-aluno"><p class="text-muted small">Carregando materiais...</p></div>
   </div>
 
+  <div id="sec-eleicao" class="card card-custom p-4 mb-4" style="display:none">
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Eleição do grêmio</h5>
+    <div id="ele-portal-info" class="text-muted small mb-3"></div>
+    <div id="ele-portal-chapas" class="mb-3"></div>
+    <div id="ele-portal-voto" style="display:none">
+      <label class="form-label small text-muted-custom mb-1">Código da sua cédula</label>
+      <input type="text" id="ele-codigo" class="form-control mb-2" maxlength="12" autocomplete="off" placeholder="Digite o código da cédula">
+      <button onclick="votarEleicao()" class="btn btn-ifce w-100 fw-bold">Confirmar voto</button>
+      <p class="text-muted mb-0 mt-2" style="font-size:12px">Seu voto é anônimo: o sistema não guarda qual código foi usado. Cada código vale uma única vez.</p>
+    </div>
+  </div>
+
   <div id="sec-quiz" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🧠 Quiz e prova sob medida</h5>
     <p class="text-muted small mb-2">Escolha as matérias, quantas questões quer e o modo. As questões são sorteadas na hora. Suas respostas não são guardadas.</p>
@@ -2217,6 +2229,58 @@ function carregarRealizacoes() {
     }
   }, true);
 })();
+</script>
+
+<script>
+/* ---- eleição do grêmio (portal do aluno) ---- */
+let eleicaoPortal = null, chapaEscolhida = null;
+function sha256Portal(txt) {
+  return crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt))
+    .then(buf => Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, '0')).join(''));
+}
+function carregarEleicaoPortal() {
+  db.collection('eleicoes').where('status', '==', 'aberta').limit(1).get().then(s => {
+    const card = document.getElementById('sec-eleicao');
+    if (!card) return;
+    if (s.empty) { card.style.display = 'none'; eleicaoPortal = null; return; }
+    eleicaoPortal = { id: s.docs[0].id, ...s.docs[0].data() };
+    card.style.display = 'block';
+    document.getElementById('ele-portal-info').textContent = `${eleicaoPortal.nome} • votação até ${eleicaoPortal.fim.toDate().toLocaleString('pt-BR')}`;
+    db.collection('eleicoes').doc(eleicaoPortal.id).collection('chapas').get().then(cs => {
+      const box = document.getElementById('ele-portal-chapas');
+      box.innerHTML = cs.docs.map(d => {
+        const ch = d.data();
+        return `<label class="list-group-item list-group-item-action d-block">
+          <input type="radio" name="ele-chapa" value="${esc(d.id)}" class="me-2" onchange="chapaEscolhida=this.value; document.getElementById('ele-portal-voto').style.display='block'">
+          <strong>${esc(ch.nome)}</strong>
+          <div class="small text-muted">${esc(ch.cargos || '')}</div>
+          <div class="small" style="white-space:pre-wrap">${esc(ch.integrantes || '')}</div></label>`;
+      }).join('');
+    });
+  }).catch(() => {});
+}
+function votarEleicao() {
+  if (!eleicaoPortal) return;
+  if (!chapaEscolhida) { aviso('Escolha uma chapa.', 'warning'); return; }
+  const codigo = document.getElementById('ele-codigo').value.toUpperCase().replace(/[\s-]/g, '');
+  if (codigo.length < 6) { aviso('Digite o código da cédula.', 'warning'); return; }
+  sha256Portal(codigo).then(hash => {
+    const cedRef = db.collection('cedulas').doc(hash);
+    const votoRef = db.collection('votos').doc();
+    return db.runTransaction(t => t.get(cedRef).then(c => {
+      if (!c.exists) throw new Error('Código inválido.');
+      const d = c.data();
+      if (d.usada) throw new Error('Este código já foi usado.');
+      if (d.eleicao !== eleicaoPortal.id) throw new Error('Este código não é desta eleição.');
+      t.update(cedRef, { usada: true });
+      t.set(votoRef, { eleicao: eleicaoPortal.id, chapa: chapaEscolhida, criadoEm: TS() });
+    }));
+  }).then(() => {
+    document.getElementById('ele-portal-voto').innerHTML = '<div class="alert alert-success mb-0 fw-bold">Voto registrado. Obrigado por participar!</div>';
+    document.querySelectorAll('input[name="ele-chapa"]').forEach(x => x.disabled = true);
+  }).catch(e => aviso(e.message || 'Não foi possível registrar o voto. Tente de novo.', 'warning'));
+}
+window.addEventListener('load', () => setTimeout(carregarEleicaoPortal, 1500));
 </script>
 </body>
 </html>
