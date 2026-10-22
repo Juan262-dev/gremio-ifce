@@ -168,6 +168,21 @@ body{background-color:#f4f6f9}
     </div>
   </div>
 
+  <div id="sec-aniversario" class="card card-custom p-4 mb-4">
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Aniversariantes do mês</h5>
+    <p class="text-muted small mb-2">Só aparece quem escolher participar. Mostramos apenas o nome e o dia, nunca o ano.</p>
+    <div id="aniv-lista" class="mb-3"><p class="text-muted small mb-0">Carregando...</p></div>
+    <div class="border rounded p-2">
+      <label class="form-label small text-muted-custom mb-1">Quer aparecer aqui? Informe seu dia e mês de aniversário</label>
+      <div class="d-flex gap-2 flex-wrap">
+        <input type="date" id="aniv-data" class="form-control form-control-sm" style="max-width:200px" max="2100-12-31">
+        <button onclick="salvarAniversario()" class="btn btn-sm btn-ifce fw-bold">Participar</button>
+        <button onclick="removerAniversario()" class="btn btn-sm btn-outline-secondary fw-bold">Sair da lista</button>
+      </div>
+      <small class="text-muted d-block mt-1" style="font-size:11px">Você pode sair a qualquer momento. Seus dados são apagados ao sair.</small>
+    </div>
+  </div>
+
   <div id="sec-quiz" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🧠 Quiz e prova sob medida</h5>
     <p class="text-muted small mb-2">Escolha as matérias, quantas questões quer e o modo. As questões são sorteadas na hora. Suas respostas não são guardadas.</p>
@@ -246,7 +261,7 @@ body{background-color:#f4f6f9}
 <div id="aviso-offline" class="d-none text-center small fw-bold py-2 px-3" style="position:fixed;top:0;left:0;right:0;z-index:1080;background:#fff3cd;color:#664d03;border-bottom:1px solid #ffe69c">Sem conexão: você está vendo os dados guardados. Votos, inscrições e envios voltam quando a internet voltar.</div>
 <nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-quiz"><span>🧠</span>Quiz</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
-<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.22-a</div>
+<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.22-b</div>
 
 <div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100005;width:100%;max-width:420px;margin-bottom:72px"></div>
 
@@ -2364,6 +2379,41 @@ window.addEventListener('load', () => {
   setInterval(carregarEleicaoPortal, 60000);
   document.addEventListener('visibilitychange', () => { if (!document.hidden) carregarEleicaoPortal(); });
 });
+</script>
+
+<script>
+/* ---- aniversariantes do mês (com participação voluntária) ---- */
+function carregarAniversarios() {
+  if (!auth.currentUser || !usuarioAtual) return;
+  const mes = String(new Date().getMonth() + 1).padStart(2, '0');
+  db.collection('aniversarios').get().then(s => {
+    const box = document.getElementById('aniv-lista');
+    if (!box) return;
+    const lista = s.docs.map(d => d.data()).filter(x => x.diaMes && x.diaMes.slice(0, 2) === mes)
+      .sort((p, q) => p.diaMes.localeCompare(q.diaMes));
+    box.innerHTML = lista.length
+      ? '<ul class="mb-0">' + lista.map(x => `<li>${esc(x.nome)} <span class="text-muted small">• dia ${Number(x.diaMes.slice(3, 5))}</span></li>`).join('') + '</ul>'
+      : '<p class="text-muted small mb-0">Nenhum aniversariante participando neste mês.</p>';
+    const meu = s.docs.find(d => d.id === usuarioAtual.email);
+    const campo = document.getElementById('aniv-data');
+    if (campo) campo.value = meu ? '2000-' + meu.data().diaMes : '';
+  }).catch(e => console.error('aniversarios', e));
+}
+function salvarAniversario() {
+  const v = document.getElementById('aniv-data').value;
+  if (!v) { aviso('Escolha o dia e o mês do seu aniversário.', 'warning'); return; }
+  const diaMes = v.slice(5, 10);
+  const nome = (usuarioAtual && usuarioAtual.nome) || usuarioAtual.email.split('@')[0];
+  db.collection('aniversarios').doc(usuarioAtual.email).set({ nome, diaMes })
+    .then(() => { aviso('Pronto! Você aparece na lista deste mês.', 'success'); carregarAniversarios(); })
+    .catch(() => aviso('Não foi possível salvar agora. Tente de novo.', 'danger'));
+}
+function removerAniversario() {
+  db.collection('aniversarios').doc(usuarioAtual.email).delete()
+    .then(() => { aviso('Você saiu da lista de aniversariantes.', 'info'); document.getElementById('aniv-data').value = ''; carregarAniversarios(); })
+    .catch(() => aviso('Não foi possível sair da lista agora. Tente de novo.', 'danger'));
+}
+auth.onAuthStateChanged(u => { if (u) setTimeout(carregarAniversarios, 1000); });
 </script>
 </body>
 </html>
