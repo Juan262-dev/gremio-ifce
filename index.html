@@ -246,7 +246,7 @@ body{background-color:#f4f6f9}
 <div id="aviso-offline" class="d-none text-center small fw-bold py-2 px-3" style="position:fixed;top:0;left:0;right:0;z-index:1080;background:#fff3cd;color:#664d03;border-bottom:1px solid #ffe69c">Sem conexão: você está vendo os dados guardados. Votos, inscrições e envios voltam quando a internet voltar.</div>
 <nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-quiz"><span>🧠</span>Quiz</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
-<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.21-a</div>
+<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.22-a</div>
 
 <div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100005;width:100%;max-width:420px;margin-bottom:72px"></div>
 
@@ -582,7 +582,7 @@ function carregarEventos() {
           <span class="badge bg-info text-dark">📅 ${esc(ev.data || dataBR(ev.dataISO))}</span>
         </div>
         <p class="mb-2 small text-dark">${esc(ev.descricao)}</p>
-        <button data-id="${esc(ev.id)}" ${passou ? 'disabled' : ''} onclick="inscreverEvento(this.dataset.id)" class="btn btn-sm ${ja || passou ? 'btn-secondary' : 'btn-ifce'} fw-bold">${ja ? '✅ Inscrito' : 'Fazer Inscrição'}</button>
+        ${acoesEvento(ev, ja, passou)}
       </div>`;
     }).join('') + '</div>';
   });
@@ -704,14 +704,83 @@ function inscreverEvento(id) {
   db.runTransaction(async t => {
     const doc = await t.get(ref);
     if (!doc.exists) return 'sumiu';
-    const ins = doc.data().inscritos || [];
-    if (ins.includes(usuarioAtual.email)) return 'ja';
-    t.update(ref, { inscritos: [...ins, usuarioAtual.email] });
+    const d = doc.data();
+    const ins = d.inscritos || [];
+    const esp = d.espera || [];
+    const eu = usuarioAtual.email;
+    if (ins.includes(eu)) return 'ja';
+    if (esp.includes(eu)) return 'espera-ja';
+    const vagas = Number(d.vagas) || 0;
+    if (vagas && ins.length >= vagas) { t.update(ref, { espera: [...esp, eu] }); return 'espera'; }
+    t.update(ref, { inscritos: [...ins, eu] });
     return 'ok';
   }).then(r => {
     if (r === 'ok') aviso("Inscrição realizada com sucesso!", 'success');
     else if (r === 'ja') aviso("Você já está inscrito neste evento!", 'info');
+    else if (r === 'espera') aviso("Vagas esgotadas. Você entrou na lista de espera e será avisado se abrir uma vaga.", 'info');
+    else if (r === 'espera-ja') aviso("Você já está na lista de espera.", 'info');
   }).catch(() => aviso("Erro ao realizar inscrição.", 'danger'));
+}
+
+/* ---------- eventos: vagas, lista de espera, cancelamento, avaliação e convite ---------- */
+function acoesEvento(ev, ja, passou) {
+  const vagas = Number(ev.vagas) || 0;
+  const ins = ev.inscritos || [];
+  const esp = ev.espera || [];
+  const naFila = esp.indexOf(usuarioAtual.email);
+  const id = esc(ev.id);
+  let botao;
+  if (passou) botao = '<button disabled class="btn btn-sm btn-secondary fw-bold">Encerrado</button>';
+  else if (ja) botao = `<button data-id="${id}" onclick="cancelarInscricaoEvento(this.dataset.id)" class="btn btn-sm btn-outline-danger fw-bold">Cancelar inscrição</button>`;
+  else if (naFila >= 0) botao = `<span class="badge bg-warning text-dark me-1">Lista de espera: posição ${naFila + 1}</span><button data-id="${id}" onclick="cancelarInscricaoEvento(this.dataset.id)" class="btn btn-sm btn-outline-secondary fw-bold">Sair da espera</button>`;
+  else if (vagas && ins.length >= vagas) botao = `<span class="badge bg-danger me-1">Vagas esgotadas</span><button data-id="${id}" onclick="inscreverEvento(this.dataset.id)" class="btn btn-sm btn-ifce fw-bold">Entrar na lista de espera</button>`;
+  else botao = `<button data-id="${id}" onclick="inscreverEvento(this.dataset.id)" class="btn btn-sm btn-ifce fw-bold">Fazer Inscrição</button>`;
+  const vagasTxt = vagas ? `<small class="text-muted d-block mb-1">${ins.length} de ${vagas} vagas ocupadas${esp.length ? ' • ' + esp.length + ' na espera' : ''}</small>` : '';
+  const convite = '';
+  const avaliar = passou && ja ? `<div class="mt-2"><button onclick="document.getElementById('av-${id}').classList.toggle('d-none')" class="btn btn-sm btn-outline-light fw-bold">Avaliar evento</button>
+      <div id="av-${id}" class="d-none border rounded p-2 mt-2">
+        <select id="av-nota-${id}" class="form-select form-select-sm mb-2"><option value="5">5 - Excelente</option><option value="4">4 - Bom</option><option value="3">3 - Regular</option><option value="2">2 - Fraco</option><option value="1">1 - Ruim</option></select>
+        <textarea id="av-com-${id}" class="form-control form-control-sm mb-2" rows="2" maxlength="300" placeholder="Comentário (opcional)"></textarea>
+        <button data-id="${id}" onclick="avaliarEvento(this.dataset.id)" class="btn btn-sm btn-ifce fw-bold">Enviar avaliação</button></div></div>` : '';
+  return vagasTxt + botao + convite + avaliar;
+}
+function cancelarInscricaoEvento(id) {
+  const ref = db.collection('eventos').doc(id);
+  db.runTransaction(async t => {
+    const doc = await t.get(ref);
+    if (!doc.exists) return 'sumiu';
+    const d = doc.data();
+    let ins = d.inscritos || [];
+    let esp = d.espera || [];
+    const eu = usuarioAtual.email;
+    if (ins.includes(eu)) {
+      ins = ins.filter(e => e !== eu);
+      const vagas = Number(d.vagas) || 0;
+      if (esp.length && (!vagas || ins.length < vagas)) { ins = [...ins, esp[0]]; esp = esp.slice(1); }
+      t.update(ref, { inscritos: ins, espera: esp });
+      return 'cancelou';
+    }
+    if (esp.includes(eu)) { t.update(ref, { espera: esp.filter(e => e !== eu) }); return 'saiu'; }
+    return 'nada';
+  }).then(r => {
+    if (r === 'cancelou') aviso('Inscrição cancelada. A vaga foi oferecida à próxima pessoa da lista de espera, se houver.', 'info');
+    else if (r === 'saiu') aviso('Você saiu da lista de espera.', 'info');
+  }).catch(() => aviso('Não foi possível cancelar agora. Tente de novo.', 'danger'));
+}
+function avaliarEvento(id) {
+  const nota = Number(document.getElementById('av-nota-' + id).value);
+  const comentario = document.getElementById('av-com-' + id).value.trim();
+  if (comentario && palavraProibida(comentario)) { aviso('O comentário tem palavras que não são permitidas.', 'warning'); return; }
+  db.collection('avaliacoes').doc(id + '_' + usuarioAtual.email).set({ evento: id, nota, comentario, criadoEm: TS() })
+    .then(() => { aviso('Obrigado pela avaliação!', 'success'); document.getElementById('av-' + id).classList.add('d-none'); })
+    .catch(() => aviso('Você já avaliou este evento, ou a avaliação não pôde ser salva.', 'warning'));
+}
+function conviteEventoWhatsApp(id) {
+  const ev = (novidades.eventos || []).find(e => e.id === id);
+  if (!ev) return;
+  const link = location.origin + location.pathname;
+  const texto = `*${ev.titulo}*\n📅 ${ev.data || dataBR(ev.dataISO)}\n${ev.descricao ? ev.descricao + '\n' : ''}\nInscreva-se pelo portal do Grêmio: ${link}`;
+  window.open('https://api.whatsapp.com/send?text=' + encodeURIComponent(texto), '_blank');
 }
 
 /* ---------- Sugestões ---------- */
@@ -2238,11 +2307,20 @@ function sha256Portal(txt) {
   return crypto.subtle.digest('SHA-256', new TextEncoder().encode(txt))
     .then(buf => Array.from(new Uint8Array(buf), b => b.toString(16).padStart(2, '0')).join(''));
 }
+function mostrarEstadoEleicao(msg) {
+  const card = document.getElementById('sec-eleicao');
+  if (!card) return;
+  card.style.display = 'block';
+  document.getElementById('ele-portal-info').textContent = msg;
+  document.getElementById('ele-portal-chapas').innerHTML = '';
+  document.getElementById('ele-portal-voto').style.display = 'none';
+}
 function carregarEleicaoPortal() {
+  if (!auth.currentUser) return;
   db.collection('eleicoes').where('status', '==', 'aberta').limit(1).get().then(s => {
     const card = document.getElementById('sec-eleicao');
     if (!card) return;
-    if (s.empty) { card.style.display = 'none'; eleicaoPortal = null; return; }
+    if (s.empty) { eleicaoPortal = null; mostrarEstadoEleicao('Nenhuma votação aberta agora. Quando o grêmio abrir a eleição, ela aparece aqui.'); return; }
     eleicaoPortal = { id: s.docs[0].id, ...s.docs[0].data() };
     card.style.display = 'block';
     document.getElementById('ele-portal-info').textContent = `${eleicaoPortal.nome} • votação até ${eleicaoPortal.fim.toDate().toLocaleString('pt-BR')}`;
@@ -2257,7 +2335,7 @@ function carregarEleicaoPortal() {
           <div class="small" style="white-space:pre-wrap">${esc(ch.integrantes || '')}</div></label>`;
       }).join('');
     });
-  }).catch(e => console.error('eleicao portal', e));
+  }).catch(e => { console.error('eleicao portal', e); mostrarEstadoEleicao('Não foi possível carregar a eleição agora. Atualize a página e tente de novo.'); });
 }
 function votarEleicao() {
   if (!eleicaoPortal) return;
@@ -2280,6 +2358,7 @@ function votarEleicao() {
     document.querySelectorAll('input[name="ele-chapa"]').forEach(x => x.disabled = true);
   }).catch(e => aviso(e.message || 'Não foi possível registrar o voto. Tente de novo.', 'warning'));
 }
+auth.onAuthStateChanged(u => { if (u) setTimeout(carregarEleicaoPortal, 800); });
 window.addEventListener('load', () => {
   setTimeout(carregarEleicaoPortal, 1500);
   setInterval(carregarEleicaoPortal, 60000);
