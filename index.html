@@ -99,7 +99,7 @@ body{background-color:#f4f6f9}
   </div>
 
   <div id="sec-primeiro" class="card card-custom p-4 mb-4" style="display:none">
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Antes de começar</h5>
+    <h5 id="perf-titulo" class="fw-bold mb-2" style="color:var(--ifce-green)">Antes de começar</h5>
     <p class="text-muted small mb-3">Três perguntas rápidas para o portal mostrar o que é mais útil para você. Você pode mudar depois.</p>
     <label class="form-label small text-muted-custom mb-1">1. Qual é a sua turma?</label>
     <input type="text" id="perf-turma" class="form-control mb-3" maxlength="40" placeholder="Ex.: 1º ano – Química">
@@ -150,6 +150,7 @@ body{background-color:#f4f6f9}
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Minha carteirinha de participação</h5>
     <p class="text-muted small mb-3">Seu resumo do ano no grêmio. Só você vê, e ele usa apenas os dados que o portal já mostra para você.</p>
     <div id="carteira-lista"><p class="text-muted small mb-0">Carregando...</p></div>
+    <button onclick="editarPerfil()" class="btn btn-sm btn-outline-success fw-bold mt-3">Editar perfil</button>
   </div>
 
   <div id="sec-realizacoes" class="card card-custom p-4 mb-4">
@@ -281,7 +282,7 @@ body{background-color:#f4f6f9}
 <div id="aviso-offline" class="d-none text-center small fw-bold py-2 px-3" style="position:fixed;top:0;left:0;right:0;z-index:1080;background:#fff3cd;color:#664d03;border-bottom:1px solid #ffe69c">Sem conexão: você está vendo os dados guardados. Votos, inscrições e envios voltam quando a internet voltar.</div>
 <nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-quiz"><span>🧠</span>Quiz</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
-<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.22-c</div>
+<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.22-d</div>
 
 <div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100005;width:100%;max-width:420px;margin-bottom:72px"></div>
 
@@ -735,6 +736,7 @@ function carregarJogos() {
   });
 }
 function inscreverEvento(id) {
+  if (!confirm('Confirmar sua inscrição? Se as vagas estiverem cheias, você entra na lista de espera.')) return;
   const ref = db.collection('eventos').doc(id);
   db.runTransaction(async t => {
     const doc = await t.get(ref);
@@ -780,6 +782,7 @@ function acoesEvento(ev, ja, passou) {
   return vagasTxt + botao + convite + avaliar;
 }
 function cancelarInscricaoEvento(id) {
+  if (!confirm('Cancelar sua participação neste evento?')) return;
   const ref = db.collection('eventos').doc(id);
   db.runTransaction(async t => {
     const doc = await t.get(ref);
@@ -2375,6 +2378,9 @@ function carregarEleicaoPortal() {
 function votarEleicao() {
   if (!eleicaoPortal) return;
   if (!chapaEscolhida) { aviso('Escolha uma chapa.', 'warning'); return; }
+  const marcada = document.querySelector('input[name="ele-chapa"]:checked');
+  const nomeChapa = (marcada && marcada.closest('label') && marcada.closest('label').querySelector('strong')) ? marcada.closest('label').querySelector('strong').textContent : 'a chapa escolhida';
+  if (!confirm(`Você está votando na chapa "${nomeChapa}". O voto não pode ser desfeito. Confirmar?`)) return;
   const codigo = document.getElementById('ele-codigo').value.toUpperCase().replace(/[\s-]/g, '');
   if (codigo.length < 6) { aviso('Digite o código da cédula.', 'warning'); return; }
   sha256Portal(codigo).then(hash => {
@@ -2440,17 +2446,24 @@ auth.onAuthStateChanged(u => { if (u) setTimeout(carregarAniversarios, 1000); })
 /* ---- primeiro acesso e carteirinha de participação ---- */
 const MATERIAS_PERFIL = ['Biologia I','Filosofia I','Física I','Geografia I','História I','Introdução à Informática','Introdução ao Curso Técnico em Química','Língua Portuguesa I','Matemática I','Química Básica','Sociologia I'];
 function anoDe(ts) { return ts && ts.toDate ? String(ts.toDate().getFullYear()) : ''; }
-function carregarPerfil() {
-  if (!auth.currentUser || !usuarioAtual) return;
+function montarMateriasPerfil() {
   const box = document.getElementById('perf-materias');
   if (box && !box.innerHTML) {
     box.innerHTML = MATERIAS_PERFIL.map((m, k) => `<div class="form-check">
       <input class="form-check-input perf-mat" type="checkbox" value="${esc(m)}" id="perf-m${k}">
       <label class="form-check-label small" for="perf-m${k}">${esc(m)}</label></div>`).join('');
   }
+}
+function carregarPerfil() {
+  if (!auth.currentUser || !usuarioAtual) return;
+  montarMateriasPerfil();
   db.collection('perfis').doc(usuarioAtual.email).get().then(d => {
     const card = document.getElementById('sec-primeiro');
-    if (!d.exists) { if (card) card.style.display = 'block'; return; }
+    if (!d.exists) {
+      if (card) card.style.display = 'block';
+      const t = document.getElementById('perf-titulo'); if (t) t.textContent = 'Antes de começar';
+      return;
+    }
     if (card) card.style.display = 'none';
     const p = d.data();
     (p.materias || []).forEach(m => {
@@ -2458,6 +2471,20 @@ function carregarPerfil() {
       if (el) el.checked = true;
     });
   }).catch(e => console.error('perfil', e));
+}
+function editarPerfil() {
+  if (!usuarioAtual) return;
+  montarMateriasPerfil();
+  db.collection('perfis').doc(usuarioAtual.email).get().then(d => {
+    const p = d.exists ? d.data() : {};
+    document.getElementById('perf-turma').value = p.turma || '';
+    document.getElementById('perf-lembretes').checked = !!p.lembretes;
+    document.querySelectorAll('.perf-mat').forEach(x => { x.checked = (p.materias || []).includes(x.value); });
+    document.getElementById('perf-titulo').textContent = 'Editar perfil';
+    const card = document.getElementById('sec-primeiro');
+    card.style.display = 'block';
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }).catch(() => aviso('Não foi possível abrir o perfil agora.', 'danger'));
 }
 function salvarPerfil() {
   const turma = document.getElementById('perf-turma').value.trim();
@@ -2467,7 +2494,7 @@ function salvarPerfil() {
     turma, materias,
     lembretes: document.getElementById('perf-lembretes').checked,
     criadoEm: TS()
-  }).then(() => { aviso('Pronto! Seu portal já está personalizado.', 'success'); carregarPerfil(); })
+  }, { merge: true }).then(() => { aviso('Perfil salvo!', 'success'); carregarPerfil(); })
     .catch(() => aviso('Não foi possível salvar agora. Tente de novo.', 'danger'));
 }
 function carregarCarteira() {
