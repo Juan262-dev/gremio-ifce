@@ -98,6 +98,20 @@ body{background-color:#f4f6f9}
     <small class="text-muted" id="email-aluno-display"></small>
   </div>
 
+  <div id="sec-primeiro" class="card card-custom p-4 mb-4" style="display:none">
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Antes de começar</h5>
+    <p class="text-muted small mb-3">Três perguntas rápidas para o portal mostrar o que é mais útil para você. Você pode mudar depois.</p>
+    <label class="form-label small text-muted-custom mb-1">1. Qual é a sua turma?</label>
+    <input type="text" id="perf-turma" class="form-control mb-3" maxlength="40" placeholder="Ex.: 1º ano – Química">
+    <label class="form-label small text-muted-custom mb-1">2. Quais matérias você quer estudar?</label>
+    <div id="perf-materias" class="mb-3"></div>
+    <div class="form-check mb-3">
+      <input type="checkbox" id="perf-lembretes" class="form-check-input">
+      <label class="form-check-label small" for="perf-lembretes">3. Quero receber lembretes de provas e eventos</label>
+    </div>
+    <button onclick="salvarPerfil()" class="btn btn-ifce w-100 fw-bold">Começar</button>
+  </div>
+
   <div id="sec-avisos" class="card card-custom p-4 mb-4">
     <h5 class="fw-bold mb-3" style="color:var(--ifce-green)">📢 Mural de Avisos</h5>
     <div id="lista-avisos-aluno"><p class="text-muted small">Carregando avisos...</p></div>
@@ -130,6 +144,12 @@ body{background-color:#f4f6f9}
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">📅 Eventos e Torneios</h5>
     <p class="text-muted small mb-3">Inscreva-se nos campeonatos, oficinas e eventos organizados pelo Grêmio.</p>
     <div id="lista-eventos-aluno"><p class="text-muted small">Carregando eventos...</p></div>
+  </div>
+
+  <div id="sec-carteira" class="card card-custom p-4 mb-4">
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Minha carteirinha de participação</h5>
+    <p class="text-muted small mb-3">Seu resumo do ano no grêmio. Só você vê, e ele usa apenas os dados que o portal já mostra para você.</p>
+    <div id="carteira-lista"><p class="text-muted small mb-0">Carregando...</p></div>
   </div>
 
   <div id="sec-realizacoes" class="card card-custom p-4 mb-4">
@@ -261,7 +281,7 @@ body{background-color:#f4f6f9}
 <div id="aviso-offline" class="d-none text-center small fw-bold py-2 px-3" style="position:fixed;top:0;left:0;right:0;z-index:1080;background:#fff3cd;color:#664d03;border-bottom:1px solid #ffe69c">Sem conexão: você está vendo os dados guardados. Votos, inscrições e envios voltam quando a internet voltar.</div>
 <nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-quiz"><span>🧠</span>Quiz</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
-<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.22-b</div>
+<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.22-c</div>
 
 <div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100005;width:100%;max-width:420px;margin-bottom:72px"></div>
 
@@ -2414,6 +2434,72 @@ function removerAniversario() {
     .catch(() => aviso('Não foi possível sair da lista agora. Tente de novo.', 'danger'));
 }
 auth.onAuthStateChanged(u => { if (u) setTimeout(carregarAniversarios, 1000); });
+</script>
+
+<script>
+/* ---- primeiro acesso e carteirinha de participação ---- */
+const MATERIAS_PERFIL = ['Biologia I','Filosofia I','Física I','Geografia I','História I','Introdução à Informática','Introdução ao Curso Técnico em Química','Língua Portuguesa I','Matemática I','Química Básica','Sociologia I'];
+function anoDe(ts) { return ts && ts.toDate ? String(ts.toDate().getFullYear()) : ''; }
+function carregarPerfil() {
+  if (!auth.currentUser || !usuarioAtual) return;
+  const box = document.getElementById('perf-materias');
+  if (box && !box.innerHTML) {
+    box.innerHTML = MATERIAS_PERFIL.map((m, k) => `<div class="form-check">
+      <input class="form-check-input perf-mat" type="checkbox" value="${esc(m)}" id="perf-m${k}">
+      <label class="form-check-label small" for="perf-m${k}">${esc(m)}</label></div>`).join('');
+  }
+  db.collection('perfis').doc(usuarioAtual.email).get().then(d => {
+    const card = document.getElementById('sec-primeiro');
+    if (!d.exists) { if (card) card.style.display = 'block'; return; }
+    if (card) card.style.display = 'none';
+    const p = d.data();
+    (p.materias || []).forEach(m => {
+      const el = [...document.querySelectorAll('[data-qdisc]')].find(x => x.value === m);
+      if (el) el.checked = true;
+    });
+  }).catch(e => console.error('perfil', e));
+}
+function salvarPerfil() {
+  const turma = document.getElementById('perf-turma').value.trim();
+  const materias = [...document.querySelectorAll('.perf-mat:checked')].map(x => x.value);
+  if (!turma) { aviso('Informe a sua turma.', 'warning'); return; }
+  db.collection('perfis').doc(usuarioAtual.email).set({
+    turma, materias,
+    lembretes: document.getElementById('perf-lembretes').checked,
+    criadoEm: TS()
+  }).then(() => { aviso('Pronto! Seu portal já está personalizado.', 'success'); carregarPerfil(); })
+    .catch(() => aviso('Não foi possível salvar agora. Tente de novo.', 'danger'));
+}
+function carregarCarteira() {
+  if (!auth.currentUser || !usuarioAtual) return;
+  const ano = String(new Date().getFullYear());
+  const eu = usuarioAtual.email;
+  Promise.all([
+    db.collection('eventos').get(),
+    db.collection('reivindicacoes').where('apoios', 'array-contains', eu).get(),
+    db.collection('enquetes').get(),
+    db.collection('sugestoes').where('email', '==', eu).get(),
+    db.collection('chamados').where('autorEmail', '==', eu).get()
+  ]).then(([ev, pautas, enq, sug, cham]) => {
+    const eventos = ev.docs.map(d => d.data()).filter(e => (e.dataISO || '').startsWith(ano) && (e.inscritos || []).includes(eu)).length;
+    const apoios = pautas.docs.map(d => d.data()).filter(x => anoDe(x.criadoEm) === ano).length;
+    const votos = enq.docs.map(d => d.data()).filter(x => (x.votosAlunos || []).some(v => v && v.email === eu)).length;
+    const sugestoes = sug.docs.map(d => d.data()).filter(x => anoDe(x.criadoEm) === ano).length;
+    const pedidos = cham.docs.map(d => d.data()).filter(x => anoDe(x.criadoEm) === ano).length;
+    const linha = (t, n) => `<li class="d-flex justify-content-between small py-1"><span>${t}</span><strong>${n}</strong></li>`;
+    document.getElementById('carteira-lista').innerHTML = `<p class="small fw-bold mb-1">Participação em ${ano}</p><ul class="list-unstyled mb-0">
+      ${linha('Eventos em que me inscrevi', eventos)}
+      ${linha('Pautas que apoiei', apoios)}
+      ${linha('Enquetes em que votei', votos)}
+      ${linha('Sugestões enviadas', sugestoes)}
+      ${linha('Pedidos de ajuda enviados', pedidos)}</ul>`;
+  }).catch(e => console.error('carteira', e));
+}
+auth.onAuthStateChanged(u => {
+  if (!u) return;
+  setTimeout(() => { carregarPerfil(); carregarCarteira(); }, 1200);
+  setTimeout(carregarPerfil, 3000);
+});
 </script>
 </body>
 </html>
