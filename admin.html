@@ -2914,15 +2914,43 @@
             });
         }
 
+        function tipoDoErro(msg) {
+            const t = String(msg || '').toLowerCase();
+            if (t.includes('permission') || t.includes('insufficient')) return 'Permissão negada (regras)';
+            if (t.includes('network') || t.includes('failed to fetch') || t.includes('offline') || t.includes('unavailable')) return 'Conexão';
+            if (t.includes('cannot read') || t.includes('undefined') || t.includes('null') || t.includes('is not a function')) return 'Erro no código';
+            return 'Outros';
+        }
         async function resumoErrosPortal() {
             if (!soRaiz()) return;
             const out = document.getElementById('ti-erros');
             try {
                 const snap = await db.collection('erros_app').orderBy('em', 'desc').limit(200).get();
-                const cont = {};
-                snap.docs.forEach(d => { const k = String(d.data().msg || '').slice(0, 100); cont[k] = cont[k] || { n: 0, pessoas: new Set() }; cont[k].n++; cont[k].pessoas.add(d.data().email); });
-                const lista = Object.entries(cont).sort((a, b) => b[1].n - a[1].n);
-                out.innerHTML = lista.length ? '<ul class="list-group">' + lista.map(([k, v]) => `<li class="list-group-item small"><span class="badge bg-warning text-dark me-1">${v.n}×</span> <span class="text-warning">${esc(k)}</span><br><small class="text-muted-custom">${v.pessoas.size} pessoa(s)</small></li>`).join('') + '</ul>' : '<p class="text-success mb-0">Nenhum erro registrado no portal.</p>';
+                if (snap.empty) { out.innerHTML = '<p class="text-success mb-0">Nenhum erro registrado no portal.</p>'; return; }
+                const grupos = {};
+                snap.docs.forEach(d => {
+                    const x = d.data();
+                    const tipo = tipoDoErro(x.msg);
+                    const tela = String(x.pagina || 'tela não informada').slice(0, 60);
+                    const chave = tipo + '|' + tela + '|' + String(x.msg || '').slice(0, 100);
+                    const quando = x.em && x.em.toDate ? x.em.toDate() : null;
+                    grupos[chave] = grupos[chave] || { tipo, tela, msg: String(x.msg || '').slice(0, 100), n: 0, pessoas: new Set(), ultimo: quando };
+                    grupos[chave].n++;
+                    grupos[chave].pessoas.add(x.email);
+                    if (quando && (!grupos[chave].ultimo || quando > grupos[chave].ultimo)) grupos[chave].ultimo = quando;
+                });
+                const porTipo = {};
+                Object.values(grupos).forEach(g => { (porTipo[g.tipo] = porTipo[g.tipo] || []).push(g); });
+                const total = snap.size;
+                out.innerHTML = `<p class="small text-white mb-2">${total} erro(s) recente(s), em ${Object.keys(porTipo).length} tipo(s).</p>` +
+                    Object.entries(porTipo).sort((p, q) => q[1].reduce((s, g) => s + g.n, 0) - p[1].reduce((s, g) => s + g.n, 0)).map(([tipo, lista]) => {
+                        const qtd = lista.reduce((s, g) => s + g.n, 0);
+                        return `<div class="mb-2"><strong class="text-warning small">${esc(tipo)}</strong> <span class="badge bg-secondary">${qtd}</span>
+                            <ul class="list-group mt-1">${lista.sort((p, q) => q.n - p.n).map(g => `
+                                <li class="list-group-item small"><span class="badge bg-warning text-dark me-1">${g.n}×</span>
+                                <span class="text-white">${esc(g.msg)}</span><br>
+                                <small class="text-muted-custom">Tela: ${esc(g.tela)} • ${g.pessoas.size} pessoa(s)${g.ultimo ? ' • última vez ' + esc(g.ultimo.toLocaleString('pt-BR')) : ''}</small></li>`).join('')}</ul></div>`;
+                    }).join('');
             } catch (e) { erroDB(e, 'resumoErros'); }
         }
 
