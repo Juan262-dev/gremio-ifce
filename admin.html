@@ -1370,7 +1370,8 @@
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label fw-bold">E-mail do Membro / Aluno</label>
-                        <input type="email" id="punicao-email" class="form-control" placeholder="email@ifce.edu.br">
+                        <input type="email" id="punicao-email" class="form-control" list="lista-emails-punicao" autocomplete="off" placeholder="Digite ou escolha: aluno ou diretoria">
+                        <datalist id="lista-emails-punicao"></datalist>
                     </div>
                     <div class="col-md-3">
                         <label class="form-label fw-bold">Punição Aplicada</label>
@@ -1715,7 +1716,7 @@
                 ['secao-atas', carregarAtas], ['secao-documentos', carregarDocumentos], ['secao-sec-alunos', carregarSecAlunos], ['secao-agenda', carregarAgenda], ['secao-avaliacoes', carregarAvaliacoesAdmin], ['secao-convites', carregarConvitesAdmin], ['secao-eventos', prepararEventosRestritos], ['secao-avisos-wpp', carregarAvisosWpp], ['secao-div-atividades', carregarAtividadesDiv], ['secao-div-materiais', carregarMateriaisDiv], ['secao-div-rel', prepararRelDiv], ['secao-mu-campanhas', () => carregarCrud('mu-campanhas')], ['secao-mu-calendario', () => carregarCrud('mu-calendario')], ['secao-ge-glossario', () => carregarCrud('ge-glossario')], ['secao-ge-debates', () => carregarCrud('ge-debates')], ['secao-ge-metas', () => carregarCrud('ge-metas')], ['secao-reunioes', carregarReunioes], ['secao-presenca', carregarPresenca], ['secao-divulgacao', carregarDivulgacoes], ['secao-artes', carregarArtes], ['secao-caixa', carregarCaixa], ['secao-cultura', () => carregarAtividades('cultura')], ['secao-racial', () => { carregarAtividades('racial'); carregarPautasRacial(); }], ['secao-tes-orc', carregarOrcamentos], ['secao-tes-contas', carregarContas], ['secao-racial-enc', carregarEncaminhamentos], ['secao-racial-apoio', carregarApoio], ['secao-novidades', carregarNovidades], ['secao-ajuda', carregarMeusChamados], ['secao-videos', carregarVideos], ['secao-estudos', carregarEstudosAdmin], ['secao-questoes', carregarQuestoesAdmin], ['secao-flashcards', carregarFlashcardsAdmin],
                 ['secao-mural', carregarAvisosAdmin], ['secao-enquetes-lista', carregarEnquetesAdmin],
                 ['secao-alunos-lista', carregarAlunos], ['secao-sugestoes', carregarSugestoesAdmin], ['secao-pautas', carregarPautasAdmin],
-                ['secao-punicoes', carregarMembrosPunidosAdmin], ['secao-auditoria', carregarAuditoria], ['secao-diretoria', carregarDiretoria],
+                ['secao-punicoes', carregarMembrosPunidosAdmin], ['secao-punicoes', carregarEmailsPunicao], ['secao-auditoria', carregarAuditoria], ['secao-diretoria', carregarDiretoria],
                 ['secao-materiais', carregarMateriaisAdmin], ['secao-jogos', carregarJogosAdmin], ['secao-jogos', carregarClassificacao],
                 ['secao-eventos', carregarEventosAdmin]
             ].forEach(([id, fn]) => { if (ver(id)) fn(); });
@@ -5107,6 +5108,30 @@
             db.collection('alunos').doc(email).update({ ativo: false, status: 'recusado' })
                 .then(() => { toast('Cadastro recusado.'); registrarAcao('Cadastro de aluno recusado', email); })
                 .catch(e => falhaSec(e, 'recusarAlunoTI'));
+        }
+
+        /* ================= E-MAILS PARA PUNIÇÃO (alunos e diretoria) ================= */
+        let cacheEmailsAlunos = [], cacheEmailsCargos = [], assinadoEmailsPunicao = false;
+        function carregarEmailsPunicao() {
+            if (assinadoEmailsPunicao) { renderEmailsPunicao(); return; }
+            assinadoEmailsPunicao = true;
+            ouvir(db.collection('alunos'), snap => {
+                cacheEmailsAlunos = snap.docs.map(d => ({ email: d.id, ...d.data() }));
+                renderEmailsPunicao();
+            });
+            ouvir(db.collection('cargos'), snap => {
+                cacheEmailsCargos = snap.docs.map(d => ({ email: d.id, ...d.data() }));
+                renderEmailsPunicao();
+            });
+        }
+        function renderEmailsPunicao() {
+            const dl = document.getElementById('lista-emails-punicao');
+            if (!dl) return;
+            const opcoes = [
+                ...cacheEmailsCargos.map(c => ({ email: c.email, rotulo: `${c.nome || 'Diretoria'} • ${c.cargo || c.nivel || 'Diretoria'}`, grupo: 'Diretoria' })),
+                ...cacheEmailsAlunos.map(x => ({ email: x.email, rotulo: `${x.nome || 'Aluno'}${x.status === 'pendente' ? ' (pendente)' : ''}${x.ativo === false ? ' (bloqueado)' : ''}`, grupo: 'Aluno' }))
+            ].sort((p, q) => p.grupo.localeCompare(q.grupo) || p.email.localeCompare(q.email));
+            dl.innerHTML = opcoes.map(o => `<option value="${esc(o.email)}">${esc(o.rotulo)}</option>`).join('');
         }
 
         /* ================= BANCO DE QUESTÕES (quiz do portal) ================= */
