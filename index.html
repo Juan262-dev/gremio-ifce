@@ -292,7 +292,7 @@ body{background-color:#f4f6f9}
 <div id="aviso-offline" class="d-none text-center small fw-bold py-2 px-3" style="position:fixed;top:0;left:0;right:0;z-index:1080;background:#fff3cd;color:#664d03;border-bottom:1px solid #ffe69c">Sem conexão: você está vendo os dados guardados. Votos, inscrições e envios voltam quando a internet voltar.</div>
 <nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-quiz"><span>🧠</span>Quiz</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
-<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.23-a</div>
+<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.23-b</div>
 
 <div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100005;width:100%;max-width:420px;margin-bottom:72px"></div>
 
@@ -437,6 +437,12 @@ auth.onAuthStateChanged(async user => {
     if (!d.ativo) {
       await auth.signOut();
       irParaSlide(2); mostrarErroLogin("Seu cadastro está bloqueado. Procure o Grêmio!");
+      return;
+    }
+    const pun = await db.collection('membros_punidos').doc(email).get().catch(() => null);
+    if (pun && pun.exists && pun.data().expiraEm && pun.data().expiraEm.toMillis() > Date.now()) {
+      await auth.signOut();
+      irParaSlide(2); mostrarErroLogin(`Seu acesso está suspenso até ${pun.data().expiraEm.toDate().toLocaleString('pt-BR')}. Motivo: ${pun.data().motivo || 'não informado'}.`);
       return;
     }
     usuarioAtual = { nome: d.nome || 'Aluno', email };
@@ -2584,6 +2590,22 @@ function enviarCadastroAluno() {
     })
     .finally(() => { btn.disabled = false; });
 }
+</script>
+
+<script>
+/* ---- punição do aluno: confere durante o uso e desconecta quando vigente ---- */
+setInterval(() => {
+  const u = auth.currentUser;
+  if (!u) return;
+  db.collection('membros_punidos').doc(u.email.toLowerCase()).get().then(p => {
+    if (p.exists && p.data().expiraEm && p.data().expiraEm.toMillis() > Date.now()) {
+      auth.signOut().then(() => {
+        irParaSlide(2);
+        mostrarErroLogin(`Seu acesso foi suspenso até ${p.data().expiraEm.toDate().toLocaleString('pt-BR')}. Motivo: ${p.data().motivo || 'não informado'}.`);
+      });
+    }
+  }).catch(() => {});
+}, 60000);
 </script>
 </body>
 </html>
