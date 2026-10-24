@@ -73,6 +73,16 @@ body{background-color:#f4f6f9}
         <div class="input-group-chem"><label>E-mail Institucional</label><input type="email" id="aluno-email-input" placeholder="aluno@aluno.ifce.edu.br" autocomplete="username"></div>
         <div class="input-group-chem"><label>Senha</label><input type="password" id="aluno-senha-input" placeholder="******" autocomplete="current-password"></div>
         <button id="btn-login-aluno" onclick="fazerLoginAluno()" class="btn-green-chem">Acessar Portal</button>
+                    <button onclick="document.getElementById('cad-aluno').classList.remove('d-none')" class="btn btn-link w-100 small" style="color:#a0b3a6">Não tenho cadastro: criar conta</button>
+                    <div id="cad-aluno" class="d-none mt-2">
+                      <p class="small text-center mb-2" style="color:#a0b3a6">Use seu e-mail institucional (@aluno.ifce.edu.br). O grêmio aprova o cadastro antes de liberar o acesso.</p>
+                      <input type="text" id="cad-nome" class="form-control form-control-sm mb-2" maxlength="80" placeholder="Nome completo">
+                      <input type="email" id="cad-email" class="form-control form-control-sm mb-2" maxlength="120" placeholder="seuemail@aluno.ifce.edu.br">
+                      <input type="password" id="cad-senha" class="form-control form-control-sm mb-2" maxlength="60" placeholder="Senha (mínimo 6 caracteres)">
+                      <input type="password" id="cad-senha2" class="form-control form-control-sm mb-2" maxlength="60" placeholder="Repita a senha">
+                      <button onclick="enviarCadastroAluno()" id="btn-cad-aluno" class="btn btn-sm btn-ifce w-100 fw-bold">Enviar cadastro</button>
+                      <button onclick="document.getElementById('cad-aluno').classList.add('d-none')" class="btn btn-sm btn-link w-100 text-muted">Voltar ao login</button>
+                    </div>
         <div class="text-center mt-3"><a href="#" onclick="recuperarSenha();return false" class="small" style="color:#a0b3a6">Esqueci minha senha</a></div>
       </div>
     </div>
@@ -282,7 +292,7 @@ body{background-color:#f4f6f9}
 <div id="aviso-offline" class="d-none text-center small fw-bold py-2 px-3" style="position:fixed;top:0;left:0;right:0;z-index:1080;background:#fff3cd;color:#664d03;border-bottom:1px solid #ffe69c">Sem conexão: você está vendo os dados guardados. Votos, inscrições e envios voltam quando a internet voltar.</div>
 <nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-quiz"><span>🧠</span>Quiz</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
-<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.22-d</div>
+<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.23-a</div>
 
 <div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100005;width:100%;max-width:420px;margin-bottom:72px"></div>
 
@@ -395,6 +405,7 @@ function fazerLogoutAluno() {
 
 // Roda ao abrir a página (sessão persistida pelo Firebase), no login e no logout
 auth.onAuthStateChanged(async user => {
+  if (user && cadastrandoAluno) return;
   if (!user) {
     usuarioAtual = null;
     limparListeners();
@@ -413,6 +424,16 @@ auth.onAuthStateChanged(async user => {
       return;
     }
     const d = doc.data();
+    if (d.status === 'pendente') {
+      await auth.signOut();
+      irParaSlide(2); mostrarErroLogin("Seu cadastro está aguardando aprovação do grêmio.");
+      return;
+    }
+    if (d.status === 'recusado') {
+      await auth.signOut();
+      irParaSlide(2); mostrarErroLogin("Seu cadastro não foi aprovado. Procure o Grêmio.");
+      return;
+    }
     if (!d.ativo) {
       await auth.signOut();
       irParaSlide(2); mostrarErroLogin("Seu cadastro está bloqueado. Procure o Grêmio!");
@@ -2527,6 +2548,42 @@ auth.onAuthStateChanged(u => {
   setTimeout(() => { carregarPerfil(); carregarCarteira(); }, 1200);
   setTimeout(carregarPerfil, 3000);
 });
+</script>
+<script>
+/* ---- cadastro do aluno pelo portal (fica pendente até a aprovação do root) ---- */
+let cadastrandoAluno = false;
+function enviarCadastroAluno() {
+  const nome = document.getElementById('cad-nome').value.trim();
+  const email = document.getElementById('cad-email').value.trim().toLowerCase();
+  const senha = document.getElementById('cad-senha').value;
+  const senha2 = document.getElementById('cad-senha2').value;
+  if (nome.length < 3) { aviso('Informe seu nome completo.', 'warning'); return; }
+  if (!/^[^@\s]+@aluno\.ifce\.edu\.br$/.test(email)) { aviso('Use seu e-mail institucional (@aluno.ifce.edu.br).', 'warning'); return; }
+  if (senha.length < 6) { aviso('A senha precisa ter pelo menos 6 caracteres.', 'warning'); return; }
+  if (senha !== senha2) { aviso('As senhas não são iguais.', 'warning'); return; }
+  const btn = document.getElementById('btn-cad-aluno');
+  btn.disabled = true;
+  cadastrandoAluno = true;
+  auth.createUserWithEmailAndPassword(email, senha)
+    .then(() => db.collection('alunos').doc(email).set({ nome, email, ativo: false, status: 'pendente', criadoEm: TS() }))
+    .then(() => auth.signOut())
+    .then(() => {
+      cadastrandoAluno = false;
+      ['cad-nome', 'cad-email', 'cad-senha', 'cad-senha2'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('cad-aluno').classList.add('d-none');
+      mostrarErroLogin('Cadastro enviado! Assim que o grêmio aprovar, você entra com seu e-mail e senha.');
+    })
+    .catch(err => {
+      cadastrandoAluno = false;
+      auth.signOut().catch(() => {});
+      const msg = err.code === 'auth/email-already-in-use' ? 'Este e-mail já tem cadastro. Entre com sua senha ou procure o Grêmio.'
+        : err.code === 'auth/weak-password' ? 'A senha é fraca. Use pelo menos 6 caracteres.'
+        : err.code === 'auth/network-request-failed' ? 'Sem conexão com a internet.'
+        : 'Não foi possível enviar o cadastro. Tente de novo ou procure o Grêmio.';
+      aviso(msg, 'warning');
+    })
+    .finally(() => { btn.disabled = false; });
+}
 </script>
 </body>
 </html>
