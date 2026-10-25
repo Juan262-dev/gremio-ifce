@@ -160,7 +160,12 @@ body{background-color:#f4f6f9}
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Minha carteirinha de participação</h5>
     <p class="text-muted small mb-3">Seu resumo do ano no grêmio. Só você vê, e ele usa apenas os dados que o portal já mostra para você.</p>
     <div id="carteira-lista"><p class="text-muted small mb-0">Carregando...</p></div>
-    <button onclick="editarPerfil()" class="btn btn-sm btn-outline-success fw-bold mt-3">Editar perfil</button>
+    <div class="d-flex flex-wrap gap-2 mt-3">
+      <button onclick="editarPerfil()" class="btn btn-sm btn-outline-success fw-bold">Editar perfil</button>
+      <button onclick="baixarMeusDados()" class="btn btn-sm btn-outline-secondary fw-bold">Baixar meus dados</button>
+      <button onclick="pedirExclusaoDados()" class="btn btn-sm btn-outline-danger fw-bold">Pedir exclusão dos meus dados</button>
+    </div>
+    
   </div>
 
   <div id="sec-realizacoes" class="card card-custom p-4 mb-4">
@@ -241,6 +246,7 @@ body{background-color:#f4f6f9}
   </div>
 
   <div id="sec-ajuda" class="card card-custom p-4 mb-4">
+    <div id="plantao-box" class="alert alert-light small mb-3 d-none"></div>
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🆘 Preciso de ajuda</h5>
     <p class="text-muted small mb-3">Algo não funciona no portal ou você tem uma dúvida? Conte aqui que o responsável pelo sistema responde.</p>
     <select id="aj-cat" class="form-select mb-2"><option>Algo não funciona</option><option>Não consigo acessar algo</option><option>Dúvida de como usar</option><option>Outro</option></select>
@@ -292,7 +298,7 @@ body{background-color:#f4f6f9}
 <div id="aviso-offline" class="d-none text-center small fw-bold py-2 px-3" style="position:fixed;top:0;left:0;right:0;z-index:1080;background:#fff3cd;color:#664d03;border-bottom:1px solid #ffe69c">Sem conexão: você está vendo os dados guardados. Votos, inscrições e envios voltam quando a internet voltar.</div>
 <nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-quiz"><span>🧠</span>Quiz</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
-<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.23-b</div>
+<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.23-c</div>
 
 <div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100005;width:100%;max-width:420px;margin-bottom:72px"></div>
 
@@ -2606,6 +2612,59 @@ setInterval(() => {
     }
   }).catch(() => {});
 }, 60000);
+</script>
+
+<script>
+/* ---- direitos do aluno: cópia dos dados, pedido de exclusão e plantão do TI ---- */
+function limparParaJSON(o) { return JSON.parse(JSON.stringify(o, (k, v) => (v && v.toDate) ? v.toDate().toISOString() : v)); }
+async function baixarMeusDados() {
+  if (!usuarioAtual) return;
+  const eu = usuarioAtual.email;
+  try {
+    const [al, pf, an, sg, ch, pa, en, ev, pe] = await Promise.all([
+      db.collection('alunos').doc(eu).get(), db.collection('perfis').doc(eu).get(), db.collection('aniversarios').doc(eu).get(),
+      db.collection('sugestoes').where('email', '==', eu).get(), db.collection('chamados').where('autorEmail', '==', eu).get(),
+      db.collection('reivindicacoes').where('apoios', 'array-contains', eu).get(), db.collection('enquetes').get(),
+      db.collection('eventos').get(), db.collection('pedidos_exclusao').where('email', '==', eu).get()
+    ]);
+    const dados = {
+      gerado_em: new Date().toISOString(), conta: eu,
+      cadastro: al.exists ? limparParaJSON(al.data()) : null,
+      perfil: pf.exists ? limparParaJSON(pf.data()) : null,
+      aniversario: an.exists ? limparParaJSON(an.data()) : null,
+      sugestoes: sg.docs.map(d => limparParaJSON(d.data())),
+      pedidos_de_ajuda: ch.docs.map(d => limparParaJSON(d.data())),
+      pautas_apoiadas: pa.docs.map(d => ({ titulo: d.data().titulo })),
+      enquetes_votadas: en.docs.filter(d => (d.data().votosAlunos || []).some(v => v && v.email === eu)).map(d => ({ titulo: d.data().titulo })),
+      eventos_inscritos: ev.docs.filter(d => (d.data().inscritos || []).includes(eu)).map(d => ({ titulo: d.data().titulo, data: d.data().data || d.data().dataISO })),
+      pedidos_de_exclusao: pe.docs.map(d => limparParaJSON(d.data()))
+    };
+    const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'meus_dados_gremio.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  } catch (e) { console.error('baixarMeusDados', e); aviso('Não foi possível gerar seus dados agora. Tente de novo.', 'danger'); }
+}
+function pedirExclusaoDados() {
+  if (!usuarioAtual) return;
+  if (!confirm('Pedir a exclusão dos seus dados no grêmio? A gestão analisa o pedido, apaga o que for possível e avisa você. Algumas informações podem ser mantidas quando a lei exigir.')) return;
+  db.collection('pedidos_exclusao').add({ email: usuarioAtual.email, nome: usuarioAtual.nome || usuarioAtual.email, status: 'Aberto', criadoEm: TS() })
+    .then(() => aviso('Pedido enviado. A gestão vai analisar e te avisar.', 'success'))
+    .catch(() => aviso('Não foi possível enviar o pedido agora. Tente de novo.', 'danger'));
+}
+function carregarPlantao() {
+  if (!auth.currentUser) return;
+  db.collection('config').doc('sistema').get().then(d => {
+    const texto = d.exists ? (d.data().plantao || '') : '';
+    const box = document.getElementById('plantao-box');
+    if (!box) return;
+    if (texto) { box.textContent = 'Plantão do TI: ' + texto; box.classList.remove('d-none'); }
+    else box.classList.add('d-none');
+  }).catch(() => {});
+}
+auth.onAuthStateChanged(u => { if (u) setTimeout(carregarPlantao, 1500); });
 </script>
 </body>
 </html>

@@ -468,10 +468,40 @@
                 <div id="lista-convites"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
-            <div id="secao-pendentes" class="card card-custom p-4 mb-4 card-root" style="border-color:#ffc107;">
+            <div id="secao-sessoes" class="card card-custom p-4 mb-4 card-root" style="border-color:#dc3545;">
+                <h5 class="card-title-chem mb-2" style="color:#ff6b6b;">Encerrar todas as sessões (somente você)</h5>
+                <p class="text-muted-custom small mb-3">Derruba todos os acessos abertos: alunos, diretoria e o seu. Depois disso, cada pessoa precisa entrar de novo com a senha. Use se achar que alguma sessão não deveria estar aberta.</p>
+                <button onclick="encerrarTodasSessoes()" class="btn btn-danger btn-sm fw-bold">Encerrar todas as sessões</button>
+            </div>
+
+            <div id="secao-pendentes" data-niveis="emergencia" class="card card-custom p-4 mb-4" style="border-color:#ffc107;">
                 <h5 class="card-title-chem mb-2">Cadastros pendentes (somente você)</h5>
                 <p class="text-muted-custom small mb-3">Alunos que se cadastraram pelo portal. Aprove para liberar o acesso.</p>
                 <div id="lista-pendentes"><p class="text-muted-custom small">Carregando...</p></div>
+            </div>
+
+            <div id="secao-plantao" class="card card-custom p-4 mb-4 card-root" style="border-color:#0dcaf0;">
+                <h5 class="card-title-chem mb-2">Plantão do TI (somente você)</h5>
+                <p class="text-muted-custom small mb-2">Quem procurar ajuda quando a TI não estiver disponível. Aparece no topo da ajuda do portal. Deixe vazio para ocultar.</p>
+                <textarea id="plantao-texto" class="form-control mb-2" rows="2" maxlength="300" placeholder="Ex.: Fale com a presidência pelo WhatsApp (xx) xxxxx-xxxx"></textarea>
+                <button onclick="salvarPlantaoTI()" class="btn btn-ifce btn-sm fw-bold">Salvar plantão</button>
+            </div>
+
+            <div id="secao-versoes" class="card card-custom p-4 mb-4 card-root" style="border-color:#0dcaf0;">
+                <h5 class="card-title-chem mb-2">Versões publicadas (somente você)</h5>
+                <p class="text-muted-custom small mb-2">Registre cada publicação com o que mudou. O histórico completo dos arquivos fica no GitHub (aba Commits do repositório).</p>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-3"><input type="text" id="ver-numero" class="form-control" maxlength="30" placeholder="Versão"></div>
+                    <div class="col-md-9"><input type="text" id="ver-nota" class="form-control" maxlength="300" placeholder="O que mudou nesta versão"></div>
+                </div>
+                <button onclick="registrarVersaoTI()" class="btn btn-ifce btn-sm fw-bold mb-2">Registrar versão</button>
+                <div id="lista-versoes"><p class="text-muted-custom small mb-0">Nenhuma versão registrada.</p></div>
+            </div>
+
+            <div id="secao-exclusoes" class="card card-custom p-4 mb-4 card-root" style="border-color:#dc3545;">
+                <h5 class="card-title-chem mb-2">Pedidos de exclusão de dados (somente você)</h5>
+                <p class="text-muted-custom small mb-2">Pedidos enviados pelos alunos. Ao concluir, o portal apaga o perfil e o aniversário e desativa o cadastro. A conta de login precisa ser apagada no console do Firebase (Authentication).</p>
+                <div id="lista-exclusoes"><p class="text-muted-custom small mb-0">Carregando...</p></div>
             </div>
 
             <div id="secao-documentos" data-niveis="admin,secretaria" class="card card-custom p-4 mb-4">
@@ -988,7 +1018,15 @@
                     <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">6. Problemas comuns</summary><div class="small text-muted-custom mt-2"><p class="mb-2"><strong>O card da eleição não aparece para o aluno:</strong> confira se a eleição está com status Aberta e se a versão do portal é a mais nova (rodapé). O portal atualiza sozinho a cada minuto.</p><p class="mb-2"><strong>Código de cédula não aceito:</strong> confira se é o código do PDF da eleição certa; cédula já usada não vota de novo; gerar de novo invalida o código antigo.</p><p class="mb-2"><strong>Botão de instalar some:</strong> o navegador decide quando oferecer a instalação. Desinstale o app antigo, feche o navegador e tente de novo. Se não aparecer, use o menu do navegador: Instalar aplicativo.</p><p class="mb-2"><strong>Campo ou cartão não aparece para alguém:</strong> confirme o nível do cargo em Diretoria e Cargos, depois use Ver o painel como outro cargo para reproduzir.</p></div></details>
                     <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">7. Limites do plano gratuito</summary><div class="small text-muted-custom mt-2"><p class="mb-2">Não há envio de e-mail automático nem notificação com o app fechado: isso exige o plano pago do Firebase. Os avisos aparecem no portal e no sininho.</p><p class="mb-2">A eleição e as avaliações são sigilosas quanto ao conteúdo do voto e ao autor do comentário, mas o root consegue ver quais cédulas foram usadas (participação), porque o PDF com os códigos fica com a gestão.</p><p class="mb-2">O armazenamento de arquivos (Storage) não está disponível; vídeos e materiais ficam em links do YouTube ou do Drive.</p></div></details>
                     <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">8. Segurança</summary><div class="small text-muted-custom mt-2"><p class="mb-2">Só o e-mail raiz tem acesso total. Cada cargo lê e altera apenas o que as regras permitem, e a regra vale mesmo que alguém tente burlar a tela.</p><p class="mb-2">Cédulas são guardadas como hash (sem o código e sem o nome). Aniversariantes são opcionais e podem ser apagados pelo próprio aluno. A lista de alunos não mostra senhas.</p><p class="mb-2">Antes de publicar, teste com uma conta de cada cargo e confira que nada apareceu que não deveria. Se algo vazar para a visão errada, corrija a regra antes de avisar os alunos.</p></div></details>
-                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">9. Roteiro de testes por conta</summary><div class="small text-muted-custom mt-2 mb-2">Use uma conta de teste de cada cargo, antes de qualquer publicação grande. Para cada conta, confirme o que aparece e o que não aparece, e registre qualquer diferença. Você também pode conferir cada visão pelo botão <strong>Ver o painel como outro cargo</strong>, mas o teste final deve ser feito com a conta real.</div><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Presidência</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Vê Diretoria e Cargos, Alunos, Pautas, Sugestões, Punições e Eventos (inclusive o campo de vagas).</li><li>Vê Avaliação dos eventos, Convites e Agenda compartilhada.</li><li>Não vê o painel da TI (Manutenção, Backup, Verificador, Nova Gestão).</li></ul></details><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Esportes/Eventos (membro)</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Cria evento com vagas, lista de espera e convite.</li><li>Vê Avaliação dos eventos e Convites.</li><li>Não vê Cadastrar Aluno, Pautas nem Punições.</li></ul></details><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Marketing</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Publica no Mural e no Calendário de Divulgação.</li><li>Não vê Alunos, Pautas, Caixa nem Eleição.</li></ul></details><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Tesouraria</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Lança entradas e saídas (saída exige comprovante).</li><li>Vê Orçamento e Contas a pagar; não vê Alunos nem Eleição.</li></ul></details><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Cultura e Igualdade Racial</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Publicam atividade (que vira evento com o nome do cargo).</li><li>Vê Avaliação dos eventos e Convites; não vê Campo de vagas.</li></ul></details><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Secretaria</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Cadastra ata, documento, reunião e lista de presença.</li><li>Vê Alunos (só leitura) e gera o relatório da secretaria.</li><li>Não vê Caixa, Eleição nem Pautas.</li></ul></details><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Diretora de Mulheres e Diretor(a) de Gêneros</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Registra atividade e presença, publica material e gera relatório mensal.</li><li>Cada um vê só as próprias funções (campanhas e calendário, ou glossário, debates e metas).</li><li>Não vê as atividades da outra área nem Alunos.</li></ul></details><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Você (root)</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Vê todos os cards e abre a Eleição na aba TI.</li><li>Confere cada cargo pelo botão Ver o painel como outro cargo.</li></ul></details></details>
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">9. Roteiro de testes por conta</summary><div class="small text-muted-custom mt-2 mb-2">Use uma conta de teste de cada cargo, antes de qualquer publicação grande. Para cada conta, confirme o que aparece e o que não aparece, e registre qualquer diferença. Você também pode conferir cada visão pelo botão <strong>Ver o painel como outro cargo</strong>, mas o teste final deve ser feito com a conta real.</div><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Presidência</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Vê Diretoria e Cargos, Alunos, Pautas, Sugestões, Punições e Eventos (inclusive o campo de vagas).</li><li>Vê Avaliação dos eventos, Convites e Agenda compartilhada.</li><li>Não vê o painel da TI (Manutenção, Backup, Verificador, Nova Gestão).</li></ul></details>
+                    <details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">10. Se a TI não estiver disponível</summary><div class="small text-muted-custom mt-2">
+<p class="mb-2"><strong>Quem assume em emergência:</strong> a pessoa indicada no Plantão do TI (card no painel, que também aparece no portal). Se ela não responder, a presidência entra em contato com o root.</p>
+<p class="mb-2"><strong>Votação em andamento e algo quebrou:</strong> não publique nada novo. Avise a gestão, anote o horário e o que aconteceu. Use o Verificador de integridade e o relatório de erros do portal. A eleição só pode ser encerrada pelo root.</p>
+<p class="mb-2"><strong>Voltar a uma versão anterior:</strong> no GitHub, abra o arquivo, toque em History ou em Commits, escolha a versão que funcionava e restaure. Depois, publique as regras e os arquivos dessa versão na mesma ordem de sempre.</p>
+<p class="mb-2"><strong>Pedido de exclusão de dados:</strong> aparece no card de pedidos de exclusão. A conta de login só pode ser apagada no console do Firebase, em Authentication.</p>
+<p class="mb-2"><strong>Quem tem acesso:</strong> o e-mail raiz e as contas de cargo. Se uma conta de cargo perder o acesso, confira a data de fim do mandato no cadastro de Diretoria e Cargos.</p>
+<p class="mb-0"><strong>Registro das versões:</strong> cada publicação deve ser registrada no card de versões, com o que mudou.</p>
+</div></details><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Esportes/Eventos (membro)</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Cria evento com vagas, lista de espera e convite.</li><li>Vê Avaliação dos eventos e Convites.</li><li>Não vê Cadastrar Aluno, Pautas nem Punições.</li></ul></details><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Marketing</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Publica no Mural e no Calendário de Divulgação.</li><li>Não vê Alunos, Pautas, Caixa nem Eleição.</li></ul></details><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Tesouraria</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Lança entradas e saídas (saída exige comprovante).</li><li>Vê Orçamento e Contas a pagar; não vê Alunos nem Eleição.</li></ul></details><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Cultura e Igualdade Racial</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Publicam atividade (que vira evento com o nome do cargo).</li><li>Vê Avaliação dos eventos e Convites; não vê Campo de vagas.</li></ul></details><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Secretaria</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Cadastra ata, documento, reunião e lista de presença.</li><li>Vê Alunos (só leitura) e gera o relatório da secretaria.</li><li>Não vê Caixa, Eleição nem Pautas.</li></ul></details><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Diretora de Mulheres e Diretor(a) de Gêneros</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Registra atividade e presença, publica material e gera relatório mensal.</li><li>Cada um vê só as próprias funções (campanhas e calendário, ou glossário, debates e metas).</li><li>Não vê as atividades da outra área nem Alunos.</li></ul></details><details class="mb-2"><summary class="fw-bold text-white" style="cursor: pointer;">Você (root)</summary><ul class="small text-muted-custom mt-2 mb-0"><li>Vê todos os cards e abre a Eleição na aba TI.</li><li>Confere cada cargo pelo botão Ver o painel como outro cargo.</li></ul></details></details>
                     
                 </div>
             </div>
@@ -1264,8 +1302,9 @@
                     <div class="col-md-6"><label class="form-label fw-bold">Nome</label><input type="text" id="dir-nome" class="form-control" placeholder="Nome do diretor"></div>
                     <div class="col-md-6"><label class="form-label fw-bold">E-mail</label><input type="email" id="dir-email" class="form-control" placeholder="email@ifce.edu.br"></div>
                     <div class="col-md-6"><label class="form-label fw-bold">Cargo</label><input type="text" id="dir-cargo" class="form-control" placeholder="Ex: Diretor de Esportes"></div>
-                    <div class="col-md-3"><label class="form-label fw-bold">Nível</label><select id="dir-nivel" class="form-select"><option value="membro">Esportes/Eventos</option><option value="marketing">Marketing</option><option value="admin">Presidência</option><option value="tesouraria">Tesouraria</option><option value="cultura">Cultura</option><option value="racial">Igualdade Racial</option></select></div>
-                    <div class="col-md-3"><label class="form-label fw-bold">Senha (opcional)</label><input type="password" id="dir-senha" class="form-control" placeholder="******"></div>
+                    <div class="col-md-3"><label class="form-label fw-bold">Nível</label><select id="dir-nivel" class="form-select"><option value="emergencia">Conta de emergência (só cadastros pendentes)</option><option value="membro">Esportes/Eventos</option><option value="marketing">Marketing</option><option value="admin">Presidência</option><option value="tesouraria">Tesouraria</option><option value="cultura">Cultura</option><option value="racial">Igualdade Racial</option></select></div>
+                    <div class="col-md-3"><label class="form-label fw-bold">Senha (opcional)</label><input type="date" id="dir-fim" class="form-control mb-2" title="Fim do mandato (opcional)">
+                    <input type="password" id="dir-senha" class="form-control" placeholder="******"></div>
                 </div>
                 <div class="d-flex gap-2 flex-wrap">
                     <button onclick="salvarDiretor()" class="btn btn-ifce">Salvar Diretor</button>
@@ -1448,7 +1487,7 @@
         // precisa estar nas Firestore Security Rules (veja firestore.rules).
         const ROOT_EMAIL = 'kevin.silva10@aluno.ifce.edu.br';
         let nivelDoPainel = 'admin', painelCongelado = false;
-        const ROTULO_NIVEL = { secretaria: 'Secretaria', mulheres: 'Diretora de Mulheres', generos: 'Diretor(a) de Gêneros', admin: 'Presidência', membro: 'Esportes/Eventos', marketing: 'Marketing', tesouraria: 'Tesouraria', cultura: 'Cultura', racial: 'Igualdade Racial' };
+        const ROTULO_NIVEL = { emergencia: 'Conta de emergência', secretaria: 'Secretaria', mulheres: 'Diretora de Mulheres', generos: 'Diretor(a) de Gêneros', admin: 'Presidência', membro: 'Esportes/Eventos', marketing: 'Marketing', tesouraria: 'Tesouraria', cultura: 'Cultura', racial: 'Igualdade Racial' };
         const cargosIniciais = {
             "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
@@ -1700,11 +1739,12 @@
             resetarOpcoes();
 
             const nivel = dadosUsuario.nivel;
-            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); carregarTermoTI(); carregarRoteiroTI(); preencherEditor(); carregarEleicaoTI(); carregarPendentesTI(); carregarAlertasTI(); carregarPendenciasTI(); carregarTravasUI(); }
+            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); carregarTermoTI(); carregarRoteiroTI(); preencherEditor(); carregarEleicaoTI(); carregarPendentesTI(); carregarPlantaoTI(); carregarVersoesTI(); carregarExclusoesTI(); carregarAlertasTI(); carregarPendenciasTI(); carregarTravasUI(); }
             // Cada cargo vê só o que precisa; o e-mail raiz (TI) vê tudo.
             nivelDoPainel = nivel;
             const raiz = emailUsuario === ROOT_EMAIL;
             nivelReal = nivel;
+            if (nivel === 'emergencia') { carregarPendentesTI(); }
             document.querySelectorAll('[data-niveis]').forEach(c => {
                 c.style.display = (raiz || c.dataset.niveis.split(',').includes(nivel)) ? 'block' : 'none';
             });
@@ -2270,7 +2310,7 @@
             try {
                 let msg = '';
                 if (senha) msg = (await criarContaAuth(email, senha)) === 'criada' ? ' Conta de login criada.' : ' (a conta já existia; a senha não mudou)';
-                await db.collection('cargos').doc(email).set({ nome, cargo, nivel });
+                await db.collection('cargos').doc(email).set({ nome, cargo, nivel, fimMandato: (document.getElementById('dir-fim') && document.getElementById('dir-fim').value) ? firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('dir-fim').value + 'T23:59:59')) : null });
                 mostrarAlertaSucesso(`${nome} salvo como ${nivel}.${msg}`);
                 registrarAcao('Diretor salvo', `${email} (${nivel})`);
                 ['dir-nome', 'dir-email', 'dir-cargo', 'dir-senha'].forEach(i => document.getElementById(i).value = '');
@@ -2777,7 +2817,7 @@
 
         /* ================= CENTRAL DE ALERTAS E UTILITÁRIOS (só o e-mail raiz) ================= */
 
-        const VERSAO_SISTEMA = '2026.10.22-b';
+        const VERSAO_SISTEMA = '2026.10.23-c';
         const DATA_ULTIMA_ATUALIZACAO = '18/10/2026';
         let nivelReal = null, travas = {};
         function aplicarVisibilidade() {
@@ -5134,6 +5174,80 @@
             dl.innerHTML = opcoes.map(o => `<option value="${esc(o.email)}">${esc(o.rotulo)}</option>`).join('');
         }
 
+        /* ================= ENCERRAR TODAS AS SESSÕES (somente o root) ================= */
+        async function encerrarTodasSessoes() {
+            if (!(await confirmar('Encerrar TODAS as sessões? Alunos, diretoria e você terão de entrar de novo com a senha.'))) return;
+            try {
+                await db.collection('config').doc('seguranca').set({
+                    sessoesDesdeSeg: Math.floor(Date.now() / 1000),
+                    atualizadoPor: emailLogado,
+                    atualizadoEm: TS()
+                }, { merge: true });
+                await auth.signOut();
+                location.reload();
+            } catch (e) { falhaSec(e, 'encerrarTodasSessoes'); }
+        }
+
+        /* ================= PLANTÃO, VERSÕES E EXCLUSÕES (somente o root) ================= */
+        function carregarPlantaoTI() {
+            db.collection('config').doc('sistema').get().then(d => {
+                const t = document.getElementById('plantao-texto');
+                if (t && d.exists) t.value = d.data().plantao || '';
+            });
+        }
+        function salvarPlantaoTI() {
+            const texto = document.getElementById('plantao-texto').value.trim();
+            db.collection('config').doc('sistema').set({ plantao: texto }, { merge: true })
+                .then(() => { toast('Plantão salvo.'); registrarAcao('Plantão do TI atualizado', texto ? 'texto definido' : 'removido'); })
+                .catch(e => falhaSec(e, 'salvarPlantaoTI'));
+        }
+        function carregarVersoesTI() {
+            document.getElementById('ver-numero').value = VERSAO_SISTEMA;
+            ouvir(db.collection('versoes_publicadas').orderBy('criadoEm', 'desc').limit(20), snap => {
+                const c = document.getElementById('lista-versoes');
+                if (!c) return;
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma versão registrada.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + snap.docs.map(d => {
+                    const x = d.data();
+                    const quando = x.criadoEm && x.criadoEm.toDate ? x.criadoEm.toDate().toLocaleString('pt-BR') : '';
+                    return `<div class="list-group-item"><strong class="text-white">${esc(x.versao)}</strong> <small class="text-muted-custom">${esc(quando)}</small><br><small class="text-white">${esc(x.nota || 'Sem descrição')}</small></div>`;
+                }).join('') + '</div>';
+            });
+        }
+        function registrarVersaoTI() {
+            const versao = document.getElementById('ver-numero').value.trim();
+            const nota = document.getElementById('ver-nota').value.trim();
+            if (!versao) { toast('Informe o número da versão.', 'warning'); return; }
+            db.collection('versoes_publicadas').add({ versao, nota, criadoEm: TS(), criadoPorEmail: emailLogado })
+                .then(() => { toast('Versão registrada.'); document.getElementById('ver-nota').value = ''; })
+                .catch(e => falhaSec(e, 'registrarVersaoTI'));
+        }
+        function carregarExclusoesTI() {
+            ouvir(db.collection('pedidos_exclusao').where('status', '==', 'Aberto'), snap => {
+                const c = document.getElementById('lista-exclusoes');
+                if (!c) return;
+                if (snap.empty) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhum pedido em aberto.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + snap.docs.map(d => {
+                    const x = d.data();
+                    return `<div class="list-group-item d-flex justify-content-between align-items-center gap-2">
+                        <div><strong class="text-white">${esc(x.nome || x.email)}</strong><br><small class="text-muted-custom">${esc(x.email)}</small></div>
+                        <button onclick="concluirExclusaoTI('${esc(d.id)}','${esc(x.email)}')" class="btn btn-danger btn-sm py-0" style="font-size:12px">Concluir</button>
+                    </div>`;
+                }).join('') + '</div>';
+            });
+        }
+        async function concluirExclusaoTI(pedidoId, email) {
+            if (!(await confirmar(`Concluir a exclusão dos dados de ${email}? Isso apaga o perfil e o aniversário e desativa o cadastro.`))) return;
+            try {
+                await db.collection('perfis').doc(email).delete().catch(() => {});
+                await db.collection('aniversarios').doc(email).delete().catch(() => {});
+                await db.collection('alunos').doc(email).update({ ativo: false, status: 'excluido', nome: 'Dados excluídos' });
+                await db.collection('pedidos_exclusao').doc(pedidoId).update({ status: 'Concluído', concluidoEm: TS() });
+                registrarAcao('Exclusão de dados concluída', email);
+                toast('Pedido concluído. Apague também a conta de login no console do Firebase.');
+            } catch (e) { falhaSec(e, 'concluirExclusaoTI'); }
+        }
+
         /* ================= BANCO DE QUESTÕES (quiz do portal) ================= */
 
         let cacheQuestoes = [];
@@ -5798,7 +5912,7 @@
             ['atividades', 'Atividades', ['secao-eventos', 'secao-jogos', 'secao-materiais', 'secao-cultura', 'secao-racial', 'secao-racial-enc', 'secao-racial-apoio', 'secao-rel-cult', 'secao-rel-racial']],
             ['financeiro', 'Financeiro', ['secao-caixa', 'secao-tes-orc', 'secao-tes-contas', 'secao-rel-tes']],
             ['diretoria', 'Diretoria', ['secao-diretoria', 'secao-avaliacoes', 'secao-convites', 'secao-agenda', 'secao-avisos-wpp', 'secao-secao-mu-campanhas', 'secao-secao-mu-calendario', 'secao-secao-mu-canais', 'secao-secao-mu-indicadores', 'secao-secao-ge-glossario', 'secao-secao-ge-debates', 'secao-secao-ge-metas', 'secao-secao-ge-indicadores', 'secao-div-atividades', 'secao-div-materiais', 'secao-div-rel', 'secao-sec-alunos', 'secao-rel-sec', 'secao-documentos', 'secao-reunioes', 'secao-presenca', 'secao-atas', 'secao-relatorio-mensal', 'secao-relatorio', 'secao-auditoria']],
-            ['ti', 'TI', ['secao-eleicao', 'secao-pendentes']],
+            ['ti', 'TI', ['secao-eleicao', 'secao-pendentes', 'secao-sessoes', 'secao-plantao', 'secao-versoes', 'secao-exclusoes']],
             ['outros', 'Outros', []]
         ];
 
