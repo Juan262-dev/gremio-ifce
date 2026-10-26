@@ -1311,12 +1311,13 @@
 
             <div id="secao-diretoria" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-2">Diretoria e Cargos</h5>
-                <p class="text-muted-custom small mb-3">Quem está aqui entra no painel. Cada nível vê só o que precisa: <strong>Presidência</strong> (presidente e vice: alunos, pautas, sugestões, punições, diretoria, atas, tarefas), <strong>Esportes/Eventos</strong> (jogos, eventos, materiais) e <strong>Marketing</strong> (mural, calendário de divulgação, banco de artes), <strong>Tesouraria</strong> (caixa), <strong>Cultura</strong> (atividades culturais) e <strong>Igualdade Racial</strong> (ações e pautas do tema). Para criar a conta de login, preencha a senha (6+ caracteres); se a pessoa já tem conta, deixe em branco.</p>
+                <p class="text-muted-custom small mb-3">Quem está aqui entra no painel. Cada nível vê só o que precisa: <strong>Presidência</strong> (presidente e vice: alunos, pautas, sugestões, punições, diretoria, atas, tarefas), <strong>Esportes/Eventos</strong> (jogos, eventos, materiais) e <strong>Marketing</strong> (mural, calendário de divulgação, banco de artes), <strong>Tesouraria</strong> (caixa), <strong>Cultura</strong> (atividades culturais) e <strong>Igualdade Racial</strong> (ações e pautas do tema). <strong>Secretaria</strong> (atas, documentos, reuniões, presença e relatório), <strong>Diretora de Mulheres</strong> e <strong>Diretor(a) de Gêneros</strong> (atividades, materiais e funções da área). Para criar a conta de login, preencha a senha (6+ caracteres); se a pessoa já tem conta, deixe em branco.</p>
                 <div class="row g-2 mb-3">
                     <div class="col-md-6"><label class="form-label fw-bold">Nome</label><input type="text" id="dir-nome" class="form-control" placeholder="Nome do diretor"></div>
                     <div class="col-md-6"><label class="form-label fw-bold">E-mail</label><input type="email" id="dir-email" class="form-control" placeholder="email@ifce.edu.br"></div>
                     <div class="col-md-6"><label class="form-label fw-bold">Cargo</label><input type="text" id="dir-cargo" class="form-control" placeholder="Ex: Diretor de Esportes"></div>
-                    <div class="col-md-3"><label class="form-label fw-bold">Nível</label><select id="dir-nivel" class="form-select"><option value="emergencia">Conta de emergência (só cadastros pendentes)</option><option value="membro">Esportes/Eventos</option><option value="marketing">Marketing</option><option value="admin">Presidência</option><option value="tesouraria">Tesouraria</option><option value="cultura">Cultura</option><option value="racial">Igualdade Racial</option></select></div>
+                    <div class="col-md-3"><label class="form-label fw-bold">Nível</label><select id="dir-nivel" class="form-select"><option value="emergencia">Conta de emergência (só cadastros pendentes)</option><option value="membro">Esportes/Eventos</option><option value="marketing">Marketing</option><option value="admin">Presidência</option><option value="tesouraria">Tesouraria</option><option value="cultura">Cultura</option><option value="racial">Igualdade Racial</option><option value="secretaria">Secretaria</option><option value="mulheres">Diretora de Mulheres</option><option value="generos">Diretor(a) de Gêneros</option></select>
+                    <div id="dir-extras-box" class="small text-muted-custom mb-2"><strong>Cargos extras (só você):</strong><br><label class="me-2"><input type="checkbox" class="dir-extra" value="membro"> membro</label><label class="me-2"><input type="checkbox" class="dir-extra" value="marketing"> marketing</label><label class="me-2"><input type="checkbox" class="dir-extra" value="admin"> admin</label><label class="me-2"><input type="checkbox" class="dir-extra" value="tesouraria"> tesouraria</label><label class="me-2"><input type="checkbox" class="dir-extra" value="cultura"> cultura</label><label class="me-2"><input type="checkbox" class="dir-extra" value="racial"> racial</label><label class="me-2"><input type="checkbox" class="dir-extra" value="secretaria"> secretaria</label><label class="me-2"><input type="checkbox" class="dir-extra" value="mulheres"> mulheres</label><label class="me-2"><input type="checkbox" class="dir-extra" value="generos"> generos</label></div></div>
                     <div class="col-md-3"><label class="form-label fw-bold">Senha (opcional)</label><input type="date" id="dir-fim" class="form-control mb-2" title="Fim do mandato (opcional)">
                     <input type="password" id="dir-senha" class="form-control" placeholder="******"></div>
                 </div>
@@ -1713,6 +1714,12 @@
                     else if (fonteSub) dados = { ...dados, nivel: 'admin', cargoExibicao: 'Fonte substituta' };
                     else dados = null;
                 }
+                if (dados && dados.nivel !== 'desenvolvedor') {
+                    const extras = Array.isArray(dados.niveisExtras) ? dados.niveisExtras : [];
+                    const todos = [dados.nivel, ...extras];
+                    const escolhido = localStorage.getItem('cargo_em_uso_' + email);
+                    dados = { ...dados, cargosDisponiveis: todos, nivel: (escolhido && todos.includes(escolhido)) ? escolhido : dados.nivel };
+                }
                 if (!dados) { semCargo(); return; }
                 verificarAcessoEAbirPainel(email, dados);
             }).catch(() => {
@@ -1722,6 +1729,14 @@
 
         function verificarAcessoEAbirPainel(emailUsuario, dadosCargo) {
             if (painelAberto) return;
+            if (dadosCargo && dadosCargo.cargosDisponiveis && dadosCargo.cargosDisponiveis.length > 1 && !document.getElementById('seletor-cargo')) {
+                const cab = document.getElementById('user-role-display').parentElement;
+                const sel = document.createElement('select');
+                sel.id = 'seletor-cargo'; sel.className = 'form-select form-select-sm mt-1'; sel.style.maxWidth = '260px';
+                sel.innerHTML = dadosCargo.cargosDisponiveis.map(n => `<option value="${n}" ${n === dadosCargo.nivel ? 'selected' : ''}>${esc(ROTULO_NIVEL[n] || n)}</option>`).join('');
+                sel.onchange = () => { localStorage.setItem('cargo_em_uso_' + emailUsuario, sel.value); location.reload(); };
+                cab.appendChild(sel);
+            }
             if (emailUsuario === ROOT_EMAIL) {
                 const sel = document.getElementById('dir-nivel');
                 if (sel && !sel.querySelector('option[value="desenvolvedor"]')) sel.insertAdjacentHTML('afterbegin', '<option value="desenvolvedor">Desenvolvedor (fonte)</option>');
@@ -2335,7 +2350,7 @@
             try {
                 let msg = '';
                 if (senha) msg = (await criarContaAuth(email, senha)) === 'criada' ? ' Conta de login criada.' : ' (a conta já existia; a senha não mudou)';
-                await db.collection('cargos').doc(email).set({ nome, cargo, nivel, fimMandato: (document.getElementById('dir-fim') && document.getElementById('dir-fim').value) ? firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('dir-fim').value + 'T23:59:59')) : null });
+                await db.collection('cargos').doc(email).set({ nome, cargo, nivel, niveisExtras: (emailLogado === ROOT_EMAIL) ? [...document.querySelectorAll('.dir-extra:checked')].map(x => x.value).filter(v => v !== nivel) : [], fimMandato: (document.getElementById('dir-fim') && document.getElementById('dir-fim').value) ? firebase.firestore.Timestamp.fromDate(new Date(document.getElementById('dir-fim').value + 'T23:59:59')) : null });
                 mostrarAlertaSucesso(`${nome} salvo como ${nivel}.${msg}`);
                 registrarAcao('Diretor salvo', `${email} (${nivel})`);
                 ['dir-nome', 'dir-email', 'dir-cargo', 'dir-senha'].forEach(i => document.getElementById(i).value = '');
