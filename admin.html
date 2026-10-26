@@ -480,6 +480,19 @@
                 <div id="lista-pendentes"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
+            <div id="secao-fontes" class="card card-custom p-4 mb-4 card-root" style="border-color:#dc3545;">
+                <h5 class="card-title-chem mb-2">Fonte substituta (somente você)</h5>
+                <p class="text-muted-custom small mb-2">Cadastre uma pessoa para ficar no seu lugar por um tempo. Ela tem os mesmos acessos da gestão, e o acesso acaba sozinho na data que você definir. Só você cadastra ou revoga. Ela não consegue criar nem alterar cargos.</p>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-6"><input type="email" id="fonte-email" class="form-control" maxlength="120" placeholder="E-mail da pessoa"></div>
+                    <div class="col-md-6"><input type="text" id="fonte-nome" class="form-control" maxlength="80" placeholder="Nome"></div>
+                    <div class="col-md-6"><input type="password" id="fonte-senha" class="form-control" maxlength="60" placeholder="Senha inicial (mínimo 6)"></div>
+                    <div class="col-md-6"><label class="form-label small text-muted-custom mb-1">Vale até</label><input type="date" id="fonte-fim" class="form-control"></div>
+                </div>
+                <button onclick="criarFonteTI()" class="btn btn-danger btn-sm fw-bold mb-3">Cadastrar fonte substituta</button>
+                <div id="lista-fontes"><p class="text-muted-custom small mb-0">Carregando...</p></div>
+            </div>
+
             <div id="secao-plantao" class="card card-custom p-4 mb-4 card-root" style="border-color:#0dcaf0;">
                 <h5 class="card-title-chem mb-2">Plantão do TI (somente você)</h5>
                 <p class="text-muted-custom small mb-2">Quem procurar ajuda quando a TI não estiver disponível. Aparece no topo da ajuda do portal. Deixe vazio para ocultar.</p>
@@ -1488,7 +1501,7 @@
         // precisa estar nas Firestore Security Rules (veja firestore.rules).
         const ROOT_EMAIL = 'kevin.silva10@aluno.ifce.edu.br';
         let nivelDoPainel = 'admin', painelCongelado = false;
-        const ROTULO_NIVEL = { emergencia: 'Conta de emergência', secretaria: 'Secretaria', mulheres: 'Diretora de Mulheres', generos: 'Diretor(a) de Gêneros', admin: 'Presidência', membro: 'Esportes/Eventos', marketing: 'Marketing', tesouraria: 'Tesouraria', cultura: 'Cultura', racial: 'Igualdade Racial' };
+        const ROTULO_NIVEL = { desenvolvedor: 'Desenvolvedor (fonte)', emergencia: 'Conta de emergência', secretaria: 'Secretaria', mulheres: 'Diretora de Mulheres', generos: 'Diretor(a) de Gêneros', admin: 'Presidência', membro: 'Esportes/Eventos', marketing: 'Marketing', tesouraria: 'Tesouraria', cultura: 'Cultura', racial: 'Igualdade Racial' };
         const cargosIniciais = {
             "kevin.silva10@aluno.ifce.edu.br": { nome: "Juan Kevin", cargo: "TI (Suporte Técnico)", nivel: "admin" },
             "evelly@ifce.edu.br": { nome: "Evelly", cargo: "Presidente", nivel: "admin" },
@@ -1693,6 +1706,13 @@
             db.collection('cargos').doc(email).get().then(doc => {
                 let dados = doc.exists ? doc.data() : null;
                 if (!dados && email === ROOT_EMAIL) dados = cargosIniciais[ROOT_EMAIL];
+                if (dados && dados.nivel === 'desenvolvedor') {
+                    // Nível da fonte: funciona como Presidência no painel; o rótulo muda conforme quem é
+                    const fonteSub = dados.fonteAte && dados.fonteAte.toMillis && dados.fonteAte.toMillis() > Date.now();
+                    if (email === ROOT_EMAIL) dados = { ...dados, nivel: 'admin', cargoExibicao: 'Desenvolvedor (fonte)' };
+                    else if (fonteSub) dados = { ...dados, nivel: 'admin', cargoExibicao: 'Fonte substituta' };
+                    else dados = null;
+                }
                 if (!dados) { semCargo(); return; }
                 verificarAcessoEAbirPainel(email, dados);
             }).catch(() => {
@@ -1702,6 +1722,10 @@
 
         function verificarAcessoEAbirPainel(emailUsuario, dadosCargo) {
             if (painelAberto) return;
+            if (emailUsuario === ROOT_EMAIL) {
+                const sel = document.getElementById('dir-nivel');
+                if (sel && !sel.querySelector('option[value="desenvolvedor"]')) sel.insertAdjacentHTML('afterbegin', '<option value="desenvolvedor">Desenvolvedor (fonte)</option>');
+            }
             painelAberto = true;
             db.collection('membros_punidos').doc(emailUsuario).get().then(docPunido => {
                 let dadosPunicao = null;
@@ -1722,7 +1746,7 @@
             const dadosUsuario = dadosCargo;
             emailLogado = emailUsuario;
             document.getElementById('user-name-display').textContent = dadosUsuario.nome;
-            document.getElementById('user-role-display').textContent = dadosUsuario.cargo;
+            document.getElementById('user-role-display').textContent = dadosUsuario.cargoExibicao || dadosUsuario.cargo;
 
             if (dadosPunicao) {
                 document.getElementById('conteudo-painel-geral').classList.add('d-none');
@@ -1740,7 +1764,7 @@
             resetarOpcoes();
 
             const nivel = dadosUsuario.nivel;
-            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); carregarTermoTI(); carregarRoteiroTI(); preencherEditor(); carregarEleicaoTI(); carregarPendentesTI(); carregarPlantaoTI(); carregarVersoesTI(); carregarExclusoesTI(); carregarAlertasTI(); carregarPendenciasTI(); carregarTravasUI(); }
+            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); carregarTermoTI(); carregarRoteiroTI(); preencherEditor(); carregarEleicaoTI(); carregarPendentesTI(); carregarPlantaoTI(); carregarVersoesTI(); carregarExclusoesTI(); carregarFontesTI(); carregarAlertasTI(); carregarPendenciasTI(); carregarTravasUI(); }
             // Cada cargo vê só o que precisa; o e-mail raiz (TI) vê tudo.
             nivelDoPainel = nivel;
             const raiz = emailUsuario === ROOT_EMAIL;
@@ -5249,6 +5273,51 @@
             } catch (e) { falhaSec(e, 'concluirExclusaoTI'); }
         }
 
+        /* ================= FONTE SUBSTITUTA (somente o root) ================= */
+        function carregarFontesTI() {
+            ouvir(db.collection('cargos').where('nivel', '==', 'desenvolvedor'), snap => {
+                const c = document.getElementById('lista-fontes');
+                if (!c) return;
+                const outras = snap.docs.filter(d => d.id !== ROOT_EMAIL);
+                if (!outras.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma fonte substituta cadastrada.</p>'; return; }
+                c.innerHTML = '<div class="list-group">' + outras.map(d => {
+                    const x = d.data();
+                    const ate = x.fonteAte && x.fonteAte.toDate ? x.fonteAte.toDate().toLocaleDateString('pt-BR') : '—';
+                    return `<div class="list-group-item d-flex justify-content-between align-items-center gap-2">
+                        <div><strong class="text-white">${esc(x.nome || d.id)}</strong><br><small class="text-muted-custom">${esc(d.id)} • vale até ${esc(ate)}</small></div>
+                        <button onclick="revogarFonteTI('${esc(d.id)}')" class="btn btn-outline-danger btn-sm py-0" style="font-size:12px">Revogar</button>
+                    </div>`;
+                }).join('') + '</div>';
+            });
+        }
+        async function criarFonteTI() {
+            if (emailLogado !== ROOT_EMAIL) return;
+            const email = document.getElementById('fonte-email').value.trim().toLowerCase();
+            const nome = document.getElementById('fonte-nome').value.trim();
+            const senha = document.getElementById('fonte-senha').value;
+            const fim = document.getElementById('fonte-fim').value;
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { toast('Informe um e-mail válido.', 'warning'); return; }
+            if (email === ROOT_EMAIL) { toast('Esse é o seu próprio e-mail.', 'warning'); return; }
+            if (!nome) { toast('Informe o nome da pessoa.', 'warning'); return; }
+            if (senha.length < 6) { toast('A senha precisa ter 6 ou mais caracteres.', 'warning'); return; }
+            if (!fim) { toast('Defina até quando a fonte vale.', 'warning'); return; }
+            try {
+                const ts = firebase.firestore.Timestamp.fromDate(new Date(fim + 'T23:59:59'));
+                await criarContaAuth(email, senha);
+                await db.collection('cargos').doc(email).set({ nome, cargo: 'Fonte substituta', nivel: 'desenvolvedor', fimMandato: ts, fonteAte: ts });
+                registrarAcao('Fonte substituta cadastrada', email);
+                ['fonte-email', 'fonte-nome', 'fonte-senha', 'fonte-fim'].forEach(i => document.getElementById(i).value = '');
+                toast('Fonte substituta cadastrada. Envie a senha só para essa pessoa.');
+            } catch (e) { falhaSec(e, 'criarFonteTI'); }
+        }
+        async function revogarFonteTI(email) {
+            if (emailLogado !== ROOT_EMAIL) return;
+            if (!(await confirmar(`Revogar o acesso de ${email} agora?`))) return;
+            db.collection('cargos').doc(email).delete()
+                .then(() => { toast('Acesso revogado.'); registrarAcao('Fonte substituta revogada', email); })
+                .catch(e => falhaSec(e, 'revogarFonteTI'));
+        }
+
         /* ================= BANCO DE QUESTÕES (quiz do portal) ================= */
 
         let cacheQuestoes = [];
@@ -5913,7 +5982,7 @@
             ['atividades', 'Atividades', ['secao-eventos', 'secao-jogos', 'secao-materiais', 'secao-cultura', 'secao-racial', 'secao-racial-enc', 'secao-racial-apoio', 'secao-rel-cult', 'secao-rel-racial']],
             ['financeiro', 'Financeiro', ['secao-caixa', 'secao-tes-orc', 'secao-tes-contas', 'secao-rel-tes']],
             ['diretoria', 'Diretoria', ['secao-diretoria', 'secao-avaliacoes', 'secao-convites', 'secao-agenda', 'secao-avisos-wpp', 'secao-secao-mu-campanhas', 'secao-secao-mu-calendario', 'secao-secao-mu-canais', 'secao-secao-mu-indicadores', 'secao-secao-ge-glossario', 'secao-secao-ge-debates', 'secao-secao-ge-metas', 'secao-secao-ge-indicadores', 'secao-div-atividades', 'secao-div-materiais', 'secao-div-rel', 'secao-sec-alunos', 'secao-rel-sec', 'secao-documentos', 'secao-reunioes', 'secao-presenca', 'secao-atas', 'secao-relatorio-mensal', 'secao-relatorio', 'secao-auditoria']],
-            ['ti', 'TI', ['secao-eleicao', 'secao-pendentes', 'secao-sessoes', 'secao-plantao', 'secao-versoes', 'secao-exclusoes']],
+            ['ti', 'TI', ['secao-eleicao', 'secao-pendentes', 'secao-sessoes', 'secao-fontes', 'secao-plantao', 'secao-versoes', 'secao-exclusoes']],
             ['outros', 'Outros', []]
         ];
 
