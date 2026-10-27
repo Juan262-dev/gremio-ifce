@@ -2857,7 +2857,7 @@
 
         /* ================= CENTRAL DE ALERTAS E UTILITÁRIOS (só o e-mail raiz) ================= */
 
-        const VERSAO_SISTEMA = '2026.10.23-c';
+        const VERSAO_SISTEMA = '2026.10.26-a';
         const DATA_ULTIMA_ATUALIZACAO = '18/10/2026';
         let nivelReal = null, travas = {};
         function aplicarVisibilidade() {
@@ -6124,6 +6124,29 @@ function instalarAdmin() {
 }
 window.addEventListener('load', mostrarBotaoInstalarAdmin);
 if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+</script>
+<script>
+/* ---- painel atualiza sozinho: a cada minuto e ao voltar para a aba ---- */
+function atualizarAgendaReunioesPainel() {
+  if (!(nivelReal === 'admin' || nivelReal === 'secretaria' || emailLogado === ROOT_EMAIL)) return;
+  if (!document.getElementById('lista-agenda')) return;
+  db.collection('reunioes').orderBy('data').limit(300).get()
+    .then(s => { cacheAgendaReu = s.docs.map(d => ({ id: d.id, ...d.data() })); renderAgenda(); })
+    .catch(() => {});
+}
+function atualizarDadosPainel() {
+  if (!auth.currentUser || !emailLogado) return;
+  try {
+    if (document.getElementById('lista-avaliacoes')) carregarAvaliacoesAdmin();
+    atualizarAgendaReunioesPainel();
+    if (eleicaoTI) {
+      carregarChapasTI();
+      if (eleicaoTI.status === 'aberta') apurarEleicaoTI();
+    }
+  } catch (e) { console.error('atualizar painel', e); }
+}
+setInterval(atualizarDadosPainel, 60000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) atualizarDadosPainel(); });
 </script>
 </body>
 </html>

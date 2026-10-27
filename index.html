@@ -74,6 +74,7 @@ body{background-color:#f4f6f9}
         <div class="input-group-chem"><label>Senha</label><input type="password" id="aluno-senha-input" placeholder="******" autocomplete="current-password"></div>
         <button id="btn-login-aluno" onclick="fazerLoginAluno()" class="btn-green-chem">Acessar Portal</button>
                     <button onclick="document.getElementById('cad-aluno').classList.remove('d-none')" class="btn btn-link w-100 small" style="color:#a0b3a6">Não tenho cadastro: criar conta</button>
+                    <p class="small text-center mt-2 mb-0" style="color:#a0b3a6;font-size:11px">Ao entrar ou criar conta, você concorda com a política de privacidade e os termos de uso (na seção Privacidade do portal). O portal guarda dados no seu aparelho para funcionar offline.</p>
                     <div id="cad-aluno" class="d-none mt-2">
                       <p class="small text-center mb-2" style="color:#a0b3a6">Use seu e-mail institucional (@aluno.ifce.edu.br). O grêmio aprova o cadastro antes de liberar o acesso.</p>
                       <input type="text" id="cad-nome" class="form-control form-control-sm mb-2" maxlength="80" placeholder="Nome completo">
@@ -245,6 +246,32 @@ body{background-color:#f4f6f9}
     <div id="lista-videos-aluno"><p class="text-muted small">Carregando vídeos...</p></div>
   </div>
 
+  <div id="sec-privacidade" class="card card-custom p-4 mb-4">
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Privacidade e termos de uso</h5>
+    <details class="mb-2"><summary class="fw-bold" style="cursor:pointer">Quais dados guardamos</summary>
+      <p class="small mt-2 mb-0">Nome, e-mail institucional, turma e matérias (se você preencher), e o que você faz no portal: inscrições, votos, sugestões, pedidos de ajuda e apoios a pautas. Cópia de senha não fica no sistema: a senha é guardada pelo serviço de login do Firebase.</p>
+    </details>
+    <details class="mb-2"><summary class="fw-bold" style="cursor:pointer">Para que usamos</summary>
+      <p class="small mt-2 mb-0">Para o portal funcionar: entrar, se inscrever em eventos, votar em enquetes e eleições, receber respostas aos seus pedidos e mostrar o que é do seu interesse. Não vendemos nem compartilhamos seus dados com empresas de publicidade.</p>
+    </details>
+    <details class="mb-2"><summary class="fw-bold" style="cursor:pointer">Por quanto tempo guardamos</summary>
+      <p class="small mt-2 mb-0">Enquanto você tiver vínculo com o campus. Depois do fim do vínculo, os dados são apagados ou tornados anônimos. <em>[Prazo a confirmar pela direção]</em></p>
+    </details>
+    <details class="mb-2"><summary class="fw-bold" style="cursor:pointer">Seus direitos</summary>
+      <p class="small mt-2 mb-0">Você pode baixar uma cópia dos seus dados, corrigir seu perfil, sair da lista de aniversariantes e pedir a exclusão dos seus dados. Os botões estão no card da sua carteirinha de participação.</p>
+    </details>
+    <details class="mb-2"><summary class="fw-bold" style="cursor:pointer">Armazenamento no aparelho</summary>
+      <p class="small mt-2 mb-0">Para o portal funcionar sem internet, ele guarda no seu aparelho os avisos, eventos e questões já carregados. Ao sair da conta, esses dados são apagados do aparelho.</p>
+    </details>
+    <details class="mb-2"><summary class="fw-bold" style="cursor:pointer">Termos de uso</summary>
+      <p class="small mt-2 mb-0">O portal é para uso pessoal e para a vida do grêmio. Não é permitido publicar ofensas, dados de terceiros ou conteúdo falso. A gestão pode remover conteúdo e aplicar punições temporárias, com motivo informado. Uma conta pode ser usada apenas pela própria pessoa.</p>
+    </details>
+    <details class="mb-2"><summary class="fw-bold" style="cursor:pointer">Responsável pelos dados e contato</summary>
+      <p class="small mt-2 mb-0">Grêmio Estudantil IFCE Campus Crateús. <em>[Nome e contato oficial do responsável a preencher]</em>. Dúvidas ou pedidos sobre seus dados: procure a gestão ou use o pedido de exclusão.</p>
+    </details>
+    <p class="text-muted small mt-2 mb-0">Versão do documento: 26/10/2026. Os textos serão revisados pela assessoria jurídica ou pela direção do campus.</p>
+  </div>
+
   <div id="sec-ajuda" class="card card-custom p-4 mb-4">
     <div id="plantao-box" class="alert alert-light small mb-3 d-none"></div>
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🆘 Preciso de ajuda</h5>
@@ -298,7 +325,7 @@ body{background-color:#f4f6f9}
 <div id="aviso-offline" class="d-none text-center small fw-bold py-2 px-3" style="position:fixed;top:0;left:0;right:0;z-index:1080;background:#fff3cd;color:#664d03;border-bottom:1px solid #ffe69c">Sem conexão: você está vendo os dados guardados. Votos, inscrições e envios voltam quando a internet voltar.</div>
 <nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-quiz"><span>🧠</span>Quiz</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
-<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.23-c</div>
+<div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.26-a</div>
 
 <div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100005;width:100%;max-width:420px;margin-bottom:72px"></div>
 
