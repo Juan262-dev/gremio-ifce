@@ -457,3 +457,59 @@
         }
 
         
+
+/* ================= PAINEL DE SAÚDE DO SISTEMA (somente o root) ================= */
+async function atualizarSaudeSistema() {
+    const box = document.getElementById('saude-lista');
+    if (!box || emailLogado !== ROOT_EMAIL) return;
+    const itens = [];
+    const add = (cor, titulo, texto) => itens.push({ cor, titulo, texto });
+    const agora = Date.now(), DIA = 864e5;
+    try {
+        // 1. backup
+        const est = await db.collection('ti_privado').doc('estado').get();
+        const ub = est.exists && est.data().ultimoBackup ? est.data().ultimoBackup.toMillis() : 0;
+        if (!ub) add('yellow', 'Backup', 'Nenhum backup registrado ainda.');
+        else {
+            const dias = Math.floor((agora - ub) / DIA);
+            add(dias > 30 ? 'red' : dias > 14 ? 'yellow' : 'green', 'Backup', dias === 0 ? 'feito hoje' : `último há ${dias} dia(s)`);
+        }
+        // 2. versão
+        const vers = await db.collection('versoes_publicadas').orderBy('criadoEm', 'desc').limit(1).get();
+        const ultima = vers.empty ? null : vers.docs[0].data().versao;
+        if (!ultima) add('yellow', 'Versão', `em uso ${VERSAO_SISTEMA}; nenhuma versão registrada`);
+        else add(ultima === VERSAO_SISTEMA ? 'green' : 'yellow', 'Versão',
+            ultima === VERSAO_SISTEMA ? `em uso ${VERSAO_SISTEMA}, igual à última registrada` : `em uso ${VERSAO_SISTEMA}, mas a última registrada é ${ultima}`);
+        // 3. cadastros pendentes
+        const pend = await db.collection('alunos').where('status', '==', 'pendente').get();
+        const velhos = pend.docs.filter(d => d.data().criadoEm && d.data().criadoEm.toMillis() < agora - 3 * DIA).length;
+        add(velhos ? 'yellow' : 'green', 'Cadastros pendentes',
+            velhos ? `${velhos} esperando há mais de 3 dias` : (pend.size ? `${pend.size} aguardando, dentro do prazo` : 'nenhum aguardando'));
+        // 4. eleição
+        const ele = await db.collection('eleicoes').orderBy('criadoEm', 'desc').limit(1).get();
+        if (ele.empty) add('green', 'Eleição', 'nenhuma eleição criada');
+        else {
+            const e = ele.docs[0].data();
+            if (e.status === 'aberta' && e.fim && e.fim.toMillis() < agora) add('red', 'Eleição', 'ainda aberta depois do horário de fim: encerre');
+            else if (e.status === 'aberta') add('yellow', 'Eleição', 'votação aberta agora');
+            else add('green', 'Eleição', `situação: ${e.status}`);
+        }
+        // 5. erros do portal nas últimas 24 horas
+        const err = await db.collection('erros_app').where('em', '>', firebase.firestore.Timestamp.fromMillis(agora - DIA)).get();
+        add(err.size > 50 ? 'red' : err.size > 10 ? 'yellow' : 'green', 'Erros do portal (24 h)', `${err.size} registro(s)`);
+        // 6. contas de cargo vencidas ou perto de vencer
+        const cargos = await db.collection('cargos').get();
+        const vencendo = cargos.docs.filter(d => d.data().fimMandato && d.data().fimMandato.toMillis() < agora + 7 * DIA).length;
+        add(vencendo ? 'yellow' : 'green', 'Contas de cargo',
+            vencendo ? `${vencendo} vencida(s) ou vencendo em até 7 dias` : 'todas dentro do prazo');
+    } catch (e) {
+        console.error('saude', e);
+        add('red', 'Verificação', 'não foi possível checar tudo agora');
+    }
+    const cores = { green: '#198754', yellow: '#ffc107', red: '#dc3545' };
+    const legenda = { green: 'Tudo certo', yellow: 'Atenção', red: 'Agir agora' };
+    box.innerHTML = itens.map(x => `<div class="mb-2">
+        <span class="badge" style="background:${cores[x.cor]};color:${x.cor === 'yellow' ? '#000' : '#fff'}">${legenda[x.cor]}</span>
+        <strong class="text-white small">${esc(x.titulo)}</strong><br>
+        <small class="text-muted-custom">${esc(x.texto)}</small></div>`).join('');
+}

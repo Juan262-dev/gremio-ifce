@@ -493,6 +493,13 @@
                 <div id="lista-fontes"><p class="text-muted-custom small mb-0">Carregando...</p></div>
             </div>
 
+            <div id="secao-saude" class="card card-custom p-4 mb-4 card-root" style="border-color:#0dcaf0;">
+                <h5 class="card-title-chem mb-2">Saúde do sistema (somente você)</h5>
+                <p class="text-muted-custom small mb-2">Um resumo do que precisa da sua atenção. Verde: tudo certo. Amarelo: atenção. Vermelho: agir agora.</p>
+                <button onclick="atualizarSaudeSistema()" class="btn btn-outline-light btn-sm fw-bold mb-3">Atualizar</button>
+                <div id="saude-lista"><p class="text-muted-custom small mb-0">Carregando...</p></div>
+            </div>
+
             <div id="secao-plantao" class="card card-custom p-4 mb-4 card-root" style="border-color:#0dcaf0;">
                 <h5 class="card-title-chem mb-2">Plantão do TI (somente você)</h5>
                 <p class="text-muted-custom small mb-2">Quem procurar ajuda quando a TI não estiver disponível. Aparece no topo da ajuda do portal. Deixe vazio para ocultar.</p>
@@ -1557,6 +1564,7 @@ function atualizarDadosPainel() {
   if (!auth.currentUser || !emailLogado) return;
   try {
     if (document.getElementById('lista-avaliacoes')) carregarAvaliacoesAdmin();
+    if (document.getElementById('saude-lista')) atualizarSaudeSistema();
     atualizarAgendaReunioesPainel();
     if (eleicaoTI) {
       carregarChapasTI();

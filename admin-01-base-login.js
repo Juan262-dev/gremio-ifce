@@ -303,7 +303,7 @@
             resetarOpcoes();
 
             const nivel = dadosUsuario.nivel;
-            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); carregarTermoTI(); carregarRoteiroTI(); preencherEditor(); carregarEleicaoTI(); carregarPendentesTI(); carregarPlantaoTI(); carregarVersoesTI(); carregarExclusoesTI(); carregarFontesTI(); carregarAlertasTI(); carregarPendenciasTI(); carregarTravasUI(); }
+            if (emailUsuario === ROOT_EMAIL) { document.getElementById('secao-nova-gestao').style.display = 'block'; document.getElementById('secao-ti').style.display = 'block'; document.querySelectorAll('.card-root').forEach(c => c.style.display = 'block'); carregarManutencao(); carregarPortalConfig(); carregarNotasTI(); carregarChamadosTI(); carregarChecklistTI(); verificarLembreteBackup(); carregarTermoTI(); carregarRoteiroTI(); preencherEditor(); carregarEleicaoTI(); carregarPendentesTI(); carregarPlantaoTI(); carregarVersoesTI(); carregarExclusoesTI(); carregarFontesTI(); atualizarSaudeSistema(); carregarAlertasTI(); carregarPendenciasTI(); carregarTravasUI(); }
             // Cada cargo vê só o que precisa; o e-mail raiz (TI) vê tudo.
             nivelDoPainel = nivel;
             const raiz = emailUsuario === ROOT_EMAIL;
@@ -427,7 +427,7 @@
         
 /* ================= CENTRAL DE ALERTAS E UTILITÁRIOS (só o e-mail raiz) ================= */
 
-        const VERSAO_SISTEMA = '2026.10.26-a';
+        const VERSAO_SISTEMA = '2026.10.26-c';
         const DATA_ULTIMA_ATUALIZACAO = '18/10/2026';
         let nivelReal = null, travas = {};
         function aplicarVisibilidade() {
