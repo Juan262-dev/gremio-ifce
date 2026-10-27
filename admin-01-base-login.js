@@ -427,7 +427,7 @@
         
 /* ================= CENTRAL DE ALERTAS E UTILITÁRIOS (só o e-mail raiz) ================= */
 
-        const VERSAO_SISTEMA = '2026.10.26-c';
+        const VERSAO_SISTEMA = '2026.10.27-c';
         const DATA_ULTIMA_ATUALIZACAO = '18/10/2026';
         let nivelReal = null, travas = {};
         function aplicarVisibilidade() {
