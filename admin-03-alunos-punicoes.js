@@ -16,7 +16,8 @@
                 // para não deslogar o admin. A senha NÃO é salva no Firestore.
                 try {
                     const appSec = firebase.apps.find(a => a.name === 'sec') || firebase.initializeApp(firebaseConfig, 'sec');
-                    await appSec.auth().createUserWithEmailAndPassword(email, senha);
+                    const cred = await appSec.auth().createUserWithEmailAndPassword(email, senha);
+                    try { await cred.user.sendEmailVerification(); } catch (e) { console.warn('verificação', e); }
                     await appSec.auth().signOut();
                 } catch (err) {
                     if (err.code !== 'auth/email-already-in-use') { console.error(err); toast('Erro ao criar a conta: ' + (err.code || 'desconhecido'), 'danger'); return; }
@@ -127,8 +128,8 @@
                     return `<div class="list-group-item d-flex justify-content-between align-items-center gap-2">
                         <div><strong class="text-white">${esc(x.nome || 'Sem nome')}</strong><br><small class="text-muted-custom">${esc(x.email || d.id)}</small></div>
                         <div class="d-flex gap-1">
-                            <button onclick="aprovarAlunoTI('${esc(d.id)}')" class="btn btn-success btn-sm py-0" style="font-size:12px">Aprovar</button>
-                            <button onclick="recusarAlunoTI('${esc(d.id)}')" class="btn btn-outline-danger btn-sm py-0" style="font-size:12px">Recusar</button>
+                            <button data-pend-acao="aprovar" data-id="${esc(d.id)}" class="btn btn-success btn-sm py-0" style="font-size:12px">Aprovar</button>
+                            <button data-pend-acao="recusar" data-id="${esc(d.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size:12px">Recusar</button>
                         </div></div>`;
                 }).join('') + '</div>';
             });
@@ -351,4 +352,11 @@
             } catch (e) { erroDB(e, 'portalConfig'); }
         }
 
-        
+
+
+document.addEventListener('click', e => {
+    const b = e.target.closest('[data-pend-acao]');
+    if (!b) return;
+    if (b.dataset.pendAcao === 'aprovar') aprovarAlunoTI(b.dataset.id);
+    else recusarAlunoTI(b.dataset.id);
+});   
