@@ -380,7 +380,7 @@
                 a.onclick = e => {
                     e.preventDefault();
                     const el = document.getElementById(modulo.id);
-                    if (el) irPara(m.id);
+                    if (el) irPara(modulo.id);
                     const inst = bootstrap.Offcanvas.getInstance(document.getElementById('sidebarMenu'));
                     if (inst) inst.hide();
                 };
