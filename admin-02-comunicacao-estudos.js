@@ -41,6 +41,7 @@
 
         function adicionarCampoOpcao() {
             const container = document.getElementById('container-opcoes');
+            if (container.querySelectorAll('.opcao-enquete').length >= 8) { toast('No máximo 8 opções por enquete.', 'warning'); return; }
             const total = container.querySelectorAll('.opcao-enquete').length + 1;
             const div = document.createElement('div');
             div.className = 'input-group mb-2';
