@@ -869,7 +869,7 @@ function avaliarEvento(id) {
   const nota = Number(document.getElementById('av-nota-' + id).value);
   const comentario = document.getElementById('av-com-' + id).value.trim();
   if (comentario && palavraProibida(comentario)) { aviso('O comentário tem palavras que não são permitidas.', 'warning'); return; }
-  db.collection('avaliacoes').doc(id + '_' + usuarioAtual.email).set({ evento: id, nota, comentario, criadoEm: TS() })
+  db.collection('avaliacoes').doc(id + '_' + auth.currentUser.uid).set({ evento: id, nota, comentario, criadoEm: TS() })
     .then(() => { aviso('Obrigado pela avaliação!', 'success'); document.getElementById('av-' + id).classList.add('d-none'); })
     .catch(() => aviso('Você já avaliou este evento, ou a avaliação não pôde ser salva.', 'warning'));
 }
