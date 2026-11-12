@@ -61,7 +61,7 @@
         }
         async function baixarBackup() {
             if (!soRaiz()) return;
-            const nomes = ['cargos', 'alunos', 'reivindicacoes', 'eventos', 'sugestoes', 'materiais', 'jogos', 'enquetes', 'mural', 'membros_punidos', 'acoes_admin'];
+            const nomes = ['cargos', 'alunos', 'reivindicacoes', 'eventos', 'sugestoes', 'materiais', 'jogos', 'enquetes', 'mural', 'membros_punidos', 'acoes_admin', 'caixa', 'orcamentos', 'contas', 'atas', 'tarefas', 'estudos', 'provas', 'questoes', 'flashcards', 'documentos', 'reunioes', 'listas_presenca', 'encaminhamentos', 'divulgacoes', 'artes', 'videos', 'atividades_diversidade', 'materiais_diversidade'];
             toast('Gerando backup...');
             try {
                 const out = { geradoEm: new Date().toISOString(), geradoPor: emailLogado };
@@ -395,7 +395,7 @@
             if (!soRaiz()) return;
             const novo = document.getElementById('ti-novo-raiz').value.trim().toLowerCase();
             if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(novo)) { toast('Digite um e-mail válido.', 'warning'); return; }
-            document.getElementById('ti-regras-out').value = RULES_TEMPLATE.split(ROOT_EMAIL).join(novo);
+            document.getElementById('ti-regras-out').value = 'No firestore.rules do repositório, troque o e-mail dentro de rootEmail() por: ' + novo + ' . Depois publique em Firestore > Regras, troque ROOT_EMAIL e cargosIniciais no admin-01-base-login.js e crie a conta dele no Authentication.';
             toast('Regras geradas. Copie e publique no Firebase.');
         }
         function copiarRegras() {
