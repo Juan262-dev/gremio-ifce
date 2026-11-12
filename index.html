@@ -2604,7 +2604,7 @@ function enviarCadastroAluno() {
   btn.disabled = true;
   cadastrandoAluno = true;
   auth.createUserWithEmailAndPassword(email, senha)
-    .then(() => db.collection('alunos').doc(email).set({ nome, email, ativo: false, status: 'pendente', criadoEm: TS() }))
+    .then(cred => { cred.user.sendEmailVerification().catch(() => {}); return db.collection('alunos').doc(email).set({ nome, email, ativo: false, status: 'pendente', criadoEm: TS() }); })
     .then(() => auth.signOut())
     .then(() => {
       cadastrandoAluno = false;
