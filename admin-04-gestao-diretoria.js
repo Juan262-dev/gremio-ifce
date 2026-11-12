@@ -3,7 +3,8 @@
         async function criarContaAuth(email, senha) {
             const appSec = firebase.apps.find(a => a.name === 'sec') || firebase.initializeApp(firebaseConfig, 'sec');
             try {
-                await appSec.auth().createUserWithEmailAndPassword(email, senha);
+            const cred = await appSec.auth().createUserWithEmailAndPassword(email, senha);
+            try { await cred.user.sendEmailVerification(); } catch (e) { console.warn('verificação', e); }
                 await appSec.auth().signOut();
                 return 'criada';
             } catch (err) {
