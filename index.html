@@ -2445,7 +2445,7 @@ function votarEleicao() {
   if (codigo.length < 6) { aviso('Digite o código da cédula.', 'warning'); return; }
   sha256Portal(codigo).then(hash => {
     const cedRef = db.collection('cedulas').doc(hash);
-    const votoRef = db.collection('votos').doc(hash);
+    const votoRef = db.collection('votos').doc();
     return db.runTransaction(t => t.get(cedRef).then(c => {
       if (!c.exists) throw new Error('Código inválido.');
       const d = c.data();
