@@ -328,7 +328,7 @@
             if (!arq) { toast('Escolha o arquivo de backup (.json).', 'warning'); return; }
             let dados;
             try { dados = JSON.parse(await arq.text()); } catch (e) { toast('Arquivo inválido.', 'danger'); return; }
-            const nomes = ['cargos', 'alunos', 'reivindicacoes', 'eventos', 'sugestoes', 'materiais', 'jogos', 'enquetes', 'mural', 'membros_punidos'];
+            const nomes = ['cargos', 'alunos', 'reivindicacoes', 'eventos', 'sugestoes', 'materiais', 'jogos', 'enquetes', 'mural', 'membros_punidos', 'caixa', 'orcamentos', 'contas', 'atas', 'tarefas', 'estudos', 'provas', 'questoes', 'flashcards', 'documentos', 'reunioes', 'listas_presenca', 'encaminhamentos', 'divulgacoes', 'artes', 'videos', 'atividades_diversidade', 'materiais_diversidade'];
             const total = nomes.reduce((t, n) => t + (Array.isArray(dados[n]) ? dados[n].length : 0), 0);
             if (!total) { toast('Esse arquivo não tem dados para restaurar.', 'warning'); return; }
             if (!(await confirmar(`Restaurar ${total} registro(s) do backup de ${String(dados.geradoEm || '').slice(0, 10)}? Eles substituem os atuais com o mesmo ID.`))) return;
