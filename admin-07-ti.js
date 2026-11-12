@@ -189,7 +189,7 @@
                     const x = d.data();
                     return `<div class="list-group-item d-flex justify-content-between align-items-center gap-2">
                         <div><strong class="text-white">${esc(x.nome || x.email)}</strong><br><small class="text-muted-custom">${esc(x.email)}</small></div>
-                        <button onclick="concluirExclusaoTI('${esc(d.id)}','${esc(x.email)}')" class="btn btn-danger btn-sm py-0" style="font-size:12px">Concluir</button>
+                        <button data-ti-acao="concluirExclusao" data-pedido="${esc(d.id)}" data-email="${esc(x.email)}" class="btn btn-danger btn-sm py-0" style="font-size:12px">Concluir</button>
                     </div>`;
                 }).join('') + '</div>';
             });
@@ -219,7 +219,7 @@
                     const ate = x.fonteAte && x.fonteAte.toDate ? x.fonteAte.toDate().toLocaleDateString('pt-BR') : '—';
                     return `<div class="list-group-item d-flex justify-content-between align-items-center gap-2">
                         <div><strong class="text-white">${esc(x.nome || d.id)}</strong><br><small class="text-muted-custom">${esc(d.id)} • vale até ${esc(ate)}</small></div>
-                        <button onclick="revogarFonteTI('${esc(d.id)}')" class="btn btn-outline-danger btn-sm py-0" style="font-size:12px">Revogar</button>
+                        <button data-ti-acao="revogarFonte" data-email="${esc(d.id)}" class="btn btn-outline-danger btn-sm py-0" style="font-size:12px">Revogar</button>
                     </div>`;
                 }).join('') + '</div>';
             });
@@ -513,3 +513,11 @@ async function atualizarSaudeSistema() {
         <strong class="text-white small">${esc(x.titulo)}</strong><br>
         <small class="text-muted-custom">${esc(x.texto)}</small></div>`).join('');
 }
+
+
+document.addEventListener('click', e => {
+    const b = e.target.closest('[data-ti-acao]');
+    if (!b) return;
+    if (b.dataset.tiAcao === 'concluirExclusao') concluirExclusaoTI(b.dataset.pedido, b.dataset.email);
+    else if (b.dataset.tiAcao === 'revogarFonte') revogarFonteTI(b.dataset.email);
+});
