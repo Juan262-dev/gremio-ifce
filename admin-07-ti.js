@@ -409,7 +409,7 @@
                 const [nome, email, cargo, nivel, senha] = l.split(';').map(x => (x || '').trim());
                 const em = (email || '').toLowerCase();
                 if (em === ROOT_EMAIL) continue;
-                if (!nome || !em.includes('@') || !cargo || !['admin', 'membro', 'marketing'].includes(nivel) || (senha && senha.length < 6)) {
+                if (!nome || !em.includes('@') || !cargo || !['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos', 'emergencia'].includes(nivel) || (senha && senha.length < 6)) {
                     toast(`Linha inválida: "${l.slice(0, 40)}". Formato: Nome;email;cargo;nivel;senha`, 'danger'); return;
                 }
                 novos.push({ nome, email: em, cargo, nivel, senha });
