@@ -32,7 +32,7 @@
                 const dominio = al.docs.filter(d => !/@(aluno\.)?ifce\.edu\.br$/i.test(d.id));
                 if (dominio.length) add('info', `${dominio.length} aluno(s) com e-mail fora do domínio do IFCE: ${dominio.slice(0, 5).map(d => d.id).join(', ')}.`);
 
-                const nivelRuim = ca.docs.filter(d => !['admin', 'membro', 'marketing'].includes(d.data().nivel));
+                const nivelRuim = ca.docs.filter(d => !['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos', 'emergencia', 'desenvolvedor'].includes(d.data().nivel));
                 if (nivelRuim.length) add('warn', `${nivelRuim.length} cargo(s) com nível inválido: ${nivelRuim.map(d => d.id).join(', ')}.`);
 
                 const vencidas = pu.docs.filter(d => d.data().expiraEm && d.data().expiraEm.toMillis() <= agora);
