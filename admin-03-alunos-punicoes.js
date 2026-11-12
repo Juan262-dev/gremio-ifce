@@ -70,6 +70,7 @@
             const motivo = document.getElementById('punicao-motivo').value.trim();
 
             if (!email || !tipo || !textoTempo || !motivo) { toast("Preencha todos os campos da punição!", 'warning'); return; }
+            if (email === ROOT_EMAIL) { toast('O e-mail raiz não pode ser punido.', 'warning'); return; }
             const minutos = converterTextoParaMinutos(textoTempo);
             if (minutos === null) { toast("Tempo inválido. Use: 30min, 2h, 1d, 2sem, 1mes ou 1ano.", 'danger'); return; }
 
