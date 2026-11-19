@@ -640,7 +640,7 @@
             const t = document.getElementById('ti-lista-saida').value;
             if (!t) { toast('Organize a lista primeiro.', 'warning'); return; }
             document.getElementById('ti-massa').value = t;
-            document.getElementById('secao-ti-portal').scrollIntoView({ behavior: 'smooth' });
+            irPara('secao-ti-portal');
             toast('Lista enviada ao Cadastro em massa. Senhas vazias serão geradas.');
         }
         function gerarSenhaForte() { document.getElementById('ti-senha-gerada').value = gerarSenha(12); }
