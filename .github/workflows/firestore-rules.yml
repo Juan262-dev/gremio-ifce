@@ -6,6 +6,7 @@ on:
       - 'admin.html'
       - 'portal-navegacao.js'
       - 'admin-01-base-login.js'
+      - 'admin-carteirinhas.js'
       - 'admin-08-resumo-abas.js'
       - 'firestore.rules'
       - 'laboratorio-quimica.js'
