@@ -656,6 +656,53 @@
                 <div id="lista-questoes-admin"><p class="text-muted-custom small">Carregando...</p></div>
             </div>
 
+
+            <div id="secao-laboratorio" data-niveis="admin" class="card card-custom p-4 mb-4">
+                <h5 class="card-title-chem mb-2">🧪 Gerenciar Laboratório Virtual</h5>
+                <p class="small text-muted-custom mb-3">Publique aulas e referências complementares. A Tabela Periódica e as calculadoras funcionam no Portal mesmo sem conteúdos cadastrados.</p>
+                <input id="lab-admin-id" type="hidden">
+                <div class="row g-2 mb-2">
+                    <div class="col-md-8">
+                        <label for="lab-admin-titulo" class="form-label">Título do conteúdo</label>
+                        <input id="lab-admin-titulo" type="text" maxlength="120" class="form-control" placeholder="Ex.: Introdução à Estequiometria">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="lab-admin-assunto" class="form-label">Assunto</label>
+                        <select id="lab-admin-assunto" class="form-select">
+                            <option>Química Geral</option>
+                            <option>Tabela Periódica</option>
+                            <option>Cálculos Químicos</option>
+                            <option>Ligações Químicas</option>
+                            <option>Química Orgânica</option>
+                            <option>Físico-Química</option>
+                            <option>Segurança no Laboratório</option>
+                            <option>Revisão e Exercícios</option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label for="lab-admin-descricao" class="form-label">Explicação ou resumo</label>
+                        <textarea id="lab-admin-descricao" class="form-control" rows="3" minlength="10" maxlength="1000" placeholder="Descreva o conceito de forma educativa, sem instruções de experimentação física perigosa."></textarea>
+                    </div>
+                    <div class="col-12">
+                        <label for="lab-admin-link" class="form-label">Link HTTPS de referência (opcional)</label>
+                        <input id="lab-admin-link" type="url" class="form-control" maxlength="500" placeholder="https://...">
+                    </div>
+                    <div class="col-12">
+                        <label class="form-check-label">
+                            <input id="lab-admin-publicado" type="checkbox" class="form-check-input me-2">
+                            Publicar para os alunos imediatamente (desmarcado = rascunho)
+                        </label>
+                    </div>
+                </div>
+                <div id="lab-admin-mensagem" class="small text-muted-custom mb-2" aria-live="polite"></div>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <button id="lab-admin-salvar" type="button" class="btn btn-ifce" onclick="salvarConteudoLaboratorio()">Adicionar conteúdo</button>
+                    <button type="button" class="btn btn-outline-light" onclick="limparFormularioLaboratorio()">Cancelar edição</button>
+                </div>
+                <h6 class="fw-bold text-white">Conteúdos e rascunhos</h6>
+                <div id="lab-admin-lista" class="small text-muted-custom" aria-live="polite">Carregando...</div>
+            </div>
+
             <div id="secao-estudos" data-niveis="admin" class="card card-custom p-4 mb-4">
                 <h5 class="card-title-chem mb-2">Estudos e Provas</h5>
                 <p class="text-muted-custom small mb-3">Publique materiais para os alunos estudarem e avise as datas das provas. Aparece na aba "Estudos" do portal.</p>
@@ -1511,6 +1558,7 @@
 <script src="admin-07-ti.js"></script>
 <script src="admin-08-resumo-abas.js"></script>
 <script src="admin-carteirinhas.js"></script>
+<script src="admin-laboratorio.js"></script>
 
 
 <style>
@@ -1640,6 +1688,7 @@ document.addEventListener('visibilitychange', () => { if (!document.hidden) atua
     'secao-divulgacao': 'marketing',
     'secao-documentos': 'admin,secretaria',
     'secao-estudos': 'admin',
+    'secao-laboratorio': 'admin',
     'secao-flashcards': 'admin',
     'secao-ge-debates': 'admin,generos',
     'secao-ge-glossario': 'admin,generos',
