@@ -32,14 +32,14 @@ function contraste(a,b) {
 
 test('Portal importa CSS Premium depois do Bootstrap e do estilo original',()=>{
   assert.match(portal,/<body class="ifce-premium-portal">/);
-  assert.match(portal,/<link rel="stylesheet" href="premium-portal.css\?v=20261119">/);
+  assert.match(portal,/<link rel="stylesheet" href="premium-portal.css\?v=20261119b">/);
   assert.ok(portal.indexOf('bootstrap@')<portal.indexOf('premium-portal.css?'));
   assert.ok(portal.indexOf('</style>')<portal.indexOf('premium-portal.css?'));
   assert.equal((portal.match(/premium-portal\.css\?/g)||[]).length,1);
 });
 test('Painel importa CSS Premium e mantém tema escuro',()=>{
   assert.match(admin,/<body class="ifce-premium-admin">/);
-  assert.match(admin,/<link rel="stylesheet" href="premium-admin.css\?v=20261119">/);
+  assert.match(admin,/<link rel="stylesheet" href="premium-admin.css\?v=20261119b">/);
   assert.ok(admin.indexOf('</style>')<admin.indexOf('premium-admin.css?'));
   assert.equal((admin.match(/premium-admin\.css\?/g)||[]).length,1);
 });
@@ -112,17 +112,32 @@ test('Admin possui apresentação Premium em login, navegação, busca e tabelas
   assert.ok(admin.includes('id="admin-email"'));
   assert.ok(admin.includes('id="btn-logout-admin"'));
 });
-test('as cores principais e textos de apoio apresentam contraste de no mínimo 4,5:1',()=>{
+test('textos e detalhes principais mantêm contraste de no mínimo 4,5:1',()=>{
   for(const [fg,bg,nome] of [
-    ['#203529','#f5f9f6','texto principal Portal'],
-    ['#607367','#f5f9f6','texto secundário Portal'],
-    ['#176c42','#ffffff','ação Portal'],
-    ['#daf6e1','#166840','descrição do cabeçalho Portal'],
-    ['#ecf8ee','#0e1c14','texto principal Admin'],
-    ['#bdd1c2','#0e1c14','texto secundário Admin'],
-    ['#89e0a6','#17281d','destaque Admin'],
-    ['#cbe8d2','#1b5635','descrição do cabeçalho Admin']
+    ['#25312b','#f8f9f7','corpo do Portal'],
+    ['#53655b','#f8f9f7','texto secundário Portal'],
+    ['#1e6543','#ffffff','ações e títulos Portal'],
+    ['#54685a','#ffffff','metadados Portal'],
+    ['#e9efe9','#111a15','corpo Admin'],
+    ['#bccbc0','#111a15','texto secundário Admin'],
+    ['#c7edcf','#1c2920','destaque de módulos Admin'],
+    ['#c7d5ca','#1c2e22','texto de apoio na busca Admin']
   ]) assert.ok(contraste(fg,bg)>=4.5,nome+': '+contraste(fg,bg).toFixed(2));
+});
+test('redesign institucional elimina efeitos genéricos sem alterar navegação',()=>{
+  for (const css of [claro,escuro]){
+    assert.doesNotMatch(css,/linear-gradient\s*\(|radial-gradient\s*\(/i);
+    assert.doesNotMatch(css,/backdrop-filter\s*:\s*blur\s*\(/i);
+    assert.match(css,/border-radius:\s*(?:5|6|7|8|9)px/);
+  }
+  const nav=portal.match(/<nav id="bottom-nav"[\s\S]*?<\/nav>/)?.[0];
+  assert.ok(nav);
+  assert.equal((nav.match(/<svg viewBox=/g)||[]).length,5);
+  assert.doesNotMatch(nav,/\p{Extended_Pictographic}/u);
+  assert.ok(portal.includes('premium-brand-symbol" aria-hidden="true">G</span>'));
+  assert.ok(admin.includes('premium-admin-brand-mark" aria-hidden="true">G</span>'));
+  assert.ok(ler('portal-navegacao.js').includes('titulo.textContent = grupo.nome;'));
+  assert.ok(ler('admin-08-resumo-abas.js').includes("titulo.textContent = 'Central de gestão';"));
 });
 test('estilo contempla mobile, impressão, foco visível e movimento reduzido',()=>{
   for(const css of [claro,escuro]){
