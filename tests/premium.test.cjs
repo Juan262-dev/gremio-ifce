@@ -71,7 +71,8 @@ test('preserva seções e marcações de acesso no Painel Administrativo',()=>{
   const ids=[...admin.matchAll(/<div id="(secao-[^"]+)"/g)].map(m=>m[1]);
   assert.equal(ids.length,84);
   assert.equal(new Set(ids).size,84);
-  assert.ok((admin.match(/data-niveis="/g)||[]).length>=75);
+  // Linha de base antes do redesign: 68 marcações data-niveis e 84 módulos.
+  assert.equal((admin.match(/data-niveis="/g)||[]).length,68);
   for(const id of ['secao-resumo','secao-laboratorio','secao-carteirinhas','secao-ti-monitor','secao-punicoes'])
     assert.ok(ids.includes(id),id);
   assert.ok(admin.includes('id="sidebarMenu"'));
