@@ -198,10 +198,12 @@
             });
         }
         async function concluirExclusaoTI(pedidoId, email) {
-            if (!(await confirmar(`Concluir a exclusão dos dados de ${email}? Isso apaga o perfil e o aniversário e desativa o cadastro.`))) return;
+            if (!(await confirmar(`Concluir a exclusão dos dados de ${email}? Isso apaga o perfil, aniversário e carteirinha, e desativa o cadastro.`))) return;
             try {
                 await db.collection('perfis').doc(email).delete().catch(() => {});
                 await db.collection('aniversarios').doc(email).delete().catch(() => {});
+                // Revoga o QR Code no processo de exclusão do aluno.
+                await db.collection('carteirinhas').doc(email).delete();
                 await db.collection('alunos').doc(email).update({ ativo: false, status: 'excluido', nome: 'Dados excluídos' });
                 await db.collection('pedidos_exclusao').doc(pedidoId).update({ status: 'Concluído', concluidoEm: TS() });
                 registrarAcao('Exclusão de dados concluída', email);
