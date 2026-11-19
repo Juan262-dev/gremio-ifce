@@ -105,7 +105,8 @@ test('Admin possui apresentação Premium em login, navegação, busca e tabelas
     '.premium-admin-brand','.premium-admin-actions','.premium-admin-identidade',
     '#tela-login-admin','.admin-app-cabecalho','.admin-app-abas',
     '.admin-app-seletor','#sidebarMenu','#bottom-nav','.table',
-    '.form-control','.btn-ifce','.modal-content'
+    '.form-control','.btn-ifce','.modal-content',
+    '.table-warning','.table-danger','.table-success'
   ])assert.ok(escuro.includes(termo),termo);
   assert.ok(admin.includes('premium-admin-identidade'));
   assert.ok(admin.includes('id="admin-email"'));
