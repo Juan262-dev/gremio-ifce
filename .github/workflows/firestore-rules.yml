@@ -2,6 +2,10 @@ name: Testar regras do Firestore
 on:
   pull_request:
     paths:
+      - 'premium-portal.css'
+      - 'premium-admin.css'
+      - 'manifest.webmanifest'
+      - 'manifest-admin.webmanifest'
       - 'index.html'
       - 'admin.html'
       - 'portal-navegacao.js'
@@ -32,7 +36,7 @@ jobs:
           java-version: '21'
       - name: Instalar dependências
         run: npm install --no-audit --no-fund
-      - name: Testar interface e navegação dos dois apps
+      - name: Testar interface, redesign Premium e navegação dos dois apps
         run: npm run test:ui
       - name: Testar cálculos e Tabela Periódica (sem Firebase)
         run: npm run test:lab
