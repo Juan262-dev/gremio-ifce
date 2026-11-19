@@ -90,3 +90,24 @@ orientações dos professores e as normas de segurança do laboratório do IFCE.
 O usuário não fornece dados químicos que executem código. O texto do Firestore
 e as questões do Banco de Questões são renderizados com `textContent`; os
 desafios não carregam scripts ou HTML de terceiros.
+
+
+## Melhoria pontual — favoritos da Tabela Periódica
+
+Na área **Tabela Periódica**, cada estudante pode selecionar um elemento e
+marcá-lo com a estrela "Adicionar aos favoritos". Os elementos destacados
+aparecem numa lista de revisão com atalhos, contador e filtro visual.
+
+- A lista contém apenas números atômicos (1–118); valores inválidos são
+  descartados e elementos duplicados são removidos.
+- A lista fica no armazenamento **local do navegador**, separada pelo UID do
+  usuário autenticado. **Não é sincronizada** entre celulares/computadores e
+  não é gravada no Firebase.
+- Se o navegador bloquear o armazenamento local, os elementos ainda podem
+  ser marcados durante a sessão, mas não persistem após recarregar a página.
+- Não há nova coleção, regra ou publicação no Firebase para esta melhoria.
+- O recurso não altera nem exclui os dados acadêmicos já salvos.
+- Estrelas e botões possuem rótulos acessíveis e funcionam por toque e teclado.
+
+Testes em \`tests/laboratorio.test.cjs\` verificam normalização, isolamento
+entre contas, persistência simulada e recuperação de dados corrompidos.
