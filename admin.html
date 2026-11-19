@@ -1456,6 +1456,18 @@
                 <div id="lista-membros-punidos-admin"><p class="text-muted-custom small">Nenhum membro punido no momento.</p></div>
             </div>
 
+            <div id="secao-carteirinhas" data-niveis="admin" class="card card-custom p-4 mb-4 card-admin-geral">
+                <h5 class="card-title-chem mb-2"><i class="bi bi-person-vcard"></i> Conferir Carteirinha Digital</h5>
+                <p class="small text-muted-custom">Leia o QR Code com a câmera do celular e abra o link, ou cole o código de 64 caracteres. A confirmação consulta o Firebase ao vivo, nunca apenas a imagem do cartão.</p>
+                <label class="form-label" for="consulta-carteira-codigo">Código da carteirinha</label>
+                <div class="d-flex flex-wrap gap-2 mb-3">
+                    <input id="consulta-carteira-codigo" class="form-control flex-grow-1" style="min-width:190px" maxlength="220" autocomplete="off" spellcheck="false" placeholder="Cole o código ou o link do QR Code">
+                    <button class="btn btn-ifce" type="button" onclick="consultarCarteirinhaCodigo()">Verificar</button>
+                </div>
+                <div id="consulta-carteira-resultado" class="small" aria-live="polite" role="status">Aguardando consulta.</div>
+                <p class="small text-muted-custom mt-3 mb-0">Uso interno do Grêmio. Não é um documento oficial do IFCE. Uma cópia do QR Code não comprova que o portador é o titular.</p>
+            </div>
+
             <div id="secao-alunos-lista" class="card card-custom p-4 mb-4 card-root">
                 <h5 class="card-title-chem mb-3">Alunos Cadastrados</h5>
                 <input type="search" id="busca-alunos" class="form-control mb-3" placeholder="🔍 Buscar por nome ou e-mail..." oninput="renderAlunos()">
@@ -1490,6 +1502,7 @@
 <script src="admin-06-eleicao-eventos.js"></script>
 <script src="admin-07-ti.js"></script>
 <script src="admin-08-resumo-abas.js"></script>
+<script src="admin-carteirinhas.js"></script>
 
 
 <style>
