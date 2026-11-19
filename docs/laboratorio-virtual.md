@@ -1,8 +1,10 @@
 # Laboratório Virtual de Química — IFCE Crateús
 
 ## Situação
-Primeira etapa implementada na branch de desenvolvimento
-`feature/laboratorio-virtual-quimica`, sem merge na `main`.
+Primeira etapa (Tabela Periódica, calculadoras e gestão de conteúdos) já
+mesclada à `main` pelo Pull Request #3. Os demais recursos são implementados na
+branch `feature/laboratorio-virtual-modulos-avancados`. Consulte
+`docs/laboratorio-virtual-avancado.md` para recursos, permissões e testes.
 
 O laboratório é um **recurso educacional virtual**, não um laboratório físico.
 Não substitui docentes, práticas supervisionadas ou orientações institucionais.
@@ -77,4 +79,6 @@ Os testes devem passar antes de revisar o Pull Request. Depois verificar:
 4. **Revisão pedagógica:** validação por responsáveis pelo conteúdo antes da
    disponibilização geral.
 
-As etapas acima **não estão implementadas** nesta primeira versão.
+As etapas avançadas foram desenvolvidas separadamente após esta primeira
+versão. Consulte `docs/laboratorio-virtual-avancado.md` para detalhes e
+informações sobre a revisão pedagógica necessária antes da publicação.
