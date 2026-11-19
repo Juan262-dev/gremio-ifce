@@ -1,0 +1,576 @@
+// =====================================================================
+// FIRESTORE SECURITY RULES  (Firebase Console > Firestore > Regras)
+// Revisão de segurança (nov/2026). Mudanças em relação à versão anterior:
+//  1. votos: só com cédula válida, um voto por cédula (ID do voto = hash da cédula)
+//  2. verificação de e-mail (liga/desliga em config/seguranca.exigirEmailVerificado)
+//  3. enquetes, apoios e inscrições: o aluno só mexe no que é dele
+//  4. cargo punido perde o acesso de verdade (não só na tela)
+//  5. cargos: nível "emergencia" liberado e bug do niveisExtras corrigido
+//  6. e-mail raiz em um único lugar (rootEmail)
+//  7. acoes_admin: autor tem que ser quem está logado
+//  8. ninguém pune o e-mail raiz
+//  9. sugestoes e reivindicacoes: só os campos esperados
+// 10. avaliações: só inscrito avalia; ID usa uid (não revela o e-mail)
+// 11. aniversarios e eleição: só aluno ativo lê
+// Ajustes propostos em 19/11/2026 (não publicados):
+// 12. inscrições com limites válidos, listas sem adulterações e fila em ordem
+// 13. Presidência administra cadastros conforme os botões do painel
+// 14. solicitação de material precisa identificar a própria conta
+// 15. opções de enquete não podem trocar de ID durante um voto
+// ATENÇÃO: enquetes e eventos ainda guardam listas com e-mails em
+// documentos legíveis pelos alunos. A correção da privacidade exige
+// migração da estrutura de dados e do código dos dois aplicativos.
+// =====================================================================
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- raiz ----------
+    function rootEmail() { return 'kevin.silva10@aluno.ifce.edu.br'; }
+
+    // ---------- sessão ----------
+    // Corte de sessões: sessões iniciadas antes do horário em config/seguranca deixam de valer
+    function sessaoMinima() {
+      return exists(/databases/$(database)/documents/config/seguranca)
+        ? get(/databases/$(database)/documents/config/seguranca).data.get('sessoesDesdeSeg', 0)
+        : 0;
+    }
+    function signedIn() {
+      return request.auth != null && request.auth.token.email != null && request.auth.token.auth_time >= sessaoMinima();
+    }
+    function mail() { return request.auth.token.email.lower(); }
+
+    // Verificação de e-mail: só vale quando config/seguranca.exigirEmailVerificado == true.
+    // Deixe DESLIGADO até todos (diretoria e alunos que se cadastraram sozinhos) terem verificado.
+    function exigirVerificacao() {
+      return exists(/databases/$(database)/documents/config/seguranca)
+        && get(/databases/$(database)/documents/config/seguranca).data.get('exigirEmailVerificado', false) == true;
+    }
+    function emailVerificado() { return !exigirVerificacao() || request.auth.token.email_verified == true; }
+
+    // ---------- estados do sistema ----------
+    function emManutencao() {
+      return exists(/databases/$(database)/documents/config/sistema) &&
+        get(/databases/$(database)/documents/config/sistema).data.get('manutencao', false) == true;
+    }
+    function congelado() {
+      return exists(/databases/$(database)/documents/config/sistema) &&
+        get(/databases/$(database)/documents/config/sistema).data.get('painelCongelado', false) == true;
+    }
+    // Punição vigente: vale para alunos E para a diretoria
+    function punido() {
+      return exists(/databases/$(database)/documents/membros_punidos/$(mail())) &&
+        get(/databases/$(database)/documents/membros_punidos/$(mail())).data.expiraEm > request.time;
+    }
+
+    // ---------- cargos ----------
+    function cargoVigente() {
+      return get(/databases/$(database)/documents/cargos/$(mail())).data.get('fimMandato', null) == null
+        || get(/databases/$(database)/documents/cargos/$(mail())).data.fimMandato > request.time;
+    }
+    function temCargo() {
+      return signedIn() && emailVerificado() && exists(/databases/$(database)/documents/cargos/$(mail())) && cargoVigente() && !punido();
+    }
+    function nivelCargo() { return get(/databases/$(database)/documents/cargos/$(mail())).data.nivel; }
+    function niveisExtras() {
+      return temCargo() ? get(/databases/$(database)/documents/cargos/$(mail())).data.get('niveisExtras', []) : [];
+    }
+    function temNivel(n) { return temCargo() && (nivelCargo() == n || niveisExtras().hasAny([n])); }
+    function temNivelEm(lista) { return temCargo() && (lista.hasAny([nivelCargo()]) || niveisExtras().hasAny(lista)); }
+
+    function isTes() { return temNivel('tesouraria') && !congelado(); }
+    function isCultura() { return temNivel('cultura') && !congelado(); }
+    function isRacial() { return temNivel('racial') && !congelado(); }
+    function isSecretaria() { return temNivel('secretaria') && !congelado(); }
+    function isEmergencia() { return temNivel('emergencia') && !congelado(); }
+    function isEsportes() { return temNivel('membro') && !congelado(); }
+    function isMulheres() { return temNivel('mulheres') && !congelado(); }
+    function isGeneros() { return temNivel('generos') && !congelado(); }
+
+    // Fonte substituta: cargo nível desenvolvedor com prazo (fonteAte) ainda não vencido
+    function fonteAtiva() {
+      return signedIn() && emailVerificado() && exists(/databases/$(database)/documents/cargos/$(mail())) &&
+        get(/databases/$(database)/documents/cargos/$(mail())).data.nivel == 'desenvolvedor' &&
+        get(/databases/$(database)/documents/cargos/$(mail())).data.get('fonteAte', null) != null &&
+        get(/databases/$(database)/documents/cargos/$(mail())).data.fonteAte > request.time &&
+        cargoVigente();
+    }
+    function isDono() { return signedIn() && mail() == rootEmail(); }
+    function isRoot() { return isDono() || fonteAtiva(); }
+    function isAdmin() { return isRoot() || (temNivel('admin') && !congelado()); }
+    function isPresidenciaReal() { return temNivel('admin') && !congelado(); }
+    function isDiretoria() {
+      return isAdmin() || (temNivelEm(['membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos']) && !congelado());
+    }
+    function isMkt() { return isAdmin() || (temNivel('marketing') && !congelado()); }
+    function isGestor() { return isAdmin() || (temNivel('membro') && !congelado()); }
+
+    // ---------- alunos ----------
+    // Aluno só acessa se o cadastro existir e estiver ativo. Quem se cadastrou sozinho
+    // (status 'aprovado') precisa ter o e-mail verificado quando a exigência estiver ligada.
+    function alunoAtivo() {
+      return exists(/databases/$(database)/documents/alunos/$(mail()))
+        && get(/databases/$(database)/documents/alunos/$(mail())).data.ativo == true
+        && (!exigirVerificacao() || request.auth.token.email_verified == true
+            || get(/databases/$(database)/documents/alunos/$(mail())).data.get('status', '') != 'aprovado');
+    }
+    function ativo() {
+      return isDiretoria() || (signedIn() && !emManutencao() && !punido() && alunoAtivo());
+    }
+
+    function onlyKeys(keys) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
+    }
+
+    // ---------- validações de enquete ----------
+    // (até 8 opções; o aluno só acrescenta o próprio voto e soma 1 na opção escolhida)
+    function vo(l, i) { return l.size() > i ? l[i].get('votos', 0) : 0; }
+    function tx(l, i) { return l.size() > i ? l[i].get('texto', '') : ''; }
+    function opOk(o, n, i, oid) {
+      return vo(n, i) == vo(o, i) + (oid == i ? 1 : 0)
+        && tx(n, i) == tx(o, i)
+        && (n.size() <= i || n[i].get('id', -1) == o[i].get('id', -1));
+    }
+    function opsOk(o, n, oid) {
+      return n.size() == o.size() && oid >= 0 && oid < o.size()
+        && opOk(o, n, 0, oid) && opOk(o, n, 1, oid) && opOk(o, n, 2, oid) && opOk(o, n, 3, oid)
+        && opOk(o, n, 4, oid) && opOk(o, n, 5, oid) && opOk(o, n, 6, oid) && opOk(o, n, 7, oid);
+    }
+    function votoDe(e) {
+      return [e,
+        {'email': e, 'opcaoId': 0}, {'email': e, 'opcaoId': 1}, {'email': e, 'opcaoId': 2}, {'email': e, 'opcaoId': 3},
+        {'email': e, 'opcaoId': 4}, {'email': e, 'opcaoId': 5}, {'email': e, 'opcaoId': 6}, {'email': e, 'opcaoId': 7}];
+    }
+    function votoEnqueteValido() {
+      let o = resource.data;
+      let n = request.resource.data;
+      let ov = o.get('votosAlunos', []);
+      let nv = n.votosAlunos;
+      let ult = nv[nv.size() - 1];
+      return o.get('ativa', false) == true
+        && nv.size() == ov.size() + 1
+        && nv[0:ov.size()] == ov
+        && ult.email == mail()
+        && !ov.hasAny(votoDe(mail()))
+        && opsOk(o.opcoes, n.opcoes, ult.opcaoId);
+    }
+
+    // ---------- validação de apoio a pauta ----------
+    function apoioValido() {
+      let o = resource.data.get('apoios', []);
+      let n = request.resource.data.get('apoios', []);
+      let eu = [mail()].toSet();
+      return (n.toSet().difference(o.toSet()) == eu && o.toSet().difference(n.toSet()).size() == 0 && n.size() == o.size() + 1)
+        || (o.toSet().difference(n.toSet()) == eu && n.toSet().difference(o.toSet()).size() == 0 && n.size() == o.size() - 1);
+    }
+
+    // ---------- validação de inscrição em evento ----------
+    function inscricaoValida() {
+      // Reproduz as cinco operações usadas pelo portal do aluno.
+      // Não permite reordenar filas, inserir terceiros ou duplicar e-mails.
+      // Usa 5 variáveis locais (limite do Firebase: 10 por função).
+      let oi = resource.data.get('inscritos', []);
+      let ni = request.resource.data.get('inscritos', []);
+      let oe = resource.data.get('espera', []);
+      let ne = request.resource.data.get('espera', []);
+      let eu = mail();
+      return oi is list && ni is list && oe is list && ne is list
+        && ni.toSet().size() == ni.size()
+        && ne.toSet().size() == ne.size()
+        && (
+          // Inscrever-se: entra somente ao fim da lista de inscritos.
+          (ni == oi.concat([eu]) && ne == oe
+            && !oi.hasAny([eu]) && !oe.hasAny([eu])
+            && (resource.data.get('vagas', 0) == 0 || oi.size() < resource.data.get('vagas', 0)))
+          // Entrar na fila: acrescenta-se somente no final.
+          || (ni == oi && ne == oe.concat([eu])
+            && !oi.hasAny([eu]) && !oe.hasAny([eu])
+            && resource.data.get('vagas', 0) > 0 && oi.size() >= resource.data.get('vagas', 0))
+          // Sair da fila sem alterar a posição de outros inscritos.
+          || (ni == oi && oe.hasAny([eu]) && ne == oe.removeAll([eu]))
+          // Cancelar a própria inscrição sem fila para promover.
+          || (oi.hasAny([eu]) && oe.size() == 0
+            && ni == oi.removeAll([eu]) && ne == oe)
+          // Cancelar e promover exclusivamente o primeiro da fila.
+          || (oi.hasAny([eu]) && oe.size() > 0
+            && ni == oi.removeAll([eu]).concat([oe[0]])
+            && ne == oe[1:oe.size()])
+        );
+    }
+
+    // ---------- eleição ----------
+    function eleicaoAberta(id) {
+      return exists(/databases/$(database)/documents/eleicoes/$(id)) &&
+        get(/databases/$(database)/documents/eleicoes/$(id)).data.status == 'aberta' &&
+        request.time >= get(/databases/$(database)/documents/eleicoes/$(id)).data.inicio &&
+        request.time <= get(/databases/$(database)/documents/eleicoes/$(id)).data.fim;
+    }
+
+    // =================================================================
+    // COLEÇÕES
+    // =================================================================
+
+    // Telefones e autorização de avisos: só o e-mail raiz lê e grava
+    match /contatos_avisos/{email} {
+      allow read, write: if isRoot();
+    }
+
+    match /cargos/{email} {
+      allow read: if signedIn() && (mail() == email || isDiretoria());
+      // Dono: qualquer nível, inclusive desenvolvedor (fonte). Presidência: níveis comuns,
+      // sem mexer no e-mail raiz, em fontes substitutas nem em cargos extras.
+      allow create, update: if (isDono() && request.resource.data.nivel in ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos', 'emergencia', 'desenvolvedor'])
+        || (isPresidenciaReal() && email != rootEmail()
+            && request.resource.data.nivel in ['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos', 'emergencia']
+            && request.resource.data.get('niveisExtras', []).size() == 0
+            && (resource == null || (resource.data.nivel != 'desenvolvedor' && resource.data.get('niveisExtras', []).size() == 0)));
+      allow delete: if isDono() || (isPresidenciaReal() && email != rootEmail() && resource.data.nivel != 'desenvolvedor');
+    }
+
+    match /alunos/{email} {
+      allow read: if isRoot() || isAdmin() || isSecretaria() || (signedIn() && mail() == email) || (isEmergencia() && resource.data.status == 'pendente');
+      // Aluno cria o próprio cadastro só como pendente, com e-mail institucional
+      allow create: if (signedIn() && mail() == email && email.matches('^[^@]+@aluno\\.ifce\\.edu\\.br$')
+          && request.resource.data.ativo == false && request.resource.data.status == 'pendente'
+          && request.resource.data.keys().hasOnly(['nome', 'email', 'ativo', 'status', 'criadoEm'])
+          && request.resource.data.nome is string && request.resource.data.nome.size() >= 3 && request.resource.data.nome.size() <= 80)
+        || isAdmin();
+      // Presidência também cadastra, bloqueia, edita turma e exclui alunos
+      // pelos controles já existentes no painel. Emergência só aprova pendentes.
+      allow update: if isAdmin() || (isEmergencia() && resource.data.status == 'pendente'
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['ativo', 'status', 'aprovadoEm']));
+      allow delete: if isAdmin();
+    }
+
+    match /mural/{id} {
+      allow read: if ativo();
+      allow write: if isMkt();
+    }
+
+    match /enquetes/{id} {
+      allow read: if ativo();
+      allow create: if isDiretoria() && request.resource.data.opcoes.size() >= 2 && request.resource.data.opcoes.size() <= 8;
+      allow delete: if isDiretoria();
+      allow update: if isDiretoria() || (ativo() && onlyKeys(['votosAlunos', 'opcoes']) && votoEnqueteValido());
+    }
+
+    match /reivindicacoes/{id} {
+      allow read: if ativo();
+      allow create: if ativo()
+        && request.resource.data.keys().hasOnly(['titulo', 'descricao', 'autor', 'autorEmail', 'apoios', 'criadoEm'])
+        && request.resource.data.autorEmail == mail()
+        && request.resource.data.apoios == [mail()]
+        && request.resource.data.titulo is string && request.resource.data.titulo.size() > 0 && request.resource.data.titulo.size() <= 100
+        && request.resource.data.descricao is string && request.resource.data.descricao.size() > 0 && request.resource.data.descricao.size() <= 800;
+      allow update: if isAdmin() || (ativo() && onlyKeys(['apoios']) && apoioValido());
+      allow delete: if isAdmin();
+    }
+
+    match /materiais/{id} {
+      allow read: if ativo();
+      allow create, delete: if isGestor();
+      allow update: if isGestor() || (ativo() && onlyKeys(['status', 'emprestadoPara'])
+        && resource.data.status == 'Disponível' && request.resource.data.status == 'Solicitado'
+        && request.resource.data.emprestadoPara ==
+          get(/databases/$(database)/documents/alunos/$(mail())).data.nome + ' (' + mail() + ')');
+    }
+
+    match /eventos/{id} {
+      allow read: if ativo();
+      allow create: if isGestor() || ((isCultura() || isRacial()) && request.resource.data.get('criadoPorEmail', '') == mail());
+      allow delete: if isGestor() || ((isCultura() || isRacial()) && resource.data.get('criadoPorEmail', '') == mail());
+      allow update: if isGestor() || (ativo() && onlyKeys(['inscritos', 'espera']) && inscricaoValida())
+        || ((isCultura() || isRacial()) && resource.data.get('criadoPorEmail', '') == mail() && request.resource.data.get('criadoPorEmail', '') == mail());
+    }
+
+    match /jogos/{id} {
+      allow read: if ativo();
+      allow write: if isGestor();
+    }
+
+    match /sugestoes/{id} {
+      allow create: if ativo() && request.resource.data.email == mail()
+        && request.resource.data.keys().hasOnly(['nome', 'email', 'texto', 'criadoEm'])
+        && request.resource.data.texto is string && request.resource.data.texto.size() > 0 && request.resource.data.texto.size() <= 1000;
+      allow read: if isAdmin() || (ativo() && resource.data.email == mail());
+      allow update, delete: if isAdmin();
+    }
+
+    match /config/{id} {
+      allow read: if signedIn();
+      allow write: if isRoot();
+    }
+
+    // Erros que o portal dos alunos reporta sozinho (só o TI lê).
+    match /erros_app/{id} {
+      allow create: if ativo() && request.resource.data.keys().hasOnly(['email', 'msg', 'pagina', 'ua', 'em'])
+        && request.resource.data.email == mail() && request.resource.data.msg.size() < 400;
+      allow read, delete: if isRoot();
+    }
+
+    // Anotações privadas do TI.
+    match /ti_privado/{id} {
+      allow read, write: if isRoot();
+    }
+
+    // Tarefas por cargo: a presidência atribui; cada diretor só lê e conclui as suas.
+    match /tarefas/{id} {
+      allow read: if isAdmin() || (isDiretoria() && resource.data.atribuidoPara == mail());
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (isDiretoria() && resource.data.atribuidoPara == mail() && onlyKeys(['status', 'concluidaEm']));
+    }
+
+    match /atas/{id} {
+      allow read, write: if isAdmin() || isSecretaria();
+    }
+
+    // Diretoria de Mulheres e Diretoria de Gêneros: cada uma só mexe na própria área
+    match /atividades_diversidade/{id} {
+      allow read: if isAdmin() || (isMulheres() && resource.data.area == 'mulheres') || (isGeneros() && resource.data.area == 'generos');
+      allow create: if isAdmin() || (isMulheres() && request.resource.data.area == 'mulheres') || (isGeneros() && request.resource.data.area == 'generos');
+      allow update: if isAdmin() || (isMulheres() && resource.data.area == 'mulheres' && request.resource.data.area == 'mulheres') || (isGeneros() && resource.data.area == 'generos' && request.resource.data.area == 'generos');
+      allow delete: if isAdmin() || (isMulheres() && resource.data.area == 'mulheres') || (isGeneros() && resource.data.area == 'generos');
+    }
+    match /materiais_diversidade/{id} {
+      allow read: if isAdmin() || (isMulheres() && resource.data.area == 'mulheres') || (isGeneros() && resource.data.area == 'generos');
+      allow create: if isAdmin() || (isMulheres() && request.resource.data.area == 'mulheres') || (isGeneros() && request.resource.data.area == 'generos');
+      allow update: if isAdmin() || (isMulheres() && resource.data.area == 'mulheres' && request.resource.data.area == 'mulheres') || (isGeneros() && resource.data.area == 'generos' && request.resource.data.area == 'generos');
+      allow delete: if isAdmin() || (isMulheres() && resource.data.area == 'mulheres') || (isGeneros() && resource.data.area == 'generos');
+    }
+
+    // Eleição do grêmio: só o root cria e apura; alunos ativos leem a eleição e votam uma vez
+    match /eleicoes/{id} {
+      allow read: if ativo();
+      allow write: if isRoot();
+      match /chapas/{cid} {
+        allow read: if ativo();
+        allow write: if isRoot();
+      }
+    }
+    match /cedulas/{hash} {
+      allow get: if ativo();
+      allow list, create, delete: if isRoot();
+      // Marcar como usada só junto com o voto (mesma transação)
+      allow update: if ativo() && resource.data.usada == false && request.resource.data.usada == true
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['usada'])
+        && existsAfter(/databases/$(database)/documents/votos/$(hash));
+    }
+    // O ID do voto é o hash da cédula: uma cédula só gera um voto. O voto não guarda o nome.
+    match /votos/{id} {
+      allow read, delete: if isRoot();
+      allow create: if ativo()
+        && request.resource.data.keys().hasOnly(['eleicao', 'chapa', 'criadoEm'])
+        && request.resource.data.eleicao is string && request.resource.data.chapa is string
+        && eleicaoAberta(request.resource.data.eleicao)
+        && exists(/databases/$(database)/documents/eleicoes/$(request.resource.data.eleicao)/chapas/$(request.resource.data.chapa))
+        && exists(/databases/$(database)/documents/cedulas/$(id))
+        && get(/databases/$(database)/documents/cedulas/$(id)).data.eleicao == request.resource.data.eleicao
+        && get(/databases/$(database)/documents/cedulas/$(id)).data.usada == false
+        && getAfter(/databases/$(database)/documents/cedulas/$(id)).data.usada == true;
+      allow update: if false;
+    }
+
+    // Avaliação de eventos: um por aluno e por evento, só de quem estava inscrito; só a diretoria lê.
+    // O ID usa o UID (pseudônimo), não o e-mail. Isso não garante anonimato total.
+    match /avaliacoes/{id} {
+      allow read: if isRoot() || isGestor() || isCultura() || isRacial();
+      allow create: if ativo() && request.resource.data.evento is string
+        && id == request.resource.data.evento + '_' + request.auth.uid
+        && request.resource.data.keys().hasOnly(['evento', 'nota', 'comentario', 'criadoEm'])
+        && request.resource.data.nota is int && request.resource.data.nota >= 1 && request.resource.data.nota <= 5
+        && request.resource.data.comentario is string && request.resource.data.comentario.size() <= 300
+        && get(/databases/$(database)/documents/eventos/$(request.resource.data.evento)).data.get('inscritos', []).hasAny([mail()]);
+      allow update, delete: if false;
+    }
+
+    // Aniversariantes do mês: participação voluntária; só nome e dia/mês; o aluno apaga o próprio registro
+    match /aniversarios/{email} {
+      allow read: if ativo();
+      allow create, update: if ativo() && email == mail()
+        && request.resource.data.keys().hasOnly(['nome', 'diaMes'])
+        && request.resource.data.diaMes is string && request.resource.data.diaMes.matches('[0-9]{2}-[0-9]{2}')
+        && request.resource.data.nome is string && request.resource.data.nome.size() > 0 && request.resource.data.nome.size() <= 80;
+      allow delete: if isRoot() || email == mail();
+    }
+
+    // Perfil do aluno (primeiro acesso): só o próprio aluno lê e grava
+    match /perfis/{email} {
+      allow read: if ativo() && email == mail();
+      allow create, update: if ativo() && email == mail()
+        && request.resource.data.keys().hasOnly(['turma', 'materias', 'lembretes', 'criadoEm'])
+        && request.resource.data.turma is string && request.resource.data.turma.size() <= 40
+        && request.resource.data.materias is list && request.resource.data.materias.size() <= 20;
+      allow delete: if isRoot() || (signedIn() && email == mail());
+    }
+
+    // Pedido de exclusão de dados: o aluno cria; só você lê e conclui
+    match /pedidos_exclusao/{id} {
+      allow create: if signedIn() && request.resource.data.email == mail()
+        && request.resource.data.keys().hasOnly(['email', 'nome', 'status', 'criadoEm'])
+        && request.resource.data.status == 'Aberto';
+      allow read: if isRoot() || (signedIn() && resource.data.email == mail());
+      allow update, delete: if isRoot();
+    }
+
+    // Versões publicadas do sistema: só você registra e lê
+    match /versoes_publicadas/{id} {
+      allow read, write: if isRoot();
+    }
+
+    // Funções próprias de cada diretoria
+    match /campanhas_mulheres/{id} {
+      allow read, write: if isAdmin() || isMulheres();
+    }
+    match /calendario_mulheres/{id} {
+      allow read, write: if isAdmin() || isMulheres();
+    }
+    match /glossario_generos/{id} {
+      allow read, write: if isAdmin() || isGeneros();
+    }
+    match /debates_generos/{id} {
+      allow read, write: if isAdmin() || isGeneros();
+    }
+    match /metas_generos/{id} {
+      allow read, write: if isAdmin() || isGeneros();
+    }
+
+    // Secretaria: documentos, reuniões e listas de presença
+    match /documentos/{id} {
+      allow read, write: if isAdmin() || isSecretaria();
+    }
+    match /reunioes/{id} {
+      allow read, write: if isAdmin() || isSecretaria();
+    }
+    match /listas_presenca/{id} {
+      allow read, write: if isAdmin() || isSecretaria();
+    }
+
+    match /divulgacoes/{id} {
+      allow read, write: if isMkt();
+    }
+
+    match /artes/{id} {
+      allow read, write: if isMkt();
+    }
+
+    // Vídeos de aula prática (links do YouTube/Drive).
+    match /videos/{id} {
+      allow read: if ativo();
+      allow write: if isMkt();
+    }
+
+    // Pedidos de ajuda ao TI: quem pede cria e lê os seus; só o TI responde.
+    match /chamados/{id} {
+      allow create: if ativo() && request.resource.data.autorEmail == mail() && request.resource.data.status == 'Aberto'
+        && request.resource.data.keys().hasOnly(['categoria', 'descricao', 'autorEmail', 'autorNome', 'cargo', 'status', 'criadoEm']);
+      allow read: if isRoot() || (ativo() && resource.data.autorEmail == mail());
+      allow update, delete: if isRoot();
+    }
+
+    // Quando cada aluno entrou pela última vez (só o TI lê).
+    match /acessos/{email} {
+      allow create, update: if ativo() && mail() == email && request.resource.data.keys().hasOnly(['ultimoAcesso', 'total', 'nome']);
+      allow read, delete: if isRoot();
+    }
+
+    // Aceite do termo de uso.
+    match /aceites/{email} {
+      allow create, update: if ativo() && mail() == email && request.resource.data.keys().hasOnly(['versao', 'em', 'nome']);
+      allow read: if isRoot() || (signedIn() && mail() == email);
+      allow delete: if isRoot();
+    }
+
+    // Último acesso de cada diretor ao painel (só o TI lê).
+    match /acessos_painel/{email} {
+      allow create, update: if isDiretoria() && mail() == email && request.resource.data.keys().hasOnly(['ultimoAcesso', 'total', 'nome', 'cargo']);
+      allow read: if isRoot();
+    }
+
+    // Aba de estudos: materiais e datas de provas (a presidência publica, os alunos leem).
+    match /estudos/{id} {
+      allow read: if ativo();
+      allow create: if isAdmin() || (isRacial() && request.resource.data.get('criadoPorEmail', '') == mail());
+      allow update, delete: if isAdmin() || (isRacial() && resource.data.get('criadoPorEmail', '') == mail());
+    }
+
+    match /provas/{id} {
+      allow read: if ativo();
+      allow write: if isAdmin();
+    }
+
+    // Caixa do Grêmio: só a tesouraria (e o TI) acessa.
+    match /caixa/{id} {
+      allow read: if isRoot() || isTes();
+      allow create: if (isRoot() || isTes())
+        && request.resource.data.keys().hasOnly(['tipo', 'valor', 'data', 'categoria', 'descricao', 'comprovante', 'lancadoPor', 'criadoEm', 'orcamento'])
+        && request.resource.data.tipo in ['Entrada', 'Saída']
+        && request.resource.data.valor is number && request.resource.data.valor > 0
+        && (request.resource.data.tipo == 'Entrada' || request.resource.data.comprovante.matches('https://.*'));
+      allow update, delete: if isRoot() || isTes();
+    }
+
+    // Orçamento por evento: só a tesouraria (e o TI) acessa.
+    match /orcamentos/{id} {
+      allow read: if isRoot() || isTes();
+      allow create: if (isRoot() || isTes()) && request.resource.data.keys().hasOnly(['nome', 'teto', 'criadoPorEmail', 'criadoEm'])
+        && request.resource.data.teto is number && request.resource.data.teto > 0;
+      allow delete: if isRoot() || isTes();
+    }
+
+    // Contas a pagar: só a tesouraria (e o TI) acessa.
+    match /contas/{id} {
+      allow read: if isRoot() || isTes();
+      allow create: if (isRoot() || isTes()) && request.resource.data.keys().hasOnly(['descricao', 'valor', 'vencimento', 'pago', 'criadoPorEmail', 'criadoEm'])
+        && request.resource.data.valor is number && request.resource.data.valor > 0 && request.resource.data.pago == false;
+      allow update: if isRoot() || (isTes() && onlyKeys(['pago', 'pagoEm']));
+      allow delete: if isRoot() || isTes();
+    }
+
+    // Encaminhamentos à direção: só a igualdade racial (e o TI) acessa.
+    match /encaminhamentos/{id} {
+      allow read: if isRoot() || isRacial();
+      allow create: if (isRoot() || isRacial()) && request.resource.data.autorEmail == mail() && request.resource.data.status == 'Aberto'
+        && request.resource.data.keys().hasOnly(['titulo', 'destinatario', 'data', 'descricao', 'status', 'autorEmail', 'autorNome', 'criadoEm']);
+      allow update: if isRoot() || (isRacial() && resource.data.autorEmail == mail() && onlyKeys(['status', 'concluidoEm']));
+      allow delete: if isRoot() || (isRacial() && resource.data.autorEmail == mail());
+    }
+
+    // Saldo mínimo de alerta do caixa: só a tesouraria (e o TI) acessa.
+    match /caixa_config/{id} {
+      allow read: if isRoot() || isTes();
+      allow write: if (isRoot() || isTes()) && request.resource.data.keys().hasOnly(['saldoMinimo', 'atualizadoEm'])
+        && request.resource.data.saldoMinimo is number && request.resource.data.saldoMinimo >= 0;
+    }
+
+    // Banco de questões do quiz: a presidência cadastra; alunos ativos leem.
+    match /questoes/{id} {
+      allow read: if ativo();
+      allow create: if isAdmin() && request.resource.data.keys().hasOnly(['disciplina', 'enunciado', 'alternativas', 'correta', 'explicacao', 'imagem', 'criadoEm', 'criadoPorEmail'])
+        && request.resource.data.alternativas.size() == 4 && request.resource.data.correta in [0, 1, 2, 3];
+      allow update, delete: if isAdmin();
+    }
+
+    // Cartões de revisão: a presidência cadastra; alunos ativos leem.
+    match /flashcards/{id} {
+      allow read: if ativo();
+      allow create: if isAdmin() && request.resource.data.keys().hasOnly(['disciplina', 'frente', 'verso', 'criadoEm', 'criadoPorEmail'])
+        && request.resource.data.frente.size() > 0 && request.resource.data.verso.size() > 0;
+      allow update, delete: if isAdmin();
+    }
+
+    // Punições: a presidência aplica, mas nunca ao e-mail raiz
+    match /membros_punidos/{email} {
+      allow read: if isAdmin() || (signedIn() && email == mail());
+      allow write: if isAdmin() && email != rootEmail();
+    }
+
+    // Log de auditoria: o autor tem que ser quem está logado; só o dono apaga
+    match /acoes_admin/{id} {
+      allow create: if (isDiretoria() || isEmergencia())
+        && request.resource.data.keys().hasOnly(['acao', 'detalhes', 'autor', 'em'])
+        && request.resource.data.autor.lower() == mail();
+      allow read: if isAdmin();
+      allow delete: if isDono();
+    }
+  }
+}
