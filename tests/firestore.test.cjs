@@ -219,3 +219,66 @@ test('Presença: só Presidência registra pessoa realmente inscrita, uma vez', 
   await assertFails(setDoc(presenca, dados));
   await assertFails(getDoc(doc(dbAluno, 'presencas_eventos', 'eventoCarteira', 'alunos', aluno)));
 });
+
+test('Laboratório: Presidência cria rascunho e aluno só lê publicado', async () => {
+  await gravarInicial([
+    cadastro(aluno, 'Aluno Exemplo'),
+    ['cargos/' + presidente, { nome: 'Presidência', nivel: 'admin' }]
+  ]);
+  const dbAdmin = usuario(presidente);
+  const dbAluno = usuario(aluno);
+  const ref = doc(dbAdmin, 'laboratorio_conteudos', 'conteudo1');
+  const dados = {
+    titulo: 'Tabela periódica',
+    assunto: 'Química Geral',
+    descricao: 'Estude os elementos e suas famílias químicas.',
+    link: 'https://example.org/curso',
+    publicado: false,
+    criadoPor: presidente,
+    criadoEm: serverTimestamp()
+  };
+  await assertSucceeds(setDoc(ref, dados));
+  await assertFails(getDoc(doc(dbAluno, 'laboratorio_conteudos', 'conteudo1')));
+  await assertFails(getDocs(collection(dbAluno, 'laboratorio_conteudos')));
+  await assertSucceeds(updateDoc(ref, { publicado: true, atualizadoEm: serverTimestamp() }));
+  await assertSucceeds(getDoc(doc(dbAluno, 'laboratorio_conteudos', 'conteudo1')));
+  const publicados = query(collection(dbAluno, 'laboratorio_conteudos'), where('publicado', '==', true));
+  const lista = await assertSucceeds(getDocs(publicados));
+  if (lista.size !== 1) throw Error('Conteúdo publicado não listado');
+  await assertFails(updateDoc(doc(dbAluno, 'laboratorio_conteudos', 'conteudo1'), {
+    titulo: 'Alterado por estudante', atualizadoEm: serverTimestamp()
+  }));
+});
+
+test('Laboratório: alunos não publicam e administradores não alteram autoria', async () => {
+  await gravarInicial([
+    cadastro(aluno, 'Aluno Exemplo'),
+    ['cargos/' + presidente, { nome: 'Presidência', nivel: 'admin' }]
+  ]);
+  const dbAdmin = usuario(presidente);
+  const dbAluno = usuario(aluno);
+  const dados = {
+    titulo: 'Ligações químicas',
+    assunto: 'Química Geral',
+    descricao: 'Entenda ligações iônicas e covalentes por meio de modelos.',
+    link: '',
+    publicado: false,
+    criadoPor: presidente,
+    criadoEm: serverTimestamp()
+  };
+  await assertFails(setDoc(doc(dbAluno, 'laboratorio_conteudos', 'invasor'), {
+    ...dados, criadoPor: aluno
+  }));
+  const ref = doc(dbAdmin, 'laboratorio_conteudos', 'valido');
+  await assertSucceeds(setDoc(ref, dados));
+  await assertFails(updateDoc(ref, { criadoPor: aluno, atualizadoEm: serverTimestamp() }));
+  await assertFails(updateDoc(ref, { titulo: 'Editado sem data' }));
+  await assertFails(setDoc(doc(dbAdmin, 'laboratorio_conteudos', 'inseguro'), {
+    ...dados, link: 'javascript:alert(1)'
+  }));
+  await assertSucceeds(updateDoc(ref, {
+    descricao: 'Atualização do resumo sobre ligações químicas.',
+    atualizadoEm: serverTimestamp()
+  }));
+  await assertSucceeds(deleteDoc(ref));
+});
