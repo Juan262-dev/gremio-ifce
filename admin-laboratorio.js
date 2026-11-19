@@ -59,7 +59,7 @@ async function salvarConteudoLaboratorio() {
       });
     } else {
       await db.collection("laboratorio_conteudos").add({
-        ...campos, criadoPor: emailLogado, criadoEm: TS()
+        ...campos, criadoEm: TS()
       });
     }
     if (typeof registrarAcao === "function") registrarAcao(
