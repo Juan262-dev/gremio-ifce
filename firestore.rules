@@ -197,7 +197,7 @@ service cloud.firestore {
           // Cancelar e promover exclusivamente o primeiro da fila.
           || (oi.hasAny([eu]) && oe.size() > 0
             && ni == oi.removeAll([eu]).concat([oe[0]])
-            && ne == oe[1:oe.size()])
+            && ne == oe.removeAll([oe[0]]))
         );
     }
 
