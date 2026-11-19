@@ -146,7 +146,7 @@
             const caixa = document.getElementById('admin-app-resultados');
             const input = document.getElementById('admin-app-busca');
             if (!caixa || !input) return;
-            const termo = input.value.trim().toLocaleLowerCase('pt-BR');
+            const termo = input.value.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR');
             caixa.replaceChildren();
             caixa.hidden = termo.length < 2;
             if (termo.length < 2) return;
@@ -154,7 +154,7 @@
             ABAS.forEach(([key,rotulo]) => {
                 ferramentasDaAbaAdmin(key).forEach(el => {
                     const rotuloItem = rotuloFerramentaAdmin(el.id);
-                    if (rotuloItem.toLocaleLowerCase('pt-BR').includes(termo))
+                    if (rotuloItem.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR').includes(termo))
                         encontrados.push({id: el.id, grupo:rotulo, label:rotuloItem});
                 });
             });
