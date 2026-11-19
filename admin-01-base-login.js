@@ -224,7 +224,7 @@
         document.getElementById('admin-senha').addEventListener('keydown', e => { if (e.key === 'Enter') fazerLoginAdmin(); });
 
         auth.onAuthStateChanged(async user => {
-            if (!user { if (painelAberto) location.reload(); return; }
+            if (!user) { if (painelAberto) location.reload(); return; }
             if (painelAberto) return;
             const email = (user.email || '').toLowerCase();
             try {
