@@ -170,6 +170,7 @@ test('navegação real ativa apenas a área escolhida, preservando recursos desa
   const todos=(no,id)=>no.id===id?no:no.children.map(c=>todos(c,id)).find(Boolean)||null;
   const doc={
     createElement:t=>new No(t),
+    createElementNS:(_ns,t)=>new No(t),
     getElementById:id=>roots.map(r=>todos(r,id)).find(Boolean)||null,
     querySelectorAll:sel=>sel==='#portal-app-dashboard [data-portal-alvo]'?
       (doc.getElementById('portal-app-dashboard')?.querySelectorAll('[data-portal-alvo]')||[]):[]
@@ -180,6 +181,20 @@ test('navegação real ativa apenas a área escolhida, preservando recursos desa
   const api=mod.exports;
   const visiveis=()=>IDs_PORTAL.filter(id=>sec[id].classList.contains('portal-secao-ativa'));
   api.preparar();api.iniciar();
+  const grade=doc.getElementById('portal-app-dashboard');
+  const atalhos=grade.children[1].children;
+  assert.equal(atalhos.length,4);
+  const nomes=['carteirinha','calendario','laboratorio','comunicacao'];
+  assert.deepEqual(nav.DESTAQUES.map(d=>d.icone),nomes);
+  for (const b of atalhos) {
+    const span=b.children[0];
+    const svg=span.children[0];
+    assert.equal(svg.tagName,'SVG');
+    assert.equal(svg.attributes['aria-hidden'],'true');
+    assert.equal(span.attributes['aria-hidden'],'true');
+    assert.equal(svg.attributes.viewBox,'0 0 24 24');
+    assert.ok(svg.children.length>=2);
+  }
   assert.deepEqual(visiveis(),['sec-avisos']);
   assert.equal(doc.getElementById('portal-app-subnav').children.length,2);
   assert.equal(doc.getElementById('portal-app-dashboard').hidden,false);
