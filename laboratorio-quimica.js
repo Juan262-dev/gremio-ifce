@@ -135,14 +135,117 @@
   function normalizar(s) {
     return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
   }
+  /* Elementos favoritos: dados mínimos somente neste dispositivo, isolados por
+   * UID Firebase e sem chamadas ao Firestore. Se o armazenamento do navegador
+   * não estiver acessível, a lista permanece útil apenas durante a sessão. */
+  const PREFIXO_FAVORITOS = "gremio-lab-elementos-favoritos-v1:";
+  let favoritos = new Set();
+  let chaveFavoritosAtiva = null;
+  let elementoSelecionado = 6;
+  let storageFavoritos = null;
+  function normalizarFavoritos(valores) {
+    if (!Array.isArray(valores)) return [];
+    const lista = new Set();
+    for (const z of valores) {
+      if (typeof z === "number" && Number.isInteger(z) && z >= 1 && z <= elementos.length) lista.add(z);
+    }
+    return [...lista].sort((a, b) => a - b);
+  }
+  function chaveFavoritos(uid) {
+    if (typeof uid !== "string" || uid.length < 1 || uid.length > 180 || !/^[A-Za-z0-9_.:-]+$/.test(uid)) return null;
+    return PREFIXO_FAVORITOS + uid;
+  }
+  function lerFavoritos(storage, chave) {
+    if (!storage || !chave) return [];
+    try {
+      const valor = storage.getItem(chave);
+      return valor === null ? [] : normalizarFavoritos(JSON.parse(valor));
+    } catch (_) {
+      return [];
+    }
+  }
+  function salvarFavoritos(storage, chave, valores) {
+    if (!storage || !chave) return false;
+    try {
+      storage.setItem(chave, JSON.stringify(normalizarFavoritos(valores)));
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+  function prepararFavoritos() {
+    const uid = typeof auth !== "undefined" && auth.currentUser ? auth.currentUser.uid : null;
+    const chave = chaveFavoritos(uid);
+    if (chave === chaveFavoritosAtiva) return;
+    chaveFavoritosAtiva = chave;
+    favoritos = new Set();
+    elementoSelecionado = 6;
+    try { storageFavoritos = window.localStorage; } catch (_) { storageFavoritos = null; }
+    favoritos = new Set(lerFavoritos(storageFavoritos, chave));
+    const aviso = document.getElementById("lab-favoritos-privacidade");
+    if (aviso) aviso.textContent = chave
+      ? "Seus elementos ficam somente neste navegador, separados por conta. Não sincronizam com outros aparelhos."
+      : "Entre na sua conta para salvar favoritos neste navegador.";
+  }
+  function renderListaFavoritos() {
+    const lista = document.getElementById("lab-favoritos-lista");
+    const contador = document.getElementById("lab-favoritos-contador");
+    if (!lista || !contador) return;
+    const zlist = normalizarFavoritos([...favoritos]);
+    contador.textContent = zlist.length + (zlist.length === 1 ? " elemento marcado" : " elementos marcados");
+    lista.replaceChildren();
+    if (!zlist.length) {
+      const vazio = document.createElement("span");
+      vazio.className = "small text-muted";
+      vazio.textContent = "Nenhum elemento favorito. Selecione um elemento na tabela e toque em ☆ Adicionar.";
+      lista.appendChild(vazio);
+    } else {
+      for (const z of zlist) {
+        const e = elementos[z - 1];
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "btn btn-outline-success btn-sm";
+        btn.dataset.favoritoZ = String(z);
+        btn.textContent = "★ " + e.simbolo + " · " + e.nome;
+        btn.setAttribute("aria-label", "Consultar " + e.nome + ", elemento favorito");
+        lista.appendChild(btn);
+      }
+    }
+    const somente = document.getElementById("lab-favoritos-somente");
+    if (somente) somente.disabled = zlist.length === 0;
+    if (somente && !zlist.length) somente.checked = false;
+  }
+  function atualizarBotaoFavorito() {
+    const btn = document.getElementById("lab-favorito-alternar");
+    if (!btn) return;
+    const e = elementos[elementoSelecionado - 1];
+    const marcado = favoritos.has(elementoSelecionado);
+    btn.textContent = marcado ? "★ Remover dos favoritos" : "☆ Adicionar aos favoritos";
+    btn.setAttribute("aria-pressed", String(marcado));
+    btn.setAttribute("aria-label", (marcado ? "Remover " : "Adicionar ") + e.nome +
+      (marcado ? " dos favoritos" : " aos favoritos"));
+  }
+  function alternarFavorito() {
+    const z = elementoSelecionado;
+    if (!elementos[z - 1]) return;
+    if (favoritos.has(z)) favoritos.delete(z);
+    else favoritos.add(z);
+    const salvo = salvarFavoritos(storageFavoritos, chaveFavoritosAtiva, [...favoritos]);
+    renderListaFavoritos();
+    atualizarBotaoFavorito();
+    renderTabela();
+    const aviso = document.getElementById("lab-favoritos-resultado");
+    if (aviso) aviso.textContent = (favoritos.has(z) ? "Marcado: " : "Removido: ") + elementos[z - 1].nome +
+      (salvo ? ". Salvo neste navegador." : ". Disponível apenas nesta sessão.");
+  }
   function elementoBotao(e) {
     const b = document.createElement("button");
     b.type = "button";
-    b.className = "lab-elemento lab-" + categoria(e);
+    b.className = "lab-elemento lab-" + categoria(e) + (favoritos.has(e.z) ? " lab-favorito" : "");
     b.style.gridColumn = String(e.grupo);
     b.style.gridRow = String(e.periodo);
     b.dataset.numero = String(e.z);
-    b.setAttribute("aria-label", e.nome + ", " + e.simbolo + ", número atômico " + e.z);
+    b.setAttribute("aria-label", e.nome + ", " + e.simbolo + ", número atômico " + e.z + (favoritos.has(e.z) ? ", favorito" : ""));
     const numero = document.createElement("small");
     numero.textContent = String(e.z);
     const simbolo = document.createElement("strong");
@@ -154,10 +257,12 @@
     const e = elementos[z - 1];
     const caixa = document.getElementById("lab-detalhes");
     if (!e || !caixa) return;
+    elementoSelecionado = z;
     const grupo = e.grupo === 0 ? "bloco f" : "grupo " + e.grupo;
     caixa.textContent = e.nome + " (" + e.simbolo + ") · Z = " + e.z +
       " · Massa de referência ≈ " + formatar(e.massa, 3) + " u · Período " +
       e.periodo + ", " + grupo + " · " + familias[categoria(e)] + ".";
+    atualizarBotaoFavorito();
   }
   function renderTabela() {
     const principal = document.getElementById("lab-tabela");
@@ -165,6 +270,7 @@
     if (!principal || !listaF) return;
     const filtro = normalizar(document.getElementById("lab-busca").value);
     const familia = document.getElementById("lab-familia").value;
+    const somenteFavoritos = document.getElementById("lab-favoritos-somente")?.checked || false;
     principal.replaceChildren();
     listaF.replaceChildren();
     for (const e of elementos) {
@@ -173,6 +279,7 @@
         botao.classList.add("lab-apagado");
       }
       if (familia && categoria(e) !== familia) botao.classList.add("lab-apagado");
+      if (somenteFavoritos && !favoritos.has(e.z)) botao.classList.add("lab-apagado");
       (e.grupo === 0 ? listaF : principal).appendChild(botao);
       if (e.grupo === 0) {
         botao.style.gridColumn = String((e.periodo === 6 ? e.z - 57 : e.z - 89));
@@ -266,6 +373,14 @@
       secao.dataset.labPronto = "sim";
       document.getElementById("lab-busca").addEventListener("input", renderTabela);
       document.getElementById("lab-familia").addEventListener("change", renderTabela);
+      document.getElementById("lab-favorito-alternar").addEventListener("click", alternarFavorito);
+      document.getElementById("lab-favoritos-somente").addEventListener("change", renderTabela);
+      document.getElementById("lab-favoritos-lista").addEventListener("click", function (ev) {
+        const alvo = ev.target.closest("button[data-favorito-z]");
+        if (!alvo) return;
+        exibirDetalhe(Number(alvo.dataset.favoritoZ));
+        document.getElementById("lab-detalhes").scrollIntoView({ behavior: "smooth", block: "nearest" });
+      });
       document.getElementById("lab-operacao").addEventListener("change", ajustarCampos);
       document.getElementById("lab-calcular").addEventListener("click", calcularUI);
       for (const id of ["lab-tabela", "lab-bloco-f"]) {
@@ -280,10 +395,12 @@
         document.getElementById("lab-formula").value = "Ca(OH)2";
         calcularUI();
       });
-      renderTabela();
-      exibirDetalhe(6);
       ajustarCampos();
     }
+    prepararFavoritos();
+    renderListaFavoritos();
+    renderTabela();
+    exibirDetalhe(elementoSelecionado);
     const caixa = document.getElementById("lab-conteudos");
     caixa.textContent = "Carregando conteúdos complementares...";
     if (typeof db === "undefined" || typeof usuarioAtual === "undefined" || !usuarioAtual) return;
@@ -300,7 +417,9 @@
   const API = Object.freeze({
     elementos: elementos, categoria: categoria, massaMolar: massaMolar,
     quantidade: quantidade, concentracao: concentracao, diluicao: diluicao,
-    iniciarPortal: iniciarPortal, renderTabela: renderTabela
+    iniciarPortal: iniciarPortal, renderTabela: renderTabela,
+    normalizarFavoritos: normalizarFavoritos, chaveFavoritos: chaveFavoritos,
+    lerFavoritos: lerFavoritos, salvarFavoritos: salvarFavoritos
   });
   root.LaboratorioQuimica = API;
   if (typeof module !== "undefined" && module.exports) module.exports = API;
