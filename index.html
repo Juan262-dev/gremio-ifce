@@ -2653,6 +2653,7 @@ function mostrarEstadoEleicao(msg) {
   const card = document.getElementById('sec-eleicao');
   if (!card) return;
   card.style.display = 'block';
+  if (window.PortalNavegacao) PortalNavegacao.atualizar();
   document.getElementById('ele-portal-info').textContent = msg;
   document.getElementById('ele-portal-chapas').innerHTML = '';
   document.getElementById('ele-portal-voto').style.display = 'none';
