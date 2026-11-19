@@ -108,12 +108,14 @@ test('painel cria busca, seleção e navegação que não alteram as permissões
 });
 
 test('não adiciona coleções de usuário nem mudanças em regras do Firestore',()=>{
-  const arquivos=['portal-navegacao.js','admin-08-resumo-abas.js'];
-  for(const arquivo of arquivos){
-    const src=ler(arquivo);
-    assert.ok(!src.includes('.collection('),arquivo);
-    assert.ok(!src.includes('eval('),arquivo);
+  const portalNovo=ler('portal-navegacao.js');
+  const painelNovo=ler('admin-08-resumo-abas.js').split('/* ================= ABAS DO PAINEL ================= */')[1];
+  for(const [nome,src] of [['portal-navegacao.js',portalNovo],['nova navegação do painel',painelNovo]]){
+    assert.ok(src && !src.includes('.collection('),nome);
+    assert.ok(!src.includes('eval('),nome);
   }
+  // A função carregarResumo() preexistente consulta o Firestore: não faz parte
+  // das alterações de navegação e deve continuar funcionando.
   assert.ok(ler('admin.html').includes('id="sidebarMenu"'));
 });
 
