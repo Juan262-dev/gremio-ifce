@@ -553,6 +553,23 @@ service cloud.firestore {
       allow delete: if isAdmin();
     }
 
+    // Progresso individual das missões educativas do Laboratório Virtual.
+    // Apenas o próprio estudante ativo vê/altera as conclusões; nenhum
+    // ranking, e-mail ou resposta de questões é salvo neste documento.
+    // A lista de progresso não pode ser consultada por nenhuma conta.
+    match /laboratorio_progresso/{email} {
+      allow get: if signedIn() && mail() == email && ativo();
+      allow list: if false;
+      allow create, update: if signedIn() && mail() == email && ativo()
+        && request.resource.data.keys().hasOnly(['concluidas', 'atualizadoEm'])
+        && request.resource.data.keys().hasAll(['concluidas', 'atualizadoEm'])
+        && request.resource.data.concluidas is list
+        && request.resource.data.concluidas.size() <= 4
+        && request.resource.data.concluidas.hasOnly(['elementos', 'moleculas', 'calculos', 'reacoes'])
+        && request.resource.data.atualizadoEm == request.time;
+      allow delete: if signedIn() && mail() == email && ativo();
+    }
+
     // Aba de estudos: materiais e datas de provas (a presidência publica, os alunos leem).
     match /estudos/{id} {
       allow read: if ativo();

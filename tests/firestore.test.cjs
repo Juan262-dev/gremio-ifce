@@ -280,3 +280,43 @@ test('Laboratório: alunos não publicam e administradores não alteram autoria'
   }));
   await assertSucceeds(deleteDoc(ref));
 });
+
+
+test("Laboratório: aluno ativo salva e consulta apenas o próprio progresso", async () => {
+  await gravarInicial([cadastro(aluno,"Aluno Teste"),cadastro(outro,"Outro Estudante"),["cargos/"+presidente,{nome:"Presidência",nivel:"admin"}]]);
+  const dbAluno=usuario(aluno), dbOutro=usuario(outro), dbAdmin=usuario(presidente);
+  const ref=doc(dbAluno,"laboratorio_progresso",aluno);
+  await assertSucceeds(setDoc(ref,{concluidas:["elementos"],atualizadoEm:serverTimestamp()}));
+  const docProgresso=await assertSucceeds(getDoc(ref));
+  if (!docProgresso.exists() || !docProgresso.data().concluidas.includes("elementos")) throw Error("Progresso privado não foi salvo.");
+  await assertSucceeds(updateDoc(ref,{concluidas:["elementos","moleculas"],atualizadoEm:serverTimestamp()}));
+  await assertSucceeds(getDoc(ref));
+  await assertFails(getDoc(doc(dbOutro,"laboratorio_progresso",aluno)));
+  await assertFails(getDoc(doc(dbAdmin,"laboratorio_progresso",aluno)));
+  await assertFails(getDocs(collection(dbAluno,"laboratorio_progresso")));
+  await assertFails(getDocs(collection(dbAdmin,"laboratorio_progresso")));
+  await assertFails(setDoc(doc(dbAluno,"laboratorio_progresso",outro),{
+    concluidas:["elementos"],atualizadoEm:serverTimestamp()
+  }));
+  await assertSucceeds(deleteDoc(ref));
+});
+
+test("Laboratório: rejeita campos pessoais, respostas e progresso adulterado", async () => {
+  await gravarInicial([cadastro(aluno,"Aluno Teste")]);
+  const db=usuario(aluno),ref=doc(db,"laboratorio_progresso",aluno);
+  await assertFails(setDoc(ref,{concluidas:["elementos"],email:aluno,atualizadoEm:serverTimestamp()}));
+  await assertFails(setDoc(ref,{concluidas:["desafio_inexistente"],atualizadoEm:serverTimestamp()}));
+  await assertFails(setDoc(ref,{concluidas:["elementos"],respostas:[1,2,3],atualizadoEm:serverTimestamp()}));
+  await assertFails(setDoc(ref,{concluidas:["elementos","moleculas","calculos","reacoes","gremio"],atualizadoEm:serverTimestamp()}));
+  await assertFails(setDoc(ref,{concluidas:["elementos"],atualizadoEm:Timestamp.fromDate(new Date("2021-01-01"))}));
+  await assertSucceeds(setDoc(ref,{concluidas:["calculos"],atualizadoEm:serverTimestamp()}));
+  await assertFails(updateDoc(ref,{atualizadoEm:Timestamp.fromDate(new Date("2020-01-01"))}));
+  await assertFails(updateDoc(ref,{concluidas:["calculos","invalido"],atualizadoEm:serverTimestamp()}));
+});
+
+test("Laboratório: conta inativa não acessa progresso", async () => {
+  await gravarInicial([["alunos/"+aluno,{email:aluno,nome:"Bloqueado",ativo:false,status:"pendente"}]]);
+  const db=usuario(aluno),ref=doc(db,"laboratorio_progresso",aluno);
+  await assertFails(setDoc(ref,{concluidas:["elementos"],atualizadoEm:serverTimestamp()}));
+  await assertFails(getDoc(ref));
+});
