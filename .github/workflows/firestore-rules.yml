@@ -4,6 +4,7 @@ on:
     paths:
       - 'firestore.rules'
       - 'laboratorio-quimica.js'
+      - 'laboratorio-avancado.js'
       - 'admin-laboratorio.js'
       - 'firebase.json'
       - 'package.json'
