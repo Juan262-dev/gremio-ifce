@@ -27,11 +27,52 @@
     "sec-privacidade": "🔐 Privacidade", "sec-ajuda": "🆘 Ajuda"
   });
   const DESTAQUES = Object.freeze([
-    { alvo: "sec-carteira", icone: "🪪", titulo: "Minha carteirinha" },
-    { alvo: "sec-eventos", icone: "📅", titulo: "Próximos eventos" },
-    { alvo: "sec-laboratorio", icone: "🧪", titulo: "Laboratório Virtual" },
-    { alvo: "sec-sugestoes", icone: "💬", titulo: "Falar com o Grêmio" }
+    { alvo: "sec-carteira", icone: "carteirinha", titulo: "Minha carteirinha" },
+    { alvo: "sec-eventos", icone: "calendario", titulo: "Próximos eventos" },
+    { alvo: "sec-laboratorio", icone: "laboratorio", titulo: "Laboratório Virtual" },
+    { alvo: "sec-sugestoes", icone: "comunicacao", titulo: "Falar com o Grêmio" }
   ]);
+  // Ícones lineares com cor herdada do tema: sem emojis nem fontes externas.
+  const CAMINHOS_ICONES = Object.freeze({
+    carteirinha: Object.freeze([
+      ["rect", { x: "2.5", y: "4.5", width: "19", height: "15", rx: "2" }],
+      ["circle", { cx: "8", cy: "10", r: "2" }],
+      ["path", { d: "M5.2 16c.6-2.3 4.9-2.3 5.6 0M14 9h4.5M14 12.5h4.5M14 16h3" }]
+    ]),
+    calendario: Object.freeze([
+      ["rect", { x: "3", y: "5", width: "18", height: "16", rx: "2" }],
+      ["path", { d: "M7 3v4M17 3v4M3 10h18" }],
+      ["path", { d: "M8 14h2M14 14h2M8 18h2M14 18h2" }]
+    ]),
+    laboratorio: Object.freeze([
+      ["path", { d: "M9 3h6M10 3v6L4.3 18.7A2.2 2.2 0 0 0 6.2 22h11.6a2.2 2.2 0 0 0 1.9-3.3L14 9V3" }],
+      ["path", { d: "M7 16h10" }]
+    ]),
+    comunicacao: Object.freeze([
+      ["path", { d: "M3 10v4h4l10 5V5L7 10H3ZM7 14l1.7 6h3" }],
+      ["path", { d: "M20 9l2-2M20 15l2 2" }]
+    ])
+  });
+  function criarIconeAtalho(nome) {
+    const ns = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(ns, "svg");
+    svg.setAttribute("viewBox", "0 0 24 24");
+    svg.setAttribute("width", "25");
+    svg.setAttribute("height", "25");
+    svg.setAttribute("fill", "none");
+    svg.setAttribute("stroke", "currentColor");
+    svg.setAttribute("stroke-width", "1.9");
+    svg.setAttribute("stroke-linecap", "round");
+    svg.setAttribute("stroke-linejoin", "round");
+    svg.setAttribute("aria-hidden", "true");
+    svg.setAttribute("focusable", "false");
+    (CAMINHOS_ICONES[nome] || []).forEach(([tag, attrs]) => {
+      const forma = document.createElementNS(ns, tag);
+      Object.entries(attrs).forEach(([chave, valor]) => forma.setAttribute(chave, valor));
+      svg.appendChild(forma);
+    });
+    return svg;
+  }
   let preparado = false, grupoAtual = "inicio", secaoAtual = null, recursos = {};
   function obterGrupo(id) {
     return Object.keys(GRUPOS).find(k => GRUPOS[k].secoes.includes(id)) || null;
@@ -80,7 +121,10 @@
     DESTAQUES.forEach(d => {
       const b = construir("button", "portal-app-atalho", "");
       b.type = "button"; b.dataset.portalAlvo = d.alvo;
-      b.appendChild(construir("span", "portal-app-atalho-icone", d.icone));
+      const icone = construir("span", "portal-app-atalho-icone");
+      icone.setAttribute("aria-hidden", "true");
+      icone.appendChild(criarIconeAtalho(d.icone));
+      b.appendChild(icone);
       b.appendChild(construir("span", "", d.titulo));
       grade.appendChild(b);
     });
