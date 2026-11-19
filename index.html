@@ -79,6 +79,13 @@ body{background-color:#f4f6f9}
 .lab-ph-escala{display:flex;justify-content:space-between;align-items:center;border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:11px;background:linear-gradient(90deg,#ef4444 0%,#fca311 22%,#facc15 38%,#4ade80 50%,#06b6d4 72%,#4f46e5 100%);color:#111827;text-shadow:0 1px 1px #ffffff90}
 .lab-ph-referencia{color:#14221b;transition:background-color .12s ease}
 #lab-missao-box button:focus-visible,#lab-avancado select:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
+
+/* Elementos favoritos: marcação visual acessível e lista local por conta */
+.lab-favoritos-painel{background:#f8fcf8}
+#lab-favoritos-lista button{max-width:100%;white-space:normal;text-align:start}
+.lab-elemento.lab-favorito{position:relative;box-shadow:inset 0 0 0 2px #b45309}
+.lab-elemento.lab-favorito::after{content:"★";position:absolute;right:3px;top:0;color:#92400e;font-size:.75rem}
+.lab-elemento.lab-favorito:focus-visible{outline:3px solid #0d6efd;outline-offset:2px}
 </style>
 </head>
 <body>
@@ -276,7 +283,25 @@ body{background-color:#f4f6f9}
     <div class="lab-rolagem" aria-label="Elementos do bloco f">
       <div id="lab-bloco-f"></div>
     </div>
-    <div id="lab-detalhes" class="small mt-3 mb-4" role="status" aria-live="polite">Selecione um elemento.</div>
+    <div class="border rounded p-3 mb-3 lab-favoritos-painel">
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
+        <div>
+          <h6 class="fw-bold mb-1">⭐ Meus elementos para revisar</h6>
+          <span id="lab-favoritos-contador" class="small text-muted" aria-live="polite">0 elementos marcados</span>
+        </div>
+        <label class="form-check-label small d-flex align-items-center gap-2">
+          <input type="checkbox" class="form-check-input mt-0" id="lab-favoritos-somente">
+          Destacar só favoritos na tabela
+        </label>
+      </div>
+      <div id="lab-favoritos-lista" class="d-flex gap-2 flex-wrap mb-2" aria-label="Elementos marcados para revisão">
+        <span class="small text-muted">Nenhum elemento marcado.</span>
+      </div>
+      <p id="lab-favoritos-privacidade" class="small text-muted mb-0">Os favoritos ficam apenas neste navegador.</p>
+    </div>
+    <div id="lab-detalhes" class="small mt-3 mb-2" role="status" aria-live="polite">Selecione um elemento.</div>
+    <button type="button" id="lab-favorito-alternar" class="btn btn-outline-success btn-sm fw-bold" aria-pressed="false">☆ Adicionar aos favoritos</button>
+    <div id="lab-favoritos-resultado" class="small text-muted mt-1 mb-4" role="status" aria-live="polite"></div>
     <h6 class="fw-bold">🧮 Calculadoras Químicas</h6>
     <label class="form-label small" for="lab-operacao">Tipo de cálculo</label>
     <select id="lab-operacao" class="form-select form-select-sm mb-2">
