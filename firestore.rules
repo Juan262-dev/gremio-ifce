@@ -532,25 +532,22 @@ service cloud.firestore {
     function conteudoLaboratorioValido() {
       let d = request.resource.data;
       return d.keys().hasOnly(['titulo', 'assunto', 'descricao', 'link', 'publicado',
-                                'criadoPor', 'criadoEm', 'atualizadoEm'])
+                                'criadoEm', 'atualizadoEm'])
         && d.keys().hasAll(['titulo', 'assunto', 'descricao', 'link', 'publicado',
-                            'criadoPor', 'criadoEm'])
+                            'criadoEm'])
         && d.titulo is string && d.titulo.size() >= 4 && d.titulo.size() <= 120
         && d.assunto is string && d.assunto.size() >= 2 && d.assunto.size() <= 80
         && d.descricao is string && d.descricao.size() >= 10 && d.descricao.size() <= 1000
         && d.link is string && d.link.size() <= 500
         && (d.link == '' || d.link.matches('^https://.+'))
-        && d.publicado is bool
-        && d.criadoPor is string;
+        && d.publicado is bool;
     }
     match /laboratorio_conteudos/{id} {
       allow get, list: if isAdmin() || (ativo() && resource.data.publicado == true);
       allow create: if isAdmin() && conteudoLaboratorioValido()
-        && request.resource.data.criadoPor == mail()
         && request.resource.data.criadoEm == request.time;
       allow update: if isAdmin() && conteudoLaboratorioValido()
         && onlyKeys(['titulo', 'assunto', 'descricao', 'link', 'publicado', 'atualizadoEm'])
-        && request.resource.data.criadoPor == resource.data.criadoPor
         && request.resource.data.criadoEm == resource.data.criadoEm
         && request.resource.data.atualizadoEm == request.time;
       allow delete: if isAdmin();
