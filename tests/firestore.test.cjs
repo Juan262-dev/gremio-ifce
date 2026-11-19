@@ -234,7 +234,6 @@ test('Laboratório: Presidência cria rascunho e aluno só lê publicado', async
     descricao: 'Estude os elementos e suas famílias químicas.',
     link: 'https://example.org/curso',
     publicado: false,
-    criadoPor: presidente,
     criadoEm: serverTimestamp()
   };
   await assertSucceeds(setDoc(ref, dados));
@@ -263,7 +262,6 @@ test('Laboratório: alunos não publicam e administradores não alteram autoria'
     descricao: 'Entenda ligações iônicas e covalentes por meio de modelos.',
     link: '',
     publicado: false,
-    criadoPor: presidente,
     criadoEm: serverTimestamp()
   };
   await assertFails(setDoc(doc(dbAluno, 'laboratorio_conteudos', 'invasor'), {
