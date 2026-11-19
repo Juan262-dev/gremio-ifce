@@ -415,6 +415,24 @@ service cloud.firestore {
       allow delete: if isAdmin() || (signedIn() && mail() == email);
     }
 
+    // Presença em eventos: a carteirinha só ajuda na conferência presencial.
+    // Apenas Presidência/TI podem registrar uma presença; precisa existir
+    // uma inscrição para o evento, e os dados são privados.
+    match /presencas_eventos/{eventoId}/alunos/{email} {
+      allow read: if isAdmin();
+      allow create: if isAdmin()
+        && request.resource.data.keys().hasOnly(['email', 'conferidoPor', 'conferidoEm'])
+        && request.resource.data.keys().hasAll(['email', 'conferidoPor', 'conferidoEm'])
+        && request.resource.data.email == email
+        && request.resource.data.conferidoPor == mail()
+        && request.resource.data.conferidoEm == request.time
+        && exists(/databases/$(database)/documents/eventos/$(eventoId))
+        && get(/databases/$(database)/documents/eventos/$(eventoId)).data.get('inscritos', []).hasAny([email])
+        && get(/databases/$(database)/documents/alunos/$(email)).data.ativo == true;
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
     // Perfil do aluno (primeiro acesso): só o próprio aluno lê e grava
     match /perfis/{email} {
       allow read: if ativo() && email == mail();
