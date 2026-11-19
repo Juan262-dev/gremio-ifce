@@ -16,10 +16,12 @@ function limparCarteirinhaDigital() {
   const visual = document.getElementById('carteirinha-visual');
   const btnCriar = document.getElementById('btn-gerar-carteirinha');
   const btnSalvar = document.getElementById('btn-salvar-qr-carteirinha');
+  const btnRenovar = document.getElementById('btn-renovar-carteirinha');
   const qr = document.getElementById('carteirinha-qr');
   if (visual) visual.style.display = 'none';
   if (btnCriar) btnCriar.style.display = 'none';
   if (btnSalvar) btnSalvar.style.display = 'none';
+  if (btnRenovar) btnRenovar.style.display = 'none';
   if (qr) qr.replaceChildren();
 }
 
@@ -92,7 +94,39 @@ async function exibirCarteirinhaDigital(email, data) {
   });
   visual.style.display = '';
   document.getElementById('btn-salvar-qr-carteirinha').style.display = '';
+  document.getElementById('btn-renovar-carteirinha').style.display = '';
   carteiraEstado('Carteirinha emitida. Apresente o QR Code à equipe do Grêmio.', 'success');
+}
+
+function novoCodigoCarteirinha() {
+  if (!window.crypto || typeof crypto.getRandomValues !== 'function') {
+    throw new Error('Este navegador não tem gerador aleatório seguro.');
+  }
+  const bytes = new Uint8Array(32);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes, x => x.toString(16).padStart(2, '0')).join('');
+}
+
+async function renovarCarteirinhaDigital() {
+  if (!usuarioAtual || !auth.currentUser) return;
+  if (!navigator.onLine) { aviso('É necessário estar conectado para renovar.', 'warning'); return; }
+  if (!confirm('Renovar a carteirinha? O QR Code anterior deixará de funcionar, inclusive em imagens já salvas.')) return;
+  const email = usuarioAtual.email;
+  const btn = document.getElementById('btn-renovar-carteirinha');
+  btn.disabled = true;
+  carteiraEstado('Revogando o código anterior...');
+  try {
+    const ref = db.collection('carteirinhas').doc(email);
+    await ref.update({ codigo: novoCodigoCarteirinha(), criadoEm: TS() });
+    if (!usuarioAtual || usuarioAtual.email !== email) return;
+    await carregarCarteirinhaDigital();
+    aviso('Novo QR Code emitido. O anterior foi revogado.', 'success');
+  } catch (e) {
+    console.error('renovar carteirinha', e);
+    carteiraEstado('Não foi possível renovar sua carteirinha.', 'danger');
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 async function gerarCarteirinhaDigital() {
@@ -110,9 +144,7 @@ async function gerarCarteirinhaDigital() {
   btn.disabled = true;
   carteiraEstado('Gerando seu código seguro...');
   try {
-    const bytes = new Uint8Array(32);
-    crypto.getRandomValues(bytes);
-    const codigo = Array.from(bytes, x => x.toString(16).padStart(2, '0')).join('');
+    const codigo = novoCodigoCarteirinha();
     // Só cria: as regras impedem alterações do código pelo aluno.
     await db.collection('carteirinhas').doc(email).set({ codigo, criadoEm: TS() });
     await carregarCarteirinhaDigital();
