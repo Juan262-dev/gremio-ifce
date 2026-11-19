@@ -91,7 +91,7 @@ function abrirConsultaCarteirinhaPendente() {
   input.value = carteirinhaPendenteUrl;
   carteirinhaPendenteUrl = null;
   if (typeof mostrarAba === 'function') mostrarAba('alunos', false);
-  document.getElementById('secao-carteirinhas').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  irPara('secao-carteirinhas');
   consultarCarteirinhaCodigo();
 }
 
