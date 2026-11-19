@@ -205,8 +205,8 @@ const IDS=Object.freeze(MISSOES.map(m=>m.id));
 function questoesGremio(){
   let banco=[];
   try{if(typeof questoesBanco!=="undefined" && Array.isArray(questoesBanco))banco=questoesBanco;}catch(_){}
-  return banco.filter(q=>/qu[ií]mic|estequiometr|ligac|mol[eé]cul|f[ií]sico.qu/i.test(String(q.disciplina||"")) &&
-      q.enunciado && Array.isArray(q.alternativas) && q.alternativas.length===4 &&
+  return banco.filter(q=>/qu[ií]mic|estequiometr|liga[cç]|mol[eé]cul|f[ií]sico.qu/i.test(String(q.disciplina||"")) &&
+      typeof q.enunciado === "string" && q.enunciado.trim().length >= 5 && Array.isArray(q.alternativas) && q.alternativas.length===4 &&
       q.alternativas.every(a=>typeof a==="string" && a.length>0 && a.length<=250) &&
       Number.isInteger(q.correta) && q.correta>=0 && q.correta<4).slice(0,10).map(q=>({
     p:q.enunciado.slice(0,400),o:q.alternativas.slice(),c:q.correta,e:String(q.explicacao||"Confira o conteúdo correspondente.").slice(0,600)
