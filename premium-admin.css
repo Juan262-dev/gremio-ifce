@@ -1,378 +1,321 @@
 /*
- * IFCE PREMIUM · PAINEL ADMINISTRATIVO
- * Tema escuro institucional. CSS de apresentação, sem lógica de cargos,
- * Firebase, ocultação de cartões, nem mudanças em ids/data-niveis.
- * Base: noite #0b1711 · superfície #15251b · verde #82dfa1.
- */
-body.ifce-premium-admin {
-  --premium-night: #091710;
-  --premium-bg: #0e1c14;
-  --premium-surface: #17281d;
-  --premium-surface-2: #1e3325;
-  --premium-border: #324d3a;
-  --premium-border-soft: #294332;
-  --premium-green: #89e0a6;
-  --premium-green-strong: #3aa268;
-  --premium-ink: #ecf8ee;
-  --premium-muted: #bdd1c2;
-  --premium-shadow: 0 18px 48px rgba(1,9,5,.18);
-  --ifce-card-bg: #17281d;
-  --ifce-card-border: #314b38;
-  --ifce-text-muted: #bfd0c2;
-  --ifce-accent-green: #9defb5;
-  background:radial-gradient(ellipse 80% 21% at 50% -4%,#1a4229 0%,transparent 81%),
-             radial-gradient(ellipse 45% 30% at 100% 15%,rgba(36,87,55,.16),transparent 85%),
-             var(--premium-bg);
-  color:var(--premium-ink);
-  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  font-size:15px;line-height:1.55;
-  -webkit-font-smoothing:antialiased;
+  Grêmio IFCE · Painel Administrativo
+  Direção visual: ferramenta de trabalho, não vitrine.
+  Só apresentação — não interfere em display/hidden, regras de acesso,
+  travas por cargo, autenticação, formulários ou dados do Firestore.
+*/
+body.ifce-premium-admin{
+  --admin-bg:#111a15;
+  --admin-paper:#1c2920;
+  --admin-paper-2:#223228;
+  --admin-ink:#e9efe9;
+  --admin-muted:#bccbc0;
+  --admin-border:#3a4c3f;
+  --admin-green:#a9d6b7;
+  --admin-action:#287c4c;
+  --ifce-card-bg:#1c2920;
+  --ifce-card-border:#3a4c3f;
+  --ifce-text-muted:#c0cec1;
+  --ifce-accent-green:#b9edc6;
+  font:15px/1.55 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;
+  color:var(--admin-ink);background:var(--admin-bg);background-image:none;
 }
-.ifce-premium-admin *, .ifce-premium-admin *::before, .ifce-premium-admin *::after {box-sizing:border-box;}
-.ifce-premium-admin ::selection {background:#368e55;color:#fff;}
-.ifce-premium-admin :is(button,a,input,select,textarea,summary,[tabindex]):focus-visible {
-  outline:3px solid #c0ffc9;outline-offset:3px;
-}
-.ifce-premium-admin a {color:#a2efb6;text-underline-offset:3px;}
-.ifce-premium-admin a:hover {color:#d1ffdb;}
-.ifce-premium-admin .text-muted-custom {color:#c0d2c5!important;}
-.ifce-premium-admin .text-muted {color:#bdd0c2!important;}
-.ifce-premium-admin .text-secondary {color:#b9cbbd!important;}
+.ifce-premium-admin *, .ifce-premium-admin *::before,.ifce-premium-admin *::after{box-sizing:border-box}
+.ifce-premium-admin :is(button,a,input,select,textarea,summary,[tabindex]):focus-visible{outline:3px solid #c3eacb;outline-offset:3px}
+.ifce-premium-admin a{color:#b4e6c0;text-underline-offset:3px}
+.ifce-premium-admin a:hover{color:#efffef}
+.ifce-premium-admin .text-muted,.ifce-premium-admin .text-muted-custom,.ifce-premium-admin .text-secondary{color:#bfcec2!important}
+.ifce-premium-admin ::selection{background:#37714d;color:#fff}
 
-/* Cabeçalho e identidade premium. */
-.ifce-premium-admin .navbar-ifce {
-  min-height:72px;background:rgba(12,34,22,.95)!important;
-  border-bottom:1px solid #335340;box-shadow:0 8px 32px rgba(0,0,0,.18);
-  backdrop-filter:blur(18px);
+/* Topo: identificação nítida, sem degradê nem vidro fosco. */
+.ifce-premium-admin .navbar-ifce{
+  background:#17251b!important;min-height:63px;
+  border-bottom:2px solid #3e8155;box-shadow:none;backdrop-filter:none;
 }
-.ifce-premium-admin .navbar-ifce>.container {max-width:1140px;gap:13px;}
-.ifce-premium-admin .premium-admin-brand {
-  display:inline-flex;align-items:center;gap:11px;min-width:0;
-  color:#fff;text-decoration:none;
+.ifce-premium-admin .navbar-ifce>.container{max-width:1140px;gap:10px}
+.ifce-premium-admin .premium-admin-brand{
+  display:inline-flex;align-items:center;gap:10px;
+  min-width:0;text-decoration:none;color:#f1f6f0;
 }
-.ifce-premium-admin .premium-admin-brand-mark {
-  width:41px;height:41px;flex:none;display:grid;place-items:center;font-size:22px;
-  border-radius:12px;color:#effff3;
-  border:1px solid rgba(184,251,197,.22);
-  background:linear-gradient(135deg,#235d38,#183522);
+.ifce-premium-admin .premium-admin-brand-mark{
+  display:grid;place-items:center;flex:none;
+  width:35px;height:35px;background:#2a7146;color:#fff;
+  border-radius:5px;border:1px solid #41845a;font-size:17px;font-weight:800;
 }
-.ifce-premium-admin .premium-admin-brand-lines {min-width:0;display:flex;flex-direction:column;line-height:1.2;}
-.ifce-premium-admin .premium-admin-brand-lines strong {font-size:1.03rem;font-weight:850;letter-spacing:-.025em;}
-.ifce-premium-admin .premium-admin-brand-lines small {color:#a8dcb5;font-size:.69rem;letter-spacing:.045em;margin-top:3px;}
-.ifce-premium-admin .premium-admin-actions {display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
-.ifce-premium-admin .navbar-ifce .btn {
-  border-radius:10px!important;font-size:.81rem;padding:8px 11px;font-weight:700;
-}
-.ifce-premium-admin #btn-menu-lateral {
-  border-color:#4e9566;color:#b3f1c3;background:rgba(99,212,125,.07);
-  min-height:41px;
-}
-.ifce-premium-admin #btn-menu-lateral:hover {background:#205a36;color:#fff;}
-.ifce-premium-admin #btn-logout-admin {border-color:rgba(250,154,154,.55);color:#ffc4c1;}
-.ifce-premium-admin #btn-logout-admin:hover {background:#8f2e2e;border-color:#8f2e2e;color:#fff;}
-.ifce-premium-admin #btn-instalar-admin {border-color:#539c6a;color:#c0f5cc;}
-.ifce-premium-admin #btn-instalar-admin:hover {background:#2a7548;color:#fff;}
+.ifce-premium-admin .premium-admin-brand-lines{display:flex;flex-direction:column;min-width:0;line-height:1.15}
+.ifce-premium-admin .premium-admin-brand-lines strong{font-size:1.02rem;font-weight:780;letter-spacing:-.015em}
+.ifce-premium-admin .premium-admin-brand-lines small{font-size:.68rem;color:#c4d4c6;margin-top:3px}
+.ifce-premium-admin .premium-admin-actions{display:flex;align-items:center;gap:7px;justify-content:flex-end;flex-wrap:wrap}
+.ifce-premium-admin .navbar-ifce .btn{font-size:.8rem;border-radius:5px!important;padding:7px 10px;font-weight:650}
+.ifce-premium-admin #btn-menu-lateral{background:transparent;border-color:#59896a;color:#d5f0da;min-height:38px;border-radius:5px!important}
+.ifce-premium-admin #btn-menu-lateral:hover{background:#294e35;color:#fff}
+.ifce-premium-admin #btn-instalar-admin{color:#dbf3df;border-color:#648a6c}
+.ifce-premium-admin #btn-instalar-admin:hover{background:#315d3d;color:#fff}
+.ifce-premium-admin #btn-logout-admin{color:#f6c9c6;border-color:#8f5b5b}
+.ifce-premium-admin #btn-logout-admin:hover{background:#813f3f;color:#fff}
 
-/* Superfícies e cartões administrativos. Respeita classes de bloqueio existentes. */
-.ifce-premium-admin #painel-admin {max-width:1140px!important;}
-.ifce-premium-admin #painel-admin .card-custom {
-  background-color:var(--premium-surface);
-  border:1px solid var(--premium-border);
-  border-radius:20px;
-  box-shadow:var(--premium-shadow);
-  overflow-wrap:anywhere;
+/* Layout sem cartões flutuantes: superfícies e bordas práticas. */
+.ifce-premium-admin #painel-admin{max-width:1100px!important}
+.ifce-premium-admin #painel-admin .card-custom{
+  background:var(--admin-paper);border:1px solid var(--admin-border);
+  border-radius:8px;box-shadow:none;overflow-wrap:anywhere;
 }
-.ifce-premium-admin #painel-admin [data-aba-pane] > .card-custom,
-.ifce-premium-admin #painel-admin #conteudo-painel-geral > .card-custom {
-  padding:clamp(18px,2.8vw,30px)!important;margin-bottom:18px!important;
+.ifce-premium-admin #painel-admin [data-aba-pane]>.card-custom,
+.ifce-premium-admin #painel-admin #conteudo-painel-geral>.card-custom{
+  padding:clamp(18px,2.5vw,28px)!important;margin-bottom:16px!important;
 }
-.ifce-premium-admin #painel-admin .card-custom:hover {border-color:#43644a;}
-.ifce-premium-admin #painel-admin .card-title-chem {
-  font-size:clamp(1.06rem,2.1vw,1.28rem);
-  font-weight:800;line-height:1.35;letter-spacing:-.02em;
-  text-transform:none;color:#b0f4c2;
-  margin-bottom:14px;
+.ifce-premium-admin #painel-admin .card-title-chem{
+  color:#c7edcf;font-size:clamp(1.05rem,2vw,1.23rem);
+  font-weight:750;line-height:1.4;letter-spacing:-.012em;
+  text-transform:none;margin-bottom:13px;
 }
 .ifce-premium-admin #painel-admin h4,.ifce-premium-admin #painel-admin h5,
-.ifce-premium-admin #painel-admin h6 {line-height:1.35;letter-spacing:-.012em;}
-.ifce-premium-admin #painel-admin .card-title-chem + .text-muted-custom {
-  border-bottom:1px solid #2c4834;padding-bottom:13px;
+.ifce-premium-admin #painel-admin h6{line-height:1.4}
+.ifce-premium-admin .premium-admin-identidade{
+  background:#21392b!important;border:1px solid #456a4e!important;
+  border-left:4px solid #6db482!important;box-shadow:none!important;
+  padding:19px 22px!important;
 }
-.ifce-premium-admin .premium-admin-identidade {
-  background:linear-gradient(115deg,#163b27 0%,#1a4931 58%,#1f3d2b 100%)!important;
-  border:1px solid #356d46!important;
-  box-shadow:0 12px 38px rgba(0,0,0,.12)!important;
-}
-.ifce-premium-admin .premium-admin-identidade #user-name-display {
-  font-weight:820;font-size:clamp(1.15rem,2.8vw,1.4rem);
-}
-.ifce-premium-admin .premium-admin-identidade #user-role-display {color:#cfffd6;}
-.ifce-premium-admin .premium-admin-identidade .text-muted-custom {color:#b6d9bd!important;}
+.ifce-premium-admin .premium-admin-identidade #user-name-display{font-size:1.25rem;font-weight:770}
+.ifce-premium-admin .premium-admin-identidade #user-role-display{color:#d4f6dc}
+.ifce-premium-admin .premium-admin-identidade .text-muted-custom{color:#c0d7c6!important}
 
-/* Central de gestão: pesquisa como componente principal, categorias e seletor. */
-.ifce-premium-admin .admin-app-cabecalho {
-  background:linear-gradient(120deg,#173a27 0%,#1b5635 70%,#1d4630 100%);
-  border:1px solid #397953;border-radius:22px;
-  padding:clamp(22px,3.5vw,34px);box-shadow:0 16px 38px rgba(3,25,12,.16);
-  margin-bottom:20px;
+/* Busca, abas e escolha da função: aparência de software de gestão. */
+.ifce-premium-admin .admin-app-cabecalho{
+  background:#1c2e22;border:1px solid #46634d;border-left:4px solid #6db482;
+  border-radius:7px;box-shadow:none;padding:clamp(20px,3vw,28px);margin-bottom:15px;
 }
-.ifce-premium-admin .admin-app-titulo {
-  font-weight:870;color:#f1fff3;letter-spacing:-.04em;
-  font-size:clamp(1.6rem,3.3vw,2.1rem);
+.ifce-premium-admin .admin-app-titulo{
+  color:#eff6ef;font-size:clamp(1.42rem,3vw,1.82rem);
+  font-weight:780;letter-spacing:-.025em;margin-bottom:6px;
 }
-.ifce-premium-admin .admin-app-texto {color:#cbe8d2;font-size:.91rem;line-height:1.5;}
-.ifce-premium-admin .admin-app-cabecalho .form-label {
-  color:#e0fae5;font-weight:740;margin-bottom:8px;
-  letter-spacing:.01em;text-transform:none;
+.ifce-premium-admin .admin-app-texto{color:#c7d5ca;font-size:.9rem;line-height:1.55}
+.ifce-premium-admin .admin-app-cabecalho .form-label{font-size:.82rem;color:#d5e8d9;font-weight:670;margin-bottom:8px}
+.ifce-premium-admin #admin-app-busca{
+  background:#16241a;color:#f2f7f2;border:1px solid #789181;border-radius:5px;
+  min-height:46px;padding:9px 13px;font-size:.94rem;
 }
-.ifce-premium-admin #admin-app-busca {
-  background:rgba(9,33,19,.64);color:#f3fff4;border:1px solid #75a882;
-  font-size:.97rem;padding:13px 16px;min-height:50px;
+.ifce-premium-admin #admin-app-busca::placeholder{color:#b4c5b6}
+.ifce-premium-admin #admin-app-busca:focus{border-color:#bde5c5;box-shadow:0 0 0 2px rgba(182,224,193,.15)}
+.ifce-premium-admin .admin-app-resultados{gap:7px}
+.ifce-premium-admin .admin-app-busca-item{
+  color:#eef8ef;background:#243c2b;
+  border:1px solid #56745f;border-radius:5px;
+  font-weight:600;min-height:40px;
 }
-.ifce-premium-admin #admin-app-busca::placeholder {color:#bad5c0;}
-.ifce-premium-admin #admin-app-busca:focus {border-color:#abedbc;box-shadow:0 0 0 3px rgba(154,244,169,.18);}
-.ifce-premium-admin .admin-app-resultados {gap:8px;}
-.ifce-premium-admin .admin-app-busca-item {
-  background:#204c34;color:#f1fff4;border:1px solid #457f58;
-  border-radius:11px;font-weight:600;min-height:42px;
+.ifce-premium-admin .admin-app-busca-item:hover{background:#31533b;border-color:#8eae96}
+.ifce-premium-admin .admin-app-abas{
+  display:flex;gap:0;overflow-x:auto;
+  padding:0 0 6px;margin-bottom:14px;
+  border-bottom:1px solid #3a5441;scrollbar-width:thin;
 }
-.ifce-premium-admin .admin-app-busca-item:hover {background:#2d734a;border-color:#86dba4;}
-.ifce-premium-admin .admin-app-abas {
-  gap:9px;padding:6px 3px 16px;margin-bottom:7px;
-  scrollbar-width:thin;scrollbar-color:#41654a transparent;
+.ifce-premium-admin .admin-app-aba{
+  background:transparent;border:0;border-bottom:3px solid transparent;
+  border-radius:0;color:#cad8ce;min-height:43px;padding:9px 15px;
+  font-size:.86rem;font-weight:630;white-space:nowrap;box-shadow:none;
 }
-.ifce-premium-admin .admin-app-aba {
-  border:1px solid #3f6449;color:#d1e9d6;
-  background:#1d3225;border-radius:12px;font-size:.87rem;
-  padding:12px 17px;min-height:46px;font-weight:730;
-  transition:background .15s ease, border-color .15s ease;
+.ifce-premium-admin .admin-app-aba:hover{background:#26362a;border-bottom-color:#547660}
+.ifce-premium-admin .admin-app-aba.ativo{
+  background:transparent;color:#e2f6e5;
+  border:0;border-bottom:3px solid #8fc59a;
+  box-shadow:none;font-weight:770;
 }
-.ifce-premium-admin .admin-app-aba.ativo {
-  background:linear-gradient(135deg,#2d9759,#267b49);
-  border-color:#74ca90;color:#fff;box-shadow:0 6px 17px rgba(6,25,12,.13);
+.ifce-premium-admin .admin-app-aba.ativo:hover{background:#26362a}
+.ifce-premium-admin .admin-app-seletor{
+  background:#1a2b20;border:1px solid #425d49;border-radius:7px;
+  box-shadow:none;padding:clamp(17px,2.6vw,23px);margin-bottom:17px;
 }
-.ifce-premium-admin .admin-app-aba:hover {background:#2d5038;border-color:#70b887;}
-.ifce-premium-admin .admin-app-aba.ativo:hover {background:#2e9457;}
-.ifce-premium-admin .admin-app-seletor {
-  background:#172e20;border:1px solid #376348;border-radius:18px;
-  padding:clamp(17px,2.5vw,25px);margin-bottom:20px;
-  box-shadow:0 10px 25px rgba(0,0,0,.09);
+.ifce-premium-admin .admin-app-subtitulo{
+  color:#e0f3e3;font-size:1.13rem;font-weight:730;
+  margin-bottom:6px;
 }
-.ifce-premium-admin .admin-app-subtitulo {color:#baf9cb;font-size:1.18rem;font-weight:830;}
-.ifce-premium-admin .admin-app-seletor .admin-app-texto {color:#bcd3c3;}
-.ifce-premium-admin .admin-app-seletor .form-label {margin-top:2px;}
-.ifce-premium-admin #admin-app-escolha {background:#10271b;border-color:#45694e;min-height:47px;}
+.ifce-premium-admin .admin-app-seletor .admin-app-texto{color:#c3d1c5}
+.ifce-premium-admin #admin-app-escolha{background:#15251b;border-color:#67826d;min-height:45px}
 
-/* Navegação inferior e lateral. Nunca mudar exibição com display próprio. */
-.ifce-premium-admin #bottom-nav {
-  background:rgba(11,29,18,.97);
-  border-top:1px solid #355c43;
-  box-shadow:0 -8px 30px rgba(0,0,0,.19);
-  backdrop-filter:blur(18px);
-  padding:8px 8px calc(10px + env(safe-area-inset-bottom));
+/* Navegação móvel e barra lateral no mesmo sistema visual. */
+.ifce-premium-admin #bottom-nav{
+  background:#17241b;border-top:1px solid #4a684f;
+  box-shadow:none;backdrop-filter:none;gap:0;
+  padding:5px 8px calc(7px + env(safe-area-inset-bottom));
 }
-.ifce-premium-admin #bottom-nav button {
-  font-size:clamp(10px,2.5vw,12px);font-weight:650;color:#b5cdb9;
-  min-height:53px;gap:3px;border-radius:12px;
+.ifce-premium-admin #bottom-nav button{
+  color:#c7d4c9;font-size:.72rem;min-height:54px;
+  border-top:3px solid transparent;border-radius:0;gap:3px;
+  font-weight:600;
 }
-.ifce-premium-admin #bottom-nav button i {font-size:21px;}
-.ifce-premium-admin #bottom-nav button.ativo {
-  background:rgba(83,197,108,.2);color:#b7f9c9;font-weight:800;
+.ifce-premium-admin #bottom-nav button i{font-size:20px}
+.ifce-premium-admin #bottom-nav button.ativo{
+  background:transparent;color:#e5f9e9;
+  border-top-color:#94d1a3;font-weight:750;
 }
-.ifce-premium-admin #bottom-nav button:hover {color:#e5ffe9;background:rgba(83,197,108,.14);}
-.ifce-premium-admin #sidebarMenu {background:#101f16!important;border-right:1px solid #36533d!important;}
-.ifce-premium-admin #sidebarMenu .offcanvas-header {border-bottom-color:#37503d!important;padding:19px 20px;}
-.ifce-premium-admin #sidebarMenuLabel {color:#b5f3c2!important;font-size:1.06rem;}
-.ifce-premium-admin #sidebarMenu .offcanvas-body {padding:16px 18px!important;}
-.ifce-premium-admin .admin-menu-categoria {
-  color:#a4e5b5;letter-spacing:.10em;font-size:.72rem;
-  border-bottom:1px solid #34513e;padding-bottom:7px;
+.ifce-premium-admin #bottom-nav button:hover{background:#263a2b}
+.ifce-premium-admin #sidebarMenu{
+  background:#152219!important;border-right:1px solid #405745!important;
 }
-.ifce-premium-admin .admin-menu-link {
-  background:#1b3122!important;color:#e4f4e8!important;
-  border:1px solid #314e3b!important;
-  border-radius:10px!important;padding:12px 13px!important;
-  transition:background .14s ease;
+.ifce-premium-admin #sidebarMenu .offcanvas-header{border-bottom:1px solid #3b5642!important;padding:18px 20px}
+.ifce-premium-admin #sidebarMenuLabel{color:#d8f4de!important;font-size:1.04rem;font-weight:750}
+.ifce-premium-admin #sidebarMenu .offcanvas-body{padding:15px 18px!important}
+.ifce-premium-admin .admin-menu-categoria{
+  color:#bcdcc3;font-size:.73rem;font-weight:730;
+  letter-spacing:.05em;border-bottom:1px solid #3b5642;
+  padding-bottom:7px;margin-top:18px;
 }
-.ifce-premium-admin .admin-menu-link:hover {background:#285a3b!important;}
-.ifce-premium-admin .admin-menu-link i {color:#8ee5aa!important;}
+.ifce-premium-admin .admin-menu-link{
+  background:#1e3023!important;color:#ebf5ec!important;
+  border:1px solid #3b5944!important;border-radius:5px!important;
+  padding:10px 12px!important;transition:background .12s ease;
+}
+.ifce-premium-admin .admin-menu-link:hover{background:#2a4b34!important}
+.ifce-premium-admin .admin-menu-link i{color:#b1e9bd!important}
 
-/* Campos e formulários (sem tocar em valores, eventos ou permissões). */
-.ifce-premium-admin .form-label {
-  color:#c5dfce;font-weight:700;letter-spacing:.025em;
-  text-transform:none;font-size:.83rem;
+/* Campos, tabelas e conteúdos: menos decoração e leitura facilitada. */
+.ifce-premium-admin .form-label{
+  color:#d4e0d5;font-size:.82rem;font-weight:650;
+  letter-spacing:0;text-transform:none;
 }
-.ifce-premium-admin .form-control,
-.ifce-premium-admin .form-select,
-.ifce-premium-admin textarea,
-.ifce-premium-admin .input-group-text {
-  background-color:#102119;border:1px solid #406049;
-  border-radius:11px;color:#eefaf0;
-  font-size:.91rem;min-height:44px;
+.ifce-premium-admin .form-control,.ifce-premium-admin .form-select,
+.ifce-premium-admin textarea,.ifce-premium-admin .input-group-text{
+  color:#edf4ed;background:#16241b;
+  border:1px solid #59715d;border-radius:5px;min-height:41px;font-size:.9rem;
 }
-.ifce-premium-admin .form-control::placeholder,
-.ifce-premium-admin textarea::placeholder {color:#9fb6a7;opacity:1;}
-.ifce-premium-admin .form-control:focus,
-.ifce-premium-admin .form-select:focus,
-.ifce-premium-admin textarea:focus {
-  background:#142b1d;border-color:#83d7a0;color:#fff;
-  box-shadow:0 0 0 3px rgba(105,218,132,.13);
+.ifce-premium-admin .form-control::placeholder,.ifce-premium-admin textarea::placeholder{
+  color:#b4c6b6;opacity:1;
 }
-.ifce-premium-admin .form-control:disabled,
-.ifce-premium-admin .form-select:disabled,
-.ifce-premium-admin .form-control[readonly] {background:#273b2d;color:#d1ddcf;opacity:1;}
-.ifce-premium-admin .form-control-sm,
-.ifce-premium-admin .form-select-sm {min-height:36px;font-size:.84rem;padding:6px 10px;}
-.ifce-premium-admin .form-check-input {
-  border-color:#71957b;background-color:#162b1d;
+.ifce-premium-admin .form-control:focus,.ifce-premium-admin .form-select:focus,
+.ifce-premium-admin textarea:focus{
+  color:#fff;background:#1b2c20;border-color:#a8d6b2;
+  box-shadow:0 0 0 2px rgba(167,219,177,.13);
 }
-.ifce-premium-admin .form-check-input:checked {border-color:#56c67d;background-color:#25894f;}
-.ifce-premium-admin .form-check-label {color:#dfebdf;}
-.ifce-premium-admin .form-range::-webkit-slider-thumb {background:#69d48d;}
-.ifce-premium-admin .form-range::-moz-range-thumb {background:#69d48d;}
-.ifce-premium-admin select option {background:#14261b;color:#fff;}
+.ifce-premium-admin .form-control:disabled,.ifce-premium-admin .form-select:disabled,
+.ifce-premium-admin .form-control[readonly]{background:#293b2d;color:#dfebdf;opacity:1}
+.ifce-premium-admin .form-control-sm,.ifce-premium-admin .form-select-sm{min-height:36px;font-size:.84rem;padding:6px 9px}
+.ifce-premium-admin .form-check-input{background:#18281d;border-color:#849a88}
+.ifce-premium-admin .form-check-input:checked{background:#357d4d;border-color:#8ebf9b}
+.ifce-premium-admin .form-check-label{color:#e2ebe2}
+.ifce-premium-admin select option{background:#1b2920;color:#fff}
+.ifce-premium-admin .btn{
+  border-radius:5px;min-height:37px;line-height:1.45;font-weight:650;
+  box-shadow:none!important;
+}
+.ifce-premium-admin .btn-ifce,.ifce-premium-admin .btn-success{
+  background:#2e7950;border:1px solid #61956d;color:#fff;
+}
+.ifce-premium-admin .btn-ifce:hover,.ifce-premium-admin .btn-success:hover{
+  background:#37895a;border-color:#92bea0;color:#fff;transform:none;
+}
+.ifce-premium-admin .btn-outline-light{
+  background:transparent;border:1px solid #829989;color:#e8f2e9;
+}
+.ifce-premium-admin .btn-outline-light:hover{background:#314536;border-color:#9dbaa5;color:#fff}
+.ifce-premium-admin .btn-outline-success{
+  color:#d2f1d9;background:transparent;border:1px solid #75a580;
+}
+.ifce-premium-admin .btn-outline-success:hover{background:#2e7950;border-color:#91be9d;color:#fff}
+.ifce-premium-admin .btn-outline-secondary{color:#e3eee5;border:1px solid #849687}
+.ifce-premium-admin .btn-outline-secondary:hover{background:#374b3a;color:#fff}
+.ifce-premium-admin .btn-outline-danger{color:#ffd1cf;border-color:#b17d78}
+.ifce-premium-admin .btn-outline-danger:hover{background:#803a3a;color:#fff}
+.ifce-premium-admin .btn-danger{background:#923d3f;border-color:#c1787a;color:#fff}
+.ifce-premium-admin .btn-danger:hover{background:#7e3335;color:#fff}
+.ifce-premium-admin .btn-link{color:#b5e7c0}
+.ifce-premium-admin .btn-sm{min-height:34px;padding:6px 11px}
+.ifce-premium-admin .btn:disabled{opacity:.62}
+.ifce-premium-admin .list-group-item{
+  background:#202f24;color:#e7f0e7;border:1px solid #3d5541;
+  border-radius:5px!important;padding:12px 14px;
+}
+.ifce-premium-admin .table{
+  --bs-table-color:#e8f0e9;--bs-table-bg:#1b2a20;
+  --bs-table-border-color:#405546;
+  --bs-table-striped-color:#e8f0e9;--bs-table-striped-bg:#25362a;
+  --bs-table-hover-color:#fff;--bs-table-hover-bg:#2d4131;
+  color:#edf2ed;vertical-align:middle;
+}
+.ifce-premium-admin .table th,.ifce-premium-admin .table td{padding:9px 11px}
+.ifce-premium-admin .table th{font-weight:690}
+.ifce-premium-admin .table-responsive{border-radius:5px;border:1px solid #3b5141}
+.ifce-premium-admin .table-light{--bs-table-color:#23412d;--bs-table-bg:#e3ede4}
+.ifce-premium-admin .table-warning{--bs-table-color:#fff3df;--bs-table-bg:#59482c}
+.ifce-premium-admin .table-danger{--bs-table-color:#ffe5e3;--bs-table-bg:#552b2c}
+.ifce-premium-admin .table-success{--bs-table-color:#e0f8e5;--bs-table-bg:#204e33}
+.ifce-premium-admin .table-info{--bs-table-color:#e0f4f8;--bs-table-bg:#234958}
+.ifce-premium-admin .badge{font-weight:680;border-radius:4px;padding:5px 8px}
+.ifce-premium-admin .badge.bg-success{background:#286b46!important}
+.ifce-premium-admin .badge.bg-secondary{background:#43574a!important}
+.ifce-premium-admin .badge.bg-warning{color:#302609!important}
+.ifce-premium-admin .alert{border-radius:5px;line-height:1.5}
+.ifce-premium-admin .alert-success{background:#193a29;color:#d2f4d9;border:1px solid #4e7759}
+.ifce-premium-admin .alert-danger{background:#492829;color:#ffdedb;border:1px solid #9c5e5c}
+.ifce-premium-admin .alert-warning{background:#483a25;color:#fbe6bd;border:1px solid #8c7854}
+.ifce-premium-admin .alert-info{background:#1c3741;color:#dbf2f5;border:1px solid #517783}
+.ifce-premium-admin .alert-light{background:#2a3b2f;color:#e8f2e9;border:1px solid #56705e}
+.ifce-premium-admin .progress{height:8px;border-radius:4px;background:#324635}
+.ifce-premium-admin .progress-bar{background:#74b98a}
+.ifce-premium-admin .border{border-color:#4c6350!important}
+.ifce-premium-admin .rounded{border-radius:6px!important}
+.ifce-premium-admin details{background:#203126;border:1px solid #455c4b;border-radius:5px;padding:12px 14px}
+.ifce-premium-admin details+details{margin-top:7px}
+.ifce-premium-admin details summary{color:#d9f2de;font-weight:660}
+.ifce-premium-admin hr{border-color:#536b58;opacity:.8}
+.ifce-premium-admin .modal-content{
+  background:#1e3023!important;color:#f2f8f2!important;
+  border:1px solid #58705c!important;border-radius:8px!important;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+.ifce-premium-admin .modal-header,.ifce-premium-admin .modal-footer{border-color:#3c5542}
+.ifce-premium-admin #toast-container .toast{border-radius:6px;box-shadow:none}
+.ifce-premium-admin .bg-dark{background:#18241b!important}
+.ifce-premium-admin .bg-white{color:#253529}
 
-/* Hierarquia de ações: principal, secundária, destrutiva. */
-.ifce-premium-admin .btn {
-  border-radius:10px;min-height:38px;font-weight:660;line-height:1.45;
+/* Acesso do Admin: claro no conteúdo, discreto na marca. */
+.ifce-premium-admin #tela-login-admin{max-width:450px!important;margin-top:min(9vh,82px)!important}
+.ifce-premium-admin #tela-login-admin>.card-custom{
+  background:#203024;border:1px solid #55735c;border-radius:8px;
+  padding:clamp(23px,4vw,32px)!important;box-shadow:none;
 }
-.ifce-premium-admin .btn-ifce,
-.ifce-premium-admin .btn-success {
-  background:linear-gradient(135deg,#2b9558,#237645);
-  color:#fff;border:1px solid #54bc78;
-  box-shadow:0 5px 17px rgba(1,14,6,.10);
-}
-.ifce-premium-admin .btn-ifce:hover,
-.ifce-premium-admin .btn-success:hover {background:#2b9d5c;border-color:#91ecaa;color:#fff;transform:none;}
-.ifce-premium-admin .btn-outline-light {border:1px solid #668772;color:#ecf7ef;background:transparent;}
-.ifce-premium-admin .btn-outline-light:hover {background:#365442;color:#fff;border-color:#90b59c;}
-.ifce-premium-admin .btn-outline-success {border:1px solid #519568;color:#bdf4ca;background:#1b3526;}
-.ifce-premium-admin .btn-outline-success:hover {background:#287e4b;color:#fff;border-color:#73d18c;}
-.ifce-premium-admin .btn-outline-secondary {border:1px solid #728a79;color:#e0eee3;}
-.ifce-premium-admin .btn-outline-secondary:hover {background:#3a5542;color:#fff;}
-.ifce-premium-admin .btn-outline-danger {color:#ffc4c4;border-color:#a85c5e;}
-.ifce-premium-admin .btn-outline-danger:hover {background:#923b3f;color:#fff;}
-.ifce-premium-admin .btn-danger {background:#a23b40;border-color:#b65b5e;color:#fff;}
-.ifce-premium-admin .btn-danger:hover {background:#8c2c33;color:#fff;}
-.ifce-premium-admin .btn-link {color:#9be9b2;}
-.ifce-premium-admin .btn-sm {min-height:34px;padding:7px 11px;}
-.ifce-premium-admin .btn:disabled {opacity:.6;cursor:not-allowed;}
+.ifce-premium-admin #tela-login-admin h4{font-size:1.38rem;letter-spacing:-.018em}
+.ifce-premium-admin #tela-login-admin .form-control{min-height:45px}
+.ifce-premium-admin #tela-login-admin .btn-ifce{min-height:44px}
+.ifce-premium-admin #rodape-painel{color:#b3c4b5!important;padding-top:17px}
 
-/* Indicadores, tabelas e componentes diversos da diretoria. */
-.ifce-premium-admin .list-group-item {
-  background:#13271b;color:#e8f3e9;border:1px solid #324d39;
-  border-radius:11px!important;padding:14px 15px;
-}
-.ifce-premium-admin .list-group-item:hover {border-color:#4c7d58;}
-.ifce-premium-admin .table {
-  --bs-table-color:#ecf4ed;
-  --bs-table-bg:#192b20;
-  --bs-table-border-color:#355340;
-  --bs-table-striped-color:#ecf4ed;
-  --bs-table-striped-bg:#213929;
-  --bs-table-hover-color:#fff;
-  --bs-table-hover-bg:#2e4936;
-  color:#ecf4ed;vertical-align:middle;
-}
-.ifce-premium-admin .table th,.ifce-premium-admin .table td {padding:11px 12px;}
-.ifce-premium-admin .table th {font-weight:750;}
-.ifce-premium-admin .table-responsive {border-radius:12px;border:1px solid #314b37;}
-.ifce-premium-admin .table-light {--bs-table-color:#1c3424;--bs-table-bg:#dcefe0;}
-/* Preserve linhas de status: warning, danger e success nunca ficam invisíveis. */
-.ifce-premium-admin .table-warning {--bs-table-color:#fff2d1;--bs-table-bg:#5c4828;--bs-table-border-color:#826e43;}
-.ifce-premium-admin .table-danger {--bs-table-color:#ffe0df;--bs-table-bg:#5c292b;--bs-table-border-color:#7e494d;}
-.ifce-premium-admin .table-success {--bs-table-color:#d9fbe2;--bs-table-bg:#1c5736;--bs-table-border-color:#43865c;}
-.ifce-premium-admin .table-info {--bs-table-color:#d8f4fc;--bs-table-bg:#214b5c;--bs-table-border-color:#437487;}
-.ifce-premium-admin .badge {font-weight:730;padding:5px 9px;letter-spacing:.01em;}
-.ifce-premium-admin .badge.bg-success {background:#277d4b!important;}
-.ifce-premium-admin .badge.bg-secondary {background:#43574a!important;color:#fff;}
-.ifce-premium-admin .badge.bg-warning {color:#302309!important;}
-.ifce-premium-admin .alert {border-radius:12px;line-height:1.5;}
-.ifce-premium-admin .alert-success {background:#143b26;color:#c4f2d0;border:1px solid #397d4c;}
-.ifce-premium-admin .alert-danger {background:#452326;color:#ffcfcc;border:1px solid #965459;}
-.ifce-premium-admin .alert-warning {background:#473922;color:#ffe7b3;border:1px solid #91754a;}
-.ifce-premium-admin .alert-info {background:#173541;color:#d0f1f6;border:1px solid #3c7a87;}
-.ifce-premium-admin .alert-light {background:#23352a;color:#e3f5e6;border:1px solid #486454;}
-.ifce-premium-admin .progress {height:10px;border-radius:999px;background:#324b39;}
-.ifce-premium-admin .progress-bar {background:#4abe78;}
-.ifce-premium-admin .border {border-color:#395541!important;}
-.ifce-premium-admin .rounded {border-radius:12px!important;}
-.ifce-premium-admin details {
-  border:1px solid #3b5541;border-radius:12px;padding:12px 15px;background:#1b2c20;
-}
-.ifce-premium-admin details+details {margin-top:8px;}
-.ifce-premium-admin details summary {color:#d4f7dd;font-weight:720;}
-.ifce-premium-admin hr {border-color:#416449;opacity:.8;}
-.ifce-premium-admin .modal-content {
-  background:#1d3023!important;color:#f4fff5!important;
-  border:1px solid #47624b!important;border-radius:20px!important;
-  box-shadow:0 26px 85px rgba(0,0,0,.4);
-}
-.ifce-premium-admin .modal-header {border-color:#36513d;}
-.ifce-premium-admin .modal-footer {border-color:#36513d;}
-.ifce-premium-admin .toast {background:#203529;color:#f6fff7;border-radius:12px;}
-.ifce-premium-admin #toast-container .toast {box-shadow:0 12px 28px rgba(0,0,0,.23);}
-.ifce-premium-admin .bg-white {color:#193421;}
-.ifce-premium-admin .bg-dark {background:#101a13!important;}
-
-/* Login: moderno, discreto e com foco na ação principal. */
-.ifce-premium-admin #tela-login-admin {
-  max-width:460px!important;margin-top:min(9vh,86px)!important;
-}
-.ifce-premium-admin #tela-login-admin>.card-custom {
-  border:1px solid #41684e;background:linear-gradient(145deg,#1a3323,#15251b);
-  border-radius:24px;padding:clamp(25px,4vw,37px)!important;
-  box-shadow:0 28px 80px rgba(0,0,0,.32);
-}
-.ifce-premium-admin #tela-login-admin .btn-ifce {
-  margin-top:10px;min-height:47px;font-size:.98rem;
-}
-.ifce-premium-admin #tela-login-admin .form-control {min-height:47px;}
-.ifce-premium-admin #tela-login-admin h4 {letter-spacing:-.025em;font-size:1.5rem;}
-.ifce-premium-admin .offcanvas .btn-close:focus-visible {outline:3px solid #b7ffd0;}
-.ifce-premium-admin #rodape-painel {color:#91b09b!important;padding-top:20px;}
-
-/* Acessibilidade, responsividade e integração com app instalado. */
-@media(min-width:1100px) {
-  .ifce-premium-admin #bottom-nav {
+/* Celular, acessibilidade e impressão. */
+@media(min-width:1100px){
+  .ifce-premium-admin #bottom-nav{
     left:50%;right:auto;transform:translateX(-50%);
-    width:min(670px,calc(100% - 30px));
-    border:1px solid #355c43;border-bottom:0;
-    border-radius:18px 18px 0 0;
+    width:min(670px,calc(100% - 24px));
+    border:1px solid #4a684f;border-bottom:0;border-radius:6px 6px 0 0;
   }
 }
-@media(max-width:700px) {
-  .ifce-premium-admin .navbar-ifce {min-height:62px;}
-  .ifce-premium-admin .navbar-ifce>.container {padding-left:12px;padding-right:12px;}
-  .ifce-premium-admin .premium-admin-brand-mark {width:35px;height:35px;font-size:19px;border-radius:10px;}
-  .ifce-premium-admin .premium-admin-brand-lines strong {font-size:.89rem;}
-  .ifce-premium-admin .premium-admin-brand-lines small {font-size:.61rem;}
-  .ifce-premium-admin #painel-admin {padding-left:12px;padding-right:12px;}
+@media(max-width:700px){
+  .ifce-premium-admin .navbar-ifce{min-height:58px}
+  .ifce-premium-admin .navbar-ifce>.container{padding-left:12px;padding-right:12px}
+  .ifce-premium-admin .premium-admin-brand-mark{width:31px;height:31px;font-size:16px}
+  .ifce-premium-admin .premium-admin-brand-lines strong{font-size:.9rem}
+  .ifce-premium-admin .premium-admin-brand-lines small{font-size:.62rem}
+  .ifce-premium-admin #painel-admin{padding-left:12px;padding-right:12px}
   .ifce-premium-admin #painel-admin [data-aba-pane]>.card-custom,
-  .ifce-premium-admin #painel-admin #conteudo-painel-geral>.card-custom {padding:17px!important;}
-  .ifce-premium-admin .admin-app-cabecalho {padding:20px 17px;border-radius:19px;}
-  .ifce-premium-admin .admin-app-seletor {padding:18px 16px;}
-  .ifce-premium-admin .admin-app-aba {padding:11px 12px;}
+  .ifce-premium-admin #painel-admin #conteudo-painel-geral>.card-custom{padding:16px!important}
+  .ifce-premium-admin .admin-app-cabecalho{padding:18px 16px}
+  .ifce-premium-admin .admin-app-seletor{padding:16px}
+  .ifce-premium-admin .admin-app-aba{padding:10px 12px}
 }
-@media(max-width:420px) {
-  .ifce-premium-admin .premium-admin-brand-lines small {display:none;}
-  .ifce-premium-admin .premium-admin-brand-lines strong {font-size:.78rem;}
-  .ifce-premium-admin .navbar-ifce .btn {padding:7px 8px;font-size:.72rem;}
-  .ifce-premium-admin .premium-admin-actions {gap:4px;}
-  .ifce-premium-admin #bottom-nav button {font-size:10px;}
+@media(max-width:420px){
+  .ifce-premium-admin .premium-admin-brand-lines small{display:none}
+  .ifce-premium-admin .premium-admin-brand-lines strong{font-size:.8rem}
+  .ifce-premium-admin .navbar-ifce .btn{padding:6px 7px;font-size:.72rem}
+  .ifce-premium-admin .premium-admin-actions{gap:4px}
+  .ifce-premium-admin #bottom-nav button{font-size:.68rem}
 }
-@media(prefers-reduced-motion:reduce) {
-  .ifce-premium-admin *, .ifce-premium-admin *::before, .ifce-premium-admin *::after {
-    scroll-behavior:auto!important;animation-duration:.01ms!important;
-    transition-duration:.01ms!important;
+@media(prefers-reduced-motion:reduce){
+  .ifce-premium-admin *, .ifce-premium-admin *::before,.ifce-premium-admin *::after{
+    animation-duration:.01ms!important;transition-duration:.01ms!important;
+    scroll-behavior:auto!important;
   }
 }
-@media print {
-  .ifce-premium-admin .navbar-ifce,
-  .ifce-premium-admin #bottom-nav,
-  .ifce-premium-admin #admin-app-cabecalho,
-  .ifce-premium-admin #abas-painel,
-  .ifce-premium-admin #admin-app-seletor {display:none!important;}
-  .ifce-premium-admin {background:#fff!important;color:#000!important;}
-  .ifce-premium-admin #painel-admin .card-custom {box-shadow:none!important;}
+@media print{
+  .ifce-premium-admin .navbar-ifce,.ifce-premium-admin #bottom-nav,
+  .ifce-premium-admin #admin-app-cabecalho,.ifce-premium-admin #abas-painel,
+  .ifce-premium-admin #admin-app-seletor{display:none!important}
+  .ifce-premium-admin{background:#fff!important;color:#000!important}
+  .ifce-premium-admin #painel-admin .card-custom{box-shadow:none!important}
 }

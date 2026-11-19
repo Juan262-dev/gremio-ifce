@@ -17,20 +17,20 @@
       secoes: Object.freeze(["sec-carteira", "sec-primeiro", "sec-privacidade", "sec-ajuda"]) })
   });
   const ROTULOS = Object.freeze({
-    "sec-avisos": "📢 Avisos", "sec-aniversario": "🎂 Aniversários",
-    "sec-estudos": "📖 Materiais e provas", "sec-laboratorio": "🧪 Laboratório",
-    "sec-quiz": "🧠 Quiz", "sec-cartoes": "🃏 Cartões de revisão", "sec-videos": "🎬 Vídeos",
-    "sec-eventos": "📅 Eventos", "sec-jogos": "🏆 Jogos", "sec-materiais": "🎲 Materiais",
-    "sec-enquetes": "📊 Enquetes", "sec-pautas": "✊ Reivindicações",
-    "sec-realizacoes": "✅ Realizações", "sec-eleicao": "🗳️ Eleições", "sec-sugestoes": "💡 Sugestões",
-    "sec-carteira": "🪪 Carteirinha", "sec-primeiro": "⚙️ Editar perfil",
-    "sec-privacidade": "🔐 Privacidade", "sec-ajuda": "🆘 Ajuda"
+    "sec-avisos": "Avisos", "sec-aniversario": "Aniversários",
+    "sec-estudos": "Materiais e provas", "sec-laboratorio": "Laboratório",
+    "sec-quiz": "Quiz", "sec-cartoes": "Cartões de revisão", "sec-videos": "Vídeos",
+    "sec-eventos": "Eventos", "sec-jogos": "Jogos", "sec-materiais": "Materiais",
+    "sec-enquetes": "Enquetes", "sec-pautas": "Reivindicações",
+    "sec-realizacoes": "Realizações", "sec-eleicao": "Eleições", "sec-sugestoes": "Sugestões",
+    "sec-carteira": "Carteirinha", "sec-primeiro": "Editar perfil",
+    "sec-privacidade": "Privacidade", "sec-ajuda": "Ajuda"
   });
   const DESTAQUES = Object.freeze([
-    { alvo: "sec-carteira", icone: "🪪", titulo: "Minha carteirinha" },
-    { alvo: "sec-eventos", icone: "📅", titulo: "Próximos eventos" },
-    { alvo: "sec-laboratorio", icone: "🧪", titulo: "Laboratório Virtual" },
-    { alvo: "sec-sugestoes", icone: "💬", titulo: "Falar com o Grêmio" }
+    { alvo: "sec-carteira", icone: "01", titulo: "Minha carteirinha" },
+    { alvo: "sec-eventos", icone: "02", titulo: "Próximos eventos" },
+    { alvo: "sec-laboratorio", icone: "03", titulo: "Laboratório Virtual" },
+    { alvo: "sec-sugestoes", icone: "04", titulo: "Falar com o Grêmio" }
   ]);
   let preparado = false, grupoAtual = "inicio", secaoAtual = null, recursos = {};
   function obterGrupo(id) {
@@ -54,7 +54,7 @@
     const painel = construir("section", "portal-app-painel");
     painel.id = "portal-app-painel";
     painel.setAttribute("aria-label", "Navegação da área selecionada");
-    painel.appendChild(construir("p", "portal-app-selo", "GRÊMIO IFCE · PORTAL DO ALUNO"));
+    painel.appendChild(construir("p", "portal-app-selo", "GRÊMIO ESTUDANTIL · IFCE CRATEÚS"));
     const h = construir("h1", "portal-app-titulo");
     h.id = "portal-app-titulo";
     painel.appendChild(h);
@@ -65,7 +65,7 @@
     atalhos.id = "portal-app-subnav";
     atalhos.setAttribute("aria-label", "Ferramentas desta área");
     painel.appendChild(atalhos);
-    const editarPerfil = construir("button", "portal-app-editar-perfil", "⚙️ Editar minhas preferências");
+    const editarPerfil = construir("button", "portal-app-editar-perfil", "Editar minhas preferências");
     editarPerfil.id = "portal-app-editar-perfil";
     editarPerfil.type = "button";
     editarPerfil.hidden = true;
@@ -97,7 +97,7 @@
     if (!portal) return;
     const grupo = GRUPOS[grupoAtual];
     const titulo = document.getElementById("portal-app-titulo");
-    if (titulo) titulo.textContent = grupo.icone + " " + grupo.nome;
+    if (titulo) titulo.textContent = grupo.nome;
     const descricao = document.getElementById("portal-app-descricao");
     if (descricao) descricao.textContent = grupo.descricao;
     const disponiveis = grupo.secoes.filter(estaDisponivel);
