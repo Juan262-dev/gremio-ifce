@@ -1,0 +1,373 @@
+/*
+ * IFCE PREMIUM · PAINEL ADMINISTRATIVO
+ * Tema escuro institucional. CSS de apresentação, sem lógica de cargos,
+ * Firebase, ocultação de cartões, nem mudanças em ids/data-niveis.
+ * Base: noite #0b1711 · superfície #15251b · verde #82dfa1.
+ */
+body.ifce-premium-admin {
+  --premium-night: #091710;
+  --premium-bg: #0e1c14;
+  --premium-surface: #17281d;
+  --premium-surface-2: #1e3325;
+  --premium-border: #324d3a;
+  --premium-border-soft: #294332;
+  --premium-green: #89e0a6;
+  --premium-green-strong: #3aa268;
+  --premium-ink: #ecf8ee;
+  --premium-muted: #bdd1c2;
+  --premium-shadow: 0 18px 48px rgba(1,9,5,.18);
+  --ifce-card-bg: #17281d;
+  --ifce-card-border: #314b38;
+  --ifce-text-muted: #bfd0c2;
+  --ifce-accent-green: #9defb5;
+  background:radial-gradient(ellipse 80% 21% at 50% -4%,#1a4229 0%,transparent 81%),
+             radial-gradient(ellipse 45% 30% at 100% 15%,rgba(36,87,55,.16),transparent 85%),
+             var(--premium-bg);
+  color:var(--premium-ink);
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:15px;line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+.ifce-premium-admin *, .ifce-premium-admin *::before, .ifce-premium-admin *::after {box-sizing:border-box;}
+.ifce-premium-admin ::selection {background:#368e55;color:#fff;}
+.ifce-premium-admin :is(button,a,input,select,textarea,summary,[tabindex]):focus-visible {
+  outline:3px solid #c0ffc9;outline-offset:3px;
+}
+.ifce-premium-admin a {color:#a2efb6;text-underline-offset:3px;}
+.ifce-premium-admin a:hover {color:#d1ffdb;}
+.ifce-premium-admin .text-muted-custom {color:#c0d2c5!important;}
+.ifce-premium-admin .text-muted {color:#bdd0c2!important;}
+.ifce-premium-admin .text-secondary {color:#b9cbbd!important;}
+
+/* Cabeçalho e identidade premium. */
+.ifce-premium-admin .navbar-ifce {
+  min-height:72px;background:rgba(12,34,22,.95)!important;
+  border-bottom:1px solid #335340;box-shadow:0 8px 32px rgba(0,0,0,.18);
+  backdrop-filter:blur(18px);
+}
+.ifce-premium-admin .navbar-ifce>.container {max-width:1140px;gap:13px;}
+.ifce-premium-admin .premium-admin-brand {
+  display:inline-flex;align-items:center;gap:11px;min-width:0;
+  color:#fff;text-decoration:none;
+}
+.ifce-premium-admin .premium-admin-brand-mark {
+  width:41px;height:41px;flex:none;display:grid;place-items:center;font-size:22px;
+  border-radius:12px;color:#effff3;
+  border:1px solid rgba(184,251,197,.22);
+  background:linear-gradient(135deg,#235d38,#183522);
+}
+.ifce-premium-admin .premium-admin-brand-lines {min-width:0;display:flex;flex-direction:column;line-height:1.2;}
+.ifce-premium-admin .premium-admin-brand-lines strong {font-size:1.03rem;font-weight:850;letter-spacing:-.025em;}
+.ifce-premium-admin .premium-admin-brand-lines small {color:#a8dcb5;font-size:.69rem;letter-spacing:.045em;margin-top:3px;}
+.ifce-premium-admin .premium-admin-actions {display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+.ifce-premium-admin .navbar-ifce .btn {
+  border-radius:10px!important;font-size:.81rem;padding:8px 11px;font-weight:700;
+}
+.ifce-premium-admin #btn-menu-lateral {
+  border-color:#4e9566;color:#b3f1c3;background:rgba(99,212,125,.07);
+  min-height:41px;
+}
+.ifce-premium-admin #btn-menu-lateral:hover {background:#205a36;color:#fff;}
+.ifce-premium-admin #btn-logout-admin {border-color:rgba(250,154,154,.55);color:#ffc4c1;}
+.ifce-premium-admin #btn-logout-admin:hover {background:#8f2e2e;border-color:#8f2e2e;color:#fff;}
+.ifce-premium-admin #btn-instalar-admin {border-color:#539c6a;color:#c0f5cc;}
+.ifce-premium-admin #btn-instalar-admin:hover {background:#2a7548;color:#fff;}
+
+/* Superfícies e cartões administrativos. Respeita classes de bloqueio existentes. */
+.ifce-premium-admin #painel-admin {max-width:1140px!important;}
+.ifce-premium-admin #painel-admin .card-custom {
+  background-color:var(--premium-surface);
+  border:1px solid var(--premium-border);
+  border-radius:20px;
+  box-shadow:var(--premium-shadow);
+  overflow-wrap:anywhere;
+}
+.ifce-premium-admin #painel-admin [data-aba-pane] > .card-custom,
+.ifce-premium-admin #painel-admin #conteudo-painel-geral > .card-custom {
+  padding:clamp(18px,2.8vw,30px)!important;margin-bottom:18px!important;
+}
+.ifce-premium-admin #painel-admin .card-custom:hover {border-color:#43644a;}
+.ifce-premium-admin #painel-admin .card-title-chem {
+  font-size:clamp(1.06rem,2.1vw,1.28rem);
+  font-weight:800;line-height:1.35;letter-spacing:-.02em;
+  text-transform:none;color:#b0f4c2;
+  margin-bottom:14px;
+}
+.ifce-premium-admin #painel-admin h4,.ifce-premium-admin #painel-admin h5,
+.ifce-premium-admin #painel-admin h6 {line-height:1.35;letter-spacing:-.012em;}
+.ifce-premium-admin #painel-admin .card-title-chem + .text-muted-custom {
+  border-bottom:1px solid #2c4834;padding-bottom:13px;
+}
+.ifce-premium-admin .premium-admin-identidade {
+  background:linear-gradient(115deg,#163b27 0%,#1a4931 58%,#1f3d2b 100%)!important;
+  border:1px solid #356d46!important;
+  box-shadow:0 12px 38px rgba(0,0,0,.12)!important;
+}
+.ifce-premium-admin .premium-admin-identidade #user-name-display {
+  font-weight:820;font-size:clamp(1.15rem,2.8vw,1.4rem);
+}
+.ifce-premium-admin .premium-admin-identidade #user-role-display {color:#cfffd6;}
+.ifce-premium-admin .premium-admin-identidade .text-muted-custom {color:#b6d9bd!important;}
+
+/* Central de gestão: pesquisa como componente principal, categorias e seletor. */
+.ifce-premium-admin .admin-app-cabecalho {
+  background:linear-gradient(120deg,#173a27 0%,#1b5635 70%,#1d4630 100%);
+  border:1px solid #397953;border-radius:22px;
+  padding:clamp(22px,3.5vw,34px);box-shadow:0 16px 38px rgba(3,25,12,.16);
+  margin-bottom:20px;
+}
+.ifce-premium-admin .admin-app-titulo {
+  font-weight:870;color:#f1fff3;letter-spacing:-.04em;
+  font-size:clamp(1.6rem,3.3vw,2.1rem);
+}
+.ifce-premium-admin .admin-app-texto {color:#cbe8d2;font-size:.91rem;line-height:1.5;}
+.ifce-premium-admin .admin-app-cabecalho .form-label {
+  color:#e0fae5;font-weight:740;margin-bottom:8px;
+  letter-spacing:.01em;text-transform:none;
+}
+.ifce-premium-admin #admin-app-busca {
+  background:rgba(9,33,19,.64);color:#f3fff4;border:1px solid #75a882;
+  font-size:.97rem;padding:13px 16px;min-height:50px;
+}
+.ifce-premium-admin #admin-app-busca::placeholder {color:#bad5c0;}
+.ifce-premium-admin #admin-app-busca:focus {border-color:#abedbc;box-shadow:0 0 0 3px rgba(154,244,169,.18);}
+.ifce-premium-admin .admin-app-resultados {gap:8px;}
+.ifce-premium-admin .admin-app-busca-item {
+  background:#204c34;color:#f1fff4;border:1px solid #457f58;
+  border-radius:11px;font-weight:600;min-height:42px;
+}
+.ifce-premium-admin .admin-app-busca-item:hover {background:#2d734a;border-color:#86dba4;}
+.ifce-premium-admin .admin-app-abas {
+  gap:9px;padding:6px 3px 16px;margin-bottom:7px;
+  scrollbar-width:thin;scrollbar-color:#41654a transparent;
+}
+.ifce-premium-admin .admin-app-aba {
+  border:1px solid #3f6449;color:#d1e9d6;
+  background:#1d3225;border-radius:12px;font-size:.87rem;
+  padding:12px 17px;min-height:46px;font-weight:730;
+  transition:background .15s ease, border-color .15s ease;
+}
+.ifce-premium-admin .admin-app-aba.ativo {
+  background:linear-gradient(135deg,#2d9759,#267b49);
+  border-color:#74ca90;color:#fff;box-shadow:0 6px 17px rgba(6,25,12,.13);
+}
+.ifce-premium-admin .admin-app-aba:hover {background:#2d5038;border-color:#70b887;}
+.ifce-premium-admin .admin-app-aba.ativo:hover {background:#2e9457;}
+.ifce-premium-admin .admin-app-seletor {
+  background:#172e20;border:1px solid #376348;border-radius:18px;
+  padding:clamp(17px,2.5vw,25px);margin-bottom:20px;
+  box-shadow:0 10px 25px rgba(0,0,0,.09);
+}
+.ifce-premium-admin .admin-app-subtitulo {color:#baf9cb;font-size:1.18rem;font-weight:830;}
+.ifce-premium-admin .admin-app-seletor .admin-app-texto {color:#bcd3c3;}
+.ifce-premium-admin .admin-app-seletor .form-label {margin-top:2px;}
+.ifce-premium-admin #admin-app-escolha {background:#10271b;border-color:#45694e;min-height:47px;}
+
+/* Navegação inferior e lateral. Nunca mudar exibição com display próprio. */
+.ifce-premium-admin #bottom-nav {
+  background:rgba(11,29,18,.97);
+  border-top:1px solid #355c43;
+  box-shadow:0 -8px 30px rgba(0,0,0,.19);
+  backdrop-filter:blur(18px);
+  padding:8px 8px calc(10px + env(safe-area-inset-bottom));
+}
+.ifce-premium-admin #bottom-nav button {
+  font-size:clamp(10px,2.5vw,12px);font-weight:650;color:#b5cdb9;
+  min-height:53px;gap:3px;border-radius:12px;
+}
+.ifce-premium-admin #bottom-nav button i {font-size:21px;}
+.ifce-premium-admin #bottom-nav button.ativo {
+  background:rgba(83,197,108,.2);color:#b7f9c9;font-weight:800;
+}
+.ifce-premium-admin #bottom-nav button:hover {color:#e5ffe9;background:rgba(83,197,108,.14);}
+.ifce-premium-admin #sidebarMenu {background:#101f16!important;border-right:1px solid #36533d!important;}
+.ifce-premium-admin #sidebarMenu .offcanvas-header {border-bottom-color:#37503d!important;padding:19px 20px;}
+.ifce-premium-admin #sidebarMenuLabel {color:#b5f3c2!important;font-size:1.06rem;}
+.ifce-premium-admin #sidebarMenu .offcanvas-body {padding:16px 18px!important;}
+.ifce-premium-admin .admin-menu-categoria {
+  color:#a4e5b5;letter-spacing:.10em;font-size:.72rem;
+  border-bottom:1px solid #34513e;padding-bottom:7px;
+}
+.ifce-premium-admin .admin-menu-link {
+  background:#1b3122!important;color:#e4f4e8!important;
+  border:1px solid #314e3b!important;
+  border-radius:10px!important;padding:12px 13px!important;
+  transition:background .14s ease;
+}
+.ifce-premium-admin .admin-menu-link:hover {background:#285a3b!important;}
+.ifce-premium-admin .admin-menu-link i {color:#8ee5aa!important;}
+
+/* Campos e formulários (sem tocar em valores, eventos ou permissões). */
+.ifce-premium-admin .form-label {
+  color:#c5dfce;font-weight:700;letter-spacing:.025em;
+  text-transform:none;font-size:.83rem;
+}
+.ifce-premium-admin .form-control,
+.ifce-premium-admin .form-select,
+.ifce-premium-admin textarea,
+.ifce-premium-admin .input-group-text {
+  background-color:#102119;border:1px solid #406049;
+  border-radius:11px;color:#eefaf0;
+  font-size:.91rem;min-height:44px;
+}
+.ifce-premium-admin .form-control::placeholder,
+.ifce-premium-admin textarea::placeholder {color:#9fb6a7;opacity:1;}
+.ifce-premium-admin .form-control:focus,
+.ifce-premium-admin .form-select:focus,
+.ifce-premium-admin textarea:focus {
+  background:#142b1d;border-color:#83d7a0;color:#fff;
+  box-shadow:0 0 0 3px rgba(105,218,132,.13);
+}
+.ifce-premium-admin .form-control:disabled,
+.ifce-premium-admin .form-select:disabled,
+.ifce-premium-admin .form-control[readonly] {background:#273b2d;color:#d1ddcf;opacity:1;}
+.ifce-premium-admin .form-control-sm,
+.ifce-premium-admin .form-select-sm {min-height:36px;font-size:.84rem;padding:6px 10px;}
+.ifce-premium-admin .form-check-input {
+  border-color:#71957b;background-color:#162b1d;
+}
+.ifce-premium-admin .form-check-input:checked {border-color:#56c67d;background-color:#25894f;}
+.ifce-premium-admin .form-check-label {color:#dfebdf;}
+.ifce-premium-admin .form-range::-webkit-slider-thumb {background:#69d48d;}
+.ifce-premium-admin .form-range::-moz-range-thumb {background:#69d48d;}
+.ifce-premium-admin select option {background:#14261b;color:#fff;}
+
+/* Hierarquia de ações: principal, secundária, destrutiva. */
+.ifce-premium-admin .btn {
+  border-radius:10px;min-height:38px;font-weight:660;line-height:1.45;
+}
+.ifce-premium-admin .btn-ifce,
+.ifce-premium-admin .btn-success {
+  background:linear-gradient(135deg,#2b9558,#237645);
+  color:#fff;border:1px solid #54bc78;
+  box-shadow:0 5px 17px rgba(1,14,6,.10);
+}
+.ifce-premium-admin .btn-ifce:hover,
+.ifce-premium-admin .btn-success:hover {background:#2b9d5c;border-color:#91ecaa;color:#fff;transform:none;}
+.ifce-premium-admin .btn-outline-light {border:1px solid #668772;color:#ecf7ef;background:transparent;}
+.ifce-premium-admin .btn-outline-light:hover {background:#365442;color:#fff;border-color:#90b59c;}
+.ifce-premium-admin .btn-outline-success {border:1px solid #519568;color:#bdf4ca;background:#1b3526;}
+.ifce-premium-admin .btn-outline-success:hover {background:#287e4b;color:#fff;border-color:#73d18c;}
+.ifce-premium-admin .btn-outline-secondary {border:1px solid #728a79;color:#e0eee3;}
+.ifce-premium-admin .btn-outline-secondary:hover {background:#3a5542;color:#fff;}
+.ifce-premium-admin .btn-outline-danger {color:#ffc4c4;border-color:#a85c5e;}
+.ifce-premium-admin .btn-outline-danger:hover {background:#923b3f;color:#fff;}
+.ifce-premium-admin .btn-danger {background:#a23b40;border-color:#b65b5e;color:#fff;}
+.ifce-premium-admin .btn-danger:hover {background:#8c2c33;color:#fff;}
+.ifce-premium-admin .btn-link {color:#9be9b2;}
+.ifce-premium-admin .btn-sm {min-height:34px;padding:7px 11px;}
+.ifce-premium-admin .btn:disabled {opacity:.6;cursor:not-allowed;}
+
+/* Indicadores, tabelas e componentes diversos da diretoria. */
+.ifce-premium-admin .list-group-item {
+  background:#13271b;color:#e8f3e9;border:1px solid #324d39;
+  border-radius:11px!important;padding:14px 15px;
+}
+.ifce-premium-admin .list-group-item:hover {border-color:#4c7d58;}
+.ifce-premium-admin .table {
+  --bs-table-color:#ecf4ed;
+  --bs-table-bg:#192b20;
+  --bs-table-border-color:#355340;
+  --bs-table-striped-color:#ecf4ed;
+  --bs-table-striped-bg:#213929;
+  --bs-table-hover-color:#fff;
+  --bs-table-hover-bg:#2e4936;
+  color:#ecf4ed;vertical-align:middle;
+}
+.ifce-premium-admin .table th,.ifce-premium-admin .table td {padding:11px 12px;}
+.ifce-premium-admin .table th {font-weight:750;}
+.ifce-premium-admin .table-responsive {border-radius:12px;border:1px solid #314b37;}
+.ifce-premium-admin .table-light {--bs-table-color:#1c3424;--bs-table-bg:#dcefe0;}
+.ifce-premium-admin .badge {font-weight:730;padding:5px 9px;letter-spacing:.01em;}
+.ifce-premium-admin .badge.bg-success {background:#277d4b!important;}
+.ifce-premium-admin .badge.bg-secondary {background:#43574a!important;color:#fff;}
+.ifce-premium-admin .badge.bg-warning {color:#302309!important;}
+.ifce-premium-admin .alert {border-radius:12px;line-height:1.5;}
+.ifce-premium-admin .alert-success {background:#143b26;color:#c4f2d0;border:1px solid #397d4c;}
+.ifce-premium-admin .alert-danger {background:#452326;color:#ffcfcc;border:1px solid #965459;}
+.ifce-premium-admin .alert-warning {background:#473922;color:#ffe7b3;border:1px solid #91754a;}
+.ifce-premium-admin .alert-info {background:#173541;color:#d0f1f6;border:1px solid #3c7a87;}
+.ifce-premium-admin .alert-light {background:#23352a;color:#e3f5e6;border:1px solid #486454;}
+.ifce-premium-admin .progress {height:10px;border-radius:999px;background:#324b39;}
+.ifce-premium-admin .progress-bar {background:#4abe78;}
+.ifce-premium-admin .border {border-color:#395541!important;}
+.ifce-premium-admin .rounded {border-radius:12px!important;}
+.ifce-premium-admin details {
+  border:1px solid #3b5541;border-radius:12px;padding:12px 15px;background:#1b2c20;
+}
+.ifce-premium-admin details+details {margin-top:8px;}
+.ifce-premium-admin details summary {color:#d4f7dd;font-weight:720;}
+.ifce-premium-admin hr {border-color:#416449;opacity:.8;}
+.ifce-premium-admin .modal-content {
+  background:#1d3023!important;color:#f4fff5!important;
+  border:1px solid #47624b!important;border-radius:20px!important;
+  box-shadow:0 26px 85px rgba(0,0,0,.4);
+}
+.ifce-premium-admin .modal-header {border-color:#36513d;}
+.ifce-premium-admin .modal-footer {border-color:#36513d;}
+.ifce-premium-admin .toast {background:#203529;color:#f6fff7;border-radius:12px;}
+.ifce-premium-admin #toast-container .toast {box-shadow:0 12px 28px rgba(0,0,0,.23);}
+.ifce-premium-admin .bg-white {color:#193421;}
+.ifce-premium-admin .bg-dark {background:#101a13!important;}
+
+/* Login: moderno, discreto e com foco na ação principal. */
+.ifce-premium-admin #tela-login-admin {
+  max-width:460px!important;margin-top:min(9vh,86px)!important;
+}
+.ifce-premium-admin #tela-login-admin>.card-custom {
+  border:1px solid #41684e;background:linear-gradient(145deg,#1a3323,#15251b);
+  border-radius:24px;padding:clamp(25px,4vw,37px)!important;
+  box-shadow:0 28px 80px rgba(0,0,0,.32);
+}
+.ifce-premium-admin #tela-login-admin .btn-ifce {
+  margin-top:10px;min-height:47px;font-size:.98rem;
+}
+.ifce-premium-admin #tela-login-admin .form-control {min-height:47px;}
+.ifce-premium-admin #tela-login-admin h4 {letter-spacing:-.025em;font-size:1.5rem;}
+.ifce-premium-admin .offcanvas .btn-close:focus-visible {outline:3px solid #b7ffd0;}
+.ifce-premium-admin #rodape-painel {color:#91b09b!important;padding-top:20px;}
+
+/* Acessibilidade, responsividade e integração com app instalado. */
+@media(min-width:1100px) {
+  .ifce-premium-admin #bottom-nav {
+    left:50%;right:auto;transform:translateX(-50%);
+    width:min(670px,calc(100% - 30px));
+    border:1px solid #355c43;border-bottom:0;
+    border-radius:18px 18px 0 0;
+  }
+}
+@media(max-width:700px) {
+  .ifce-premium-admin .navbar-ifce {min-height:62px;}
+  .ifce-premium-admin .navbar-ifce>.container {padding-left:12px;padding-right:12px;}
+  .ifce-premium-admin .premium-admin-brand-mark {width:35px;height:35px;font-size:19px;border-radius:10px;}
+  .ifce-premium-admin .premium-admin-brand-lines strong {font-size:.89rem;}
+  .ifce-premium-admin .premium-admin-brand-lines small {font-size:.61rem;}
+  .ifce-premium-admin #painel-admin {padding-left:12px;padding-right:12px;}
+  .ifce-premium-admin #painel-admin [data-aba-pane]>.card-custom,
+  .ifce-premium-admin #painel-admin #conteudo-painel-geral>.card-custom {padding:17px!important;}
+  .ifce-premium-admin .admin-app-cabecalho {padding:20px 17px;border-radius:19px;}
+  .ifce-premium-admin .admin-app-seletor {padding:18px 16px;}
+  .ifce-premium-admin .admin-app-aba {padding:11px 12px;}
+}
+@media(max-width:420px) {
+  .ifce-premium-admin .premium-admin-brand-lines small {display:none;}
+  .ifce-premium-admin .premium-admin-brand-lines strong {font-size:.78rem;}
+  .ifce-premium-admin .navbar-ifce .btn {padding:7px 8px;font-size:.72rem;}
+  .ifce-premium-admin .premium-admin-actions {gap:4px;}
+  .ifce-premium-admin #bottom-nav button {font-size:10px;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .ifce-premium-admin *, .ifce-premium-admin *::before, .ifce-premium-admin *::after {
+    scroll-behavior:auto!important;animation-duration:.01ms!important;
+    transition-duration:.01ms!important;
+  }
+}
+@media print {
+  .ifce-premium-admin .navbar-ifce,
+  .ifce-premium-admin #bottom-nav,
+  .ifce-premium-admin #admin-app-cabecalho,
+  .ifce-premium-admin #abas-painel,
+  .ifce-premium-admin #admin-app-seletor {display:none!important;}
+  .ifce-premium-admin {background:#fff!important;color:#000!important;}
+  .ifce-premium-admin #painel-admin .card-custom {box-shadow:none!important;}
+}
