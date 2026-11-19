@@ -93,8 +93,9 @@
           #bottom-nav button{font-size:10px}
         }
     </style>
+    <link rel="stylesheet" href="premium-admin.css?v=20261119">
 </head>
-<body>
+<body class="ifce-premium-admin">
 
     <nav class="navbar navbar-dark navbar-ifce mb-4 sticky-top">
         <div class="container d-flex justify-content-between align-items-center">
@@ -102,10 +103,15 @@
                 <button id="btn-menu-lateral" class="btn btn-outline-success btn-sm d-none fw-bold" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" style="border-radius: 8px;">
                     <i class="bi bi-list fs-5"></i> Menu
                 </button>
-                <span class="navbar-brand-chem m-0">🧪 IFCE | <span>PAINEL ADMIN</span></span>
+                <span class="navbar-brand-chem premium-admin-brand m-0" aria-label="Grêmio IFCE, Painel Administrativo">
+                    <span class="premium-admin-brand-mark" aria-hidden="true">🌿</span>
+                    <span class="premium-admin-brand-lines"><strong>Grêmio IFCE</strong><small>Painel Administrativo</small></span>
+                </span>
             </div>
-            <button id="btn-instalar-admin" onclick="instalarAdmin()" class="btn btn-outline-success btn-sm fw-bold" style="display:none;border-radius:8px;">📲 Instalar</button>
-            <button id="btn-logout-admin" onclick="fazerLogoutAdmin()" class="btn btn-outline-danger btn-sm d-none fw-bold" style="border-radius: 8px;">Sair do Admin</button>
+            <div class="premium-admin-actions">
+                <button id="btn-instalar-admin" onclick="instalarAdmin()" class="btn btn-outline-success btn-sm fw-bold" style="display:none;border-radius:8px;">📲 Instalar</button>
+                <button id="btn-logout-admin" onclick="fazerLogoutAdmin()" class="btn btn-outline-danger btn-sm d-none fw-bold" style="border-radius: 8px;">Sair</button>
+            </div>
         </div>
     </nav>
 
@@ -188,7 +194,7 @@
 
         <div id="conteudo-painel-geral">
 
-            <div class="card card-custom p-3 mb-4" style="background: rgba(45, 134, 71, 0.15); border-left: 5px solid var(--ifce-accent-green);">
+            <div class="card card-custom premium-admin-identidade p-3 mb-4" style="background: rgba(45, 134, 71, 0.15); border-left: 5px solid var(--ifce-accent-green);">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <span class="small text-muted-custom text-uppercase fw-bold">Identificação de Cargo</span>
