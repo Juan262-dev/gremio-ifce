@@ -382,7 +382,7 @@
                     if (en.isIntersecting) bar.querySelectorAll('button[data-alvo]').forEach(b => b.classList.toggle('ativo', b.dataset.alvo === en.target.id));
                 });
             }, { rootMargin: '-35% 0px -55% 0px' });
-            (atalhosPorNivel[nivel] || []).forEach(id => {
+            (atalhosPorNivel[nivel] || []).slice(0, 3).forEach(id => {
                 const m = modulosSistema.find(x => x.id === id);
                 const el = document.getElementById(id);
                 if (!m || !el || el.style.display === 'none') return;
@@ -403,21 +403,75 @@
 
         function renderizarMenuLateral(dadosUsuario) {
             const containerMenu = document.getElementById('itensMenuNav');
-            containerMenu.innerHTML = '';
-            modulosSistema.filter(m => ((emailLogado === ROOT_EMAIL && !nivelPreview) || m.niveisPermitidos.includes(dadosUsuario.nivel)) && (!m.soRaiz || (emailLogado === ROOT_EMAIL && !nivelPreview)) && !(travas[m.id] === true && !(emailLogado === ROOT_EMAIL && !nivelPreview))).forEach(modulo => {
-                const a = document.createElement('a');
-                a.href = `#${modulo.id}`;
-                a.className = 'list-group-item list-group-item-action bg-dark text-white border-secondary d-flex align-items-center gap-2 py-3';
-                a.innerHTML = `<i class="bi ${modulo.icon} fs-5 text-success"></i> <span>${esc(modulo.label)}</span>`;
-                a.onclick = e => {
-                    e.preventDefault();
-                    const el = document.getElementById(modulo.id);
-                    if (el) irPara(modulo.id);
-                    const inst = bootstrap.Offcanvas.getInstance(document.getElementById('sidebarMenu'));
-                    if (inst) inst.hide();
-                };
-                containerMenu.appendChild(a);
+            containerMenu.replaceChildren();
+            const raiz = emailLogado === ROOT_EMAIL && !nivelPreview;
+            const permitidos = modulosSistema.filter(m =>
+                (raiz || m.niveisPermitidos.includes(dadosUsuario.nivel)) &&
+                (!m.soRaiz || raiz) && !(travas[m.id] === true && !raiz) &&
+                document.getElementById(m.id));
+            const barra = containerMenu.parentElement;
+            let busca = document.getElementById('admin-menu-busca');
+            if (!busca) {
+                const label = document.createElement('label');
+                label.htmlFor = 'admin-menu-busca';
+                label.className = 'form-label';
+                label.textContent = 'Buscar neste menu';
+                busca = document.createElement('input');
+                busca.type = 'search';
+                busca.id = 'admin-menu-busca';
+                busca.className = 'form-control form-control-sm mb-3';
+                busca.maxLength = 80;
+                busca.placeholder = 'Digite o nome da ferramenta';
+                label.appendChild(busca);
+                barra.insertBefore(label, containerMenu);
+            } else busca.value = '';
+            const grupos = new Map(ABAS.map(([chave,rotulo]) => [chave,{rotulo,itens:[]}]));
+            permitidos.forEach(modulo => {
+                const pai = document.getElementById(modulo.id).closest('[data-aba-pane]');
+                const grupo = pai ? pai.dataset.abaPane : 'outros';
+                (grupos.get(grupo) || grupos.get('outros')).itens.push(modulo);
             });
+            for (const [chave, grupo] of grupos) {
+                if (!grupo.itens.length) continue;
+                const bloco = document.createElement('section');
+                bloco.dataset.adminGrupoLista = chave;
+                const titulo = document.createElement('h6');
+                titulo.className = 'admin-menu-categoria';
+                titulo.textContent = grupo.rotulo;
+                bloco.appendChild(titulo);
+                grupo.itens.forEach(modulo => {
+                    const a = document.createElement('a');
+                    a.href = '#' + modulo.id;
+                    a.className = 'list-group-item list-group-item-action d-flex align-items-center gap-2 py-2 admin-menu-link';
+                    const i = document.createElement('i');
+                    i.className = 'bi ' + modulo.icon + ' fs-6 text-success';
+                    i.setAttribute('aria-hidden','true');
+                    const texto = document.createElement('span');
+                    texto.textContent = modulo.label;
+                    a.append(i,texto);
+                    a.dataset.adminBusca = modulo.label.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+                    a.onclick = e => {
+                        e.preventDefault();
+                        irPara(modulo.id);
+                        const inst = bootstrap.Offcanvas.getInstance(document.getElementById('sidebarMenu'));
+                        if (inst) inst.hide();
+                    };
+                    bloco.appendChild(a);
+                });
+                containerMenu.appendChild(bloco);
+            }
+            busca.oninput = () => {
+                const termo = busca.value.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+                containerMenu.querySelectorAll('[data-admin-grupo-lista]').forEach(sec => {
+                    let encontrados = 0;
+                    sec.querySelectorAll('[data-admin-busca]').forEach(link => {
+                        const ok = link.dataset.adminBusca.includes(termo);
+                        link.hidden = !ok;
+                        if (ok) encontrados++;
+                    });
+                    sec.hidden = encontrados === 0;
+                });
+            };
         }
 
         function iniciarContadorRegressivo(expiracaoMs) {
