@@ -28,7 +28,7 @@
         const ABAS = [
             ['inicio', 'Início', ['secao-resumo', 'secao-tarefas', 'secao-tarefas-admin', 'secao-novidades', 'secao-ajuda', 'secao-guia']],
             ['comunicacao', 'Comunicação', ['secao-mural', 'secao-divulgacao', 'secao-artes', 'secao-enquetes-criar', 'secao-enquetes-lista', 'secao-videos', 'secao-estudos', 'secao-questoes', 'secao-flashcards', 'secao-pautas', 'secao-sugestoes']],
-            ['alunos', 'Alunos', ['secao-alunos-cadastrar', 'secao-alunos-lista', 'secao-punicoes']],
+            ['alunos', 'Alunos', ['secao-alunos-cadastrar', 'secao-alunos-lista', 'secao-carteirinhas', 'secao-punicoes']],
             ['atividades', 'Atividades', ['secao-eventos', 'secao-jogos', 'secao-materiais', 'secao-cultura', 'secao-racial', 'secao-racial-enc', 'secao-racial-apoio', 'secao-rel-cult', 'secao-rel-racial']],
             ['financeiro', 'Financeiro', ['secao-caixa', 'secao-tes-orc', 'secao-tes-contas', 'secao-rel-tes']],
             ['diretoria', 'Diretoria', ['secao-diretoria', 'secao-avaliacoes', 'secao-convites', 'secao-agenda', 'secao-avisos-wpp', 'secao-mu-campanhas', 'secao-mu-calendario', 'secao-mu-canais', 'secao-mu-indicadores', 'secao-ge-glossario', 'secao-ge-debates', 'secao-ge-metas', 'secao-ge-indicadores', 'secao-div-atividades', 'secao-div-materiais', 'secao-div-rel', 'secao-sec-alunos', 'secao-rel-sec', 'secao-documentos', 'secao-reunioes', 'secao-presenca', 'secao-atas', 'secao-relatorio-mensal', 'secao-relatorio', 'secao-auditoria']],

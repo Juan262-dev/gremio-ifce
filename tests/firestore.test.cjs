@@ -3,7 +3,7 @@ const { before, after, beforeEach, test } = require('node:test');
 const { readFileSync } = require('node:fs');
 const { initializeTestEnvironment, assertSucceeds, assertFails } = require('@firebase/rules-unit-testing');
 const {
-  doc, setDoc, updateDoc, getDoc, runTransaction, serverTimestamp, Timestamp
+  doc, setDoc, updateDoc, getDoc, getDocs, query, collection, where, deleteDoc, runTransaction, serverTimestamp, Timestamp
 } = require('firebase/firestore');
 
 let env;
@@ -156,4 +156,66 @@ test('Conta de emergência só pode consultar cadastros pendentes', async () => 
   const db = usuario(emergency);
   await assertSucceeds(getDoc(doc(db, 'alunos/pendente@aluno.ifce.edu.br')));
   await assertFails(getDoc(doc(db, 'alunos', aluno)));
+});
+
+test('Carteirinha: aluno ativo emite, consulta e renova somente a própria', async () => {
+  await gravarInicial([cadastro(aluno, 'Aluno Exemplo'), cadastro(outro, 'Outro Aluno')]);
+  const db = usuario(aluno);
+  const ref = doc(db, 'carteirinhas', aluno);
+  const codigo1 = 'a'.repeat(64);
+  const codigo2 = 'b'.repeat(64);
+  await assertSucceeds(setDoc(ref, { codigo: codigo1, criadoEm: serverTimestamp() }));
+  const emitida = await assertSucceeds(getDoc(ref));
+  if (emitida.data().codigo !== codigo1) throw Error('Código emitido incorreto');
+  await assertFails(getDoc(doc(db, 'carteirinhas', outro)));
+  await assertFails(setDoc(doc(db, 'carteirinhas', outro), { codigo: codigo2, criadoEm: serverTimestamp() }));
+  await assertFails(updateDoc(ref, { codigo: 'curto', criadoEm: serverTimestamp() }));
+  await assertSucceeds(updateDoc(ref, { codigo: codigo2, criadoEm: serverTimestamp() }));
+  const renovada = await assertSucceeds(getDoc(ref));
+  if (renovada.data().codigo !== codigo2) throw Error('Renovação não gravada');
+  await assertSucceeds(deleteDoc(ref));
+});
+
+test('Carteirinha: consulta por código restrita à Presidência e TI', async () => {
+  await gravarInicial([
+    cadastro(aluno, 'Aluno Exemplo'),
+    ['cargos/' + presidente, { nome: 'Presidente', nivel: 'admin' }],
+    ['carteirinhas/' + aluno, { codigo: 'c'.repeat(64), criadoEm: Timestamp.now() }]
+  ]);
+  const studentDB = usuario(aluno);
+  const adminDB = usuario(presidente);
+  const buscaAluno = query(collection(studentDB, 'carteirinhas'), where('codigo', '==', 'c'.repeat(64)));
+  const buscaAdmin = query(collection(adminDB, 'carteirinhas'), where('codigo', '==', 'c'.repeat(64)));
+  await assertFails(getDocs(buscaAluno));
+  const lista = await assertSucceeds(getDocs(buscaAdmin));
+  if (lista.size !== 1) throw Error('Carteirinha não localizada pelo código');
+  await assertSucceeds(getDoc(doc(adminDB, 'carteirinhas', aluno)));
+});
+
+test('Carteirinha: aluno bloqueado não pode emitir código', async () => {
+  await gravarInicial([['alunos/' + aluno, { email: aluno, nome: 'Aluno Bloqueado', ativo: false }]]);
+  const db = usuario(aluno);
+  await assertFails(setDoc(doc(db, 'carteirinhas', aluno), {
+    codigo: 'd'.repeat(64), criadoEm: serverTimestamp()
+  }));
+});
+
+test('Presença: só Presidência registra pessoa realmente inscrita, uma vez', async () => {
+  await gravarInicial([
+    cadastro(aluno, 'Aluno Exemplo'), cadastro(outro, 'Outro Aluno'),
+    ['cargos/' + presidente, { nome: 'Presidente', nivel: 'admin' }],
+    ['eventos/eventoCarteira', { titulo: 'Oficina', inscritos: [aluno], espera: [outro], vagas: 1 }]
+  ]);
+  const dbAdmin = usuario(presidente);
+  const dbAluno = usuario(aluno);
+  const presenca = doc(dbAdmin, 'presencas_eventos', 'eventoCarteira', 'alunos', aluno);
+  const outroNaEspera = doc(dbAdmin, 'presencas_eventos', 'eventoCarteira', 'alunos', outro);
+  const dados = { email: aluno, conferidoPor: presidente, conferidoEm: serverTimestamp() };
+  await assertFails(setDoc(doc(dbAluno, 'presencas_eventos', 'eventoCarteira', 'alunos', aluno), dados));
+  await assertFails(setDoc(outroNaEspera, { email: outro, conferidoPor: presidente, conferidoEm: serverTimestamp() }));
+  await assertFails(setDoc(presenca, { email: outro, conferidoPor: presidente, conferidoEm: serverTimestamp() }));
+  await assertSucceeds(setDoc(presenca, dados));
+  await assertSucceeds(getDoc(presenca));
+  await assertFails(setDoc(presenca, dados));
+  await assertFails(getDoc(doc(dbAluno, 'presencas_eventos', 'eventoCarteira', 'alunos', aluno)));
 });
