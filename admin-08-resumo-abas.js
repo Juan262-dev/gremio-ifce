@@ -27,7 +27,7 @@
 /* ================= ABAS DO PAINEL ================= */
         const ABAS = [
             ['inicio', 'Início', ['secao-resumo', 'secao-tarefas', 'secao-tarefas-admin', 'secao-novidades', 'secao-ajuda', 'secao-guia']],
-            ['comunicacao', 'Comunicação', ['secao-mural', 'secao-divulgacao', 'secao-artes', 'secao-enquetes-criar', 'secao-enquetes-lista', 'secao-videos', 'secao-estudos', 'secao-questoes', 'secao-flashcards', 'secao-pautas', 'secao-sugestoes']],
+            ['comunicacao', 'Comunicação', ['secao-mural', 'secao-divulgacao', 'secao-artes', 'secao-enquetes-criar', 'secao-enquetes-lista', 'secao-videos', 'secao-estudos', 'secao-laboratorio', 'secao-questoes', 'secao-flashcards', 'secao-pautas', 'secao-sugestoes']],
             ['alunos', 'Alunos', ['secao-alunos-cadastrar', 'secao-alunos-lista', 'secao-carteirinhas', 'secao-punicoes']],
             ['atividades', 'Atividades', ['secao-eventos', 'secao-jogos', 'secao-materiais', 'secao-cultura', 'secao-racial', 'secao-racial-enc', 'secao-racial-apoio', 'secao-rel-cult', 'secao-rel-racial']],
             ['financeiro', 'Financeiro', ['secao-caixa', 'secao-tes-orc', 'secao-tes-contas', 'secao-rel-tes']],
