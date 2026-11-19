@@ -74,8 +74,9 @@ test('Inscrição preserva vagas e posição da lista de espera', async () => {
     cadastro(aluno, 'Aluno Exemplo'), cadastro(outro, 'Outro Aluno'),
     ['eventos/e1', { titulo: 'Evento de Teste', inscritos: [], espera: [], vagas: 1 }]
   ]);
-  const evento = doc(usuario(aluno), 'eventos/e1');
-  await assertSucceeds(runTransaction(usuario(aluno), async t => {
+  const dbAluno = usuario(aluno);
+  const evento = doc(dbAluno, 'eventos/e1');
+  await assertSucceeds(runTransaction(dbAluno, async t => {
     const d = await t.get(evento);
     t.update(evento, { inscritos: [...d.data().inscritos, aluno] });
   }));
@@ -86,7 +87,7 @@ test('Inscrição preserva vagas e posição da lista de espera', async () => {
     t.update(evento2, { espera: [...d.data().espera, outro] });
   }));
   await assertFails(updateDoc(evento2, { inscritos: [outro], espera: [] }));
-  await assertSucceeds(runTransaction(usuario(aluno), async t => {
+  await assertSucceeds(runTransaction(dbAluno, async t => {
     const d = await t.get(evento);
     t.update(evento, {
       inscritos: d.data().inscritos.filter(e => e !== aluno).concat([d.data().espera[0]]),
