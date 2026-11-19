@@ -98,6 +98,9 @@ body{background-color:#f4f6f9}
 .portal-app-subitem{background:#fff;color:#286641;border:1px solid #c5dec9;font-size:.86rem;font-weight:600;padding:9px 13px;border-radius:999px;transition:background .15s ease}
 .portal-app-subitem.ativo{background:#23763d;color:#fff;border-color:#23763d}
 .portal-app-subitem:hover{border-color:#23763d}
+.portal-app-editar-perfil{display:inline-flex;border:1px solid #277348;background:#fff;color:#195d34;border-radius:12px;padding:10px 15px;font-weight:700;font-size:.86rem;margin:5px 0 2px}
+.portal-app-editar-perfil[hidden]{display:none!important}
+.portal-app-editar-perfil:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
 .portal-app-subitem:focus-visible,.portal-app-atalho:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
 .portal-app-dashboard{margin-top:18px}
 .portal-app-dashboard[hidden],.portal-app-vazio[hidden]{display:none!important}
@@ -2787,6 +2790,7 @@ function carregarPerfil() {
       return;
     }
     if (card) card.style.display = 'none';
+    if (window.PortalNavegacao) PortalNavegacao.atualizar();
     const p = d.data();
     (p.materias || []).forEach(m => {
       const el = [...document.querySelectorAll('[data-qdisc]')].find(x => x.value === m);
