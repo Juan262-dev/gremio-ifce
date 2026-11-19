@@ -278,6 +278,11 @@ body.ifce-premium-admin {
 .ifce-premium-admin .table th {font-weight:750;}
 .ifce-premium-admin .table-responsive {border-radius:12px;border:1px solid #314b37;}
 .ifce-premium-admin .table-light {--bs-table-color:#1c3424;--bs-table-bg:#dcefe0;}
+/* Preserve linhas de status: warning, danger e success nunca ficam invisíveis. */
+.ifce-premium-admin .table-warning {--bs-table-color:#fff2d1;--bs-table-bg:#5c4828;--bs-table-border-color:#826e43;}
+.ifce-premium-admin .table-danger {--bs-table-color:#ffe0df;--bs-table-bg:#5c292b;--bs-table-border-color:#7e494d;}
+.ifce-premium-admin .table-success {--bs-table-color:#d9fbe2;--bs-table-bg:#1c5736;--bs-table-border-color:#43865c;}
+.ifce-premium-admin .table-info {--bs-table-color:#d8f4fc;--bs-table-bg:#214b5c;--bs-table-border-color:#437487;}
 .ifce-premium-admin .badge {font-weight:730;padding:5px 9px;letter-spacing:.01em;}
 .ifce-premium-admin .badge.bg-success {background:#277d4b!important;}
 .ifce-premium-admin .badge.bg-secondary {background:#43574a!important;color:#fff;}
