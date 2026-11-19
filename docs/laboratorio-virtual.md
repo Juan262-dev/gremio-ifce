@@ -37,12 +37,12 @@ um isótopo de referência; não é necessariamente uma massa atômica padrão.
 ## Firebase
 Nova coleção `laboratorio_conteudos` com campos:
 `titulo`, `assunto`, `descricao`, `link`, `publicado`,
-`criadoPor`, `criadoEm`, e opcionalmente `atualizadoEm`.
+`criadoEm`, e opcionalmente `atualizadoEm`. O e-mail de quem publica não é armazenado em documentos de acesso dos alunos.
 
 Regras em `firestore.rules`:
 - alunos ativos podem consultar **somente** `publicado == true`;
 - rascunhos e publicação/edição/exclusão requerem Presidência ou TI;
-- o autor e a data de criação não podem ser alterados após a emissão;
+- a data de criação não pode ser alterada; a ação da equipe fica registrada no log administrativo privado;
 - campos e tamanhos são validados, além do protocolo HTTPS dos links;
 - o app utiliza uma consulta com filtro `publicado == true`, em vez
   de listar todos os documentos para estudantes.
