@@ -100,7 +100,8 @@ service cloud.firestore {
     function isAdmin() { return isRoot() || (temNivel('admin') && !congelado()); }
     function isPresidenciaReal() { return temNivel('admin') && !congelado(); }
     function isDiretoria() {
-      return isAdmin() || (temNivelEm(['membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos']) && !congelado());
+      // Consulta o cargo uma vez em vez de repetir a hierarquia de isAdmin.
+      return isRoot() || (temNivelEm(['admin', 'membro', 'marketing', 'tesouraria', 'cultura', 'racial', 'secretaria', 'mulheres', 'generos']) && !congelado());
     }
     function isMkt() { return isAdmin() || (temNivel('marketing') && !congelado()); }
     function isGestor() { return isAdmin() || (temNivel('membro') && !congelado()); }
@@ -115,7 +116,9 @@ service cloud.firestore {
             || get(/databases/$(database)/documents/alunos/$(mail())).data.get('status', '') != 'aprovado');
     }
     function ativo() {
-      return isDiretoria() || (signedIn() && !emManutencao() && !punido() && alunoAtivo());
+      // Consulta o perfil de aluno primeiro: evita avaliar todos os cargos
+      // em ações comuns de estudantes e reduz o custo das regras.
+      return (signedIn() && !emManutencao() && !punido() && alunoAtivo()) || isDiretoria();
     }
 
     function onlyKeys(keys) {
@@ -200,10 +203,15 @@ service cloud.firestore {
 
     // ---------- eleição ----------
     function eleicaoAberta(id) {
-      return exists(/databases/$(database)/documents/eleicoes/$(id)) &&
-        get(/databases/$(database)/documents/eleicoes/$(id)).data.status == 'aberta' &&
-        request.time >= get(/databases/$(database)/documents/eleicoes/$(id)).data.inicio &&
-        request.time <= get(/databases/$(database)/documents/eleicoes/$(id)).data.fim;
+      let e = get(/databases/$(database)/documents/eleicoes/$(id));
+      return e.data.status == 'aberta' &&
+        request.time >= e.data.inicio && request.time <= e.data.fim;
+    }
+    function cedulaVotavel(hash, idEleicao) {
+      let antes = get(/databases/$(database)/documents/cedulas/$(hash));
+      let depois = getAfter(/databases/$(database)/documents/cedulas/$(hash));
+      return antes.data.eleicao == idEleicao
+        && antes.data.usada == false && depois.data.usada == true;
     }
 
     // =================================================================
@@ -363,10 +371,7 @@ service cloud.firestore {
         && request.resource.data.eleicao is string && request.resource.data.chapa is string
         && eleicaoAberta(request.resource.data.eleicao)
         && exists(/databases/$(database)/documents/eleicoes/$(request.resource.data.eleicao)/chapas/$(request.resource.data.chapa))
-        && exists(/databases/$(database)/documents/cedulas/$(id))
-        && get(/databases/$(database)/documents/cedulas/$(id)).data.eleicao == request.resource.data.eleicao
-        && get(/databases/$(database)/documents/cedulas/$(id)).data.usada == false
-        && getAfter(/databases/$(database)/documents/cedulas/$(id)).data.usada == true;
+        && cedulaVotavel(id, request.resource.data.eleicao);
       allow update: if false;
     }
 
