@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#103f2a">
+<meta name="theme-color" content="#2d8647">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal do Aluno - Grêmio IFCE</title>
@@ -114,22 +114,21 @@ body{background-color:#f4f6f9}
 @media(min-width:760px){.portal-app-dashboard-grade{grid-template-columns:repeat(4,minmax(0,1fr))}.portal-app-painel{padding:27px}}
 @media(max-width:350px){.portal-app-atalho{flex-direction:column;align-items:flex-start;font-size:.76rem;padding:11px}}
 </style>
-<link rel="stylesheet" href="premium-portal.css?v=20261119b">
 </head>
-<body class="ifce-premium-portal">
+<body>
 
 <div id="screen-onboarding">
-  <div class="top-logo-chem">IFCE · GRÊMIO ESTUDANTIL</div>
+  <div class="top-logo-chem">🧪 IFCE | QUÍMICA</div>
   <div class="slides-wrapper-chem" id="slidesWrapperChem">
     <div class="slide-chem">
-      <div class="chem-icon-box">GE</div>
-      <h1 class="highlight-title-chem">O GRÊMIO É <span>SEU</span></h1>
-      <p class="subtitle-chem">Informações e ferramentas para os estudantes do IFCE Crateús.</p>
+      <div class="chem-icon-box">🔬</div>
+      <h1 class="highlight-title-chem">REAGINDO AO <span>FUTURO</span></h1>
+      <p class="subtitle-chem">Sua central de apoio ao estudante de Química do IFCE.</p>
     </div>
     <div class="slide-chem">
-      <div class="chem-icon-box">IFCE</div>
-      <h1 class="highlight-title-chem">PARTICIPE DAS <span>DECISÕES</span></h1>
-      <p class="subtitle-chem">Avisos, eventos, sugestões e ações do Grêmio no mesmo lugar.</p>
+      <div class="chem-icon-box">⚗️</div>
+      <h1 class="highlight-title-chem">CONEXÃO <span>ACADÊMICA</span></h1>
+      <p class="subtitle-chem">Mural de avisos, enquetes, reivindicações e materiais a uma reação de distância.</p>
     </div>
     <div class="slide-chem">
       <div class="login-card-chem">
@@ -163,18 +162,14 @@ body{background-color:#f4f6f9}
 
 <nav class="navbar navbar-dark navbar-ifce mb-4 sticky-top">
   <div class="container d-flex justify-content-between align-items-center">
-    <span class="navbar-brand premium-brand m-0" aria-label="Grêmio IFCE, Portal do Aluno">
-      <span class="premium-brand-symbol" aria-hidden="true">G</span>
-      <span class="premium-brand-text"><strong>Grêmio IFCE</strong><small>Portal do Aluno · Crateús</small></span>
-    </span>
+    <span class="navbar-brand fw-bold m-0">Portal do Aluno - Grêmio IFCE</span>
     <div class="d-flex align-items-center gap-2"><button id="btn-instalar" onclick="instalarApp()" class="btn btn-outline-light btn-sm" style="display:none">📲 Instalar</button><button id="btn-logout-aluno" onclick="fazerLogoutAluno()" class="btn btn-outline-light btn-sm d-none">Sair</button><button id="btn-sino" type="button" onclick="alternarPainelNotif()" aria-label="Novidades">🔔<span id="sino-badge">0</span></button></div>
   </div>
 </nav>
 
 <div class="container pb-5" id="portal-aluno" style="max-width:800px">
   <div id="banner-portal" class="alert alert-warning text-center fw-bold mb-3 py-2" style="display:none"></div>
-  <div class="card card-custom premium-boas-vindas p-3 mb-4 bg-success-subtle border-0">
-    <span class="premium-bem-vindo-selo">Área do estudante</span>
+  <div class="card card-custom p-3 mb-4 bg-success-subtle border-0">
     <h5 class="fw-bold mb-1" style="color:var(--ifce-green)">Olá, <span id="nome-aluno-display">Aluno</span>! 👋</h5>
     <small class="text-muted" id="email-aluno-display"></small>
   </div>
@@ -194,17 +189,17 @@ body{background-color:#f4f6f9}
   </div>
 
   <div id="sec-avisos" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-3" style="color:var(--ifce-green)">Mural de Avisos</h5>
+    <h5 class="fw-bold mb-3" style="color:var(--ifce-green)">📢 Mural de Avisos</h5>
     <div id="lista-avisos-aluno"><p class="text-muted small">Carregando avisos...</p></div>
   </div>
 
   <div id="sec-enquetes" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-3" style="color:var(--ifce-green)">Enquetes e Votações</h5>
+    <h5 class="fw-bold mb-3" style="color:var(--ifce-green)">📊 Enquetes e Votações</h5>
     <div id="lista-enquetes-aluno"><p class="text-muted small">Carregando enquetes...</p></div>
   </div>
 
   <div id="sec-pautas" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Reivindicações dos Alunos</h5>
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">✊ Reivindicações dos Alunos</h5>
     <p class="text-muted small mb-3">Crie ou apoie pautas para melhorias no campus. O Grêmio levará as pautas mais apoiadas à Direção.</p>
     <div class="mb-3 p-3 bg-light rounded border">
       <h6 class="fw-bold text-success mb-2">Criar Nova Reivindicação</h6>
@@ -216,19 +211,19 @@ body{background-color:#f4f6f9}
   </div>
 
   <div id="sec-materiais" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Empréstimo de Materiais</h5>
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🎲 Empréstimo de Materiais</h5>
     <p class="text-muted small mb-3">Solicite jogos, bolas e equipamentos disponíveis no Grêmio para uso nos intervalos.</p>
     <div id="lista-materiais-aluno"><p class="text-muted small">Carregando materiais disponíveis...</p></div>
   </div>
 
   <div id="sec-eventos" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Eventos e Torneios</h5>
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">📅 Eventos e Torneios</h5>
     <p class="text-muted small mb-3">Inscreva-se nos campeonatos, oficinas e eventos organizados pelo Grêmio.</p>
     <div id="lista-eventos-aluno"><p class="text-muted small">Carregando eventos...</p></div>
   </div>
 
   <div id="sec-carteira" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Minha carteirinha digital</h5>
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🪪 Minha carteirinha digital</h5>
     <p class="text-muted small mb-3">Identificação interna para atividades do Grêmio. Não substitui a carteira estudantil nem um documento oficial do IFCE.</p>
     <div id="carteirinha-digital-estado" class="small text-muted mb-3" role="status" aria-live="polite">Consultando sua carteirinha...</div>
     <div id="carteirinha-visual" style="display:none" aria-label="Sua carteirinha de participação do Grêmio">
@@ -263,13 +258,13 @@ body{background-color:#f4f6f9}
   </div>
 
   <div id="sec-jogos" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-3" style="color:var(--ifce-green)">Placar dos Jogos</h5>
+    <h5 class="fw-bold mb-3" style="color:var(--ifce-green)">🏆 Placar dos Jogos</h5>
     <div id="lista-jogos-aluno"><p class="text-muted small">Carregando jogos...</p></div>
     <div id="classificacao-aluno"></div>
   </div>
 
   <div id="sec-estudos" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Estudos</h5>
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">📚 Estudos</h5>
     <p class="text-muted small mb-3">Materiais para estudar para as provas: resumos, listas de exercícios, provas antigas e vídeos.</p>
     <div id="lista-provas-aluno" class="mb-3"></div>
     <div class="row g-2 mb-3">
@@ -282,7 +277,7 @@ body{background-color:#f4f6f9}
 
 
   <div id="sec-laboratorio" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Laboratório Virtual de Química</h5>
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🧪 Laboratório Virtual de Química</h5>
     <p class="small text-muted mb-3">Aprenda com a Tabela Periódica e cálculos químicos interativos. Recursos didáticos virtuais: não substituem aulas práticas supervisionadas.</p>
     <h6 class="fw-bold">⚛️ Tabela Periódica Interativa</h6>
     <div class="row g-2 mb-2">
@@ -454,7 +449,7 @@ body{background-color:#f4f6f9}
   </div>
 
   <div id="sec-quiz" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Quiz e prova sob medida</h5>
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🧠 Quiz e prova sob medida</h5>
     <p class="text-muted small mb-2">Escolha as matérias, quantas questões quer e o modo. As questões são sorteadas na hora. Suas respostas não são guardadas.</p>
     <div id="quiz-discs" class="mb-2"></div>
     <div class="row g-2 mb-2">
@@ -467,14 +462,14 @@ body{background-color:#f4f6f9}
   </div>
 
   <div id="sec-cartoes" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Cartões de revisão</h5>
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🃏 Cartões de revisão</h5>
     <p class="text-muted small mb-3">Pense na resposta antes e depois toque em Virar para conferir.</p>
     <div class="mb-2"><select id="cards-disc" class="form-select form-select-sm" onchange="cartoesIniciar()"><option value="">Todas as disciplinas</option></select></div>
     <div id="cards-box"></div>
   </div>
 
   <div id="sec-videos" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Vídeos de Aula Prática</h5>
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🎬 Vídeos de Aula Prática</h5>
     <p class="text-muted small mb-3">Reveja as aulas práticas do laboratório quando quiser.</p>
     <div id="lista-videos-aluno"><p class="text-muted small">Carregando vídeos...</p></div>
   </div>
@@ -507,7 +502,7 @@ body{background-color:#f4f6f9}
 
   <div id="sec-ajuda" class="card card-custom p-4 mb-4">
     <div id="plantao-box" class="alert alert-light small mb-3 d-none"></div>
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Preciso de ajuda</h5>
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🆘 Preciso de ajuda</h5>
     <p class="text-muted small mb-3">Algo não funciona no portal ou você tem uma dúvida? Conte aqui que o responsável pelo sistema responde.</p>
     <select id="aj-cat" class="form-select mb-2"><option>Algo não funciona</option><option>Não consigo acessar algo</option><option>Dúvida de como usar</option><option>Outro</option></select>
     <textarea id="aj-desc" class="form-control mb-2" rows="3" maxlength="800" placeholder="Descreva o que aconteceu..."></textarea>
@@ -520,7 +515,7 @@ body{background-color:#f4f6f9}
   </div>
 
   <div id="sec-sugestoes" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Enviando Sugestões ao Grêmio</h5>
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">💡 Enviando Sugestões ao Grêmio</h5>
     <p class="text-muted small mb-3">Mande suas ideias, críticas ou dúvidas para a gestão do Grêmio Estudantil.</p>
     <div class="mb-3"><textarea id="sugestao-texto" class="form-control" rows="3" maxlength="1000" placeholder="Escreva sua sugestão aqui..."></textarea></div>
     <button onclick="enviarSugestao()" class="btn btn-ifce fw-bold w-100">Enviar Sugestão</button>
@@ -557,11 +552,11 @@ body{background-color:#f4f6f9}
 
 <div id="aviso-offline" class="d-none text-center small fw-bold py-2 px-3" style="position:fixed;top:0;left:0;right:0;z-index:1080;background:#fff3cd;color:#664d03;border-bottom:1px solid #ffe69c">Sem conexão: você está vendo os dados guardados. Votos, inscrições e envios voltam quando a internet voltar.</div>
 <nav id="bottom-nav" aria-label="Navegação principal do Portal">
-<button type="button" data-portal-grupo="inicio" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9"/><path d="M9 20v-7h6v7"/></svg>Início</button>
-<button type="button" data-portal-grupo="estudos"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 7c-3.1-1.8-6-1.9-9-1v13c3-1 6-.8 9 1"/><path d="M12 7c3.1-1.8 6-1.9 9-1v13c-3-1-6-.8-9 1"/><path d="M12 7v13"/></svg>Estudos</button>
-<button type="button" data-portal-grupo="atividades"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M7 3v4M17 3v4M3 10h18"/></svg>Atividades</button>
-<button type="button" data-portal-grupo="gremio"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="8" cy="8" r="3"/><path d="M2 21v-2a6 6 0 0 1 12 0v2"/><circle cx="17" cy="8" r="2"/><path d="M16 15a5 5 0 0 1 6 5v1"/></svg>Grêmio</button>
-<button type="button" data-portal-grupo="perfil"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></svg>Perfil</button>
+<button type="button" data-portal-grupo="inicio" aria-current="page"><span aria-hidden="true">🏠</span>Início</button>
+<button type="button" data-portal-grupo="estudos"><span aria-hidden="true">📚</span>Estudos</button>
+<button type="button" data-portal-grupo="atividades"><span aria-hidden="true">📅</span>Atividades</button>
+<button type="button" data-portal-grupo="gremio"><span aria-hidden="true">🤝</span>Grêmio</button>
+<button type="button" data-portal-grupo="perfil"><span aria-hidden="true">👤</span>Perfil</button>
 </nav>
 
 <div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.26-a</div>

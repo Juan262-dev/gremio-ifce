@@ -66,7 +66,7 @@
             busca.className = 'admin-app-cabecalho';
             const titulo = document.createElement('h2');
             titulo.className = 'admin-app-titulo';
-            titulo.textContent = 'Central de gestão';
+            titulo.textContent = '🧭 Central de Gestão';
             const texto = document.createElement('p');
             texto.className = 'admin-app-texto';
             texto.textContent = 'Localize uma ferramenta e trabalhe em uma atividade de cada vez.';
