@@ -126,18 +126,14 @@ service cloud.firestore {
     }
 
     // ---------- validações de enquete ----------
-    // (até 8 opções; o aluno só acrescenta o próprio voto e soma 1 na opção escolhida)
-    function vo(l, i) { return l.size() > i ? l[i].get('votos', 0) : 0; }
-    function tx(l, i) { return l.size() > i ? l[i].get('texto', '') : ''; }
-    function opOk(o, n, i, oid) {
-      return vo(n, i) == vo(o, i) + (oid == i ? 1 : 0)
-        && tx(n, i) == tx(o, i)
-        && (n.size() <= i || n[i].get('id', -1) == o[i].get('id', -1));
-    }
+    // Valida a opção escolhida sem avaliar todas as oito opções uma por uma.
+    // Opções não escolhidas, IDs, textos e demais campos ficam inalterados.
     function opsOk(o, n, oid) {
       return n.size() == o.size() && oid >= 0 && oid < o.size()
-        && opOk(o, n, 0, oid) && opOk(o, n, 1, oid) && opOk(o, n, 2, oid) && opOk(o, n, 3, oid)
-        && opOk(o, n, 4, oid) && opOk(o, n, 5, oid) && opOk(o, n, 6, oid) && opOk(o, n, 7, oid);
+        && n[oid].get('id', -1) == o[oid].get('id', -1)
+        && n[oid].diff(o[oid]).affectedKeys().hasOnly(['votos'])
+        && n[oid].get('votos', 0) == o[oid].get('votos', 0) + 1
+        && n.removeAll([n[oid]]) == o.removeAll([o[oid]]);
     }
     function votoDe(e) {
       return [e,
@@ -152,7 +148,7 @@ service cloud.firestore {
       let ult = nv[nv.size() - 1];
       return o.get('ativa', false) == true
         && nv.size() == ov.size() + 1
-        && nv[0:ov.size()] == ov
+        && nv == ov.concat([ult])
         && ult.email == mail()
         && !ov.hasAny(votoDe(mail()))
         && opsOk(o.opcoes, n.opcoes, ult.opcaoId);
@@ -259,7 +255,7 @@ service cloud.firestore {
       allow read: if ativo();
       allow create: if isDiretoria() && request.resource.data.opcoes.size() >= 2 && request.resource.data.opcoes.size() <= 8;
       allow delete: if isDiretoria();
-      allow update: if isDiretoria() || (ativo() && onlyKeys(['votosAlunos', 'opcoes']) && votoEnqueteValido());
+      allow update: if (ativo() && onlyKeys(['votosAlunos', 'opcoes']) && votoEnqueteValido()) || isDiretoria();
     }
 
     match /reivindicacoes/{id} {
@@ -277,17 +273,17 @@ service cloud.firestore {
     match /materiais/{id} {
       allow read: if ativo();
       allow create, delete: if isGestor();
-      allow update: if isGestor() || (ativo() && onlyKeys(['status', 'emprestadoPara'])
+      allow update: if (ativo() && onlyKeys(['status', 'emprestadoPara'])
         && resource.data.status == 'Disponível' && request.resource.data.status == 'Solicitado'
         && request.resource.data.emprestadoPara ==
-          get(/databases/$(database)/documents/alunos/$(mail())).data.nome + ' (' + mail() + ')');
+          get(/databases/$(database)/documents/alunos/$(mail())).data.nome + ' (' + mail() + ')') || isGestor();
     }
 
     match /eventos/{id} {
       allow read: if ativo();
       allow create: if isGestor() || ((isCultura() || isRacial()) && request.resource.data.get('criadoPorEmail', '') == mail());
       allow delete: if isGestor() || ((isCultura() || isRacial()) && resource.data.get('criadoPorEmail', '') == mail());
-      allow update: if isGestor() || (ativo() && onlyKeys(['inscritos', 'espera']) && inscricaoValida())
+      allow update: if (ativo() && onlyKeys(['inscritos', 'espera']) && inscricaoValida()) || isGestor()
         || ((isCultura() || isRacial()) && resource.data.get('criadoPorEmail', '') == mail() && request.resource.data.get('criadoPorEmail', '') == mail());
     }
 
