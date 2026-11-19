@@ -223,10 +223,32 @@
 
         document.getElementById('admin-senha').addEventListener('keydown', e => { if (e.key === 'Enter') fazerLoginAdmin(); });
 
-        auth.onAuthStateChanged(user => {
+        auth.onAuthStateChanged(async user => {
             if (!user) { if (painelAberto) location.reload(); return; }
             if (painelAberto) return;
             const email = (user.email || '').toLowerCase();
+            try {
+                await user.reload();
+                await user.getIdToken(true);
+                const seg = await db.collection('config').doc('seguranca').get();
+                const cfg = seg.exists ? seg.data() : {};
+                const authTime = Math.floor(new Date((await user.getIdTokenResult()).authTime).getTime() / 1000);
+                if ((cfg.sessoesDesdeSeg || 0) > authTime) {
+                    mostrarErroLogin('Sua sessão foi encerrada pela TI. Entre novamente.');
+                    await auth.signOut();
+                    return;
+                }
+                if (cfg.exigirEmailVerificado === true && !user.emailVerified) {
+                    mostrarErroLogin('Confirme seu e-mail pelo link recebido antes de entrar.');
+                    await auth.signOut();
+                    return;
+                }
+            } catch (e) {
+                console.error('Falha ao validar sessão administrativa', e);
+                mostrarErroLogin('Não foi possível validar sua sessão agora.');
+                await auth.signOut();
+                return;
+            }
             const semCargo = () => { mostrarErroLogin("Este e-mail não tem cargo no painel. Peça à presidência para cadastrar."); auth.signOut(); };
             db.collection('cargos').doc(email).get().then(doc => {
                 let dados = doc.exists ? doc.data() : null;
@@ -245,6 +267,13 @@
                     dados = { ...dados, cargosDisponiveis: todos, nivel: (escolhido && todos.includes(escolhido)) ? escolhido : dados.nivel };
                 }
                 if (!dados) { semCargo(); return; }
+                const expirado = dados.fimMandato && dados.fimMandato.toMillis
+                    && dados.fimMandato.toMillis() <= Date.now();
+                if (expirado) {
+                    mostrarErroLogin('Seu mandato terminou. Peça à presidência para atualizar seu acesso.');
+                    auth.signOut();
+                    return;
+                }
                 verificarAcessoEAbirPainel(email, dados);
             }).catch(() => {
                 if (email === ROOT_EMAIL) verificarAcessoEAbirPainel(email, cargosIniciais[ROOT_EMAIL]); else semCargo();
@@ -427,8 +456,8 @@
         
 /* ================= CENTRAL DE ALERTAS E UTILITÁRIOS (só o e-mail raiz) ================= */
 
-        const VERSAO_SISTEMA = '2026.10.27-c';
-        const DATA_ULTIMA_ATUALIZACAO = '18/10/2026';
+        const VERSAO_SISTEMA = '2026.11.19-a';
+        const DATA_ULTIMA_ATUALIZACAO = '19/11/2026';
         let nivelReal = null, travas = {};
         function aplicarVisibilidade() {
             if (!nivelReal) return;

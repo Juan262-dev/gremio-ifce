@@ -69,6 +69,35 @@
                     const snap = await db.collection(n).get();
                     out[n] = snap.docs.map(d => { const x = { id: d.id, ...paraJSON(d.data()) }; delete x.senha; return x; });
                 }
+                // Arquivo suplementar para conservar coleções que o restaurador antigo
+                // não cobre. Os dados das eleições são apenas arquivados neste fluxo.
+                const suplementares = ['aceites', 'acessos', 'acessos_painel', 'aniversarios',
+                    'avaliacoes', 'caixa_config', 'cedulas', 'chamados', 'config',
+                    'contatos_avisos', 'eleicoes', 'erros_app', 'pedidos_exclusao',
+                    'ti_privado', 'versoes_publicadas', 'votos'];
+                out.arquivoSuplementar = {};
+                out.avisosBackup = [
+                    'A restauração automática não contempla as coleções do arquivo suplementar.',
+                    'Os perfis individuais e as contas do Firebase Authentication exigem cópia própria.',
+                    'As chapas eleitorais são subcoleções arquivadas, sem restauração automática.'
+                ];
+                for (const n of suplementares) {
+                    try {
+                        const snap = await db.collection(n).get();
+                        out.arquivoSuplementar[n] = snap.docs.map(d => ({ id: d.id, ...paraJSON(d.data()) }));
+                    } catch (e) {
+                        out.avisosBackup.push('Não foi possível exportar ' + n + ': ' + (e.code || 'erro'));
+                    }
+                }
+                out.chapasEleicoes = {};
+                for (const eleicao of (out.arquivoSuplementar.eleicoes || [])) {
+                    try {
+                        const snap = await db.collection('eleicoes').doc(eleicao.id).collection('chapas').get();
+                        out.chapasEleicoes[eleicao.id] = snap.docs.map(d => ({ id: d.id, ...paraJSON(d.data()) }));
+                    } catch (e) {
+                        out.avisosBackup.push('Não foi possível exportar chapas da eleição ' + eleicao.id);
+                    }
+                }
                 const url = URL.createObjectURL(new Blob([JSON.stringify(out, null, 2)], { type: 'application/json' }));
                 const a = document.createElement('a');
                 a.href = url; a.download = `backup_gremio_${hojeISO()}.json`;

@@ -450,6 +450,16 @@ auth.onAuthStateChanged(async user => {
   }
   try {
     const email = user.email.toLowerCase();
+    // Verificação condicional: não bloqueia contas antigas até a opção ser ativada.
+    await user.reload();
+    await user.getIdToken(true);
+    const seguranca = await db.collection('config').doc('seguranca').get();
+    if (seguranca.exists && seguranca.data().exigirEmailVerificado === true && !user.emailVerified) {
+      await auth.signOut();
+      irParaSlide(2);
+      mostrarErroLogin('Confirme seu e-mail institucional pelo link recebido antes de entrar. Confira também o spam.');
+      return;
+    }
     const doc = await db.collection('alunos').doc(email).get();
     if (!doc.exists) {
       await auth.signOut();
@@ -797,6 +807,11 @@ function carregarJogos() {
 }
 function inscreverEvento(id) {
   if (!confirm('Confirmar sua inscrição? Se as vagas estiverem cheias, você entra na lista de espera.')) return;
+  const evento = (novidades.eventos || []).find(e => e.id === id);
+  if (evento && evento.dataISO && evento.dataISO < hojeISO()) {
+    aviso('As inscrições deste evento já terminaram.', 'warning');
+    return;
+  }
   const ref = db.collection('eventos').doc(id);
   db.runTransaction(async t => {
     const doc = await t.get(ref);
@@ -985,7 +1000,7 @@ async function verificarTermo() {
     ov.style.display = 'flex';
   } else ov.style.display = 'none';
 }
-const VERSAO_PORTAL = '2026.10.17-d';
+const VERSAO_PORTAL = '2026.11.19-a';
 document.querySelectorAll('.versao-portal').forEach(e => e.textContent = VERSAO_PORTAL);
 // Se o servidor não responder em 10 s, avisa em vez de ficar parado sem dizer nada.
 const comTimeout = (p, ms = 10000) => Promise.race([p, new Promise((_, rej) => setTimeout(() => rej({ code: 'timeout' }), ms))]);
@@ -2419,7 +2434,18 @@ function carregarEleicaoPortal() {
     const card = document.getElementById('sec-eleicao');
     if (!card) return;
     if (s.empty) { eleicaoPortal = null; mostrarEstadoEleicao('Nenhuma votação aberta agora. Quando o grêmio abrir a eleição, ela aparece aqui.'); return; }
+    const anterior = eleicaoPortal && eleicaoPortal.id;
     eleicaoPortal = { id: s.docs[0].id, ...s.docs[0].data() };
+    if (anterior !== eleicaoPortal.id) chapaEscolhida = null;
+    const inicioMs = eleicaoPortal.inicio && eleicaoPortal.inicio.toMillis ? eleicaoPortal.inicio.toMillis() : 0;
+    const fimMs = eleicaoPortal.fim && eleicaoPortal.fim.toMillis ? eleicaoPortal.fim.toMillis() : 0;
+    if (!inicioMs || !fimMs || Date.now() < inicioMs || Date.now() > fimMs) {
+      chapaEscolhida = null;
+      mostrarEstadoEleicao(Date.now() < inicioMs
+        ? 'Esta votação ainda não começou.'
+        : 'O prazo desta votação terminou. Aguarde a apuração.');
+      return;
+    }
     card.style.display = 'block';
     document.getElementById('ele-portal-info').textContent = `${eleicaoPortal.nome} • votação até ${eleicaoPortal.fim.toDate().toLocaleString('pt-BR')}`;
     db.collection('eleicoes').doc(eleicaoPortal.id).collection('chapas').get().then(cs => {
@@ -2437,6 +2463,13 @@ function carregarEleicaoPortal() {
 }
 function votarEleicao() {
   if (!eleicaoPortal) return;
+  const agora = Date.now();
+  if (!eleicaoPortal.inicio || !eleicaoPortal.fim ||
+      agora < eleicaoPortal.inicio.toMillis() || agora > eleicaoPortal.fim.toMillis()) {
+    aviso('Esta votação não está no período permitido.', 'warning');
+    carregarEleicaoPortal();
+    return;
+  }
   if (!chapaEscolhida) { aviso('Escolha uma chapa.', 'warning'); return; }
   const marcada = document.querySelector('input[name="ele-chapa"]:checked');
   const nomeChapa = (marcada && marcada.closest('label') && marcada.closest('label').querySelector('strong')) ? marcada.closest('label').querySelector('strong').textContent : 'a chapa escolhida';
@@ -2445,7 +2478,8 @@ function votarEleicao() {
   if (codigo.length < 6) { aviso('Digite o código da cédula.', 'warning'); return; }
   sha256Portal(codigo).then(hash => {
     const cedRef = db.collection('cedulas').doc(hash);
-    const votoRef = db.collection('votos').doc();
+    // O ID do voto deve ser o hash da cédula para a regra validar a transação.
+    const votoRef = db.collection('votos').doc(hash);
     return db.runTransaction(t => t.get(cedRef).then(c => {
       if (!c.exists) throw new Error('Código inválido.');
       const d = c.data();

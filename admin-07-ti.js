@@ -69,9 +69,11 @@
                 const alvo = snap.docs.filter(d => filtro(d));
                 if (!alvo.length) { toast('Nada para corrigir.', 'warning'); return; }
                 if (!(await confirmar(`Corrigir ${alvo.length} registro(s)?`))) return;
-                const batch = db.batch();
-                alvo.forEach(d => fn(batch, d));
-                await batch.commit();
+                for (let i = 0; i < alvo.length; i += 400) {
+                    const batch = db.batch();
+                    alvo.slice(i, i + 400).forEach(d => fn(batch, d));
+                    await batch.commit();
+                }
                 registrarAcao(acaoLog, alvo.length + ' registros');
                 toast(alvo.length + ' registro(s) corrigido(s).');
                 verificarIntegridade();
@@ -136,6 +138,7 @@
             if (!(await confirmar('Encerrar TODAS as sessões? Alunos, diretoria e você terão de entrar de novo com a senha.'))) return;
             try {
                 await db.collection('config').doc('seguranca').set({
+                    // O horário é conferido pelas regras do Firestore e pelo login do painel.
                     sessoesDesdeSeg: Math.floor(Date.now() / 1000),
                     atualizadoPor: emailLogado,
                     atualizadoEm: TS()
@@ -315,7 +318,10 @@
             } catch (e) { erroDB(e, 'alternarManutencao'); }
         }
 
-        const CAMPOS_DATA = ['criadoEm', 'expiraEm', 'punidoEm', 'em', 'statusEm', 'respondidaEm'];
+        const CAMPOS_DATA = ['criadoEm', 'expiraEm', 'punidoEm', 'em', 'statusEm', 'respondidaEm',
+            'aprovadoEm', 'concluidoEm', 'inicio', 'fim', 'encerradaEm', 'cedulasEm', 'pagoEm',
+            'atualizadoEm', 'ultimoAcesso', 'criadoEm', 'fonteAte', 'fimMandato',
+            'respondidoEm', 'ultimoBackup', 'ultimoAcessoEm', 'devolvidoEm'];
         function deJSON(o) {
             const r = { ...o };
             delete r.id; delete r.senha;

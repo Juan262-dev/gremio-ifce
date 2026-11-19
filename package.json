@@ -1,0 +1,14 @@
+{
+  "name": "gremio-ifce-firebase-tests",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Testes de segurança do Firestore no emulador, sem dados reais",
+  "scripts": {
+    "test:rules": "firebase emulators:exec --project demo-gremio-ifce --only firestore \"node --test tests/firestore.test.cjs\""
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^4.0.1",
+    "firebase": "^11.9.0",
+    "firebase-tools": "^14.0.0"
+  }
+}

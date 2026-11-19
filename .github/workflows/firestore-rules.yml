@@ -1,0 +1,27 @@
+name: Testar regras do Firestore
+on:
+  pull_request:
+    paths:
+      - 'firestore.rules'
+      - 'firebase.json'
+      - 'package.json'
+      - 'tests/**'
+      - '.github/workflows/firestore-rules.yml'
+  workflow_dispatch:
+
+jobs:
+  regras:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Instalar dependências
+        run: npm install --no-audit --no-fund
+      - name: Testar com dados fictícios no Firebase Emulator
+        run: npm run test:rules
