@@ -1,0 +1,361 @@
+/*
+ * IFCE PREMIUM · PORTAL DO ALUNO
+ * Identidade visual local (sem fontes externas, frameworks novos ou tracking).
+ * Camada somente visual: não modifica display/permissions dos cartões do portal.
+ * Tokens: floresta #103f2a, verde #167347, lima suave #e9f7ec, papel #f5f9f5.
+ */
+body.ifce-premium-portal {
+  --premium-forest: #103f2a;
+  --premium-deep: #092b1c;
+  --premium-green: #167347;
+  --premium-mint: #e8f7ed;
+  --premium-paper: #f5f9f6;
+  --premium-ink: #203529;
+  --premium-muted: #607367;
+  --premium-line: #dbe9dd;
+  --premium-shadow: 0 12px 38px rgba(20, 63, 39, .065);
+  color: var(--premium-ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: radial-gradient(ellipse 80% 30% at 15% 0%, #e5f5e8 0%, transparent 75%),
+              radial-gradient(ellipse 55% 27% at 90% 8%, #edf7e9 0%, transparent 85%),
+              var(--premium-paper);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+.ifce-premium-portal *, .ifce-premium-portal *::before, .ifce-premium-portal *::after { box-sizing: border-box; }
+.ifce-premium-portal :is(button,a,input,select,textarea,summary,[tabindex]):focus-visible {
+  outline: 3px solid #247ec5;
+  outline-offset: 3px;
+}
+.ifce-premium-portal a { color: #126d42; text-underline-offset: 3px; }
+.ifce-premium-portal a:hover { color: #0b4d2c; }
+.ifce-premium-portal .text-muted { color: #63766a !important; }
+.ifce-premium-portal .text-muted-custom { color: #647c6b !important; }
+.ifce-premium-portal ::selection { background: #bde7c5; color: #103f2a; }
+
+/* Barra superior com identidade institucional e ações claras. */
+.ifce-premium-portal .navbar-ifce {
+  background: linear-gradient(115deg, #092d1d, #135739 64%, #176942);
+  border-bottom: 1px solid rgba(209, 247, 218, .25);
+  box-shadow: 0 8px 32px rgba(6, 45, 25, .14);
+  min-height: 70px;
+  backdrop-filter: blur(16px);
+}
+.ifce-premium-portal .navbar-ifce > .container { gap: 12px; max-width: 1110px; }
+.ifce-premium-portal .premium-brand {
+  display: inline-flex; align-items: center; min-width: 0; gap: 10px;
+  color: #f7fff8; letter-spacing: -.025em; text-decoration: none;
+}
+.ifce-premium-portal .premium-brand-symbol {
+  flex: 0 0 auto; width: 41px; height: 41px; border-radius: 13px;
+  display: grid; place-items: center; font-size: 22px;
+  background: linear-gradient(145deg, rgba(198, 245, 204, .25), rgba(98, 199, 137, .12));
+  border: 1px solid rgba(229, 255, 233, .26);
+}
+.ifce-premium-portal .premium-brand-text { min-width: 0; display:flex;flex-direction:column;line-height:1.15; }
+.ifce-premium-portal .premium-brand-text strong { font-weight:850; font-size:1.04rem; }
+.ifce-premium-portal .premium-brand-text small { font-size:.69rem; font-weight:550; color:#ccead3; margin-top:3px; }
+.ifce-premium-portal .navbar-ifce .btn-outline-light {
+  color: #f4fff4; border-color: rgba(235,255,240,.42);
+  border-radius: 11px; padding: 8px 12px; font-weight: 700;
+}
+.ifce-premium-portal .navbar-ifce .btn-outline-light:hover {
+  color: #124229; background: #ebffef; border-color: #ebffef;
+}
+.ifce-premium-portal #btn-sino {
+  order: 0; width: 41px; height: 41px; padding: 4px;
+  display: grid; place-items:center; font-size: 20px;
+  background: rgba(255,255,255,.11); border: 1px solid rgba(255,255,255,.22);
+  border-radius: 13px; transition: background .15s ease;
+}
+.ifce-premium-portal #btn-sino:hover { background: rgba(255,255,255,.24); }
+.ifce-premium-portal #sino-badge { box-shadow:0 0 0 3px #125539; font-size:11px; padding:2px 5px; }
+
+/* Base das telas, cartões e apresentação de dados. */
+.ifce-premium-portal #portal-aluno { max-width: 1080px !important; padding-top: 2px; }
+.ifce-premium-portal #portal-aluno .card-custom {
+  background-color: #fff; border: 1px solid var(--premium-line);
+  border-radius: 21px; box-shadow: var(--premium-shadow);
+  overflow-wrap: anywhere;
+}
+.ifce-premium-portal #portal-aluno > .card-custom {
+  padding: clamp(18px, 3.1vw, 32px) !important;
+  margin-bottom: 17px !important;
+}
+.ifce-premium-portal #portal-aluno .card-custom h5 {
+  font-size: clamp(1.09rem, 2.3vw, 1.36rem);
+  font-weight: 780 !important; letter-spacing: -.025em;
+  line-height: 1.35;
+}
+.ifce-premium-portal #portal-aluno .card-custom h6 {
+  font-size: 1.02rem; letter-spacing: -.014em;
+}
+.ifce-premium-portal #portal-aluno .card-custom > h5:first-child,
+.ifce-premium-portal #portal-aluno .card-custom > h5:nth-child(2) {
+  padding-bottom: 12px; margin-bottom: 20px !important;
+  border-bottom: 1px solid #e8f0e8;
+}
+.ifce-premium-portal .premium-boas-vindas {
+  position: relative; overflow:hidden; border: 1px solid #b7d9bf !important;
+  background: linear-gradient(110deg, #e2f6e7 0%, #f8fcf8 57%, #e1f3ea 100%) !important;
+  box-shadow: 0 12px 40px rgba(30, 112, 66, .075) !important;
+  padding: clamp(20px,3vw,29px) !important;
+}
+.ifce-premium-portal .premium-boas-vindas::after {
+  content: ""; width:130px;height:130px;position:absolute;right:-30px;top:-48px;
+  border: 26px solid rgba(34, 129, 74, .055);border-radius:50%;pointer-events:none;
+}
+.ifce-premium-portal .premium-boas-vindas h5 {
+  padding: 0 !important; margin:0 !important; border:0 !important;
+  color: #0e5b35 !important;
+  font-size: clamp(1.25rem, 3.1vw, 1.8rem) !important;
+}
+.ifce-premium-portal .premium-boas-vindas .premium-bem-vindo-selo {
+  display:inline-block; font-size:10px; font-weight:850; letter-spacing:.13em;
+  color:#1f7346; text-transform:uppercase; margin-bottom:7px;
+}
+.ifce-premium-portal .premium-boas-vindas #email-aluno-display {
+  display:block; font-size:.86rem; margin-top:6px; color:#55755e !important;
+}
+.ifce-premium-portal .portal-app-painel {
+  background: linear-gradient(128deg, #0d432a 0%, #166840 66%, #1a7a4a 100%);
+  border: 1px solid rgba(9, 61, 31, .12);
+  border-radius: 23px;
+  padding: clamp(22px, 4vw, 35px);
+  box-shadow: 0 20px 50px rgba(12, 79, 42, .16);
+  position:relative; isolation:isolate; overflow:hidden;
+}
+.ifce-premium-portal .portal-app-painel::before {
+  content:""; position:absolute; z-index:-1; right:-46px;top:-110px;
+  width:300px;height:300px;border-radius:50%;
+  background:radial-gradient(circle,rgba(220,255,223,.14),transparent 69%);
+  pointer-events:none;
+}
+.ifce-premium-portal .portal-app-selo {
+  color:#c4f6d1; font-size:.68rem; font-weight:800;
+  letter-spacing:.14em; margin-bottom:11px;
+}
+.ifce-premium-portal .portal-app-titulo {
+  color:#fff; font-weight:850; font-size:clamp(1.65rem,4vw,2.3rem);
+  letter-spacing:-.045em;
+}
+.ifce-premium-portal .portal-app-descricao {color:#daf6e1;line-height:1.5;font-size:.94rem;margin:9px 0 21px;}
+.ifce-premium-portal .portal-app-subnav {gap:9px; margin-top:13px;}
+.ifce-premium-portal .portal-app-subitem {
+  color:#e9ffef;background:rgba(255,255,255,.105);
+  border-color:rgba(230,255,234,.29);
+  font-size:.86rem;min-height:43px; padding:10px 15px;
+  font-weight:650; border-radius:12px;
+}
+.ifce-premium-portal .portal-app-subitem:hover {background:rgba(255,255,255,.23);border-color:rgba(255,255,255,.5);}
+.ifce-premium-portal .portal-app-subitem.ativo {
+  background:#f7fff7;color:#125b35;border-color:#f7fff7;
+  box-shadow:0 4px 16px rgba(4,30,11,.12);
+}
+.ifce-premium-portal .portal-app-editar-perfil {
+  background:rgba(255,255,255,.95);color:#155b38;border-color:#f3fff6;
+}
+.ifce-premium-portal .portal-app-dashboard {margin-top:28px;}
+.ifce-premium-portal .portal-app-dashboard-titulo {
+  color:#fff;font-size:1.05rem;letter-spacing:-.02em;margin-bottom:12px;
+}
+.ifce-premium-portal .portal-app-dashboard-grade {gap:11px;}
+.ifce-premium-portal .portal-app-atalho {
+  color:#1f4d32; background:#fafffb;border-color:rgba(255,255,255,.8);
+  box-shadow:0 5px 18px rgba(3,28,15,.08);border-radius:15px;min-height:78px;
+  padding:17px 14px;font-size:.87rem;
+  transition:transform .16s ease,box-shadow .16s ease,background .16s ease;
+}
+.ifce-premium-portal .portal-app-atalho:hover {
+  transform:translateY(-2px); background:#fff;box-shadow:0 9px 20px rgba(3,28,15,.13);
+}
+.ifce-premium-portal .portal-app-atalho-icone {
+  flex:none;display:grid;place-items:center;width:41px;height:41px;
+  border-radius:13px;background:#e9f7ee;font-size:22px;
+}
+.ifce-premium-portal .portal-app-vazio {color:#fff4ce;}
+.ifce-premium-portal #banner-portal {border:1px solid #f8d999;border-radius:14px;}
+.ifce-premium-portal #rodape-portal {padding-top:25px;color:#718674 !important;}
+
+/* Barra inferior de aplicativo: sempre cinco destinos. */
+.ifce-premium-portal #bottom-nav {
+  background:rgba(255,255,255,.96);border:1px solid #d6e5d9;border-bottom:0;
+  box-shadow:0 -8px 35px rgba(18,66,32,.105);
+  backdrop-filter:blur(18px); gap:4px;
+  padding:8px 10px calc(9px + env(safe-area-inset-bottom));
+}
+.ifce-premium-portal #bottom-nav button {
+  color:#607568;border-radius:13px;
+  padding:9px 4px;min-height:57px;font-size:clamp(10px,2.2vw,12px);font-weight:650;
+}
+.ifce-premium-portal #bottom-nav button span {font-size:21px; margin-bottom:2px;}
+.ifce-premium-portal #bottom-nav button.ativo {
+  color:#126b3d;background:#e0f3e6;font-weight:850;
+}
+.ifce-premium-portal #bottom-nav button:hover {color:#126b3d;background:#f0f9f2;}
+.ifce-premium-portal #bottom-nav button.ativo:hover {background:#d6eddf;}
+
+/* Botões e campos: consistência visual em todos os módulos. */
+.ifce-premium-portal .btn {border-radius:11px;font-weight:650;min-height:38px;}
+.ifce-premium-portal .btn-ifce,
+.ifce-premium-portal .btn-success {
+  background:#176c42;border:1px solid #176c42;color:#fff;
+  box-shadow:0 4px 12px rgba(23,108,66,.11);
+}
+.ifce-premium-portal .btn-ifce:hover,
+.ifce-premium-portal .btn-success:hover {background:#0e5432;border-color:#0e5432;color:#fff;}
+.ifce-premium-portal .btn-outline-success {border-color:#a9d4b6;color:#155f37;background:#fff;}
+.ifce-premium-portal .btn-outline-success:hover {background:#176c42;color:#fff;border-color:#176c42;}
+.ifce-premium-portal .btn-outline-secondary {border-color:#b8c9bc;color:#3b5e49;}
+.ifce-premium-portal .btn-link {font-weight:650;}
+.ifce-premium-portal .btn-sm {min-height:34px;padding:6px 12px;}
+.ifce-premium-portal .form-control,
+.ifce-premium-portal .form-select,
+.ifce-premium-portal textarea,
+.ifce-premium-portal .input-group-text {
+  border:1px solid #ccdbcf;border-radius:11px;color:#233d2c;
+  background-color:#fff;min-height:42px;
+}
+.ifce-premium-portal .form-control::placeholder,
+.ifce-premium-portal textarea::placeholder {color:#758d7d;opacity:1;}
+.ifce-premium-portal .form-control:focus,
+.ifce-premium-portal .form-select:focus,
+.ifce-premium-portal textarea:focus {
+  border-color:#2d9660;box-shadow:0 0 0 3px rgba(45,150,96,.15);
+  background:#fff;color:#203529;
+}
+.ifce-premium-portal .form-control:disabled,
+.ifce-premium-portal .form-select:disabled {background:#f0f5f0;color:#68786e;}
+.ifce-premium-portal .form-control-sm,
+.ifce-premium-portal .form-select-sm {min-height:37px;font-size:.88rem;}
+.ifce-premium-portal .form-label {color:#42634e;font-weight:700;margin-bottom:7px;}
+.ifce-premium-portal .form-check-input {border-color:#a6bca9;}
+.ifce-premium-portal .form-check-input:checked {background:#176c42;border-color:#176c42;}
+.ifce-premium-portal .form-range::-webkit-slider-thumb {background:#176c42;}
+.ifce-premium-portal .form-range::-moz-range-thumb {background:#176c42;}
+.ifce-premium-portal .form-range::-webkit-slider-runnable-track {background-color:#d7eadd;}
+.ifce-premium-portal .form-range::-moz-range-track {background-color:#d7eadd;}
+
+/* Listas, cards internos, tabelas e estados carregando/vazio. */
+.ifce-premium-portal #portal-aluno .list-group-item {
+  background:#fff;color:#213a2b;
+  border:1px solid #e1eae2;border-radius:13px !important;
+  padding:14px 16px;margin-bottom:8px;
+}
+.ifce-premium-portal #portal-aluno .list-group-item:hover {border-color:#b6d8bd;}
+.ifce-premium-portal #portal-aluno .bg-light {background-color:#f7faf7 !important;}
+.ifce-premium-portal #portal-aluno .border {border-color:#dae7dc !important;}
+.ifce-premium-portal #portal-aluno .rounded {border-radius:13px!important;}
+.ifce-premium-portal #portal-aluno .rounded-pill {border-radius:999px!important;}
+.ifce-premium-portal .table-responsive {border-radius:12px;}
+.ifce-premium-portal .table {--bs-table-color:#233d2c;--bs-table-bg:#fff;--bs-table-border-color:#e1e9e1;vertical-align:middle;}
+.ifce-premium-portal .table>:not(caption)>*>* {padding:10px 12px;}
+.ifce-premium-portal .table thead {--bs-table-bg:#eff6f0;color:#27613f;}
+.ifce-premium-portal #portal-aluno .badge {font-weight:730;letter-spacing:.015em;padding:5px 9px;}
+.ifce-premium-portal .badge.bg-success {background-color:#167347!important;}
+.ifce-premium-portal .alert {border-radius:12px;line-height:1.5;}
+.ifce-premium-portal .alert-light {background:#f3f8f4;color:#355c40;border-color:#dde9df;}
+.ifce-premium-portal .alert-success {background:#eaf7ed;color:#145631;border-color:#bbdfc3;}
+.ifce-premium-portal .alert-warning {color:#704a0a;background:#fff7e4;border-color:#f2d8a4;}
+.ifce-premium-portal .alert-danger {color:#822a28;background:#fff0ef;border-color:#f1c4c1;}
+.ifce-premium-portal .progress {background:#e7f0e9;border-radius:20px;height:10px;}
+.ifce-premium-portal .progress-bar {background:#16804e;}
+.ifce-premium-portal details {
+  border:1px solid #e0eae0;border-radius:12px;padding:13px 16px;background:#fbfdfb;
+}
+.ifce-premium-portal details+details {margin-top:8px;}
+.ifce-premium-portal details summary {color:#225c38;font-weight:750;}
+.ifce-premium-portal #lista-notif .item-notif {color:#284031;line-height:1.45;}
+.ifce-premium-portal #lista-notif .item-notif:hover {background:#f1f8f3;}
+.ifce-premium-portal #painel-notif {
+  border:1px solid #d7e5d8;border-radius:17px;
+  box-shadow:0 19px 50px rgba(3,42,20,.17);
+}
+.ifce-premium-portal .modal-content {border-radius:20px;border:1px solid #dce9de;}
+.ifce-premium-portal .modal-header {border-bottom-color:#dce9de;}
+.ifce-premium-portal .modal-footer {border-top-color:#dce9de;}
+.ifce-premium-portal .toast {border-radius:14px;}
+.ifce-premium-portal #aviso-offline {box-shadow:0 5px 15px rgba(77,52,11,.12);}
+
+/* Laboratório: destaque só nos invólucros, sem alterar os gráficos SVG. */
+.ifce-premium-portal #sec-laboratorio hr {
+  border-color:#dae9db;opacity:1;margin:26px 0;
+}
+.ifce-premium-portal .lab-rolagem {border-radius:14px;background:#f7fbf8;padding:12px;}
+.ifce-premium-portal .lab-mol-tela {border-color:#cce0d0!important;border-radius:16px!important;}
+.ifce-premium-portal .lab-elemento {border-radius:8px;transition:filter .12s ease;}
+.ifce-premium-portal .lab-elemento:hover {filter:brightness(.97);}
+
+/* Tela de entrada do estudante continua funcional, agora com visual Premium. */
+.ifce-premium-portal #screen-onboarding {
+  background:radial-gradient(ellipse at 50% 15%,#215c3b 0%,#0d2b1e 60%,#071c14 100%);
+}
+.ifce-premium-portal .top-logo-chem {letter-spacing:.12em;color:#a1f1b8;text-shadow:none;}
+.ifce-premium-portal .highlight-title-chem {
+  font-weight:900;font-size:clamp(2rem,5vw,3.2rem);text-shadow:none;
+  letter-spacing:-.04em;
+}
+.ifce-premium-portal .highlight-title-chem span {color:#9ef1b4;}
+.ifce-premium-portal .subtitle-chem {color:#c6e1cc;line-height:1.6;}
+.ifce-premium-portal .login-card-chem {
+  background:rgba(13,38,25,.93);border:1px solid rgba(186,238,195,.23);
+  border-radius:22px;padding:28px 23px;
+  box-shadow:0 20px 65px rgba(0,0,0,.29);
+}
+.ifce-premium-portal .login-card-chem p {color:#b8d6c1;}
+.ifce-premium-portal .input-group-chem label {color:#cde9d1;}
+.ifce-premium-portal .input-group-chem input {
+  color:#fff;background:#0c261a;border:1px solid #4d7758;border-radius:11px;min-height:46px;
+}
+.ifce-premium-portal .input-group-chem input:focus {border-color:#9de7b2;box-shadow:0 0 0 3px rgba(149,236,172,.17);}
+.ifce-premium-portal .btn-green-chem {
+  background:linear-gradient(130deg,#2c995b,#197343);
+  border-color:#6ccf8c;border-radius:12px;box-shadow:none;
+}
+.ifce-premium-portal .btn-green-chem:hover {filter:brightness(1.08);}
+.ifce-premium-portal .dots-container-chem .dot-chem.active {background:#9de8b1;box-shadow:none;}
+
+/* Impressão/PWA/acessibilidade: evitar que fixações cubram dados. */
+@media(min-width:1000px) {
+  .ifce-premium-portal #bottom-nav {
+    left:50%;right:auto;transform:translateX(-50%);
+    width:min(680px,calc(100% - 30px));
+    border-radius:19px 19px 0 0;
+  }
+}
+@media(max-width:680px) {
+  .ifce-premium-portal .navbar-ifce {min-height:62px;}
+  .ifce-premium-portal .premium-brand-symbol {width:35px;height:35px;font-size:19px;border-radius:10px;}
+  .ifce-premium-portal .premium-brand-text strong {font-size:.88rem;}
+  .ifce-premium-portal .premium-brand-text small {font-size:.63rem;}
+  .ifce-premium-portal #portal-aluno {padding-left:12px;padding-right:12px;}
+  .ifce-premium-portal #portal-aluno > .card-custom {padding:17px!important;}
+  .ifce-premium-portal .portal-app-painel {padding:19px 17px;border-radius:19px;}
+  .ifce-premium-portal .portal-app-subnav {display:flex;flex-wrap:nowrap;overflow-x:auto;padding:3px 1px 9px;scrollbar-width:thin;}
+  .ifce-premium-portal .portal-app-subitem {white-space:nowrap;flex:0 0 auto;}
+  .ifce-premium-portal .portal-app-atalho {padding:13px 11px;font-size:.79rem;}
+  .ifce-premium-portal .portal-app-atalho-icone {width:35px;height:35px;font-size:20px;}
+  .ifce-premium-portal #bottom-nav {padding-left:5px;padding-right:5px;}
+}
+@media(max-width:380px) {
+  .ifce-premium-portal .premium-brand-text small {display:none;}
+  .ifce-premium-portal .navbar-ifce .btn-outline-light {padding:6px 7px;font-size:.72rem;}
+  .ifce-premium-portal #btn-sino {width:35px;height:35px;}
+  .ifce-premium-portal #bottom-nav button {padding-left:1px;padding-right:1px;}
+  .ifce-premium-portal .portal-app-atalho {flex-direction:column;align-items:flex-start;}
+}
+@media(prefers-reduced-motion:reduce) {
+  .ifce-premium-portal *, .ifce-premium-portal *::before, .ifce-premium-portal *::after {
+    scroll-behavior:auto!important; animation-duration:.01ms!important;
+    transition-duration:.01ms!important;
+  }
+}
+@media print {
+  .ifce-premium-portal #bottom-nav,
+  .ifce-premium-portal .navbar-ifce,
+  .ifce-premium-portal .portal-app-painel,
+  .ifce-premium-portal #btn-sino {display:none!important;}
+  .ifce-premium-portal, .ifce-premium-portal #portal-aluno {background:#fff!important;}
+  .ifce-premium-portal #portal-aluno .card-custom {box-shadow:none!important;border-color:#aaa!important;}
+}

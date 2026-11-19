@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#2d8647">
+<meta name="theme-color" content="#103f2a">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portal do Aluno - Grêmio IFCE</title>
@@ -114,8 +114,9 @@ body{background-color:#f4f6f9}
 @media(min-width:760px){.portal-app-dashboard-grade{grid-template-columns:repeat(4,minmax(0,1fr))}.portal-app-painel{padding:27px}}
 @media(max-width:350px){.portal-app-atalho{flex-direction:column;align-items:flex-start;font-size:.76rem;padding:11px}}
 </style>
+<link rel="stylesheet" href="premium-portal.css?v=20261119">
 </head>
-<body>
+<body class="ifce-premium-portal">
 
 <div id="screen-onboarding">
   <div class="top-logo-chem">🧪 IFCE | QUÍMICA</div>
@@ -162,14 +163,18 @@ body{background-color:#f4f6f9}
 
 <nav class="navbar navbar-dark navbar-ifce mb-4 sticky-top">
   <div class="container d-flex justify-content-between align-items-center">
-    <span class="navbar-brand fw-bold m-0">Portal do Aluno - Grêmio IFCE</span>
+    <span class="navbar-brand premium-brand m-0" aria-label="Grêmio IFCE, Portal do Aluno">
+      <span class="premium-brand-symbol" aria-hidden="true">🌿</span>
+      <span class="premium-brand-text"><strong>Grêmio IFCE</strong><small>Portal do Aluno · Crateús</small></span>
+    </span>
     <div class="d-flex align-items-center gap-2"><button id="btn-instalar" onclick="instalarApp()" class="btn btn-outline-light btn-sm" style="display:none">📲 Instalar</button><button id="btn-logout-aluno" onclick="fazerLogoutAluno()" class="btn btn-outline-light btn-sm d-none">Sair</button><button id="btn-sino" type="button" onclick="alternarPainelNotif()" aria-label="Novidades">🔔<span id="sino-badge">0</span></button></div>
   </div>
 </nav>
 
 <div class="container pb-5" id="portal-aluno" style="max-width:800px">
   <div id="banner-portal" class="alert alert-warning text-center fw-bold mb-3 py-2" style="display:none"></div>
-  <div class="card card-custom p-3 mb-4 bg-success-subtle border-0">
+  <div class="card card-custom premium-boas-vindas p-3 mb-4 bg-success-subtle border-0">
+    <span class="premium-bem-vindo-selo">Área do estudante</span>
     <h5 class="fw-bold mb-1" style="color:var(--ifce-green)">Olá, <span id="nome-aluno-display">Aluno</span>! 👋</h5>
     <small class="text-muted" id="email-aluno-display"></small>
   </div>
