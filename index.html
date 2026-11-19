@@ -79,6 +79,37 @@ body{background-color:#f4f6f9}
 .lab-ph-escala{display:flex;justify-content:space-between;align-items:center;border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:11px;background:linear-gradient(90deg,#ef4444 0%,#fca311 22%,#facc15 38%,#4ade80 50%,#06b6d4 72%,#4f46e5 100%);color:#111827;text-shadow:0 1px 1px #ffffff90}
 .lab-ph-referencia{color:#14221b;transition:background-color .12s ease}
 #lab-missao-box button:focus-visible,#lab-avancado select:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
+
+/* Navegação 2026: cinco áreas, um recurso aberto por vez. Mantém a lógica de
+   permissões/recursos do Firebase (display inline original continua valendo). */
+#portal-aluno{max-width:1040px!important}
+#portal-aluno.portal-app-ativo > [data-portal-grupo]:not(.portal-secao-ativa){display:none!important}
+#bottom-nav{justify-content:space-around;overflow-x:hidden;padding:7px 5px calc(7px + env(safe-area-inset-bottom));gap:3px}
+#bottom-nav button{flex:1 1 20%;min-width:0;padding:8px 2px;font-size:clamp(10px,2.5vw,12px);line-height:1.2;white-space:nowrap}
+#bottom-nav button span{font-size:21px;margin-bottom:3px}
+#bottom-nav button:focus-visible{outline:3px solid #176c41;outline-offset:-2px}
+#bottom-nav button.ativo{background:#d9f2df;color:#166534}
+#portal-aluno .card-custom{border-radius:18px;box-shadow:0 8px 30px rgba(21,60,34,.06)}
+.portal-app-painel{border:1px solid #dfeee3;border-radius:21px;padding:22px;background:linear-gradient(135deg,#f7fff9 0%,#e8f4ec 100%);box-shadow:0 8px 25px rgba(16,90,40,.05);margin-bottom:18px;scroll-margin-top:74px}
+.portal-app-selo{margin:0 0 6px;color:#287444;font-size:11px;font-weight:800;letter-spacing:.08em}
+.portal-app-titulo{font-size:clamp(1.35rem,4vw,1.85rem);font-weight:800;color:#195d34;margin:0}
+.portal-app-descricao{font-size:.92rem;color:#526b5b;margin:6px 0 14px}
+.portal-app-subnav{display:flex;flex-wrap:wrap;gap:8px;margin-top:11px}
+.portal-app-subitem{background:#fff;color:#286641;border:1px solid #c5dec9;font-size:.86rem;font-weight:600;padding:9px 13px;border-radius:999px;transition:background .15s ease}
+.portal-app-subitem.ativo{background:#23763d;color:#fff;border-color:#23763d}
+.portal-app-subitem:hover{border-color:#23763d}
+.portal-app-subitem:focus-visible,.portal-app-atalho:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
+.portal-app-dashboard{margin-top:18px}
+.portal-app-dashboard[hidden],.portal-app-vazio[hidden]{display:none!important}
+.portal-app-dashboard-titulo{font-size:.96rem;font-weight:800;color:#1d5933;margin-bottom:10px}
+.portal-app-dashboard-grade{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.portal-app-atalho{display:flex;align-items:center;gap:12px;text-align:left;font-weight:700;font-size:.85rem;min-width:0;color:#234c31;background:#fff;border:1px solid #d9e7dc;border-radius:14px;padding:16px 12px}
+.portal-app-atalho:hover{border-color:#23763d;background:#f6fff7}
+.portal-app-atalho[hidden]{display:none!important}
+.portal-app-atalho-icone{font-size:25px}
+.portal-app-vazio{font-size:.9rem;color:#5e7965;margin:12px 0 0}
+@media(min-width:760px){.portal-app-dashboard-grade{grid-template-columns:repeat(4,minmax(0,1fr))}.portal-app-painel{padding:27px}}
+@media(max-width:350px){.portal-app-atalho{flex-direction:column;align-items:flex-start;font-size:.76rem;padding:11px}}
 </style>
 </head>
 <body>
@@ -517,7 +548,13 @@ body{background-color:#f4f6f9}
 </div>
 
 <div id="aviso-offline" class="d-none text-center small fw-bold py-2 px-3" style="position:fixed;top:0;left:0;right:0;z-index:1080;background:#fff3cd;color:#664d03;border-bottom:1px solid #ffe69c">Sem conexão: você está vendo os dados guardados. Votos, inscrições e envios voltam quando a internet voltar.</div>
-<nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-quiz"><span>🧠</span>Quiz</button><button type="button" data-alvo="sec-laboratorio"><span>🧪</span>Lab.</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
+<nav id="bottom-nav" aria-label="Navegação principal do Portal">
+<button type="button" data-portal-grupo="inicio" aria-current="page"><span aria-hidden="true">🏠</span>Início</button>
+<button type="button" data-portal-grupo="estudos"><span aria-hidden="true">📚</span>Estudos</button>
+<button type="button" data-portal-grupo="atividades"><span aria-hidden="true">📅</span>Atividades</button>
+<button type="button" data-portal-grupo="gremio"><span aria-hidden="true">🤝</span>Grêmio</button>
+<button type="button" data-portal-grupo="perfil"><span aria-hidden="true">👤</span>Perfil</button>
+</nav>
 
 <div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.26-a</div>
 
@@ -529,6 +566,7 @@ body{background-color:#f4f6f9}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="laboratorio-quimica.js"></script>
 <script src="laboratorio-avancado.js"></script>
+<script src="portal-navegacao.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -721,13 +759,14 @@ function iniciarSessaoAluno() {
     ['avisos', 'enquetes', 'pautas', 'materiais', 'eventos', 'jogos', 'videos', 'estudos', 'laboratorio', 'ajuda', 'sugestoes'].forEach(k => {
       const off = rec[k] === false;
       const card = document.getElementById('sec-' + k); if (card) card.style.display = off ? 'none' : '';
-      const btn = document.querySelector('#bottom-nav [data-alvo="sec-' + k + '"]'); if (btn) btn.style.display = off ? 'none' : '';
     });
+    PortalNavegacao.atualizarRecursos(rec);
   });
   carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarRealizacoes(); carregarJogos(); carregarClassificacao(); carregarVideos(); carregarEstudos(); carregarQuestoes(); carregarFlashcards(); carregarMeusChamados(); carregarMinhasSugestoes();
   carregarCarteirinhaDigital();
   LaboratorioQuimica.iniciarPortal();
   LaboratorioAvancado.iniciarPortal();
+  PortalNavegacao.iniciar();
 }
 
 /* ---------- Mural ---------- */
@@ -1176,7 +1215,8 @@ document.getElementById('lista-notif').addEventListener('click', e => {
   const b = e.target.closest('[data-alvo]');
   if (!b) return;
   document.getElementById('painel-notif').style.display = 'none';
-  document.getElementById(b.dataset.alvo).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  if (window.PortalNavegacao) PortalNavegacao.irPara(b.dataset.alvo);
+  else document.getElementById(b.dataset.alvo).scrollIntoView({ behavior: 'smooth', block: 'start' });
 });
 
 /* ---------- adoção do portal e termo de uso ---------- */
@@ -2507,23 +2547,8 @@ function relatarErro(msg) {
 window.addEventListener('error', e => relatarErro(e.message));
 window.addEventListener('unhandledrejection', e => relatarErro(e.reason && e.reason.message ? e.reason.message : e.reason));
 
-/* ---------- barra de navegação inferior (celular) ---------- */
-(function () {
-  const nav = document.getElementById('bottom-nav');
-  nav.addEventListener('click', e => {
-    const b = e.target.closest('button[data-alvo]');
-    if (b) document.getElementById(b.dataset.alvo).scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-  const obs = new IntersectionObserver(entradas => {
-    entradas.forEach(en => {
-      if (!en.isIntersecting) return;
-      nav.querySelectorAll('button').forEach(b => b.classList.toggle('ativo', b.dataset.alvo === en.target.id));
-      const ativo = nav.querySelector('button.ativo');
-      if (ativo) ativo.scrollIntoView({ inline: 'center', block: 'nearest' });
-    });
-  }, { rootMargin: '-35% 0px -55% 0px' });
-  nav.querySelectorAll('button').forEach(b => obs.observe(document.getElementById(b.dataset.alvo)));
-})();
+/* ---------- navegação principal: cinco áreas, sem alterar formulários ---------- */
+PortalNavegacao.preparar();
 </script>
 
 <style>
@@ -2757,6 +2782,7 @@ function carregarPerfil() {
     const card = document.getElementById('sec-primeiro');
     if (!d.exists) {
       if (card) card.style.display = 'block';
+      if (window.PortalNavegacao) PortalNavegacao.irPara('sec-primeiro');
       const t = document.getElementById('perf-titulo'); if (t) t.textContent = 'Antes de começar';
       return;
     }
@@ -2779,7 +2805,8 @@ function editarPerfil() {
     document.getElementById('perf-titulo').textContent = 'Editar perfil';
     const card = document.getElementById('sec-primeiro');
     card.style.display = 'block';
-    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (window.PortalNavegacao) PortalNavegacao.irPara('sec-primeiro');
+    else card.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }).catch(() => aviso('Não foi possível abrir o perfil agora.', 'danger'));
 }
 function salvarPerfil() {
