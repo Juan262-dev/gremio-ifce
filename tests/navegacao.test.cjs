@@ -125,3 +125,78 @@ test('telas apresentam busca e foco de teclado e respeitam HTML escapado',()=>{
   assert.ok(code.includes("texto.textContent = modulo.label"));
   assert.ok(!ler('portal-navegacao.js').includes('innerHTML'));
 });
+
+
+test('navegação real ativa apenas a área escolhida, preservando recursos desativados',()=>{
+  class No {
+    constructor(tag='div'){
+      this.tagName=tag.toUpperCase();this.id='';this.children=[];this.parent=null;
+      this.style={display:''};this.dataset={};this.hidden=false;
+      this.attributes={};this.handlers={};this.className='';this.textContent='';
+      const classes=new Set();
+      this.classList={
+        add:x=>classes.add(x),remove:x=>classes.delete(x),
+        contains:x=>classes.has(x),
+        toggle:(x,val)=>{if(val===undefined)val=!classes.has(x);if(val)classes.add(x);else classes.delete(x);return val;}
+      };
+    }
+    append(...xs){for(const x of xs)this.appendChild(x)}
+    appendChild(x){x.parent=this;this.children.push(x);return x}
+    insertBefore(x,ref){const i=this.children.indexOf(ref);x.parent=this;if(i>=0)this.children.splice(i,0,x);else this.children.push(x)}
+    replaceChildren(...xs){this.children=[];this.append(...xs)}
+    setAttribute(k,v){this.attributes[k]=v}
+    addEventListener(k,f){this.handlers[k]=f}
+    scrollIntoView(){this.scrolled=true}
+    contains(x){return x===this||this.children.some(c=>c.contains(x))}
+    querySelectorAll(sel){
+      const found=[];
+      const matches=(x)=>{
+        if(sel==='button[data-portal-grupo]')return x.tagName==='BUTTON'&&!!x.dataset.portalGrupo;
+        if(sel==='[data-portal-alvo]')return !!x.dataset.portalAlvo;
+        return false;
+      };
+      const walk=x=>x.children.forEach(c=>{if(matches(c))found.push(c);walk(c)});
+      walk(this);return found;
+    }
+  }
+  const portal=new No('main');portal.id='portal-aluno';
+  const barra=new No('nav');barra.id='bottom-nav';
+  const sec={};
+  for(const id of IDs_PORTAL){const x=new No('section');x.id=id;if(id==='sec-primeiro'||id==='sec-eleicao')x.style.display='none';portal.appendChild(x);sec[id]=x}
+  for(const key of Object.keys(nav.GRUPOS)){const b=new No('button');b.dataset.portalGrupo=key;barra.appendChild(b)}
+  const roots=[portal,barra];
+  const todos=(no,id)=>no.id===id?no:no.children.map(c=>todos(c,id)).find(Boolean)||null;
+  const doc={
+    createElement:t=>new No(t),
+    getElementById:id=>roots.map(r=>todos(r,id)).find(Boolean)||null,
+    querySelectorAll:sel=>sel==='#portal-app-dashboard [data-portal-alvo]'?
+      (doc.getElementById('portal-app-dashboard')?.querySelectorAll('[data-portal-alvo]')||[]):[]
+  };
+  const mod={exports:{}};
+  const ctx=vm.createContext({document:doc,module:mod,console});
+  vm.runInContext(ler('portal-navegacao.js'),ctx);
+  const api=mod.exports;
+  const visiveis=()=>IDs_PORTAL.filter(id=>sec[id].classList.contains('portal-secao-ativa'));
+  api.preparar();api.iniciar();
+  assert.deepEqual(visiveis(),['sec-avisos']);
+  assert.equal(doc.getElementById('portal-app-subnav').children.length,2);
+  assert.equal(doc.getElementById('portal-app-dashboard').hidden,false);
+  api.abrir('estudos',null,false);
+  assert.deepEqual(visiveis(),['sec-estudos']);
+  assert.equal(doc.getElementById('portal-app-dashboard').hidden,true);
+  assert.equal(api.irPara('sec-laboratorio'),true);
+  assert.deepEqual(visiveis(),['sec-laboratorio']);
+  api.atualizarRecursos({laboratorio:false});
+  assert.deepEqual(visiveis(),['sec-estudos']);
+  assert.equal(api.irPara('sec-laboratorio'),false);
+  assert.equal(api.irPara('sec-carteira'),true);
+  assert.deepEqual(visiveis(),['sec-carteira']);
+  assert.equal(api.irPara('sec-primeiro'),false); // edição de perfil ainda não solicitada
+  sec['sec-primeiro'].style.display='block';
+  assert.equal(api.irPara('sec-primeiro'),true);
+  assert.deepEqual(visiveis(),['sec-primeiro']);
+  sec['sec-primeiro'].style.display='none';api.atualizar();
+  assert.deepEqual(visiveis(),['sec-carteira']);
+  assert.equal(api.abrir('grupo-que-nao-existe'),false);
+  assert.deepEqual(visiveis(),['sec-carteira']);
+});
