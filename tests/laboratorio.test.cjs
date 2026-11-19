@@ -39,3 +39,50 @@ test("quantidade, concentração e diluição verificam dados", () => {
   assert.throws(() => lab.concentracao(0.5, 0));
   assert.throws(() => lab.diluicao(1, 50, 2));
 });
+
+
+test("favoritos: aceita apenas números atômicos válidos e sem repetição", () => {
+  assert.deepEqual(lab.normalizarFavoritos([8, 6, 8, 1, 118, 0, 119, -3, 2.5, "6", null, NaN]), [1, 6, 8, 118]);
+  assert.deepEqual(lab.normalizarFavoritos("C, O"), []);
+  assert.deepEqual(lab.normalizarFavoritos({6: true}), []);
+  assert.deepEqual(lab.normalizarFavoritos([]), []);
+});
+
+test("favoritos: cada conta usa chave isolada e o UID é validado", () => {
+  const a = lab.chaveFavoritos("aluno-01");
+  const b = lab.chaveFavoritos("aluno-02");
+  assert.ok(a && b && a !== b);
+  assert.ok(a.includes("aluno-01"));
+  for (const x of [null, undefined, "", "abc/def", "../", "a".repeat(200)]) {
+    assert.equal(lab.chaveFavoritos(x), null);
+  }
+});
+
+test("favoritos: persiste localmente e recupera a lista por conta", () => {
+  const dados = new Map();
+  const storage = {
+    getItem: chave => dados.has(chave) ? dados.get(chave) : null,
+    setItem: (chave, valor) => dados.set(chave, valor)
+  };
+  const a = lab.chaveFavoritos("estudanteA"), b = lab.chaveFavoritos("estudanteB");
+  assert.equal(lab.salvarFavoritos(storage, a, [8, 6, 8, 118]), true);
+  assert.deepEqual(lab.lerFavoritos(storage, a), [6, 8, 118]);
+  assert.deepEqual(lab.lerFavoritos(storage, b), []);
+  assert.equal(lab.salvarFavoritos(storage, b, [1]), true);
+  assert.deepEqual(lab.lerFavoritos(storage, b), [1]);
+  assert.deepEqual(lab.lerFavoritos(storage, a), [6, 8, 118]);
+});
+
+test("favoritos: dados corrompidos e navegador com armazenamento bloqueado não quebram o laboratório", () => {
+  const chave = lab.chaveFavoritos("aluno");
+  const bloqueado = {
+    getItem() { throw Error("storage blocked"); },
+    setItem() { throw Error("quota exceeded"); }
+  };
+  assert.deepEqual(lab.lerFavoritos(bloqueado, chave), []);
+  assert.equal(lab.salvarFavoritos(bloqueado, chave, [6]), false);
+  assert.deepEqual(lab.lerFavoritos({getItem: () => "{json quebrado"}, chave), []);
+  assert.deepEqual(lab.lerFavoritos({getItem: () => JSON.stringify(["6", 6, 200])}, chave), [6]);
+  assert.equal(lab.salvarFavoritos(null, chave, [6]), false);
+  assert.deepEqual(lab.lerFavoritos(null, chave), []);
+});
