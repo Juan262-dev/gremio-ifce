@@ -84,7 +84,7 @@ function editarConteudoLaboratorio(id) {
   }
   document.getElementById("lab-admin-publicado").checked = !!d.publicado;
   document.getElementById("lab-admin-salvar").textContent = "Salvar alterações";
-  document.getElementById("secao-laboratorio").scrollIntoView({ behavior: "smooth", block: "start" });
+  irPara('secao-laboratorio');
   labAdminMensagem("Editando: " + d.titulo, false);
 }
 async function excluirConteudoLaboratorio(id) {

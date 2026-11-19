@@ -60,6 +60,38 @@
         .card-admin-geral, .card-admin-nao-marketing { display: none; }
         #toast-container { position: fixed; top: 70px; right: 12px; left: 12px; z-index: 20000; display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none; }
         #toast-container .toast { pointer-events: auto; max-width: 420px; width: 100%; }
+
+        /* Central de Gestão: menu organizado sem remover qualquer módulo. */
+        #painel-admin { max-width:1080px !important; }
+        #painel-admin .card-custom { border-radius:18px; box-shadow:0 8px 26px rgba(0,0,0,.24); }
+        .admin-app-cabecalho { padding:22px; border:1px solid #2d5139; background:linear-gradient(135deg,#173123,#1b261e); border-radius:18px; margin-bottom:14px; }
+        .admin-app-titulo { font-size:clamp(1.4rem,3vw,1.9rem); font-weight:800; color:#f0fff4; margin-bottom:5px; }
+        .admin-app-texto { font-size:.88rem; color:#b4cdbd; margin-bottom:14px; }
+        .admin-app-resultados { display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:8px; margin-top:12px; }
+        .admin-app-resultados[hidden]{display:none!important}
+        .admin-app-busca-item { background:#23382a; color:#f2fff4; border:1px solid #345840; border-radius:9px; text-align:left; padding:11px; font-size:.84rem; }
+        .admin-app-busca-item:hover { background:#27513b; border-color:#00e676; }
+        .admin-app-abas { display:flex; gap:8px; align-items:stretch; overflow-x:auto; padding:5px 2px 12px; margin-bottom:6px; scrollbar-width:thin; }
+        .admin-app-aba { flex:0 0 auto; color:#b9cfbf; background:#1b2c21; border:1px solid #395341; border-radius:11px; font-size:.86rem; font-weight:700; padding:12px 14px; }
+        .admin-app-aba.ativo { background:#2d8647; color:#fff; border-color:#6fdb89; }
+        .admin-app-aba:hover { border-color:#00e676; }
+        .admin-app-aba:focus-visible, .admin-app-busca-item:focus-visible,
+        .admin-menu-link:focus-visible { outline:3px solid #91f6ab; outline-offset:2px; }
+        .admin-app-seletor { border:1px solid #304936; border-radius:16px; background:#1a291f; padding:18px 20px; margin-bottom:18px; scroll-margin-top:75px; }
+        .admin-app-subtitulo { font-size:1.14rem; color:#bdffca; font-weight:800; margin-bottom:3px; }
+        .admin-app-seletor .form-label { margin-bottom:6px; }
+        .admin-app-ferramenta-oculta { display:none!important; }
+        .admin-menu-categoria { color:#8ff0a7; font-size:.75rem; text-transform:uppercase; font-weight:800; letter-spacing:.06em; margin:22px 4px 8px; }
+        .admin-menu-link { color:#ecf7ee!important; background:#1d2c21!important; border-color:#304936!important; border-radius:9px!important; margin-bottom:5px!important; }
+        .admin-menu-link:hover { background:#244b31!important; }
+        #bottom-nav { justify-content:space-around; }
+        #bottom-nav button { min-width:0; }
+        @media(max-width:576px) {
+          .admin-app-cabecalho{padding:17px}
+          .admin-app-aba{font-size:.8rem;padding:10px 12px}
+          .admin-app-seletor{padding:14px}
+          #bottom-nav button{font-size:10px}
+        }
     </style>
 </head>
 <body>
@@ -105,11 +137,11 @@
     <!-- MENU LATERAL -->
     <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel" style="background-color: var(--ifce-dark); border-right: 1px solid var(--ifce-card-border);">
         <div class="offcanvas-header border-bottom border-secondary">
-            <h5 class="offcanvas-title fw-bold" id="sidebarMenuLabel" style="color: var(--ifce-accent-green);">Navegação Rápida</h5>
+            <h5 class="offcanvas-title fw-bold" id="sidebarMenuLabel" style="color: var(--ifce-accent-green);">Ferramentas do Painel</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body p-3">
-            <p class="small text-muted-custom mb-3">Acesso direto às secções do painel:</p>
+            <p class="small text-muted-custom mb-3">Busque uma ferramenta ou escolha uma categoria:</p>
             <div class="list-group list-group-flush" id="itensMenuNav"></div>
         </div>
     </div>
@@ -136,7 +168,7 @@
     </div>
 
     <!-- PAINEL -->
-    <div class="container pb-5" id="painel-admin" style="max-width: 850px;">
+    <div class="container pb-5" id="painel-admin" style="max-width: 1080px;">
         <div id="aviso-ti" class="alert alert-info fw-bold mb-3 py-2 d-none"></div>
         <div id="banner-preview" class="alert alert-warning d-none mb-3 py-2 justify-content-between align-items-center" style="position: sticky; top: 64px; z-index: 1020;">
             <span>👁️ Vendo como <strong id="preview-nome"></strong></span>
