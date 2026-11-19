@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'firestore.rules'
+      - 'laboratorio-quimica.js'
+      - 'admin-laboratorio.js'
       - 'firebase.json'
       - 'package.json'
       - 'tests/**'
@@ -23,5 +25,7 @@ jobs:
           java-version: '21'
       - name: Instalar dependências
         run: npm install --no-audit --no-fund
+      - name: Testar cálculos e Tabela Periódica (sem Firebase)
+        run: npm run test:lab
       - name: Testar com dados fictícios no Firebase Emulator
         run: npm run test:rules
