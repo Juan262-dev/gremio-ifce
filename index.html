@@ -54,6 +54,23 @@ body{background-color:#f4f6f9}
 .dots-container-chem{display:flex;gap:8px;margin-bottom:10px}
 .dot-chem{width:10px;height:10px;background:#283a2e;border-radius:50%;cursor:pointer;transition:all .3s}
 .dot-chem.active{width:25px;background:var(--ifce-accent-green);border-radius:10px;box-shadow:0 0 10px rgba(0,230,118,.8)}
+
+/* Laboratório Virtual: tabela clicável responsiva e foco acessível */
+#sec-laboratorio [hidden]{display:none!important}
+.lab-rolagem{overflow-x:auto;overscroll-behavior-x:contain;padding-bottom:8px}
+#lab-tabela{display:grid;grid-template-columns:repeat(18,minmax(42px,1fr));grid-template-rows:repeat(7,62px);gap:4px;min-width:850px}
+#lab-bloco-f{display:grid;grid-template-columns:repeat(14,minmax(42px,1fr));grid-template-rows:repeat(2,62px);gap:4px;min-width:680px}
+.lab-elemento{border:1px solid rgba(0,0,0,.16);border-radius:8px;color:#172719;padding:4px 2px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;background:#e8f5e9;cursor:pointer;min-width:0}
+.lab-elemento small{font-size:.65rem;align-self:flex-start;margin-left:4px}
+.lab-elemento strong{font-size:1.1rem;line-height:1.1}
+.lab-elemento:hover{outline:2px solid #155724;outline-offset:-2px}
+.lab-elemento:focus-visible{outline:3px solid #0d6efd;outline-offset:2px}
+.lab-elemento.lab-apagado{opacity:.16}
+.lab-naoMetal{background:#c4ebd4}.lab-nobre{background:#c3defb}.lab-halogenio{background:#e3d3fa}
+.lab-alcalino{background:#ffdad3}.lab-alcalinoTerroso{background:#ffe9ad}.lab-transicao{background:#f2dfc3}
+.lab-semimetal{background:#d5edab}.lab-posTransicao{background:#e5e8eb}
+.lab-lantanideo{background:#fed7ec}.lab-actinideo{background:#ffdee0}
+#lab-detalhes{background:#eaf5ed;border-left:4px solid var(--ifce-green);border-radius:6px;padding:12px;min-height:65px}
 </style>
 </head>
 <body>
@@ -216,6 +233,93 @@ body{background-color:#f4f6f9}
     <div id="lista-estudos-aluno"><p class="text-muted small">Carregando materiais...</p></div>
   </div>
 
+
+  <div id="sec-laboratorio" class="card card-custom p-4 mb-4">
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🧪 Laboratório Virtual de Química</h5>
+    <p class="small text-muted mb-3">Aprenda com a Tabela Periódica e cálculos químicos interativos. Recursos didáticos virtuais: não substituem aulas práticas supervisionadas.</p>
+    <h6 class="fw-bold">⚛️ Tabela Periódica Interativa</h6>
+    <div class="row g-2 mb-2">
+      <div class="col-md-7">
+        <label class="form-label small" for="lab-busca">Buscar elemento</label>
+        <input id="lab-busca" type="search" class="form-control form-control-sm" maxlength="70" placeholder="Nome, símbolo ou número atômico">
+      </div>
+      <div class="col-md-5">
+        <label class="form-label small" for="lab-familia">Filtrar família</label>
+        <select id="lab-familia" class="form-select form-select-sm">
+          <option value="">Todas as famílias</option>
+          <option value="alcalino">Metais alcalinos</option>
+          <option value="alcalinoTerroso">Alcalino-terrosos</option>
+          <option value="transicao">Metais de transição</option>
+          <option value="posTransicao">Outros metais</option>
+          <option value="semimetal">Semimetais</option>
+          <option value="naoMetal">Não metais</option>
+          <option value="halogenio">Halogênios</option>
+          <option value="nobre">Gases nobres</option>
+          <option value="lantanideo">Lantanídeos</option>
+          <option value="actinideo">Actinídeos</option>
+        </select>
+      </div>
+    </div>
+    <p class="small text-muted mb-1">Toque em um elemento para descobrir suas propriedades. No celular, deslize para os lados.</p>
+    <div class="lab-rolagem" aria-label="Tabela periódica com sete períodos">
+      <div id="lab-tabela"></div>
+    </div>
+    <p class="small text-muted mt-2 mb-1">Lantanídeos e actinídeos:</p>
+    <div class="lab-rolagem" aria-label="Elementos do bloco f">
+      <div id="lab-bloco-f"></div>
+    </div>
+    <div id="lab-detalhes" class="small mt-3 mb-4" role="status" aria-live="polite">Selecione um elemento.</div>
+    <h6 class="fw-bold">🧮 Calculadoras Químicas</h6>
+    <label class="form-label small" for="lab-operacao">Tipo de cálculo</label>
+    <select id="lab-operacao" class="form-select form-select-sm mb-2">
+      <option value="molar">Massa molar (g/mol)</option>
+      <option value="quantidade">Quantidade de matéria (mol)</option>
+      <option value="concentracao">Concentração molar (mol/L)</option>
+      <option value="diluicao">Relação de diluição (C₁V₁ = C₂V₂)</option>
+    </select>
+    <div id="lab-campo-formula" class="mb-2">
+      <label class="form-label small" for="lab-formula">Fórmula química</label>
+      <input id="lab-formula" type="text" class="form-control" maxlength="90" value="H2O" spellcheck="false" autocomplete="off" placeholder="Ex.: H2O, Ca(OH)2, CuSO4·5H2O">
+      <small class="text-muted">Use letras maiúsculas e minúsculas corretas; aceita parênteses e hidratos.</small>
+    </div>
+    <div id="lab-campo-massa" class="mb-2" hidden>
+      <label class="form-label small" for="lab-massa">Massa (g)</label>
+      <input id="lab-massa" class="form-control" type="number" min="0" step="any" value="18">
+    </div>
+    <div id="lab-campo-mols" class="mb-2" hidden>
+      <label class="form-label small" for="lab-mols">Quantidade de matéria (mol)</label>
+      <input id="lab-mols" class="form-control" type="number" min="0" step="any" value="0.5">
+    </div>
+    <div id="lab-campo-volume" class="mb-2" hidden>
+      <label class="form-label small" for="lab-volume">Volume (L)</label>
+      <input id="lab-volume" class="form-control" type="number" min="0" step="any" value="2">
+    </div>
+    <div id="lab-campo-diluicao" class="row g-2 mb-2" hidden>
+      <div class="col-4">
+        <label class="form-label small" for="lab-c1">C₁ (mol/L)</label>
+        <input id="lab-c1" type="number" class="form-control" min="0" step="any" value="2">
+      </div>
+      <div class="col-4">
+        <label class="form-label small" for="lab-v1">V₁ (mL)</label>
+        <input id="lab-v1" type="number" class="form-control" min="0" step="any" value="50">
+      </div>
+      <div class="col-4">
+        <label class="form-label small" for="lab-c2">C₂ (mol/L)</label>
+        <input id="lab-c2" type="number" class="form-control" min="0" step="any" value="0.5">
+      </div>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <button id="lab-calcular" type="button" class="btn btn-ifce btn-sm fw-bold">Calcular</button>
+      <button id="lab-exemplo" type="button" class="btn btn-outline-success btn-sm fw-bold">Ver exemplo: Ca(OH)₂</button>
+    </div>
+    <div id="lab-resultado" class="alert alert-light small mt-2 mb-0" role="status" aria-live="polite">Informe os dados e selecione Calcular.</div>
+    <small class="d-block text-muted mt-2">Massas atômicas didáticas arredondadas; para elementos radioativos, os números podem representar isótopos de referência. Resultados aproximados.</small>
+    <hr class="my-4">
+    <h6 class="fw-bold">📚 Conteúdos complementares do Grêmio</h6>
+    <div id="lab-conteudos" class="small text-muted" aria-live="polite">Carregando conteúdos...</div>
+    <p class="small text-muted mt-3 mb-0">Próximos módulos planejados: visualização de moléculas, simulações de reações e missões educativas.</p>
+  </div>
+
   <div id="sec-eleicao" class="card card-custom p-4 mb-4" style="display:none">
     <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Eleição do grêmio</h5>
     <div id="ele-portal-info" class="text-muted small mb-3"></div>
@@ -346,7 +450,7 @@ body{background-color:#f4f6f9}
 </div>
 
 <div id="aviso-offline" class="d-none text-center small fw-bold py-2 px-3" style="position:fixed;top:0;left:0;right:0;z-index:1080;background:#fff3cd;color:#664d03;border-bottom:1px solid #ffe69c">Sem conexão: você está vendo os dados guardados. Votos, inscrições e envios voltam quando a internet voltar.</div>
-<nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-quiz"><span>🧠</span>Quiz</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
+<nav id="bottom-nav" aria-label="Seções do portal"><button type="button" data-alvo="sec-avisos"><span>📢</span>Avisos</button><button type="button" data-alvo="sec-enquetes"><span>📊</span>Enquetes</button><button type="button" data-alvo="sec-pautas"><span>✊</span>Pautas</button><button type="button" data-alvo="sec-materiais"><span>🎲</span>Materiais</button><button type="button" data-alvo="sec-eventos"><span>📅</span>Eventos</button><button type="button" data-alvo="sec-jogos"><span>🏆</span>Jogos</button><button type="button" data-alvo="sec-quiz"><span>🧠</span>Quiz</button><button type="button" data-alvo="sec-laboratorio"><span>🧪</span>Lab.</button><button type="button" data-alvo="sec-estudos"><span>📚</span>Estudos</button><button type="button" data-alvo="sec-videos"><span>🎬</span>Vídeos</button><button type="button" data-alvo="sec-ajuda"><span>🆘</span>Ajuda</button><button type="button" data-alvo="sec-sugestoes"><span>💡</span>Sugestões</button></nav>
 
 <div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.26-a</div>
 
@@ -356,6 +460,7 @@ body{background-color:#f4f6f9}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="laboratorio-quimica.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -545,7 +650,7 @@ function iniciarSessaoAluno() {
     bn.textContent = d.banner || ''; bn.style.display = (d.banner && noPeriodo) ? 'block' : 'none';
     palavrasProibidas = Array.isArray(d.palavrasProibidas) ? d.palavrasProibidas : [];
     const rec = d.recursos || {};
-    ['avisos', 'enquetes', 'pautas', 'materiais', 'eventos', 'jogos', 'videos', 'estudos', 'ajuda', 'sugestoes'].forEach(k => {
+    ['avisos', 'enquetes', 'pautas', 'materiais', 'eventos', 'jogos', 'videos', 'estudos', 'laboratorio', 'ajuda', 'sugestoes'].forEach(k => {
       const off = rec[k] === false;
       const card = document.getElementById('sec-' + k); if (card) card.style.display = off ? 'none' : '';
       const btn = document.querySelector('#bottom-nav [data-alvo="sec-' + k + '"]'); if (btn) btn.style.display = off ? 'none' : '';
@@ -553,6 +658,7 @@ function iniciarSessaoAluno() {
   });
   carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarRealizacoes(); carregarJogos(); carregarClassificacao(); carregarVideos(); carregarEstudos(); carregarQuestoes(); carregarFlashcards(); carregarMeusChamados(); carregarMinhasSugestoes();
   carregarCarteirinhaDigital();
+  LaboratorioQuimica.iniciarPortal();
 }
 
 /* ---------- Mural ---------- */
