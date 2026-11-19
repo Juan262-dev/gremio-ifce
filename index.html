@@ -26,6 +26,12 @@ body{background-color:#f4f6f9}
 #bottom-nav button{flex:1 0 auto;min-width:64px;border:0;background:none;color:#555;font-size:11px;padding:6px 8px;border-radius:10px;display:flex;flex-direction:column;align-items:center}
 #bottom-nav button span{font-size:20px;line-height:1.1}
 #bottom-nav button.ativo{background:#e6f4ea;color:var(--ifce-green);font-weight:700}
+#carteirinha-visual{background:linear-gradient(130deg,#174127,#2d8647);color:#fff;border-radius:18px;padding:18px;box-shadow:0 10px 24px rgba(21,78,43,.22);max-width:510px;margin:auto}
+#carteirinha-visual .carteirinha-marca{font-size:.8rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+#carteirinha-nome{font-size:clamp(1.2rem,4vw,1.65rem);font-weight:800;overflow-wrap:anywhere}
+#carteirinha-qr{min-width:192px;min-height:192px;max-width:max-content;margin:12px auto 8px;padding:9px;border-radius:12px;background:#fff}
+#carteirinha-qr img,#carteirinha-qr canvas{display:block;width:174px!important;height:174px!important}
+@media print{#sec-carteira{box-shadow:none!important}#sec-carteira button{display:none!important}}
 #screen-onboarding{position:fixed;inset:0;background-color:var(--ifce-dark);background-image:radial-gradient(circle at 50% 30%,#1e2922 0%,#0d120f 70%),radial-gradient(rgba(45,134,71,.1) 1px,transparent 0);background-size:100% 100%,30px 30px;color:#fff;z-index:99999;display:flex;flex-direction:column;justify-content:space-between;align-items:center;padding:30px 20px 20px;overflow:hidden}
 .top-logo-chem{font-size:1.2rem;font-weight:800;color:var(--ifce-accent-green);text-transform:uppercase;letter-spacing:2px;margin-top:10px;text-shadow:0 0 12px rgba(0,230,118,.4)}
 .slides-wrapper-chem{width:100%;flex:1;display:flex;transition:transform .4s cubic-bezier(.25,1,.5,1)}
@@ -158,8 +164,24 @@ body{background-color:#f4f6f9}
   </div>
 
   <div id="sec-carteira" class="card card-custom p-4 mb-4">
-    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">Minha carteirinha de participação</h5>
-    <p class="text-muted small mb-3">Seu resumo do ano no grêmio. Só você vê, e ele usa apenas os dados que o portal já mostra para você.</p>
+    <h5 class="fw-bold mb-2" style="color:var(--ifce-green)">🪪 Minha carteirinha digital</h5>
+    <p class="text-muted small mb-3">Identificação interna para atividades do Grêmio. Não substitui a carteira estudantil nem um documento oficial do IFCE.</p>
+    <div id="carteirinha-digital-estado" class="small text-muted mb-3" role="status" aria-live="polite">Consultando sua carteirinha...</div>
+    <div id="carteirinha-visual" style="display:none" aria-label="Sua carteirinha de participação do Grêmio">
+      <div class="carteirinha-marca">Grêmio Estudantil · IFCE Crateús</div>
+      <div class="small opacity-75 mb-3">Carteirinha digital de participação</div>
+      <div id="carteirinha-nome"></div>
+      <div class="small mt-1">Turma: <strong id="carteirinha-turma"></strong></div>
+      <div id="carteirinha-qr" aria-label="QR Code para conferência no Painel Administrativo"></div>
+      <div class="small text-center">Escaneie para conferir o cadastro no Painel Administrativo</div>
+      <div class="small opacity-75 text-center" id="carteirinha-emissao"></div>
+    </div>
+    <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+      <button id="btn-gerar-carteirinha" type="button" onclick="gerarCarteirinhaDigital()" class="btn btn-ifce btn-sm fw-bold" style="display:none">Gerar minha carteirinha</button>
+      <button id="btn-salvar-qr-carteirinha" type="button" onclick="baixarQrCarteirinha()" class="btn btn-outline-success btn-sm fw-bold" style="display:none">Salvar QR Code</button>
+    </div>
+    <p class="small text-muted mt-3 mb-3">A conferência precisa de internet e de uma conta autorizada do Grêmio. QR Codes salvos ou impressos podem ser copiados; a validade é conferida pelo banco de dados.</p>
+    <h6 class="fw-bold mt-3" style="color:var(--ifce-green)">Minha participação no ano</h6>
     <div id="carteira-lista"><p class="text-muted small mb-0">Carregando...</p></div>
     <div class="d-flex flex-wrap gap-2 mt-3">
       <button onclick="editarPerfil()" class="btn btn-sm btn-outline-success fw-bold">Editar perfil</button>
@@ -332,6 +354,7 @@ body{background-color:#f4f6f9}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -528,6 +551,7 @@ function iniciarSessaoAluno() {
     });
   });
   carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarRealizacoes(); carregarJogos(); carregarClassificacao(); carregarVideos(); carregarEstudos(); carregarQuestoes(); carregarFlashcards(); carregarMeusChamados(); carregarMinhasSugestoes();
+  carregarCarteirinhaDigital();
 }
 
 /* ---------- Mural ---------- */
@@ -2536,6 +2560,7 @@ function removerAniversario() {
 auth.onAuthStateChanged(u => { if (u) setTimeout(carregarAniversarios, 1000); });
 </script>
 
+<script src="carteirinha-aluno.js"></script>
 <script>
 /* ---- primeiro acesso e carteirinha de participação ---- */
 const MATERIAS_PERFIL = ['Biologia I','Filosofia I','Física I','Geografia I','História I','Introdução à Informática','Introdução ao Curso Técnico em Química','Língua Portuguesa I','Matemática I','Química Básica','Sociologia I'];
