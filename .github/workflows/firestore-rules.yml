@@ -2,6 +2,11 @@ name: Testar regras do Firestore
 on:
   pull_request:
     paths:
+      - 'index.html'
+      - 'admin.html'
+      - 'portal-navegacao.js'
+      - 'admin-01-base-login.js'
+      - 'admin-08-resumo-abas.js'
       - 'firestore.rules'
       - 'laboratorio-quimica.js'
       - 'laboratorio-avancado.js'
@@ -26,6 +31,8 @@ jobs:
           java-version: '21'
       - name: Instalar dependências
         run: npm install --no-audit --no-fund
+      - name: Testar interface e navegação dos dois apps
+        run: npm run test:ui
       - name: Testar cálculos e Tabela Periódica (sem Firebase)
         run: npm run test:lab
       - name: Testar com dados fictícios no Firebase Emulator
