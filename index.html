@@ -511,7 +511,7 @@ auth.onAuthStateChanged(async user => {
       irParaSlide(2); mostrarErroLogin(`Seu acesso está suspenso até ${pun.data().expiraEm.toDate().toLocaleString('pt-BR')}. Motivo: ${pun.data().motivo || 'não informado'}.`);
       return;
     }
-    usuarioAtual = { nome: d.nome || 'Aluno', email };
+    usuarioAtual = { nome: d.nome || 'Aluno', email, turma: d.turma || '' };
     iniciarSessaoAluno();
   } catch (err) {
     console.error(err);
