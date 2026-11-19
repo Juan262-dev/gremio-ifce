@@ -71,6 +71,14 @@ body{background-color:#f4f6f9}
 .lab-semimetal{background:#d5edab}.lab-posTransicao{background:#e5e8eb}
 .lab-lantanideo{background:#fed7ec}.lab-actinideo{background:#ffdee0}
 #lab-detalhes{background:#eaf5ed;border-left:4px solid var(--ifce-green);border-radius:6px;padding:12px;min-height:65px}
+
+/* Módulos 3D e simulações — acessíveis em celulares */
+#lab-avancado [hidden]{display:none!important}
+.lab-mol-tela{background:linear-gradient(150deg,#f3faf5,#e1f2ed);min-height:200px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.lab-mol-tela svg{max-width:100%;display:block}
+.lab-ph-escala{display:flex;justify-content:space-between;align-items:center;border-radius:8px;padding:8px 10px;margin-bottom:8px;font-size:11px;background:linear-gradient(90deg,#ef4444 0%,#fca311 22%,#facc15 38%,#4ade80 50%,#06b6d4 72%,#4f46e5 100%);color:#111827;text-shadow:0 1px 1px #ffffff90}
+.lab-ph-referencia{color:#14221b;transition:background-color .12s ease}
+#lab-missao-box button:focus-visible,#lab-avancado select:focus-visible{outline:3px solid #2563eb;outline-offset:2px}
 </style>
 </head>
 <body>
@@ -314,10 +322,69 @@ body{background-color:#f4f6f9}
     </div>
     <div id="lab-resultado" class="alert alert-light small mt-2 mb-0" role="status" aria-live="polite">Informe os dados e selecione Calcular.</div>
     <small class="d-block text-muted mt-2">Massas atômicas didáticas arredondadas; para elementos radioativos, os números podem representar isótopos de referência. Resultados aproximados.</small>
+
+    <div id="lab-avancado">
+      <hr class="my-4">
+      <h6 class="fw-bold">🧬 Visualizador de moléculas em 3D</h6>
+      <p class="small text-muted mb-2">Modelos educativos de geometria molecular: gire a representação usando os controles, sem precisar instalar nada.</p>
+      <label for="lab-molecula" class="form-label small">Escolha uma molécula</label>
+      <select id="lab-molecula" class="form-select form-select-sm mb-2"></select>
+      <div id="lab-mol-tela" class="lab-mol-tela border rounded" aria-live="off">Carregando modelo molecular...</div>
+      <div class="row g-2 mt-2">
+        <div class="col-sm-6">
+          <label for="lab-mol-x" class="form-label small">Inclinação vertical</label>
+          <input id="lab-mol-x" class="form-range" type="range" min="-180" max="180" step="5" value="15">
+        </div>
+        <div class="col-sm-6">
+          <label for="lab-mol-y" class="form-label small">Rotação horizontal</label>
+          <input id="lab-mol-y" class="form-range" type="range" min="-180" max="180" step="5" value="20">
+        </div>
+      </div>
+      <button id="lab-mol-resetar" class="btn btn-outline-success btn-sm mb-2" type="button">Restaurar posição</button>
+      <p id="lab-mol-info" class="small text-muted" role="status">Selecione uma molécula para conhecer sua geometria.</p>
+      <small class="d-block text-muted">As distâncias e os tamanhos atômicos são ilustrativos. Ligações são representadas simbolicamente, não em escala real.</small>
+
+      <hr class="my-4">
+      <h6 class="fw-bold">⚖️ Simulador de balanceamento</h6>
+      <p class="small text-muted mb-2">Ajuste apenas os coeficientes das equações: os índices das fórmulas não mudam. Compare os átomos nos dois lados. Esta é uma atividade totalmente digital.</p>
+      <label for="lab-bal-equacao" class="form-label small">Exemplo de equação simbólica</label>
+      <select id="lab-bal-equacao" class="form-select form-select-sm mb-2"></select>
+      <div id="lab-bal-campos"></div>
+      <div id="lab-bal-retorno" class="small fw-bold text-muted" role="status" aria-live="polite"></div>
+      <div id="lab-bal-contagem" class="table-responsive"></div>
+      <button id="lab-bal-gabarito-btn" class="btn btn-outline-success btn-sm" type="button">Mostrar solução explicada</button>
+      <p id="lab-bal-gabarito" class="alert alert-light small mt-2 mb-0" hidden></p>
+
+      <hr class="my-4">
+      <h6 class="fw-bold">🌈 Simulador virtual de pH</h6>
+      <p class="small text-muted mb-2">Mova o controle para explorar uma <strong>escala matemática</strong> de 0 a 14. Modelo idealizado de soluções aquosas a 25 °C, não um resultado de experimento.</p>
+      <label for="lab-ph-valor" class="form-label small">pH: <strong id="lab-ph-numero">7</strong></label>
+      <input id="lab-ph-valor" class="form-range" type="range" min="0" max="14" step="0.5" value="7" aria-describedby="lab-ph-resultado">
+      <div class="lab-ph-escala" aria-hidden="true">
+        <span>Ácido (0)</span><span>Neutro (7)</span><span>Básico (14)</span>
+      </div>
+      <div id="lab-ph-referencia" class="lab-ph-referencia rounded p-3 text-center fw-bold mb-2">Modelo de solução neutra · pH 7</div>
+      <p id="lab-ph-resultado" class="small text-muted" role="status" aria-live="polite"></p>
+      <small class="text-muted d-block">A relação pH + pOH = 14 é uma aproximação usual a 25 °C; o modelo não prevê pH real de misturas, atividade iônica ou soluções muito concentradas.</small>
+
+      <hr class="my-4">
+      <h6 class="fw-bold">🏅 Missões de aprendizagem</h6>
+      <p class="small text-muted">Pratique com perguntas de Química e explicações após cada acerto. Sem ranking público, sem notas escolares e sem guardar as respostas.</p>
+      <div id="lab-missao-placar" class="mb-2" aria-label="Missões concluídas"></div>
+      <p id="lab-missao-progresso" class="small text-muted" role="status" aria-live="polite">Carregando progresso...</p>
+      <label for="lab-missao-escolha" class="form-label small">Escolha um desafio</label>
+      <select id="lab-missao-escolha" class="form-select form-select-sm mb-2"></select>
+      <button id="lab-missao-iniciar" class="btn btn-ifce btn-sm fw-bold" type="button">Começar missão</button>
+      <div id="lab-missao-box" class="border rounded p-3 mt-3" hidden></div>
+
+      <hr class="my-4">
+      <h6 class="fw-bold">🦺 Segurança e responsabilidade</h6>
+      <p class="small text-muted mb-1">Utilize os módulos somente para aprendizagem virtual. Em atividades presenciais, siga sempre as orientações do professor e as normas do laboratório da instituição. Não reproduza reações ou use reagentes por conta própria.</p>
+    </div>
     <hr class="my-4">
     <h6 class="fw-bold">📚 Conteúdos complementares do Grêmio</h6>
     <div id="lab-conteudos" class="small text-muted" aria-live="polite">Carregando conteúdos...</div>
-    <p class="small text-muted mt-3 mb-0">Próximos módulos planejados: visualização de moléculas, simulações de reações e missões educativas.</p>
+    <p class="small text-muted mt-3 mb-0">Laboratório Virtual — módulos digitais de aprendizagem desenvolvidos para os estudantes do Ensino Médio Integrado em Química.</p>
   </div>
 
   <div id="sec-eleicao" class="card card-custom p-4 mb-4" style="display:none">
@@ -461,6 +528,7 @@ body{background-color:#f4f6f9}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="laboratorio-quimica.js"></script>
+<script src="laboratorio-avancado.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -659,6 +727,7 @@ function iniciarSessaoAluno() {
   carregarAvisos(); carregarEnquetes(); carregarReivindicacoes(); carregarMateriais(); carregarEventos(); carregarRealizacoes(); carregarJogos(); carregarClassificacao(); carregarVideos(); carregarEstudos(); carregarQuestoes(); carregarFlashcards(); carregarMeusChamados(); carregarMinhasSugestoes();
   carregarCarteirinhaDigital();
   LaboratorioQuimica.iniciarPortal();
+  LaboratorioAvancado.iniciarPortal();
 }
 
 /* ---------- Mural ---------- */
@@ -2289,6 +2358,7 @@ let questoesBanco = [], quiz = null, flashcardsBanco = [], cartoes = { fila: [],
 function carregarQuestoes() {
   ouvir(db.collection('questoes').orderBy('criadoEm', 'desc'), snap => {
     questoesBanco = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    if (window.LaboratorioAvancado) LaboratorioAvancado.atualizarMissoes();
     const marcadas = new Set([...document.querySelectorAll('[data-qdisc]:checked')].map(c => c.value));
     const discs = [...new Set([...GERADORES.map(g => g.disciplina), ...BANCO_1ANO.map(q => q.disciplina), ...questoesBanco.map(q => q.disciplina)].filter(Boolean))]
       .sort((a, b) => a.localeCompare(b));
