@@ -65,6 +65,14 @@
     atalhos.id = "portal-app-subnav";
     atalhos.setAttribute("aria-label", "Ferramentas desta área");
     painel.appendChild(atalhos);
+    const editarPerfil = construir("button", "portal-app-editar-perfil", "⚙️ Editar minhas preferências");
+    editarPerfil.id = "portal-app-editar-perfil";
+    editarPerfil.type = "button";
+    editarPerfil.hidden = true;
+    editarPerfil.addEventListener("click", () => {
+      if (typeof root.editarPerfil === "function") root.editarPerfil();
+    });
+    painel.appendChild(editarPerfil);
     const dashboard = construir("div", "portal-app-dashboard");
     dashboard.id = "portal-app-dashboard";
     dashboard.appendChild(construir("h2", "portal-app-dashboard-titulo", "Acesso rápido"));
@@ -112,6 +120,8 @@
     }
     const dashboard = document.getElementById("portal-app-dashboard");
     if (dashboard) dashboard.hidden = grupoAtual !== "inicio";
+    const editar = document.getElementById("portal-app-editar-perfil");
+    if (editar) editar.hidden = grupoAtual !== "perfil";
     const vazio = document.getElementById("portal-app-vazio");
     if (vazio) vazio.hidden = disponiveis.length > 0;
     const nav = document.getElementById("bottom-nav");
@@ -177,7 +187,7 @@
     abrir("inicio", null, false);
   }
   const API = Object.freeze({ GRUPOS, ROTULOS, DESTAQUES, obterGrupo,
-    preparar, iniciar, abrir, irPara, atualizarRecursos });
+    preparar, iniciar, abrir, irPara, atualizarRecursos, atualizar: atualizarInterface });
   root.PortalNavegacao = API;
   if (typeof module !== "undefined" && module.exports) module.exports = API;
 })(typeof window !== "undefined" ? window : globalThis);
