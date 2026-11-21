@@ -805,24 +805,58 @@ function carregarAvisos() {
 
 /* ---------- Enquetes ---------- */
 function carregarEnquetes() {
-  lista('lista-enquetes-aluno', db.collection('enquetes').where('privacidadeVersao','==',2), 'Nenhuma enquete por enquanto. Quando houver uma votação, ela aparece aqui.', (e, id) => {
-    const jaVotou = false; // a validação definitiva ocorre na transação privada por UID
-    const msg = !e.ativa ? '<p class="text-muted small mb-2">Esta enquete já foi encerrada.</p>'
-      : jaVotou ? '<div class="alert alert-info py-2 mb-2 small fw-bold text-center">✅ Você já votou nesta enquete!</div>'
-      : '<p class="text-muted small mb-2">Escolha uma opção para votar:</p>';
-    const ops = (e.opcoes || []).map(op => `
-      <button type="button" data-enquete="${esc(id)}" data-opcao="${esc(op.id)}" ${(!e.ativa || jaVotou) ? 'disabled' : ''} class="list-group-item list-group-item-action d-flex justify-content-between align-items-center small btn-voto">
-        <span>🔘 ${esc(op.texto)}</span>
-        ${jaVotou || !e.ativa ? `<span class="badge bg-secondary">${op.votos || 0} votos</span>` : ''}
-      </button>`).join('');
-    return `
-    <div class="border rounded p-3 mb-3 bg-white">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="fw-bold m-0">${esc(e.titulo)}</h6>
-        <span class="badge ${e.ativa ? 'bg-success' : 'bg-secondary'}">${e.ativa ? 'Ativa' : 'Encerrada'}</span>
-      </div>${msg}<div class="list-group mb-2">${ops}</div>
-    </div>`;
-  }, '');
+  // Consulta somente cédulas privadas do próprio UID; falha fechada.
+  ouvir(db.collection('enquetes').where('privacidadeVersao','==',2), async snap => {
+    const uid=auth.currentUser && auth.currentUser.uid;
+    if (!uid || !usuarioAtual) return;
+    const container=document.getElementById('lista-enquetes-aluno');
+    const docs=snap.docs.map(d=>({id:d.id,...d.data()}));
+    novidades.enquetes=docs;renderNotificacoes();
+    if(!docs.length){
+      container.textContent='Nenhuma enquete liberada para estudantes.';
+      return;
+    }
+    const votou=await Promise.all(snap.docs.map(d=>d.ref.collection('votos')
+      .doc(uid).get({source:'server'})
+      .then(s=>({voted:s.exists,error:false}))
+      .catch(()=>({voted:false,error:true}))));
+    if(!auth.currentUser||auth.currentUser.uid!==uid)return;
+    const nodes=docs.map((e,i)=>{
+      const box=document.createElement('article');
+      box.className='border rounded p-3 mb-3 bg-white';
+      const heading=document.createElement('h6');
+      heading.className='fw-bold mb-2';
+      heading.textContent=e.titulo||'Enquete';
+      box.appendChild(heading);
+      const message=document.createElement('p');
+      message.className='text-muted small mb-2';
+      message.textContent=!e.ativa?'Esta enquete já foi encerrada.'
+        :votou[i].error?'Não foi possível verificar seu voto. Tente mais tarde.'
+        :votou[i].voted?'Você já votou nesta enquete!':'Escolha uma opção para votar:';
+      box.appendChild(message);
+      const options=document.createElement('div');
+      options.className='list-group mb-2';
+      (e.opcoes||[]).forEach(op=>{
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='list-group-item list-group-item-action d-flex justify-content-between align-items-center small btn-voto';
+        b.dataset.enquete=e.id;b.dataset.opcao=String(op.id);
+        b.disabled=!e.ativa||votou[i].voted||votou[i].error;
+        const title=document.createElement('span');
+        title.textContent='🔘 '+String(op.texto||'Opção');
+        b.appendChild(title);
+        if(votou[i].voted||!e.ativa){
+          const count=document.createElement('span');
+          count.className='badge bg-secondary';
+          count.textContent=String(Number(op.votos)||0)+' votos';
+          b.appendChild(count);
+        }
+        options.appendChild(b);
+      });
+      box.appendChild(options);return box;
+    });
+    container.replaceChildren(...nodes);
+  });
 }
 document.getElementById('lista-enquetes-aluno').addEventListener('click', e => {
   const b = e.target.closest('.btn-voto');
