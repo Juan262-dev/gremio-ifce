@@ -40,6 +40,45 @@ contagem pública agregada, eleição formal ou migração automática:
 essas funcionalidades devem ser projetadas e testadas separadamente.
 Não substituir a votação eleitoral real por uma enquete simples.
 
+## Ensaio offline sem dados reais (não é uma migração!)
+
+O diretório \`scripts/privacy/\` inclui:
+
+- \`legacy-audit.cjs\`: auditoria que lista o **teto de referências**
+  existentes ao formato antigo no Portal/Admin e em \`firestore.rules\`.
+  O CI falha se surgirem novos usos do legado. **Teto não é segurança**:
+  a exposição histórica continua até a migração real.
+- \`rehearse-migration.cjs\`: funções puras que recebem somente
+  **documentos fictícios** e um mapa explícito email→UID de exemplo.
+  Retornam desenho de evento/enquete pública separado de inscrições e
+  votos privados por UID. Preservam ordem da fila, opções e contagens
+  quando coerentes, sem copiar e-mails para a saída.
+- \`tests/privacidade-migracao.test.cjs\`: testa isolamento de dados de
+  exemplo, duplicações, inconsistências, listas sem UID e cenários
+  que exigem **intervenção humana**.
+
+A saída de ensaio **NÃO deve ser gravada no Firestore**. Não é um
+migrador completo, não trata todos os campos, consentimento, exclusões,
+concorrência ou rollback. Não use mapa de e-mails real no GitHub,
+issue, log de CI ou fixtures. Operação real permanece proibida sem
+aprovação da instituição, backup/restauração e testes dos dois apps.
+
+## Inventário conhecido de dependências
+
+Há referências ao formato legado no \`index.html\`, \`admin.html\`,
+\`admin-02-comunicacao-estudos.js\`, \`admin-03-alunos-punicoes.js\`,
+\`admin-04-gestao-diretoria.js\`, \`admin-05-financeiro-diretorias.js\`,
+\`admin-06-eleicao-eventos.js\`, \`admin-07-ti.js\`,
+\`admin-carteirinhas.js\` e \`firestore.rules\`. Elas afetam:
+
+- voto e contagem de enquetes;
+- inscrição, cancelamento, capacidade e ordem da fila;
+- avaliações, convites e presenças;
+- exportação de CSV, relatórios, perfil e exclusão de dados;
+- verificações de segurança e permissões do Firestore.
+
+Por isso, atualizar somente uma das partes **não protege a privacidade**.
+
 ## Migração FUTURA do IFCE (em PR e aprovação separados)
 
 1. **Preparar:** mapear coleções e consumidores de
