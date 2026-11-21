@@ -46,6 +46,8 @@ Nunca usar o botão "Publicar" para fazer deploy automático antes dos testes.
 └────────────────────────────────────────────────────┘
 ```
 
+O processo deve funcionar **sem deploy automático**: a ativação ocorrerá somente após homologação e autorização explícita.
+
 O assistente deve usar a linguagem e o visual do futuro **template genérico**
 sem substituir as telas atuais do Grêmio IFCE.
 
