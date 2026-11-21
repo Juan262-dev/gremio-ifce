@@ -573,6 +573,7 @@ body{background-color:#f4f6f9}
 <script src="laboratorio-quimica.js"></script>
 <script src="laboratorio-avancado.js"></script>
 <script src="portal-navegacao.js"></script>
+<script src="portal-eventos-v2.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -751,6 +752,10 @@ auth.onAuthStateChanged(async user => {
 
 function iniciarSessaoAluno() {
   limparListeners();
+  eventosV2Liberados = false;
+  eventosPrivadosCache = null;
+  eventoRenderGeracao++;
+  operacoesEventoPendentes.clear();
   document.getElementById('screen-onboarding').style.display = 'none';
   document.getElementById('portal-aluno').style.display = 'block';
   document.getElementById('bottom-nav').style.display = 'flex';
@@ -772,6 +777,11 @@ function iniciarSessaoAluno() {
     const noPeriodo = (!d.bannerDe || d.bannerDe <= hojeB) && (!d.bannerAte || d.bannerAte >= hojeB);
     bn.textContent = d.banner || ''; bn.style.display = (d.banner && noPeriodo) ? 'block' : 'none';
     palavrasProibidas = Array.isArray(d.palavrasProibidas) ? d.palavrasProibidas : [];
+    const liberados = PortalEventosV2.liberados(d);
+    if (eventosV2Liberados !== liberados) {
+      eventosV2Liberados = liberados;
+      renderEventosPrivados();
+    }
     const rec = d.recursos || {};
     ['avisos', 'enquetes', 'pautas', 'materiais', 'eventos', 'jogos', 'videos', 'estudos', 'laboratorio', 'ajuda', 'sugestoes'].forEach(k => {
       const off = rec[k] === false;
@@ -963,16 +973,13 @@ function solicitarMaterial(id, nome) {
   }).then(() => aviso("Pedido enviado! Aguarde a aprovação do Grêmio.", 'success'))
     .catch(err => aviso(typeof err === 'string' ? err : "Erro ao solicitar material.", 'danger'));
 }
-function carregarEventos() {
-  ouvir(db.collection('eventos').where('privacidadeVersao','==',2), async snap => {
-    const uid = auth.currentUser && auth.currentUser.uid;
-    if (!uid) return;
-    const todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    const estados = await Promise.all(snap.docs.map(d =>
-      d.ref.collection('inscricoes').doc(uid).get({source:'server'})
-        .then(s => s.exists ? s.data() : null).catch(() => ({status:'unavailable'}))));
-    if (!auth.currentUser || auth.currentUser.uid !== uid) return;
-    todos.forEach((e,i) => { e.minhaInscricao = estados[i]; });
+let eventosV2Liberados = false;
+let eventosPrivadosCache = null;
+let eventoRenderGeracao = 0;
+const operacoesEventoPendentes = new Set();
+function renderEventosPrivados() {
+  if (!auth.currentUser || !eventosPrivadosCache) return;
+  const todos = eventosPrivadosCache;
     novidades.eventos = todos; renderNotificacoes();
     const c = document.getElementById('lista-eventos-aluno');
     if (!todos.length) { c.innerHTML = '<p class="text-muted small mb-0">Nenhum evento programado por enquanto. Eles aparecem aqui quando forem publicados.</p>'; return; }
@@ -993,6 +1000,21 @@ function carregarEventos() {
         ${acoesEvento(ev, ja, passou)}
       </div>`;
     }).join('') + '</div>';
+}
+function carregarEventos() {
+  ouvir(db.collection('eventos').where('privacidadeVersao','==',2), async snap => {
+    const uid = auth.currentUser && auth.currentUser.uid;
+    if (!uid) return;
+    const geracao = ++eventoRenderGeracao;
+    const todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const estados = await Promise.all(snap.docs.map(d =>
+      d.ref.collection('inscricoes').doc(uid).get({source:'server'})
+        .then(s => s.exists ? s.data() : null).catch(() => ({status:'unavailable'}))));
+    if (geracao !== eventoRenderGeracao || !auth.currentUser ||
+        auth.currentUser.uid !== uid || !usuarioAtual) return;
+    todos.forEach((e,i) => { e.minhaInscricao = estados[i]; });
+    eventosPrivadosCache = todos;
+    renderEventosPrivados();
   });
 }
 /* ---------- aba de estudos ---------- */
@@ -1107,13 +1129,50 @@ function carregarJogos() {
     </div>`;
   });
 }
-function inscreverEvento(id) {
-  if (!auth.currentUser) return;
-  firebase.app().functions('southamerica-east1').httpsCallable('inscreverEventoSeguro')({eventoId:id})
-    .then(r => aviso(r.data.status === 'waitlisted'
-      ? 'Você entrou na lista de espera privada.' : 'Inscrição confirmada!', 'success'))
-    .catch(() => aviso('Não foi possível confirmar a inscrição. Verifique a conexão e o cadastro.', 'warning'));
+async function atualizarInscricaoEvento(id, uid) {
+  const snap = await db.collection('eventos').doc(id).collection('inscricoes')
+    .doc(uid).get({source:'server'});
+  if (!auth.currentUser || auth.currentUser.uid !== uid) return;
+  const ev = (eventosPrivadosCache || []).find(x => x.id === id);
+  if (ev) {
+    ev.minhaInscricao = snap.exists ? snap.data() : null;
+    renderEventosPrivados();
+  }
 }
+async function operarEvento(id, operacao) {
+  if (!auth.currentUser) return;
+  if (!eventosV2Liberados) {
+    aviso('Inscrições temporariamente indisponíveis até a liberação do Grêmio.', 'warning');
+    return;
+  }
+  if (operacoesEventoPendentes.has(id)) return;
+  if (operacao === 'cancelar' && !confirm('Cancelar sua participação neste evento?')) return;
+  const uid = auth.currentUser.uid;
+  operacoesEventoPendentes.add(id);
+  renderEventosPrivados();
+  try {
+    const funcao = operacao === 'cancelar' ? 'cancelarEventoSeguro' : 'inscreverEventoSeguro';
+    const resultado = await firebase.app().functions('southamerica-east1')
+      .httpsCallable(funcao)({eventoId:id});
+    if (!auth.currentUser || auth.currentUser.uid !== uid) return;
+    // Sucesso no servidor não pode virar mensagem de falha por atraso visual.
+    try { await atualizarInscricaoEvento(id, uid); }
+    catch (e) { console.warn('Atualização da inscrição indisponível', e); }
+    if (operacao === 'cancelar') {
+      aviso(PortalEventosV2.mensagemCancelamento(resultado.data.status), 'info');
+    } else {
+      aviso(resultado.data.status === 'waitlisted'
+        ? 'Você entrou na lista de espera privada.' : 'Inscrição confirmada!', 'success');
+    }
+  } catch (erro) {
+    if (auth.currentUser && auth.currentUser.uid === uid)
+      aviso(PortalEventosV2.mensagemFalha(erro), 'warning');
+  } finally {
+    operacoesEventoPendentes.delete(id);
+    if (auth.currentUser && auth.currentUser.uid === uid) renderEventosPrivados();
+  }
+}
+function inscreverEvento(id) { return operarEvento(id, 'inscrever'); }
 
 /* ---------- eventos: inscrição e fila privada pendentes de homologação ---------- */
 function acoesEvento(ev, ja, passou) {
@@ -1124,6 +1183,11 @@ function acoesEvento(ev, ja, passou) {
   const resumo=vagas ? '<small class="text-muted d-block mb-1">'+inscritos+' de '+vagas+
     ' vagas ocupadas'+(aguardando?' • '+aguardando+' em espera':'')+'</small>' : '';
   if(passou)return resumo+'<span class="badge bg-secondary">Encerrado</span>';
+  if (!eventosV2Liberados)
+    return resumo+'<span class="badge bg-secondary">'+
+      esc(PortalEventosV2.estadoPausado(privateReg))+'</span>';
+  if (operacoesEventoPendentes.has(ev.id))
+    return resumo+'<span class="badge bg-secondary">Processando solicitação...</span>';
   if(privateReg&&privateReg.status==='unavailable')
     return resumo+'<span class="badge bg-warning text-dark">Não foi possível verificar a inscrição.</span>';
   if(privateReg&&privateReg.status==='waitlisted')
@@ -1134,12 +1198,7 @@ function acoesEvento(ev, ja, passou) {
   return resumo+'<button data-id="'+id+'" onclick="inscreverEvento(this.dataset.id)" class="btn btn-sm btn-ifce">'+
     (vagas&&inscritos>=vagas?'Entrar na lista de espera':'Fazer inscrição')+'</button>';
 }
-function cancelarInscricaoEvento(id) {
-  if (!auth.currentUser || !confirm('Cancelar sua participação neste evento?')) return;
-  firebase.app().functions('southamerica-east1').httpsCallable('cancelarEventoSeguro')({eventoId:id})
-    .then(() => aviso('Participação cancelada. A primeira pessoa da fila é promovida automaticamente.', 'info'))
-    .catch(() => aviso('Não foi possível cancelar agora. Procure a gestão.', 'warning'));
-}
+function cancelarInscricaoEvento(id) { return operarEvento(id, 'cancelar'); }
 function avaliarEvento(id) {
   const nota = Number(document.getElementById('av-nota-' + id).value);
   const comentario = document.getElementById('av-com-' + id).value.trim();
