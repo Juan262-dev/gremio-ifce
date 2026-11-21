@@ -145,3 +145,53 @@ test('roadmap e guias incluem assistente como planejamento, não código ativo',
   assert.match(assistente,/Ainda não é uma tela/i);
   assert.match(assistente,/Não entregue.*interface funcionando/i);
 });
+
+const guiaEscolas=ler('GUIA-PARA-ESCOLAS.md');
+const fichaEscola=ler('FICHA-DA-ESCOLA.md');
+const readmeRaiz=fs.readFileSync(path.resolve(__dirname,'../README.md'),'utf8');
+
+test('tutorial para escolas distingue preparação de instalação ainda não disponível',()=>{
+  assert.match(guiaEscolas,/ainda NÃO está pronto para ser instalado/i);
+  assert.match(guiaEscolas,/não publique com dados reais de alunos/i);
+  assert.match(guiaEscolas,/Tutorial de implantação — etapas futuras/i);
+  assert.match(guiaEscolas,/O código atual do IFCE/i);
+  assert.match(guiaEscolas,/Não.*copie.*firestore\.rules|Nunca copie.*firestore\.rules/i);
+  assert.match(guiaEscolas,/Não.*copi.*app atual|não faça uma cópia do app atual/i);
+});
+
+test('tutorial cobre aplicativos, Firebase por escola, direitos e segurança',()=>{
+  for (const palavra of ['Portal do Aluno','Painel Administrativo','Authentication',
+    'Cloud Firestore','Security Rules','direitos de uso','privacidade',
+    'primeiro administrador','créditos originais','sem contas reais',
+    'backup','troca de diretoria','Problemas comuns'])
+    assert.ok(guiaEscolas.toLowerCase().includes(palavra.toLowerCase()),palavra);
+  assert.match(guiaEscolas,/Escolas diferentes terão Firebase/i);
+  assert.match(guiaEscolas,/sem conexão com o banco do IFCE/i);
+  assert.match(guiaEscolas,/não.*compartilhar.*chaves|Nunca cole chaves privadas/i);
+  assert.match(guiaEscolas,/não publicar/i);
+});
+
+test('tutorial e ficha oferecem roteiro sem dados sensíveis',()=>{
+  for(const etapa of ['1. Confirmar','2. Criar o Firebase','3. Usar o Assistente',
+    '4. Personalizar','5. Criar e validar','6. Fazer um piloto',
+    '7. Publicar','8. Manter'])
+    assert.ok(guiaEscolas.includes(etapa),etapa);
+  assert.match(fichaEscola,/Não informe senhas, credenciais, tokens/i);
+  assert.match(fichaEscola,/projeto Firebase exclusivo da escola/i);
+  assert.match(fichaEscola,/aprovação \*\*explícita\*\* para publicar/i);
+  assert.match(fichaEscola,/GUIA-PARA-ESCOLAS\.md/);
+  assert.match(readmeRaiz,/GUIA-PARA-ESCOLAS\.md/);
+  assert.match(arq,/GUIA-PARA-ESCOLAS\.md/);
+  assert.match(plano,/Experiência de implantação guiada/i);
+});
+
+test('guia inclui documentação Firebase verificável e não executa deploy',()=>{
+  for(const url of [
+    'https://firebase.google.com/docs/web/setup',
+    'https://firebase.google.com/docs/auth/web/start',
+    'https://firebase.google.com/docs/firestore/security/test-rules-emulator',
+    'https://firebase.google.com/docs/hosting/quickstart'])
+    assert.ok(guiaEscolas.includes(url),url);
+  assert.doesNotMatch(guiaEscolas,/firebase deploy(?: --only)?/i);
+  assert.match(guiaEscolas,/Este tutorial não dispara deploy/i);
+});
