@@ -15,6 +15,7 @@ on:
       - 'firebase.json'
       - 'package.json'
       - 'template-escolas/**'
+      - 'scripts/privacy/**'
       - 'tests/**'
       - '.github/workflows/firestore-rules.yml'
   workflow_dispatch:
@@ -35,6 +36,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Testar interface e navegação dos dois apps
         run: npm run test:ui
+      - name: Auditar regressões de privacidade e ensaiar migração fictícia
+        run: npm run test:privacy:audit
       - name: Validar configuração isolada do template escolar
         run: npm run test:template:config
       - name: Validar planejamento e exemplos seguros para outras escolas

@@ -5,6 +5,12 @@ pequenos, testados e sem publicação/merge sem autorização.
 
 ## Implementação técnica em andamento — não distribuível
 
+- [x] Auditoria regressiva do formato legado IFCE e ensaios **offline**
+  de migração de listas de e-mails para documentos privados, com testes
+  de consistência e sem conexão a dados reais.
+- [ ] Migrar dados reais e interfaces IFCE em etapa institucional própria:
+  ainda não foi feita nenhuma alteração nas regras ou listas atuais.
+
 - [x] Assistente de terminal com cinco etapas e modo ensaio para gerar a
   configuração pública exclusiva da escola, sem conectar ou publicar.
 - [ ] Evoluir o assistente para experiência visual completa e revisada
