@@ -406,7 +406,7 @@
                 const cult = c => {
                     const atv = evs.filter(e => e.criadoPorEmail === c.email);
                     const inscritos = atv.reduce((t, e) => t + (Number(e.inscritosCount) || 0), 0);
-                    const comPresenca = atv.filter(e => 0 /* presença em subcoleção restrita */).length;
+                    const comPresenca = 'Consulta restrita'; // presença de eventos só via QR e papel autorizado
                     const semReg = atv.filter(e => e.dataISO && e.dataISO < hoje && !e.registroLink).length;
                     return [atv.length, inscritos, comPresenca, semReg ? `<span class="text-warning">${semReg}</span>` : 0];
                 };
@@ -629,7 +629,7 @@
                 <div class="list-group-item">
                     <div class="d-flex justify-content-between align-items-start gap-2">
                         <div><strong class="text-white">${esc(x.titulo)}</strong><br>
-                        <small class="text-muted-custom">${esc(x.data.split('-').reverse().join('/'))}${x.hora ? ' às ' + esc(x.hora) : ''}${x.local ? ' • ' + esc(x.local) : ''} • ${x.total || 0 /* presença em subcoleção restrita */} participante(s)</small></div>
+                        <small class="text-muted-custom">${esc(x.data.split('-').reverse().join('/'))}${x.hora ? ' às ' + esc(x.hora) : ''}${x.local ? ' • ' + esc(x.local) : ''} • ${x.total || 0} participante(s)</small></div>
                         <button onclick="excluirAtividadeDiv('${x.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size:11px">Excluir</button>
                     </div>
                     ${x.descricao ? `<p class="small text-white mt-2 mb-1" style="white-space:pre-wrap">${esc(x.descricao)}</p>` : ''}
@@ -702,7 +702,7 @@
                 ]);
                 const atv = atS.docs.map(d => d.data()).filter(x => x.data && x.data.startsWith(mes)).sort((p, q) => p.data.localeCompare(q.data));
                 const mats = matS.docs.map(d => d.data()).filter(x => noMesDiv(x.criadoEm, mes));
-                const participantes = atv.reduce((s, x) => s + (x.total || 0 /* presença em subcoleção restrita */), 0);
+                const participantes = atv.reduce((s, x) => s + (x.total || 0), 0);
                 const br = iso => iso ? iso.split('-').reverse().join('/') : '—';
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF();
@@ -724,7 +724,7 @@
                 secao(`Atividades (${atv.length})`);
                 if (!atv.length) linha('Nenhuma atividade registrada neste mês.');
                 atv.forEach(x => {
-                    linha(`• ${br(x.data)}${x.hora ? ' às ' + x.hora : ''} – ${x.titulo}${x.local ? ' (' + x.local + ')' : ''}: ${x.total || 0 /* presença em subcoleção restrita */} participante(s)`);
+                    linha(`• ${br(x.data)}${x.hora ? ' às ' + x.hora : ''} – ${x.titulo}${x.local ? ' (' + x.local + ')' : ''}: ${x.total || 0} participante(s)`);
                     (x.presentes || []).forEach(n => linha('      ' + n, 9));
                 });
                 secao(`Materiais publicados (${mats.length})`);
@@ -972,7 +972,7 @@
                 snap.docs.map(d => d.data()).filter(x => x.area === area && String(x.data).startsWith(ano)).forEach(x => {
                     const i = Number(x.data.slice(5, 7)) - 1;
                     meses[i].ativ++;
-                    meses[i].part += (x.total || 0 /* presença em subcoleção restrita */);
+                    meses[i].part += (x.total || 0);
                 });
                 const nomes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
                 const tot = meses.reduce((s, m) => ({ ativ: s.ativ + m.ativ, part: s.part + m.part }), { ativ: 0, part: 0 });
