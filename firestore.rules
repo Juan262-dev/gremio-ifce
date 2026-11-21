@@ -128,7 +128,7 @@ service cloud.firestore {
 
     // Campos legados são proibidos em documentos públicos v2.
     function enquetePublicaSegura(d) { return !d.keys().hasAny(['votosAlunos']); }
-    function eventoPublicoSeguro(d) { return !d.keys().hasAny(['inscritos', 'espera']); }
+    function eventoPublicoSeguro(d) { return !d.keys().hasAny(['inscritos', 'espera', 'presentes']); }
 
     // ---------- validações de enquete ----------
     // Valida a opção escolhida sem avaliar todas as oito opções uma por uma.

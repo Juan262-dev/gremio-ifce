@@ -471,7 +471,7 @@
                 linha(`Eventos no mês: ${ev.length}`);
                 linha(`Jogos cadastrados no mês: ${jogos.docs.filter(d => noMes(d.data().criadoEm)).length}`);
                 titulo('Eventos');
-                ev.length ? ev.forEach(e => linha(`- ${e.titulo} (${e.data || dataBR(e.dataISO)}) - ${(e.inscritos || []).length} inscrito(s)`)) : linha('Nenhum evento.');
+                ev.length ? ev.forEach(e => linha(`- ${e.titulo} (${e.data || dataBR(e.dataISO)}) - ${(Number(e.inscritosCount) || 0)} inscrito(s)`)) : linha('Nenhum evento.');
                 titulo('Pautas dos alunos');
                 linha(`Novas pautas: ${pa.filter(p => noMes(p.criadoEm)).length}`);
                 const movidas = pa.filter(p => noMes(p.statusEm));
@@ -710,14 +710,14 @@
                 } else if (nivel === 'cultura') {
                     const atv = (cacheAtividades.cultura || []).filter(x => noMes(x.dataISO));
                     titulo('Atividades do mês');
-                    linha(`Atividades: ${atv.length} | Inscritos: ${soma(atv, x => (x.inscritos || []).length)} | Com lista de presença: ${atv.filter(x => (x.presentes || []).length).length}`);
-                    atv.forEach(x => linha(`- ${x.titulo} (${x.data || '-'}): ${(x.inscritos || []).length} inscrito(s), ${(x.presentes || []).length} presente(s)${x.registroLink ? '' : ' — sem registro de fotos'}`));
+                    linha(`Atividades: ${atv.length} | Inscritos: ${soma(atv, x => (Number(x.inscritosCount) || 0))} | Com lista de presença: ${atv.filter(x => (x.presentes || []).length).length}`);
+                    atv.forEach(x => linha(`- ${x.titulo} (${x.data || '-'}): ${(Number(x.inscritosCount) || 0)} inscrito(s), ${(x.presentes || []).length} presente(s)${x.registroLink ? '' : ' — sem registro de fotos'}`));
                     if (!atv.length) linha('Nenhuma atividade publicada neste mês.');
                 } else if (nivel === 'racial') {
                     const atv = (cacheAtividades.racial || []).filter(x => noMes(x.dataISO));
                     titulo('Ações do mês');
-                    linha(`Ações: ${atv.length} | Inscritos: ${soma(atv, x => (x.inscritos || []).length)} | Com lista de presença: ${atv.filter(x => (x.presentes || []).length).length}`);
-                    atv.forEach(x => linha(`- ${x.titulo} (${x.data || '-'}): ${(x.inscritos || []).length} inscrito(s)`));
+                    linha(`Ações: ${atv.length} | Inscritos: ${soma(atv, x => (Number(x.inscritosCount) || 0))} | Com lista de presença: ${atv.filter(x => (x.presentes || []).length).length}`);
+                    atv.forEach(x => linha(`- ${x.titulo} (${x.data || '-'}): ${(Number(x.inscritosCount) || 0)} inscrito(s)`));
                     titulo('Encaminhamentos à direção');
                     const enc = cacheEnc.filter(e => noMes(e.data) || mesDeTs(e.criadoEm) === mes);
                     linha(`Registrados: ${enc.length} | Concluídos: ${enc.filter(e => e.status === 'Concluído').length} | Abertos: ${enc.filter(e => e.status !== 'Concluído').length}`);
