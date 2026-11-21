@@ -2792,15 +2792,19 @@ function carregarCarteira() {
   const ano = String(new Date().getFullYear());
   const eu = usuarioAtual.email;
   Promise.all([
-    db.collection('eventos').get(),
+    db.collection('eventos').where('privacidadeVersao','==',2).get(),
     db.collection('reivindicacoes').where('apoios', 'array-contains', eu).get(),
-    db.collection('enquetes').get(),
+    db.collection('enquetes').where('privacidadeVersao','==',2).get(),
     db.collection('sugestoes').where('email', '==', eu).get(),
     db.collection('chamados').where('autorEmail', '==', eu).get()
-  ]).then(([ev, pautas, enq, sug, cham]) => {
-    const eventos = ev.docs.map(d => d.data()).filter(e => (e.dataISO || '').startsWith(ano) && (e.inscritos || []).includes(eu)).length;
+  ]).then(async ([ev, pautas, enq, sug, cham]) => {
+    const uid = auth.currentUser.uid;
+    const inscricoes = await Promise.all(ev.docs.filter(d => (d.data().dataISO || '').startsWith(ano))
+      .map(d => d.ref.collection('inscricoes').doc(uid).get()));
+    const eventos = inscricoes.filter(d => d.exists && d.data().status === 'registered').length;
     const apoios = pautas.docs.map(d => d.data()).filter(x => anoDe(x.criadoEm) === ano).length;
-    const votos = enq.docs.map(d => d.data()).filter(x => (x.votosAlunos || []).some(v => v && v.email === eu)).length;
+    const meusVotos = await Promise.all(enq.docs.map(d => d.ref.collection('votos').doc(uid).get()));
+    const votos = meusVotos.filter(d => d.exists).length;
     const sugestoes = sug.docs.map(d => d.data()).filter(x => anoDe(x.criadoEm) === ano).length;
     const pedidos = cham.docs.map(d => d.data()).filter(x => anoDe(x.criadoEm) === ano).length;
     const linha = (t, n) => `<li class="d-flex justify-content-between small py-1"><span>${t}</span><strong>${n}</strong></li>`;
@@ -2881,8 +2885,22 @@ async function baixarMeusDados() {
     const [al, pf, an, sg, ch, pa, en, ev, pe] = await Promise.all([
       db.collection('alunos').doc(eu).get(), db.collection('perfis').doc(eu).get(), db.collection('aniversarios').doc(eu).get(),
       db.collection('sugestoes').where('email', '==', eu).get(), db.collection('chamados').where('autorEmail', '==', eu).get(),
-      db.collection('reivindicacoes').where('apoios', 'array-contains', eu).get(), db.collection('enquetes').get(),
-      db.collection('eventos').get(), db.collection('pedidos_exclusao').where('email', '==', eu).get()
+      db.collection('reivindicacoes').where('apoios', 'array-contains', eu).get(),
+      db.collection('enquetes').where('privacidadeVersao','==',2).get(),
+      db.collection('eventos').where('privacidadeVersao','==',2).get(),
+      db.collection('pedidos_exclusao').where('email', '==', eu).get()
+    ]);
+    const uidPrivado = auth.currentUser.uid;
+    const [votosPrivados, eventosPrivados] = await Promise.all([
+      Promise.all(en.docs.map(async d => {
+        const voto = await d.ref.collection('votos').doc(uidPrivado).get();
+        return voto.exists ? {titulo:d.data().titulo} : null;
+      })),
+      Promise.all(ev.docs.map(async d => {
+        const inscricao = await d.ref.collection('inscricoes').doc(uidPrivado).get();
+        return inscricao.exists && inscricao.data().status === 'registered'
+          ? {titulo:d.data().titulo,data:d.data().data || d.data().dataISO} : null;
+      }))
     ]);
     const dados = {
       gerado_em: new Date().toISOString(), conta: eu,
@@ -2892,8 +2910,8 @@ async function baixarMeusDados() {
       sugestoes: sg.docs.map(d => limparParaJSON(d.data())),
       pedidos_de_ajuda: ch.docs.map(d => limparParaJSON(d.data())),
       pautas_apoiadas: pa.docs.map(d => ({ titulo: d.data().titulo })),
-      enquetes_votadas: en.docs.filter(d => (d.data().votosAlunos || []).some(v => v && v.email === eu)).map(d => ({ titulo: d.data().titulo })),
-      eventos_inscritos: ev.docs.filter(d => (d.data().inscritos || []).includes(eu)).map(d => ({ titulo: d.data().titulo, data: d.data().data || d.data().dataISO })),
+      enquetes_votadas: votosPrivados.filter(Boolean),
+      eventos_inscritos: eventosPrivados.filter(Boolean),
       pedidos_de_exclusao: pe.docs.map(d => limparParaJSON(d.data()))
     };
     const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
