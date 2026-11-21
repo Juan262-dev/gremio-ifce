@@ -121,7 +121,7 @@
                 titulo, data: dataBR(iso), dataISO: iso,
                 descricao: (local ? 'Local: ' + local + '\n' : '') + desc,
                 eixo: EIXO[p], criadoPor: document.getElementById('user-name-display').textContent, criadoPorEmail: emailLogado,
-                registroLink: '', inscritos: [], criadoEm: TS()
+                registroLink: '', privacidadeVersao: 2, inscritosCount: 0, esperaCount: 0, proximaOrdem: 0, criadoEm: TS()
             }).then(() => {
                 toast('Atividade publicada para os alunos! 🎉');
                 registrarAcao('Atividade publicada', `${EIXO[p]}: ${titulo}`);
@@ -138,14 +138,14 @@
                 if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma atividade publicada ainda. Publique a primeira acima.</p>'; return; }
                 c.innerHTML = '<div class="list-group">' + docs.map(x => {
                     const semRegistro = x.dataISO && x.dataISO < hoje && !x.registroLink;
-                    const presentes = (x.presentes || []).length;
+                    // Presença exige conferência de QR pela gestão autorizada.
                     return `
                     <div class="list-group-item">
                         <div class="d-flex justify-content-between align-items-start gap-2">
                             <div>
                                 <strong class="text-white">${esc(x.titulo)}</strong>
                                 ${semRegistro ? ' <span class="badge bg-warning text-dark">sem registro</span>' : ''}<br>
-                                <small class="text-muted-custom">${esc(x.data || '')} • ${(x.inscritos || []).length} inscrito(s) • ${presentes} presente(s)</small>
+                                <small class="text-muted-custom">${esc(x.data || '')} • ${(Number(x.inscritosCount) || 0)} inscrito(s) • presenças em registros privados</small>
                             </div>
                             <div class="d-flex gap-1 flex-wrap justify-content-end">
                                 <button data-acao="abrirPresenca" data-id="${esc(x.id)}" class="btn btn-outline-info btn-sm py-0" style="font-size: 11px;">✔ Presença</button>
@@ -163,26 +163,20 @@
             });
         }
         function abrirPresenca(id) {
-            const x = Object.values(cacheAtividades).flat().find(a => a.id === id);
             const box = document.getElementById('pres-' + id);
-            if (!x || !box) return;
-            if (!(x.inscritos || []).length) { box.innerHTML = '<small class="text-muted-custom">Ainda não há inscritos nesta atividade.</small>'; return; }
-            const presentes = new Set(x.presentes || []);
-            box.innerHTML = '<div class="p-2 rounded" style="background: #121a14; border: 1px solid var(--ifce-card-border);">' +
-                '<div class="small text-muted-custom mb-1">Marque quem compareceu:</div>' +
-                x.inscritos.map((e, i) => `<div class="form-check"><input class="form-check-input" type="checkbox" id="pr-${esc(id)}-${i}" data-pres="${esc(id)}" value="${esc(e)}" ${presentes.has(e) ? 'checked' : ''}><label class="form-check-label small" for="pr-${esc(id)}-${i}">${esc(e)}</label></div>`).join('') +
-                `<button data-acao="salvarPresenca" data-id="${esc(id)}" class="btn btn-success btn-sm py-0 mt-2" style="font-size: 11px;">Salvar presença</button></div>`;
+            if (box) box.textContent = 'A presença agora é conferida com a carteirinha e a inscrição privada por UID, pela gestão autorizada.';
         }
         function salvarPresenca(id) {
-            const marcados = [...document.querySelectorAll(`[data-pres="${CSS.escape(id)}"]:checked`)].map(c => c.value);
-            db.collection('eventos').doc(id).update({ presentes: marcados })
-                .then(() => { toast(`Presença salva (${marcados.length} presente(s)).`); registrarAcao('Presença registrada', id); })
-                .catch(e => erroDB(e, 'salvarPresenca'));
+            toast('Registro de presença por lista pública desativado. Use a conferência de carteirinha.', 'warning');
         }
 
-        function gerarRelatorioAtividade(id) {
+        async function gerarRelatorioAtividade(id) {
             const x = Object.values(cacheAtividades).flat().find(a => a.id === id);
             if (!x) return;
+            // Não inventar contagem: a leitura depende de cargo autorizado.
+            const presencasConfirmadas = await db.collection('presencas_eventos')
+                .doc(id).collection('alunos').get({ source: 'server' })
+                .then(s => s.size).catch(() => null);
             const { jsPDF } = window.jspdf; const doc = new jsPDF(); let y = 20;
             const linha = t => doc.splitTextToSize(String(t), 170).forEach(p => { if (y > 280) { doc.addPage(); y = 20; } doc.text(p, 20, y); y += 6; });
             doc.setFont('Helvetica', 'bold'); doc.setFontSize(15); doc.text('Grêmio Estudantil - IFCE Crateús', 20, y); y += 9;
@@ -190,7 +184,9 @@
             doc.setFont('Helvetica', 'normal'); doc.setFontSize(11);
             linha('Eixo: ' + (x.eixo || '-'));
             linha('Data: ' + (x.data || '-'));
-            linha('Inscritos: ' + (x.inscritos || []).length);
+            linha('Inscritos: ' + (Number(x.inscritosCount) || 0));
+            linha('Presenças confirmadas: ' +
+                (presencasConfirmadas === null ? 'não disponíveis para esta conta' : String(presencasConfirmadas)));
             y += 3; linha(x.descricao || '(sem descrição)');
             if (x.registroLink) { y += 3; linha('Registros (fotos e materiais): ' + x.registroLink); }
             y += 6; linha('Responsável: ' + (x.criadoPor || '-'));
@@ -409,8 +405,8 @@
                 };
                 const cult = c => {
                     const atv = evs.filter(e => e.criadoPorEmail === c.email);
-                    const inscritos = atv.reduce((t, e) => t + (e.inscritos || []).length, 0);
-                    const comPresenca = atv.filter(e => (e.presentes || []).length).length;
+                    const inscritos = atv.reduce((t, e) => t + (Number(e.inscritosCount) || 0), 0);
+                    const comPresenca = 'Consulta restrita'; // presença de eventos só via QR e papel autorizado
                     const semReg = atv.filter(e => e.dataISO && e.dataISO < hoje && !e.registroLink).length;
                     return [atv.length, inscritos, comPresenca, semReg ? `<span class="text-warning">${semReg}</span>` : 0];
                 };
@@ -633,7 +629,7 @@
                 <div class="list-group-item">
                     <div class="d-flex justify-content-between align-items-start gap-2">
                         <div><strong class="text-white">${esc(x.titulo)}</strong><br>
-                        <small class="text-muted-custom">${esc(x.data.split('-').reverse().join('/'))}${x.hora ? ' às ' + esc(x.hora) : ''}${x.local ? ' • ' + esc(x.local) : ''} • ${x.total || (x.presentes || []).length} participante(s)</small></div>
+                        <small class="text-muted-custom">${esc(x.data.split('-').reverse().join('/'))}${x.hora ? ' às ' + esc(x.hora) : ''}${x.local ? ' • ' + esc(x.local) : ''} • ${x.total || 0} participante(s)</small></div>
                         <button onclick="excluirAtividadeDiv('${x.id}')" class="btn btn-outline-danger btn-sm py-0" style="font-size:11px">Excluir</button>
                     </div>
                     ${x.descricao ? `<p class="small text-white mt-2 mb-1" style="white-space:pre-wrap">${esc(x.descricao)}</p>` : ''}
@@ -706,7 +702,7 @@
                 ]);
                 const atv = atS.docs.map(d => d.data()).filter(x => x.data && x.data.startsWith(mes)).sort((p, q) => p.data.localeCompare(q.data));
                 const mats = matS.docs.map(d => d.data()).filter(x => noMesDiv(x.criadoEm, mes));
-                const participantes = atv.reduce((s, x) => s + (x.total || (x.presentes || []).length), 0);
+                const participantes = atv.reduce((s, x) => s + (x.total || 0), 0);
                 const br = iso => iso ? iso.split('-').reverse().join('/') : '—';
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF();
@@ -728,7 +724,7 @@
                 secao(`Atividades (${atv.length})`);
                 if (!atv.length) linha('Nenhuma atividade registrada neste mês.');
                 atv.forEach(x => {
-                    linha(`• ${br(x.data)}${x.hora ? ' às ' + x.hora : ''} – ${x.titulo}${x.local ? ' (' + x.local + ')' : ''}: ${x.total || (x.presentes || []).length} participante(s)`);
+                    linha(`• ${br(x.data)}${x.hora ? ' às ' + x.hora : ''} – ${x.titulo}${x.local ? ' (' + x.local + ')' : ''}: ${x.total || 0} participante(s)`);
                     (x.presentes || []).forEach(n => linha('      ' + n, 9));
                 });
                 secao(`Materiais publicados (${mats.length})`);
@@ -976,7 +972,7 @@
                 snap.docs.map(d => d.data()).filter(x => x.area === area && String(x.data).startsWith(ano)).forEach(x => {
                     const i = Number(x.data.slice(5, 7)) - 1;
                     meses[i].ativ++;
-                    meses[i].part += (x.total || (x.presentes || []).length);
+                    meses[i].part += (x.total || 0);
                 });
                 const nomes = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
                 const tot = meses.reduce((s, m) => ({ ativ: s.ativ + m.ativ, part: s.part + m.part }), { ativ: 0, part: 0 });

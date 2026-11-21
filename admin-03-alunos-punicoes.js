@@ -194,8 +194,7 @@
                 const p = pu.exists ? pu.data() : null;
                 if (p && p.expiraEm && p.expiraEm.toMillis() > Date.now()) L.push(`⚠️ Punição ativa: ${esc(p.punicao)} até ${esc(fmtData(p.expiraEm))}`);
                 L.push(`💡 Sugestões: ${su.size} (${su.docs.filter(d => d.data().resposta).length} respondidas)`);
-                const insc = ev.docs.filter(d => (d.data().inscritos || []).includes(email)).map(d => d.data().titulo);
-                L.push(`📅 Eventos inscrito: ${insc.length ? esc(insc.join(', ')) : 'nenhum'}`);
+                L.push('📅 Inscrições individuais: consulte os registros privados com a gestão autorizada.');
                 const mats = ma.docs.filter(d => (d.data().emprestadoPara || '').toLowerCase().includes(email)).map(d => `${d.data().nome} (${d.data().status})`);
                 L.push(`🎲 Materiais: ${mats.length ? esc(mats.join(', ')) : 'nenhum'}`);
                 const acs = ac.docs.map(d => d.data()).sort((a, b) => (b.em ? b.em.toMillis() : 0) - (a.em ? a.em.toMillis() : 0)).slice(0, 5);

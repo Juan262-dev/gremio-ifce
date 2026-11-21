@@ -5,6 +5,16 @@ pequenos, testados e sem publicação/merge sem autorização.
 
 ## Implementação técnica em andamento — não distribuível
 
+- [x] Regras v2 do IFCE em branch isolada: nega leitura estudantil
+  de dados legados, prepara voto privado por UID e comando
+  transacional de migração sob autorização/backup.
+- [ ] **Aplicar** migração no Firebase do IFCE após backup/restauração
+  comprovados e concluir controle de inscrições, filas, presenças,
+  carteirinha e relatórios antes de reabrir ao público.
+- [ ] Homologar técnica e institucionalmente com a direção, registrar
+  evidências, revisar direitos de uso e liberar implantação manual.
+
+
 - [x] Primeiro módulo adicional de paridade: materiais de estudo textuais
   e Central de Ajuda nos dois apps do template, com regras e testes.
 - [ ] Eleições, financeiro, carteirinha, Laboratório Virtual, PWA e demais

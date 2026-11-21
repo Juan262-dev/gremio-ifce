@@ -273,10 +273,19 @@
             const titulo = document.getElementById('evento-titulo').value.trim();
             const data = document.getElementById('evento-data').value.trim();
             const descricao = document.getElementById('evento-descricao').value.trim();
+            const dataISO = document.getElementById('evento-dataiso').value;
+            const vagas = Number(document.getElementById('evento-vagas').value || 0);
             if (!titulo || !data) { toast("Preencha título e data do evento!", 'warning'); return; }
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(dataISO)) {
+                toast('Informe também a data completa no calendário antes de publicar.', 'warning'); return;
+            }
+            if (!Number.isSafeInteger(vagas) || vagas < 0 || vagas > 100000) {
+                toast('A quantidade de vagas precisa ser um número válido.', 'warning'); return;
+            }
 
             db.collection('eventos').add({
-                titulo, data, descricao, dataISO: document.getElementById('evento-dataiso').value || '', inscritos: [], espera: [], vagas: Number(document.getElementById('evento-vagas').value) || 0, criadoEm: TS()
+                titulo, data, descricao, dataISO,
+                privacidadeVersao: 2, inscritosCount: 0, esperaCount: 0, proximaOrdem: 0, vagas, criadoEm: TS()
             }).then(() => {
                 mostrarAlertaSucesso("Evento publicado com sucesso!");
                 registrarAcao('Evento criado', titulo);
@@ -293,13 +302,13 @@
                 snapshot.forEach(doc => {
                     const ev = doc.data();
                     cacheEventos[doc.id] = ev;
-                    const insc = ev.inscritos || [];
+                    const count = Number(ev.inscritosCount) || 0;
                     html += `
                         <div class="list-group-item d-flex justify-content-between align-items-start">
                             <div>
                                 <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${esc(ev.titulo)} <span class="badge bg-info text-dark">📅 ${esc(ev.data)}</span></h6>
                                 <p class="mb-1 small text-white">${esc(ev.descricao)}</p>
-                                <small class="text-muted-custom fw-bold">Inscritos (${insc.length}): ${esc(insc.join(', ')) || 'Nenhum inscrito ainda'}</small>
+                                <small class="text-muted-custom fw-bold">Inscritos (${count}): lista individual privada, disponível apenas à gestão autorizada</small>
                             </div>
                             <div class="d-flex flex-column gap-1 ms-2">
                                 <button data-acao="exportarInscritos" data-id="${esc(doc.id)}" class="btn btn-outline-light btn-sm py-0" style="font-size: 11px;">⬇️ CSV</button>
@@ -316,7 +325,9 @@
 
         const acoes = {
             excluirAviso: async (id, el) => { if (await confirmar("Excluir este aviso?")) db.collection('mural').doc(id).delete().then(() => registrarAcao('Aviso excluído', el.dataset.titulo)).catch(e => erroDB(e, 'excluirAviso')); },
-            excluirEnquete: async (id, el) => { if (await confirmar("Excluir esta enquete?")) db.collection('enquetes').doc(id).delete().then(() => registrarAcao('Enquete excluída', el.dataset.titulo)).catch(e => erroDB(e, 'excluirEnquete')); },
+            excluirEnquete: async () => {
+                toast('Exclusão bloqueada para proteger votos privados. Encerre a enquete; remoção definitiva exige procedimento seguro da TI.', 'warning');
+            },
             alternarEnquete: (id, el) => db.collection('enquetes').doc(id).update({ ativa: el.dataset.valor === 'true' }).catch(e => erroDB(e, 'alternarEnquete')),
             alternarAluno: (id, el) => { const bloq = el.dataset.valor === 'false'; db.collection('alunos').doc(id).update({ ativo: !bloq }).then(() => registrarAcao(bloq ? 'Aluno bloqueado' : 'Aluno desbloqueado', id)).catch(e => erroDB(e, 'alternarAluno')); },
             excluirAluno: async id => { if (await confirmar(`Excluir o aluno ${id}?`)) db.collection('alunos').doc(id).delete().then(() => registrarAcao('Aluno excluído', id)).catch(e => erroDB(e, 'excluirAluno')); },
@@ -423,7 +434,9 @@
                 if (link && !/^https:\/\//i.test(link)) { toast('O link precisa começar com https://', 'warning'); return; }
                 db.collection('eventos').doc(id).update({ registroLink: link }).then(() => toast('Link salvo.')).catch(e => erroDB(e, 'salvarRegistro'));
             },
-            excluirAtividade: async id => { if (await confirmar('Excluir esta atividade? Os inscritos perdem a inscrição.')) db.collection('eventos').doc(id).delete().then(() => registrarAcao('Atividade excluída', id)).catch(e => erroDB(e, 'excluirAtividade')); },
+            excluirAtividade: async () => {
+                toast('Atividade protegida: exclusão exige limpeza segura das inscrições e presenças pela TI.', 'warning');
+            },
             relatorioAtividade: id => gerarRelatorioAtividade(id),
             excluirOrcamento: async id => { if (await confirmar('Excluir este orçamento? Os lançamentos continuam, mas perdem o vínculo.')) db.collection('orcamentos').doc(id).delete().catch(e => erroDB(e, 'excluirOrcamento')); },
             pagarConta: id => db.collection('contas').doc(id).update({ pago: true, pagoEm: TS() }).then(() => registrarAcao('Conta marcada como paga', id)).catch(e => erroDB(e, 'pagarConta')),
@@ -441,17 +454,24 @@
             removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(e => erroDB(e, 'removerPunicao')); },
             devolverMaterial: (id, el) => db.collection('materiais').doc(id).update({ status: 'Disponível', emprestadoPara: '', devolverAte: '' }).then(() => registrarAcao('Material devolvido', el.dataset.titulo)).catch(e => erroDB(e, 'devolverMaterial')),
             excluirMaterial: async (id, el) => { if (await confirmar("Excluir este material?")) db.collection('materiais').doc(id).delete().then(() => registrarAcao('Material excluído', el.dataset.titulo)).catch(e => erroDB(e, 'excluirMaterial')); },
-            excluirEvento: async (id, el) => { if (await confirmar("Excluir este evento?")) db.collection('eventos').doc(id).delete().then(() => registrarAcao('Evento excluído', el.dataset.titulo)).catch(e => erroDB(e, 'excluirEvento')); },
+            excluirEvento: async () => {
+                toast('Exclusão protegida: inscrições privadas exigem tratamento e retenção autorizados.', 'warning');
+            },
             exportarPautas: () => {
                 if (!cachePautas.length) { toast("Não há pautas para exportar.", 'warning'); return; }
                 baixarCSV('pautas.csv', [['Título', 'Descrição', 'Autor', 'Apoios', 'Status']]
                     .concat(cachePautas.map(p => [p.titulo, p.descricao, p.autor || '', (p.apoios || []).length, p.status || STATUS_PAUTA[0]])));
             },
-            exportarInscritos: id => {
+            exportarInscritos: async id => {
                 const ev = cacheEventos[id];
-                if (!ev) return;
-                baixarCSV(`inscritos_${(ev.titulo || 'evento').toLowerCase().replace(/\s+/g, '_')}.csv`,
-                    [['Evento', 'Data', 'E-mail do inscrito']].concat((ev.inscritos || []).map(e => [ev.titulo, ev.data, e])));
+                if (!ev || ev.privacidadeVersao !== 2) { toast('Evento antigo precisa de migração.', 'warning'); return; }
+                try {
+                    const snap = await db.collection('eventos').doc(id).collection('inscricoes')
+                        .where('status','==','registered').get();
+                    const rows = snap.docs.map(d => [ev.titulo, ev.data, d.data().email || '']);
+                    baixarCSV('inscritos_' + (ev.titulo || 'evento').toLowerCase().replace(/\s+/g,'_')+'.csv',
+                        [['Evento','Data','E-mail do inscrito'], ...rows]);
+                } catch (e) { erroDB(e,'exportarInscritos'); }
             }
         };
 

@@ -9,6 +9,9 @@ on:
       - 'admin-carteirinhas.js'
       - 'admin-08-resumo-abas.js'
       - 'firestore.rules'
+      - 'firestore.indexes.json'
+      - 'functions/**'
+      - 'admin-*.js'
       - 'laboratorio-quimica.js'
       - 'laboratorio-avancado.js'
       - 'admin-laboratorio.js'
@@ -48,6 +51,10 @@ jobs:
         run: node --test tests/modelo-reutilizavel.test.cjs
       - name: Testar cálculos e Tabela Periódica (sem Firebase)
         run: npm run test:lab
+      - name: Testar planos de migração IFCE v2 e backend de eventos
+        run: npm run test:privacy:migrate && npm run test:privacy:backend
+      - name: Verificar bloqueios e lista de pré-homologação IFCE
+        run: npm run test:homologacao:tecnica
       - name: Testar com dados fictícios no Firebase Emulator
         run: npm run test:rules
       - name: Testar privacidade e acesso do Firebase separado por escola
