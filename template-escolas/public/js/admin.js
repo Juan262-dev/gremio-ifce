@@ -11,6 +11,20 @@
     b.addEventListener("click",async()=>{b.disabled=true;try{await fn();}catch(e){status("Operação negada ou indisponível.",true);}finally{b.disabled=false;}});
     return b;
   }
+  async function loadStudyMaterials(){
+    const list=$("study-admin-list");list.replaceChildren();
+    const snapshot=await db.collection("studyMaterials").limit(50).get();
+    if(snapshot.empty)list.append(elem("p","Nenhum material de estudo nesta escola."));
+    snapshot.forEach(doc=>{
+      const m=doc.data(),box=document.createElement("article");box.className="item";
+      box.append(elem("h4",m.title),elem("p",m.content));
+      box.append(btn("Excluir material",async()=>{
+        if(!window.confirm("Excluir este conteúdo textual da escola?"))return;
+        await doc.ref.delete();await loadStudyMaterials();status("Material excluído.");
+      }));
+      list.append(box);
+    });
+  }
   async function loadMembers(){
     const list=$("member-list");list.replaceChildren();
     const found=await db.collection("members").limit(60).get();
@@ -56,7 +70,7 @@
       show(false);status("Conta sem permissão administrativa. O cargo não pode ser criado por esta tela.",true);return;
     }
     show(true);status("Gestor autorizado para esta instalação. As permissões também são verificadas pelo Firestore.");
-    await Promise.all([loadMembers(),loadSuggestions()]);
+    await Promise.all([loadMembers(),loadSuggestions(),loadStudyMaterials()]);
   }
   try{
     const config=await InstalacaoEscolar.load();
@@ -84,6 +98,13 @@
       finally{b.disabled=false;}
     });
   }
+  handleForm("study-form",async v=>{
+    const title=String(v.title||"").trim(),content=String(v.content||"").trim();
+    if(!title||title.length>100||!content||content.length>2000)
+      throw Error("Material inválido");
+    await db.collection("studyMaterials").add({title,content,createdAt:timestamp()});
+    await loadStudyMaterials();
+  });
   handleForm("notice-form",async v=>db.collection("notices").add({
     title:String(v.title).trim(),body:String(v.body).trim(),createdAt:timestamp()
   }));

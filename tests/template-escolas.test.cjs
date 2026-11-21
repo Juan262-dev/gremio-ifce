@@ -105,3 +105,18 @@ test("Sender ID e appId de instalações diferentes são rejeitados",()=>{
   a.firebase.appId="1:123456789:web:abcdef1234";
   assert.equal(I.validate(a).firebase.appId,a.firebase.appId);
 });
+
+test("materiais e ajuda escolar têm fluxos em ambos apps com proteção de dados",()=>{
+ const rule=read("firestore.rules"),portal=read("public/js/portal.js"),adm=read("public/js/admin.js");
+ const portalHtml=read("public/index.html"),adminHtml=read("public/admin.html");
+ assert.match(rule,/match \/studyMaterials\/\{id\}/);
+ assert.match(rule,/request\.resource\.data\.keys\(\)\.hasOnly\(\['title', 'content', 'createdAt'\]\)/);
+ assert.match(rule,/allow get, list: if participant\(\)/);
+ assert.match(portal,/loadStudyMaterials/);
+ assert.match(adm,/loadStudyMaterials/);
+ assert.match(portalHtml,/id="study-list"/);
+ assert.match(adminHtml,/id="study-form"/);
+ assert.match(portalHtml,/Central de Ajuda/);
+ assert.match(adminHtml,/Central de Ajuda/);
+ assert.doesNotMatch(portal+adm,/\.innerHTML\s*=/);
+});
