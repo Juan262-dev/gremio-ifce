@@ -5,6 +5,14 @@ pequenos, testados e sem publicação/merge sem autorização.
 
 ## Implementação técnica em andamento — não distribuível
 
+- [x] Script de exportação **real sob controle exclusivo da TI**, com
+  bloqueios de projeto, bucket, CMEK, retenção e autorização; não executado.
+- [x] Inventário inicial de direitos, roteiro de aceite institucional
+  e verificador offline de manifesto assinado.
+- [ ] Produzir backup real e restaurá-lo com autorização; validar
+  titularidade, LGPD e homologar formalmente escolas A/B.
+
+
 - [x] Ensaio offline de backup/restauração de **dados totalmente fictícios**:
   detecta corrupção, rejeita importação entre escolas e não restaura cargos.
 - [ ] Implementar política, retenção, criptografia e restauração **reais**,

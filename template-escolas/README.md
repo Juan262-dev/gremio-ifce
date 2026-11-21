@@ -211,6 +211,19 @@ autorização e suporte técnico, criptografia, acesso mínimo, teste
 separado de restauração, revisão de permissões e aprovação expressa
 antes de publicar.
 
+## Backup real e liberação institucional — bloqueados por padrão
+
+O roteiro [de exportação Firestore protegida](../docs/homologacao/BACKUP-FIRESTORE.md)
+descreve a ferramenta `scripts/export-firestore.cjs`. O comando de ensaio
+não acessa a rede; `--execute` exige autorização, projeto, bucket e
+criptografia/retensão verificadas. **Não foi executado em produção**.
+
+O [inventário de direitos](../docs/direitos/REVISAO-DIREITOS.md) e o
+[roteiro de homologação](../docs/homologacao/HOMOLOGACAO-INSTITUCIONAL.md)
+ainda exigem decisão de responsáveis. O `scripts/release-gate.cjs`
+confere assinatura e campos de evidência institucionais externos ao Git,
+mas não prova autoridade por si só e **não realiza publicação**.
+
 ## Testes e verificação
 
 Os testes **não apontam para produção**:

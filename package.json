@@ -9,7 +9,8 @@
     "test:ui": "node --test tests/navegacao.test.cjs tests/primeira-experiencia.test.cjs tests/central-implantacao.test.cjs tests/modo-demonstracao.test.cjs tests/verificador-seguranca.test.cjs",
     "test:template:config": "node --test tests/template-escolas.test.cjs tests/template-escolas.transfer.test.cjs tests/template-escolas.setup.test.cjs tests/template-escolas.backup.test.cjs",
     "test:template:rules": "firebase emulators:exec --config template-escolas/firebase.json --project demo-gremio-escola-teste --only firestore \"node --test tests/template-escolas.rules.test.cjs\"",
-    "test:privacy:audit": "node --test tests/privacidade-migracao.test.cjs"
+    "test:privacy:audit": "node --test tests/privacidade-migracao.test.cjs",
+    "test:operations": "node --test tests/operacoes-backup-homologacao.test.cjs"
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^4.0.1",
