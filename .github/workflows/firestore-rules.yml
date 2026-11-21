@@ -53,6 +53,8 @@ jobs:
         run: npm run test:lab
       - name: Testar planos de migração IFCE v2 e backend de eventos
         run: npm run test:privacy:migrate && npm run test:privacy:backend
+      - name: Verificar bloqueios e lista de pré-homologação IFCE
+        run: npm run test:homologacao:tecnica
       - name: Testar com dados fictícios no Firebase Emulator
         run: npm run test:rules
       - name: Testar privacidade e acesso do Firebase separado por escola
