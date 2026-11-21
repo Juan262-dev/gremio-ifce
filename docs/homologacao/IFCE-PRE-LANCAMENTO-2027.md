@@ -46,6 +46,18 @@ Sem calendário ISO válido no evento, a função também recusa inscrições,
 impedindo acesso a eventos com datas incorretas. Esta é uma proteção
 de servidor: não depende de a interface esconder botões.
 
+## Auditoria de regressão mais rigorosa
+
+Os testes de privacidade foram ajustados ao estado atual deste PR:
+o limite permitido de referências aos antigos campos `votosAlunos`,
+`inscritos` e `espera` foi reduzido nos arquivos que já usam o
+modelo privado. Assim, uma mudança futura não pode reintroduzir
+silenciosamente campos pessoais nesses locais.
+
+Ainda há leitores legados em partes do Painel e das regras para
+compatibilidade e quarentena, que exigem substituição antes de uma
+homologação completa.
+
 ## Proteção contra documentos órfãos
 
 O Firestore **não apaga subcoleções automaticamente** quando o documento

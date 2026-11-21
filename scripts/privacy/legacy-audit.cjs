@@ -8,16 +8,16 @@ const TOKENS=["votosAlunos","inscritos","espera"];
 // Contagens existentes em 21/11/2026; números não são requisitos funcionais.
 // Na medida em que a migração for concluída, estes valores DEVEM diminuir a zero.
 const BASELINE={
-  "index.html":                 [5,9,20],
+  "index.html":                 [0,3,5],
   "admin.html":                 [0,2,2],
-  "admin-02-comunicacao-estudos.js":[1,5,0],
-  "admin-03-alunos-punicoes.js":[0,1,0],
-  "admin-04-gestao-diretoria.js":[3,4,0],
-  "admin-05-financeiro-diretorias.js":[0,9,0],
-  "admin-06-eleicao-eventos.js":[0,4,1],
+  "admin-02-comunicacao-estudos.js":[0,0,0],
+  "admin-03-alunos-punicoes.js":[0,0,0],
+  "admin-04-gestao-diretoria.js":[0,1,0],
+  "admin-05-financeiro-diretorias.js":[0,2,0],
+  "admin-06-eleicao-eventos.js":[0,0,0],
   "admin-07-ti.js":             [1,0,0],
-  "admin-carteirinhas.js":      [0,2,1],
-  "firestore.rules":            [3,7,3]
+  "admin-carteirinhas.js":      [0,0,1],
+  "firestore.rules":            [2,2,3]
 };
 function tokens(content){
   return TOKENS.map(term=>(content.match(new RegExp("\\b"+term+"\\b","g"))||[]).length);

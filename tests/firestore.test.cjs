@@ -1,5 +1,6 @@
 // Testes totalmente locais no Firestore Emulator; nunca apontar para produção.
 const { before, after, beforeEach, test } = require('node:test');
+const assert = require('node:assert/strict');
 const { readFileSync } = require('node:fs');
 const { initializeTestEnvironment, assertSucceeds, assertFails } = require('@firebase/rules-unit-testing');
 const {

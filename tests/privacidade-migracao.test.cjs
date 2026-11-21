@@ -16,7 +16,8 @@ test("auditoria legado protege contra novas dependências e reconhece a dívida 
  assert.equal(r.ok,true,r.failures.join("\n"));
  assert.ok(Object.keys(BASELINE).length>=8);
  assert.ok(TOKENS.includes("votosAlunos"));
- assert.ok(BASELINE["index.html"][0]>0);
+ assert.equal(BASELINE["index.html"][0],0,"O Portal não deve voltar a escrever votosAlunos");
+ assert.ok(BASELINE["firestore.rules"][0]>0,"As regras ainda verificam campos legados em quarentena");
 });
 test("auditoria detecta novo uso do formato antigo em arquivo de produção",()=>{
  const dir=fs.mkdtempSync(path.join(os.tmpdir(),"audit-ifce-"));
