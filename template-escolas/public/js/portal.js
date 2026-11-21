@@ -38,6 +38,7 @@
     show("portal");setStatus("Acesso autorizado à instalação desta escola.");
     await loadContent(user.uid);
     await loadSuggestions(user.uid);
+    await loadStudyMaterials();
   }
   async function loadContent(uid){
     clear("notice-list");clear("event-list");clear("poll-list");
@@ -72,6 +73,15 @@
       }
       $("poll-list").append(w);
     }
+  }
+  async function loadStudyMaterials(){
+    clear("study-list");
+    const snapshot=await db.collection("studyMaterials").limit(25).get();
+    if(snapshot.empty)$("study-list").append(node("p","Nenhum material publicado nesta escola."));
+    snapshot.forEach(doc=>{
+      const m=doc.data();
+      $("study-list").append(item(m.title,m.content));
+    });
   }
   async function loadSuggestions(uid){
     clear("suggestion-list");

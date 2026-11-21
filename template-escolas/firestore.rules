@@ -98,6 +98,19 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // Material didático textual: sem anexos, listas de alunos ou URLs.
+    function validStudy() {
+      return request.resource.data.keys().hasAll(['title', 'content', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['title', 'content', 'createdAt'])
+        && validText(request.resource.data.title, 100)
+        && validText(request.resource.data.content, 2000)
+        && request.resource.data.createdAt is timestamp;
+    }
+    match /studyMaterials/{id} {
+      allow get, list: if participant();
+      allow create, update: if admin() && validStudy();
+      allow delete: if admin();
+    }
     match /notices/{id} {
       allow get, list: if participant();
       allow create, update: if admin() && validPost();
