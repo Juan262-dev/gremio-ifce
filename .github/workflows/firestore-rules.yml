@@ -14,6 +14,7 @@ on:
       - 'admin-laboratorio.js'
       - 'firebase.json'
       - 'package.json'
+      - 'template-escolas/**'
       - 'tests/**'
       - '.github/workflows/firestore-rules.yml'
   workflow_dispatch:
@@ -34,9 +35,13 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Testar interface e navegação dos dois apps
         run: npm run test:ui
+      - name: Validar configuração isolada do template escolar
+        run: npm run test:template:config
       - name: Validar planejamento e exemplos seguros para outras escolas
         run: node --test tests/modelo-reutilizavel.test.cjs
       - name: Testar cálculos e Tabela Periódica (sem Firebase)
         run: npm run test:lab
       - name: Testar com dados fictícios no Firebase Emulator
         run: npm run test:rules
+      - name: Testar privacidade e acesso do Firebase separado por escola
+        run: npm run test:template:rules
