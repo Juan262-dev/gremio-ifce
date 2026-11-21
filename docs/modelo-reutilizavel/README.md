@@ -87,6 +87,19 @@ Portal ou Admin carreguem o Firebase. Não fazer fallback silencioso para
 o projeto original. Em caso de configuração ausente ou inválida, **não
 inicializar Firebase** e mostrar uma página de configuração pendente.
 
+### Assistente de configuração inicial (novo escopo do plano)
+
+O futuro template terá um **assistente em cinco etapas** (identificação,
+aparência, conexão Firebase, administrador inicial, revisão) para orientar a
+escola sem exigir edição de código para a personalização visual. O navegador
+não criará projetos Firebase nem administradores privilegiados. Antes da
+ativação, o responsável técnico valida isolamento, regras e privacidade;
+publicar exige aprovação explícita, sem deploy automático por PR.
+
+Ver [especificação do Assistente de Configuração Inicial](ASSISTENTE-CONFIGURACAO.md)
+para telas, estados, regras e critérios de aceite. **Essa interface ainda
+não foi implementada** e não altera o Portal/Admin do IFCE.
+
 ## 4. Instalação, gestão e dados
 
 1. Criar um projeto Firebase **novo e exclusivo** para cada escola;
@@ -158,6 +171,7 @@ Critérios para aprovar a futura implementação:
 
 ## 7. Próximas leituras
 
+- [Assistente de Configuração Inicial (especificação)](ASSISTENTE-CONFIGURACAO.md)
 - [Instalação piloto](INSTALACAO-PILOTO.md)
 - [Etapas e critérios de aceite](ROADMAP.md)
 - [Exemplos de configuração fictícia](exemplos/escola-a.exemplo.json)

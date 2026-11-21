@@ -38,6 +38,23 @@ scripts/
 Os exemplos em `exemplos/` não podem ser usados em produção: os domínios
 são fictícios e os IDs Firebase de demonstração são distintos por escola.
 
+### Assistente inicial — futuro guia da instalação
+
+Após a extração segura do template, o instalador deverá apresentar o
+[Assistente de Configuração Inicial](ASSISTENTE-CONFIGURACAO.md):
+
+1. Identificar escola e Grêmio.
+2. Escolher logo, cor e prévia de Portal/Admin.
+3. Conferir com o responsável técnico o projeto Firebase exclusivo da
+   instituição (a página **não** cria nem troca projetos por conta própria).
+4. Aguardar provisionamento privilegiado do primeiro gestor, fora do
+   navegador público.
+5. Revisar regras, privacidade e créditos imutáveis no painel, solicitar
+   homologação e só publicar após aprovação explícita.
+
+O assistente **não existe ainda** na versão atual e não substitui as
+etapas técnicas de segurança abaixo.
+
 ## 2. Firebase de **cada** escola
 
 Cada instalação precisa de um projeto Firebase **diferente**:

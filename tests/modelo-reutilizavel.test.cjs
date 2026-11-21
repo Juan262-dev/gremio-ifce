@@ -107,3 +107,41 @@ test('arquivos de produção originais continuam presentes e não há script de 
   assert.match(arq,/NÃO uma instalação pronta/);
   assert.match(inst,/proposta.*, não instalador funcional/i);
 });
+
+const assistente=ler('ASSISTENTE-CONFIGURACAO.md');
+
+test('assistente proposto tem cinco etapas, estados e duas prévias',()=>{
+  for(const nome of ['Identificação da escola','Aparência e recursos',
+    'Conexão Firebase','Administrador inicial','Revisão e ativação'])
+    assert.ok(assistente.includes(nome),nome);
+  for(const estado of ['rascunho','pronto para homologação',
+    'apto à publicação','instalação ativa'])
+    assert.ok(assistente.includes(estado),estado);
+  assert.match(assistente,/prévia.*Portal.*Admin/i);
+});
+
+test('assistente não concede privilégio nem publica diretamente',()=>{
+  assert.match(assistente,/sem acesso automático/i);
+  assert.match(assistente,/não criar.*administrador|nenhuma conta administrativa criada/i);
+  assert.match(assistente,/aprovação explícita/i);
+  assert.match(assistente,/sem deploy automático|não.*deploy automático/i);
+  assert.match(assistente,/não iniciar Firebase/i);
+});
+
+test('assistente preserva isolamentos, créditos e segurança por escola',()=>{
+  assert.match(assistente,/MESMA configuração validada do Firebase/i);
+  assert.match(assistente,/sessões de login separadas/i);
+  assert.match(assistente,/escolas diferentes nunca compartilham Firebase/i);
+  assert.match(assistente,/créditos originais/i);
+  assert.match(assistente,/sem campo de edição/i);
+  assert.match(assistente,/enquetes\/eventos/i);
+  assert.match(assistente,/não.*fallback|não tentar conexão de reserva/i);
+});
+
+test('roadmap e guias incluem assistente como planejamento, não código ativo',()=>{
+  assert.match(arq,/ASSISTENTE-CONFIGURACAO\.md/);
+  assert.match(inst,/Assistente de Configuração Inicial/);
+  assert.match(plano,/Assistente de Configuração Inicial/);
+  assert.match(assistente,/Ainda não é uma tela/i);
+  assert.match(assistente,/Não entregue.*interface funcionando/i);
+});

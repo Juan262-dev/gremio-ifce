@@ -44,6 +44,15 @@ pequenos, testados e sem publicação/merge sem autorização.
 
 ## Fase 3 — configuração de identidade e apresentação
 
+- [ ] Implementar o **Assistente de Configuração Inicial** em cinco etapas
+  segundo [a especificação](ASSISTENTE-CONFIGURACAO.md): identificação,
+  aparência, Firebase, administrador inicial e revisão; sem dar privilégios
+  pelo navegador ou fazer deploy automaticamente.
+- [ ] Criar prévias do Portal e do Admin, validação acessível de campos,
+  salvamento de rascunho sem segredos e bloqueio de etapas incompletas.
+- [ ] Garantir que o mesmo carregador forneça a configuração Firebase da
+  escola às duas interfaces, preservando sessões separadas.
+
 - [ ] Aplicar nome da escola e do Grêmio a Portal e Admin sem mudar
   layout/funcionalidade do IFCE.
 - [ ] Personalizar manifestos e ícones com recursos devidamente
@@ -62,6 +71,8 @@ pequenos, testados e sem publicação/merge sem autorização.
   de uma escola.
 - [ ] Subir duas instâncias **de demonstração** com projetos Firebase
   separados, dados de teste e credenciais próprias.
+- [ ] Testar o fluxo completo do assistente: prévia, retomada, validação
+  de projeto Firebase, falha segura e aprovação manual de publicação.
 - [ ] Executar regressão de Portal e Admin, emulador, testes mobile,
   atualização PWA, acessibilidade, desempenho e autenticação.
 - [ ] Verificar isolamento, privacidade e créditos em ambientes distintos.
@@ -84,10 +95,12 @@ pequenos, testados e sem publicação/merge sem autorização.
 - [x] Levantamento dos acoplamentos da versão IFCE.
 - [x] Plano de instalações totalmente separadas.
 - [x] Contrato ilustrativo de personalização e créditos.
+- [x] Especificação do Assistente de Configuração Inicial, estados,
+  cinco etapas, bloqueios e testes futuros.
 - [x] Critérios de segurança, privacidade, licenciamento e aceite.
 - [x] Roteiro proposto para escola piloto e testes automatizados dos
   exemplos e documentação.
-- [ ] **Não entrega** instalador, criação automática de Firebase,
+- [ ] **Não entrega** assistente funcional, instalador, criação automática de Firebase,
   nova interface do Admin, adaptação da lógica, licença definida,
   créditos de autor confirmados, deploy ou migração.
 
