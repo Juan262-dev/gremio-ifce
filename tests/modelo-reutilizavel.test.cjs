@@ -195,3 +195,47 @@ test('guia inclui documentação Firebase verificável e não executa deploy',()
   assert.doesNotMatch(guiaEscolas,/firebase deploy(?: --only)?/i);
   assert.match(guiaEscolas,/Este tutorial não dispara deploy/i);
 });
+
+const seteMelhorias=ler('SETE-MELHORIAS.md');
+
+test('sete melhorias propostas estão detalhadas e priorizadas, sem implementação implícita',()=>{
+  for(const titulo of [
+    'Central de Implantação',
+    'Modo Demonstração',
+    'Troca de Gestão do Grêmio',
+    'Verificador de Segurança',
+    'Atualizações sem perder personalizações',
+    'Central de Ajuda',
+    'Backup e Recuperação'
+  ]) assert.ok(seteMelhorias.includes(titulo),titulo);
+  for(const fase of ['P0','P1','P2'])
+    assert.ok(seteMelhorias.includes(fase),fase);
+  assert.match(seteMelhorias,/planejamento, não implementação/i);
+  assert.match(seteMelhorias,/Não incluído nesta etapa/i);
+});
+
+test('sete melhorias respeitam isolamento, segurança de alunos, créditos e liberação manual',()=>{
+  for(const termo of [
+    'Firebase Emulator',
+    'duas escolas fictícias',
+    'dados fictícios',
+    'privacidade',
+    'créditos',
+    'não recebe privilégio',
+    'sem merge ou publicação',
+    'restauração',
+    'revog'
+  ]) assert.ok(seteMelhorias.toLowerCase().includes(termo.toLowerCase()),termo);
+  assert.match(seteMelhorias,/sem acesso|acesso cruzado/i);
+  assert.match(seteMelhorias,/não inicializa Firebase inválido/i);
+  assert.match(seteMelhorias,/aprovação humana expressa/i);
+});
+
+test('links do guia e roadmap apontam para a proposta das sete melhorias',()=>{
+  assert.match(guiaEscolas,/SETE-MELHORIAS\.md/);
+  assert.match(arq,/SETE-MELHORIAS\.md/);
+  assert.match(plano,/SETE-MELHORIAS\.md/);
+  assert.match(plano,/P0 \(pré-requisitos obrigatórios\)/i);
+  assert.match(plano,/P1 \(primeiro piloto fictício\)/i);
+  assert.match(plano,/P2 \(uso contínuo após o piloto\)/i);
+});

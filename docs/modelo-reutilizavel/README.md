@@ -182,6 +182,7 @@ Critérios para aprovar a futura implementação:
 - [Tutorial para escolas (passo a passo, ainda não instalável)](GUIA-PARA-ESCOLAS.md)
 - [Ficha de preparação da escola](FICHA-DA-ESCOLA.md)
 - [Assistente de Configuração Inicial (especificação)](ASSISTENTE-CONFIGURACAO.md)
+- [Sete melhorias planejadas para a plataforma](SETE-MELHORIAS.md)
 - [Instalação piloto](INSTALACAO-PILOTO.md)
 - [Etapas e critérios de aceite](ROADMAP.md)
 - [Exemplos de configuração fictícia](exemplos/escola-a.exemplo.json)
