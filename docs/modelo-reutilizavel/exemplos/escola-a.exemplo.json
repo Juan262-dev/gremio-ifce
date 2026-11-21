@@ -1,0 +1,54 @@
+{
+  "_aviso": "EXEMPLO FICTICIO: ainda nao e lido pelos aplicativos e NAO pode ser publicado.",
+  "versaoContrato": 1,
+  "instalacao": {
+    "modo": "exemplo-nao-publicavel",
+    "id": "gremio-escola-a",
+    "urlPublica": "https://escola-a.example.invalid/gremio/",
+    "firebase": {
+      "projectId": "demo-gremio-escola-a",
+      "apiKey": "EXEMPLO_NAO_CONECTAR",
+      "authDomain": "demo-gremio-escola-a.firebaseapp.com",
+      "storageBucket": "demo-gremio-escola-a.firebasestorage.app",
+      "messagingSenderId": "EXEMPLO_NAO_CONECTAR",
+      "appId": "EXEMPLO_NAO_CONECTAR"
+    },
+    "autenticacao": {
+      "dominiosInstitucionais": [
+        "escola-a.example.invalid"
+      ],
+      "exigirEmailVerificado": true,
+      "cadastroAprovadoPelaGestao": true
+    }
+  },
+  "escola": {
+    "nome": "Escola Exemplo A",
+    "campus": "Unidade A",
+    "cidade": "Cidade Ficticia",
+    "estado": "EX"
+  },
+  "gremio": {
+    "nome": "Gremio da Escola A",
+    "descricao": "Representacao estudantil",
+    "contatoPublico": "gremio@escola-a.example.invalid"
+  },
+  "identidadeVisual": {
+    "corPrincipal": "#2d8647",
+    "logo": "imagens/logo-escola-a.svg",
+    "tituloPortal": "Portal do Aluno - Gremio A",
+    "tituloAdmin": "Painel Administrativo - Gremio A"
+  },
+  "modulosVisiveis": {
+    "avisos": true,
+    "eventos": true,
+    "carteirinha": true,
+    "estudos": true,
+    "laboratorioVirtual": false,
+    "enquetes": true,
+    "eleicoes": false
+  },
+  "privacidade": {
+    "urlPolitica": "https://escola-a.example.invalid/privacidade",
+    "urlTermos": "https://escola-a.example.invalid/termos"
+  }
+}
