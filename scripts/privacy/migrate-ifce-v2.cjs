@@ -51,7 +51,8 @@ function safeRecordCount(v){if(!Number.isInteger(v)||v<0||v>350)stop("excesso de
 function build(kind,id,data,mapping){
   if(!["eventos","enquetes"].includes(kind))stop("coleção não permitida");
   if(!data||typeof data!=="object"||Array.isArray(data))stop("documento inválido");
-  if(kind==="eventos"&&Array.isArray(data.presentes)&&data.presentes.length>0)
+  if(kind==="eventos"&&Object.hasOwn(data,"presentes")
+    &&(!Array.isArray(data.presentes)||data.presentes.length>0))
     stop("presenças antigas exigem migração e validação humana");
   const hasOld=kind==="eventos"
     ?Object.hasOwn(data,"inscritos")||Object.hasOwn(data,"espera")

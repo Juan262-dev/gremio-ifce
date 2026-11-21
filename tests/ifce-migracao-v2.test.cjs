@@ -54,6 +54,15 @@ test("bloqueia dados incoerentes, identidades inexistentes e limites de transaç
   assert.throws(()=>S.safeRecordCount(351),/limite|excesso/i);
   assert.throws(()=>S.build("eventos","e",{privacidadeVersao:2,titulo:"Evento",inscritos:[]},mapping),/ainda contém/);
 });
+test("presença legada malformada ou não vazia impede migração automática",()=>{
+  const input={
+    titulo:"Evento",vagas:2,inscritos:["ana@example.invalid"],espera:[],
+  };
+  assert.throws(()=>S.build("eventos","e",{...input,presentes:["ana@example.invalid"]},mapping),/presenças antigas/);
+  assert.throws(()=>S.build("eventos","e",{...input,presentes:"dado inesperado"},mapping),/presenças antigas/);
+  const safelyEmpty=S.build("eventos","e",{...input,presentes:[]},mapping);
+  assert.ok(safelyEmpty.remove.includes("presentes"));
+});
 test("esquema migrado sem campos antigos é idempotente",()=>{
   const plan=S.build("eventos","e",{titulo:"Exemplo",privacidadeVersao:2,inscritosCount:0,esperaCount:0},mapping);
   assert.equal(plan.skip,true);
