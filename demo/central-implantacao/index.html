@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' blob: data:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="color-scheme" content="light">
+  <title>Central de Implantação · Demonstração do Grêmio Digital</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./model.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#conteudo">Ir para o conteúdo</a>
+  <header class="topbar">
+    <div class="identity"><span class="brand-mark" aria-hidden="true">G</span><div><strong>Grêmio Digital</strong><span>Laboratório de implantação</span></div></div>
+    <div class="top-status"><span class="status-dot" aria-hidden="true"></span> Ambiente de demonstração · Sem Firebase</div>
+  </header>
+  <main id="conteudo" class="layout">
+    <aside class="rail" aria-label="Etapas da configuração">
+      <p class="eyebrow">AMBIENTE FICTÍCIO</p>
+      <h1>Configure a sua escola.</h1>
+      <p>Explore como será a implantação dos dois aplicativos, sem criar contas, alterar bancos ou publicar nada.</p>
+      <div class="completion">
+        <div class="completion-line"><strong>Preenchimento da simulação</strong><output id="progress-label" for="progress-bar">0%</output></div>
+        <progress id="progress-bar" value="0" max="100">0%</progress>
+        <small>Este percentual não representa aprovação de segurança.</small>
+      </div>
+      <nav class="step-nav" aria-label="Etapas do assistente">
+        <button type="button" class="step current" data-goto="0" aria-current="step"><span class="step-number">01</span><span><strong>Identificação</strong><small>Escola e Grêmio</small></span><span class="step-state" aria-hidden="true">—</span></button>
+        <button type="button" class="step" data-goto="1"><span class="step-number">02</span><span><strong>Aparência</strong><small>Marca e recursos</small></span><span class="step-state" aria-hidden="true">—</span></button>
+        <button type="button" class="step" data-goto="2"><span class="step-number">03</span><span><strong>Firebase</strong><small>Apenas projeto fictício</small></span><span class="step-state" aria-hidden="true">—</span></button>
+        <button type="button" class="step" data-goto="3"><span class="step-number">04</span><span><strong>Gestão inicial</strong><small>Orientações técnicas</small></span><span class="step-state" aria-hidden="true">—</span></button>
+        <button type="button" class="step" data-goto="4"><span class="step-number">05</span><span><strong>Revisão</strong><small>Simulação, não ativação</small></span><span class="step-state" aria-hidden="true">—</span></button>
+      </nav>
+      <p class="rail-footer">Projeto original: Grêmio IFCE · <a href="../../docs/modelo-reutilizavel/GUIA-PARA-ESCOLAS.md">Guia para escolas</a></p>
+    </aside>
+    <div class="workspace">
+      <div class="page-header">
+        <div><p class="eyebrow">CENTRAL DE IMPLANTAÇÃO</p><h2 id="step-heading">Identificação da escola</h2><p id="step-description">Comece pelos dados públicos da instituição e do Grêmio.</p></div>
+        <span class="round-tag" id="step-badge">Etapa 1 de 5</span>
+      </div>
+      <div class="workspace-grid">
+        <div class="form-panel">
+          <div class="notice" role="note"><strong>Simulação isolada.</strong> Use somente dados fictícios. Nenhum dado é enviado pela internet. Não informe senhas, chaves nem dados pessoais de estudantes.</div>
+          <div id="form-errors" class="form-errors" role="alert" hidden></div>
+          <section id="step-0" data-panel="0" aria-labelledby="section-0-title">
+            <h3 id="section-0-title">A escola</h3>
+            <p class="section-lead">Esses nomes aparecem nas prévias dos aplicativos.</p>
+            <div class="fields">
+              <label class="field wide">Nome da escola <span aria-hidden="true">*</span><input id="schoolName" data-field="schoolName" maxlength="80" autocomplete="off" required></label>
+              <label class="field">Campus ou unidade<input id="campus" data-field="campus" maxlength="60" autocomplete="off"></label>
+              <label class="field">Cidade fictícia<input id="city" data-field="city" maxlength="60" autocomplete="off"></label>
+              <label class="field wide">Nome do Grêmio <span aria-hidden="true">*</span><input id="gremioName" data-field="gremioName" maxlength="80" autocomplete="off" required></label>
+              <label class="field wide">Contato institucional de exemplo<input id="contact" data-field="contact" maxlength="100" type="email" autocomplete="off" placeholder="gremio@escola.example.invalid"></label>
+            </div>
+          </section>
+          <section id="step-1" data-panel="1" aria-labelledby="section-1-title" hidden>
+            <h3 id="section-1-title">Personalize a identidade</h3>
+            <p class="section-lead">A prévia usa seus textos e cores. Nada muda no aplicativo original.</p>
+            <div class="fields">
+              <label class="field">Cor principal<input id="theme" data-field="theme" type="color" value="#246a49"></label>
+              <label class="field wide">Título do Portal<input id="portalTitle" data-field="portalTitle" maxlength="65" autocomplete="off"></label>
+              <label class="field wide">Título do Painel Administrativo<input id="adminTitle" data-field="adminTitle" maxlength="65" autocomplete="off"></label>
+              <div class="field wide"><label for="logo-upload">Logotipo de demonstração (PNG, JPG ou WEBP, até 1 MB)</label><input id="logo-upload" type="file" accept="image/png,image/jpeg,image/webp"><small>A imagem é pré-visualizada apenas nesta aba e não é guardada no rascunho.</small></div>
+            </div>
+            <fieldset class="modules"><legend>Recursos exibidos nas prévias</legend>
+              <label><input type="checkbox" data-module="avisos"> Avisos</label>
+              <label><input type="checkbox" data-module="eventos"> Eventos</label>
+              <label><input type="checkbox" data-module="carteirinha"> Carteirinha</label>
+              <label><input type="checkbox" data-module="estudos"> Estudos</label>
+              <label><input type="checkbox" data-module="enquetes"> Enquetes</label>
+            </fieldset>
+            <p class="hint">Ativar um módulo aqui muda apenas a prévia. Não altera regras nem permissões.</p>
+          </section>
+          <section id="step-2" data-panel="2" aria-labelledby="section-2-title" hidden>
+            <h3 id="section-2-title">Firebase da escola</h3>
+            <p class="section-lead">Na implantação real, cada escola terá um projeto próprio, configurado por um responsável técnico.</p>
+            <div class="technical-panel"><strong>Conexão desativada nesta demonstração</strong><p>Digite somente um ID começando por <code>demo-</code>. Ele é um exemplo, não será usado para conectar ao Firebase.</p></div>
+            <div class="fields">
+              <label class="field wide">ID de projeto fictício <span aria-hidden="true">*</span><input id="demoProjectId" data-field="demoProjectId" maxlength="64" autocomplete="off" spellcheck="false" placeholder="demo-minha-escola"></label>
+            </div>
+            <label class="check-row"><input id="firebaseAcknowledged" data-field="firebaseAcknowledged" type="checkbox"><span>Entendi que o Firebase real será configurado por um responsável técnico, com projeto independente e regras testadas.</span></label>
+            <p class="hint">Nenhuma chave de API, senha, conta administrativa ou dado real deve ser informado aqui.</p>
+          </section>
+          <section id="step-3" data-panel="3" aria-labelledby="section-3-title" hidden>
+            <h3 id="section-3-title">Primeiro administrador</h3>
+            <p class="section-lead">Na versão real, o primeiro gestor deve ser autorizado pela escola por um processo seguro.</p>
+            <div class="technical-panel"><strong>Provisionamento não disponível no protótipo</strong><p>O sistema não cria usuários, não concede cargos e não acessa dados de estudantes. A gestão de cada escola será separada.</p></div>
+            <label class="check-row"><input id="adminAcknowledged" data-field="adminAcknowledged" type="checkbox"><span>Entendi que a conta administrativa real precisa de validação institucional e procedimento privilegiado fora desta demonstração.</span></label>
+            <p class="hint">Não digite e-mail de pessoas, senhas ou identificadores privados.</p>
+          </section>
+          <section id="step-4" data-panel="4" aria-labelledby="section-4-title" hidden>
+            <h3 id="section-4-title">Revisão da simulação</h3>
+            <p class="section-lead">Confira o que foi preenchido. Esta etapa não libera publicação.</p>
+            <dl class="summary">
+              <div><dt>Escola</dt><dd id="sum-school">—</dd></div>
+              <div><dt>Grêmio</dt><dd id="sum-gremio">—</dd></div>
+              <div><dt>Projeto fictício</dt><dd id="sum-project">—</dd></div>
+              <div><dt>Etapas preenchidas</dt><dd id="sum-progress">—</dd></div>
+            </dl>
+            <div class="blockers"><h4>Publicação real permanece bloqueada</h4>
+              <ul>
+                <li>Template genérico independente ainda não foi implementado.</li>
+                <li>Firebase real e administrador institucional não foram provisionados.</li>
+                <li>Regras, privacidade, direitos de uso e testes precisam de homologação.</li>
+              </ul>
+            </div>
+            <label class="check-row"><input id="reviewAcknowledged" data-field="reviewAcknowledged" type="checkbox"><span>Entendi que concluir esta etapa finaliza apenas a demonstração, sem publicar nenhum aplicativo.</span></label>
+          </section>
+          <div id="step-feedback" class="feedback" role="status" aria-live="polite"></div>
+          <div class="actions">
+            <button id="back" type="button" class="button secondary">Voltar</button>
+            <button id="save" type="button" class="button secondary">Salvar rascunho nesta aba</button>
+            <button id="next" type="button" class="button primary">Continuar <span aria-hidden="true">→</span></button>
+          </div>
+          <button type="button" class="reset" id="reset">Reiniciar dados de exemplo</button>
+        </div>
+        <aside class="preview" aria-label="Prévia ilustrativa dos aplicativos">
+          <div class="preview-heading"><div><p class="eyebrow">VISUALIZAÇÃO</p><h3>Como vai aparecer</h3></div><span class="preview-label">Exemplo</span></div>
+          <div class="preview-card" id="preview-portal">
+            <div class="preview-banner"><span id="portal-logo" class="initial-logo" aria-hidden="true">G</span><img id="portal-image" alt="Logotipo escolhido apenas para esta prévia" hidden><span class="preview-type">PORTAL DO ALUNO</span></div>
+            <div class="preview-body"><strong id="preview-portal-title">Portal do Aluno</strong><span id="preview-school">Escola Exemplo</span><p>Bem-vindo ao espaço de participação estudantil.</p><div class="pills" id="preview-modules"></div></div>
+          </div>
+          <div class="preview-card" id="preview-admin">
+            <div class="admin-preview-top"><span class="mini-square" aria-hidden="true">G</span><div><strong id="preview-admin-title">Painel Administrativo</strong><span id="preview-gremio">Grêmio Exemplo</span></div></div>
+            <div class="admin-preview-body"><div>Central de Gestão</div><span class="mini-line"></span><span class="mini-line short"></span><p>Somente visualização. Nenhum administrador é criado.</p></div>
+          </div>
+          <p class="preview-foot">As prévias não estão ligadas ao Portal nem ao Painel reais do IFCE. A configuração não é publicada.</p>
+        </aside>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
