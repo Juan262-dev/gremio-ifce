@@ -5,6 +5,18 @@
  * Usa transação sobre o evento e a inscrição para preservar vagas e FIFO.
  */
 const MAX_REGISTERED=100000,MAX_WAITING=100000;
+function fortalezaDay(now=new Date()){
+  const parts=new Intl.DateTimeFormat("en-US",{
+    timeZone:"America/Fortaleza",year:"numeric",month:"2-digit",day:"2-digit"
+  }).formatToParts(now);
+  const byType=Object.fromEntries(parts.map(p=>[p.type,p.value]));
+  return byType.year+"-"+byType.month+"-"+byType.day;
+}
+function validISODate(text){
+  if(typeof text!=="string"||!/^\d{4}-\d{2}-\d{2}$/.test(text))return false;
+  const date=new Date(text+"T12:00:00Z");
+  return Number.isFinite(date.getTime())&&date.toISOString().slice(0,10)===text;
+}
 function invalid(message,code="failed-precondition"){
   const e=new Error(message);e.code=code;throw e;
 }
@@ -15,19 +27,20 @@ const counts=e=>{
   const seq=Number(e.proximaOrdem||0);
   if(![vagas,inscritos,espera,seq].every(n=>Number.isSafeInteger(n)&&n>=0)
     ||vagas>MAX_REGISTERED||inscritos>MAX_REGISTERED||espera>MAX_WAITING
-    ||(vagas>0&&inscritos>vagas))invalid("Contagens ou vagas do evento inválidas");
+    ||(vagas>0&&inscritos>vagas)
+    ||(vagas===0&&espera>0)
+    ||(vagas>0&&espera>0&&inscritos<vagas)
+    ||seq<espera)invalid("Contagens ou vagas do evento inválidas");
   return {vagas,inscritos,espera,seq};
 };
 function validateEvent(data){
-  if(!data||data.privacidadeVersao!==2||Object.hasOwn(data,"inscritos")
-    ||Object.hasOwn(data,"espera"))
+  if(!data||data.privacidadeVersao!==2
+    ||["inscritos","espera","presentes"].some(key=>Object.hasOwn(data,key)))
     invalid("Evento ainda não migrado para o modelo privado");
-  if(typeof data.dataISO==="string"&&/^\d{4}-\d\d-\d\d$/.test(data.dataISO)){
-    const localDay=new Intl.DateTimeFormat("en-CA",{
-      timeZone:"America/Fortaleza",year:"numeric",month:"2-digit",day:"2-digit"
-    }).format(new Date());
-    if(data.dataISO<localDay)invalid("Evento já encerrado");
-  }
+  if(!validISODate(data.dataISO))
+    invalid("Evento sem data ISO válida; corrija antes de abrir inscrições");
+  if(data.dataISO<fortalezaDay())
+    invalid("Evento já encerrado");
   return counts(data);
 }
 function validateUser(uid,email){
@@ -46,7 +59,13 @@ async function enroll(db,dbField,uid,email,eventId){
     const [ev,registration]=await Promise.all([tx.get(eventRef),tx.get(regRef)]);
     if(!ev.exists)invalid("Evento não encontrado","not-found");
     const {vagas,inscritos,espera,seq}=validateEvent(ev.data());
-    if(registration.exists)return {status:registration.data().status,existing:true};
+    if(registration.exists){
+      const saved=registration.data();
+      if(saved.uid!==uid||saved.email!==email
+        ||!["registered","waitlisted"].includes(saved.status))
+        invalid("Inscrição privada inconsistente; revisão da gestão necessária");
+      return {status:saved.status,existing:true};
+    }
     const wait=vagas>0&&inscritos>=vagas;
     const status=wait?"waitlisted":"registered";
     const nextOrder=seq+1;
@@ -95,4 +114,4 @@ async function cancel(db,uid,eventId){
     return {status:"cancelled-promoted"};
   });
 }
-module.exports={enroll,cancel,validateUser,validateEvent,counts};
+module.exports={enroll,cancel,validateUser,validateEvent,counts,fortalezaDay,validISODate};

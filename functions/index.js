@@ -2,6 +2,7 @@
 const admin=require("firebase-admin");
 const {onCall,HttpsError}=require("firebase-functions/v2/https");
 const {enroll,cancel}=require("./event-service.cjs");
+const {assertEventsReleased}=require("./release-gate.cjs");
 admin.initializeApp();
 const db=admin.firestore();
 function errorFrom(err){
@@ -21,9 +22,7 @@ async function authorized(request){
     db.doc("config/sistema").get(),
     db.collection("membros_punidos").doc(canonical).get()
   ]);
-  if(system.exists&&(system.data().manutencao===true
-    ||system.data().privacidadeMigracaoBloqueada===true))
-    throw new HttpsError("failed-precondition","Sistema em manutenção.");
+  assertEventsReleased(system);
   if(!aluno.exists||aluno.data().ativo!==true
     ||["pendente","recusado","excluido"].includes(aluno.data().status))
     throw new HttpsError("permission-denied","Cadastro estudantil não aprovado.");

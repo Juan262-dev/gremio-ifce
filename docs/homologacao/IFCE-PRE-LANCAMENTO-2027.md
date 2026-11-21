@@ -25,6 +25,27 @@ Firebase esteja vazio**, nem constitui ata de homologação institucional.
 | Homologação funcional com duas contas de alunos + gestão | **PENDENTE** | Testar voto, evento cheio, cancelamento, primeira pessoa da fila, presença, relatórios |
 | Aprovação institucional documentada | **PENDENTE** | Responsável da escola/direção deve confirmar finalidade, dados, direitos e liberação |
 
+## Chave de liberação dos eventos (fail closed)
+
+As Cloud Functions do IFCE agora **recusam inscrições e cancelamentos**
+se o documento `config/sistema` estiver ausente ou não contiver
+**todas** as condições explícitas:
+
+- `eventosV2Habilitados: true`
+- `manutencao: false`
+- `painelCongelado: false`
+- `privacidadeMigracaoBloqueada: false`
+
+O valor `eventosV2Habilitados` **não deve ser ativado** antes de
+comprovar que a migração, as regras, os índices e as Functions estão
+implantados conjuntamente, que os dados estão isolados e que o backup
+foi restaurado com sucesso em homologação. A direção/TI precisa
+autorizar a liberação, com contas fictícias e evidências arquivadas.
+
+Sem calendário ISO válido no evento, a função também recusa inscrições,
+impedindo acesso a eventos com datas incorretas. Esta é uma proteção
+de servidor: não depende de a interface esconder botões.
+
 ## Sequência de lançamento — sem atalhos
 
 1. Confirmar que o projeto Firebase de produção ainda não está em uso,

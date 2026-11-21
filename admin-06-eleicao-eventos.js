@@ -273,11 +273,19 @@
             const titulo = document.getElementById('evento-titulo').value.trim();
             const data = document.getElementById('evento-data').value.trim();
             const descricao = document.getElementById('evento-descricao').value.trim();
+            const dataISO = document.getElementById('evento-dataiso').value;
+            const vagas = Number(document.getElementById('evento-vagas').value || 0);
             if (!titulo || !data) { toast("Preencha título e data do evento!", 'warning'); return; }
+            if (!/^\d{4}-\d{2}-\d{2}$/.test(dataISO)) {
+                toast('Informe também a data completa no calendário antes de publicar.', 'warning'); return;
+            }
+            if (!Number.isSafeInteger(vagas) || vagas < 0 || vagas > 100000) {
+                toast('A quantidade de vagas precisa ser um número válido.', 'warning'); return;
+            }
 
             db.collection('eventos').add({
-                titulo, data, descricao, dataISO: document.getElementById('evento-dataiso').value || '',
-                privacidadeVersao: 2, inscritosCount: 0, esperaCount: 0, proximaOrdem: 0, vagas: Number(document.getElementById('evento-vagas').value) || 0, criadoEm: TS()
+                titulo, data, descricao, dataISO,
+                privacidadeVersao: 2, inscritosCount: 0, esperaCount: 0, proximaOrdem: 0, vagas, criadoEm: TS()
             }).then(() => {
                 mostrarAlertaSucesso("Evento publicado com sucesso!");
                 registrarAcao('Evento criado', titulo);

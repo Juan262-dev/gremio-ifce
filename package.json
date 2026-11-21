@@ -12,7 +12,7 @@
     "test:privacy:audit": "node --test tests/privacidade-migracao.test.cjs",
     "test:operations": "node --test tests/operacoes-backup-homologacao.test.cjs",
     "test:privacy:migrate": "node --test tests/ifce-migracao-v2.test.cjs",
-    "test:privacy:backend": "node --check functions/index.js && node --check functions/event-service.cjs",
+    "test:privacy:backend": "node --check functions/index.js && node --check functions/event-service.cjs && node --check functions/release-gate.cjs && node --test tests/ifce-events-release.test.cjs",
     "test:homologacao:tecnica": "node --test tests/ifce-prelancamento.test.cjs"
   },
   "devDependencies": {

@@ -68,3 +68,24 @@ test("impede eventos legados, inscrições falsas e contagens impossíveis",asyn
  await assert.rejects(()=>enroll(db,FieldValue,"x",emailA,"evento-legado"),/Identidade/);
  await assert.rejects(()=>enroll(db,FieldValue,uidA,emailA,"id inválido"),/Evento inválido/);
 });
+
+test("bloqueia data ausente, datas antigas e eventos com campos legados",async()=>{
+ await seed("evento-sem-data",{dataISO:""});
+ await assert.rejects(()=>enroll(db,FieldValue,uidA,emailA,"evento-sem-data"),/data ISO válida/);
+ await seed("evento-antigo",{dataISO:"2020-04-01"});
+ await assert.rejects(()=>enroll(db,FieldValue,uidA,emailA,"evento-antigo"),/encerrado/);
+ await seed("evento-exposicao",{presentes:[emailA]});
+ await assert.rejects(()=>enroll(db,FieldValue,uidA,emailA,"evento-exposicao"),/não migrado/);
+});
+test("rejeita fila inconsistente, duplicação adulterada e não realiza gravações",async()=>{
+ await seed("evento-fila-incoerente",{inscritosCount:0,esperaCount:1,proximaOrdem:1,vagas:1});
+ await assert.rejects(()=>enroll(db,FieldValue,uidA,emailA,"evento-fila-incoerente"),/Contagens/);
+ await seed("evento-fila-ilimitada",{esperaCount:1,proximaOrdem:1,vagas:0});
+ await assert.rejects(()=>enroll(db,FieldValue,uidA,emailA,"evento-fila-ilimitada"),/Contagens/);
+ await seed("evento-inscricao-adulterada");
+ await db.doc("eventos/evento-inscricao-adulterada/inscricoes/"+uidA)
+   .set({uid:uidB,email:emailB,status:"registered"});
+ await assert.rejects(()=>enroll(db,FieldValue,uidA,emailA,"evento-inscricao-adulterada"),/inconsistente/);
+ const record=await db.doc("eventos/evento-inscricao-adulterada").get();
+ assert.equal(record.data().inscritosCount,0);
+});

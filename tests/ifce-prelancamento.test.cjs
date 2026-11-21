@@ -28,6 +28,9 @@ test("segurança do backend de eventos requer validação Auth e transação",()
  assert.match(server,/email_verified!==true/);
  assert.match(server,/privacidadeMigracaoBloqueada/);
  assert.match(service,/runTransaction/);
+ const release=read("functions/release-gate.cjs");
+ assert.match(release,/eventosV2Habilitados/);
+ assert.match(server,/assertEventsReleased\(system\)/);
  assert.match(service,/orderBy\("order","asc"\)/);
  assert.match(service,/tx\.update\(first\.ref/);
  assert.doesNotMatch(service,/request\.data\.uid/);
