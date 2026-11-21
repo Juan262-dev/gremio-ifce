@@ -8,6 +8,8 @@ pequenos, testados e sem publicação/merge sem autorização.
 - [x] **Primeira base mínima** separada em `template-escolas/`, com Portal,
   Painel, configuração Firebase independente e falha segura para instância
   ausente ou inválida.
+- [x] Sugestões privadas de estudantes e moderação, validação reforçada de
+  enquetes e teste de dois projetos isolados no mesmo Firestore Emulator.
 - [x] Regras novas de registros privados para votos e inscrições por UID,
   e testes no emulador para negar acesso cruzado de estudantes.
 - [x] Bootstrap técnico manual e único para o primeiro administrador,

@@ -22,6 +22,15 @@ async function main(){
   const cred=path.resolve(keyPath),repoRoot=path.resolve(__dirname,"../..");
   if(cred===repoRoot||cred.startsWith(repoRoot+path.sep))
     throw Error("Credenciais devem permanecer fora do repositório.");
+  // Uma credencial da escola A jamais deve ser usada para gerenciar B.
+  let service;
+  try{service=JSON.parse(fs.readFileSync(cred,"utf8"));}
+  catch(e){throw Error("Credencial técnica inválida.");}
+  if(service.type!=="service_account"
+    ||service.project_id!==expected
+    ||typeof service.private_key!=="string"
+    ||!service.private_key.includes("BEGIN PRIVATE KEY"))
+    throw Error("A conta de serviço não corresponde ao Firebase desta escola.");
   // O SDK Admin nunca deve ser empacotado para os navegadores.
   const admin=require("firebase-admin");
   const app=admin.initializeApp({

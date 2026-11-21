@@ -24,6 +24,29 @@
       list.append(w);
     });
   }
+  async function loadSuggestions(){
+    const list=$("suggestion-list");list.replaceChildren();
+    const found=await db.collection("suggestions").limit(60).get();
+    if(found.empty)list.append(elem("p","Nenhuma sugestão recebida."));
+    found.forEach(doc=>{
+      const s=doc.data(),w=document.createElement("article");
+      w.className="item";
+      w.append(elem("h4",s.status==="pending"?"Em análise":s.status==="approved"?"Aprovada":"Arquivada"),elem("p",s.body));
+      if(s.status==="pending"){
+        const actions=document.createElement("div");actions.className="button-row";
+        actions.append(
+          btn("Aprovar",async()=>{
+            await doc.ref.update({status:"approved"});await loadSuggestions();status("Sugestão aprovada.");
+          }),
+          btn("Arquivar",async()=>{
+            await doc.ref.update({status:"archived"});await loadSuggestions();status("Sugestão arquivada.");
+          })
+        );
+        w.append(actions);
+      }
+      list.append(w);
+    });
+  }
   async function check(user){
     if(!user){show(false);status("Acesso administrativo exige uma conta verificada e cargo autorizado.");return;}
     await user.reload();await user.getIdToken(true);
@@ -33,7 +56,7 @@
       show(false);status("Conta sem permissão administrativa. O cargo não pode ser criado por esta tela.",true);return;
     }
     show(true);status("Gestor autorizado para esta instalação. As permissões também são verificadas pelo Firestore.");
-    await loadMembers();
+    await Promise.all([loadMembers(),loadSuggestions()]);
   }
   try{
     const config=await InstalacaoEscolar.load();

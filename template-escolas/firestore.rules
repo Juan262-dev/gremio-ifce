@@ -54,6 +54,18 @@ service cloud.firestore {
         && request.resource.data.options is list
         && request.resource.data.options.size() >= 2
         && request.resource.data.options.size() <= 4
+        && validText(request.resource.data.options[0], 80)
+        && validText(request.resource.data.options[1], 80)
+        && request.resource.data.options[0] != request.resource.data.options[1]
+        && (request.resource.data.options.size() < 3
+          || (validText(request.resource.data.options[2], 80)
+            && request.resource.data.options[2] != request.resource.data.options[0]
+            && request.resource.data.options[2] != request.resource.data.options[1]))
+        && (request.resource.data.options.size() < 4
+          || (validText(request.resource.data.options[3], 80)
+            && request.resource.data.options[3] != request.resource.data.options[0]
+            && request.resource.data.options[3] != request.resource.data.options[1]
+            && request.resource.data.options[3] != request.resource.data.options[2]))
         && request.resource.data.active == true
         && request.resource.data.createdAt is timestamp;
     }
@@ -134,6 +146,25 @@ service cloud.firestore {
           && request.resource.data.createdAt == request.time;
         allow update, delete: if false;
       }
+    }
+
+    // Solicitações estudantis privadas: o aluno vê apenas as próprias,
+    // a gestão recebe apenas o necessário para responder e moderar.
+    match /suggestions/{id} {
+      allow get, list: if admin()
+        || (approved() && resource.data.ownerUid == request.auth.uid);
+      allow create: if approved()
+        && request.resource.data.keys().hasAll(['ownerUid', 'body', 'status', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['ownerUid', 'body', 'status', 'createdAt'])
+        && request.resource.data.ownerUid == request.auth.uid
+        && validText(request.resource.data.body, 500)
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time;
+      allow update: if admin()
+        && resource.data.status == 'pending'
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['approved', 'archived'];
+      allow delete: if false;
     }
 
     // Fechamento explícito para todas as coleções que não fazem parte

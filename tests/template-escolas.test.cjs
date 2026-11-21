@@ -79,3 +79,21 @@ test("privacidade: participações não estão no documento coletivo e são priv
   assert.match(rules,/allow list: if admin\(\)/);
   assert.doesNotMatch(rules,/votosAlunos|inscritos:\s*\[|espera:\s*\[/);
 });
+
+test("sugestões e opções de enquete têm limites de privacidade testáveis",()=>{
+  const rules=read("firestore.rules");
+  const portal=read("public/js/portal.js"),admin=read("public/js/admin.js");
+  assert.match(rules,/match \/suggestions\/\{id\}/);
+  assert.match(rules,/request\.resource\.data\.ownerUid == request\.auth\.uid/);
+  assert.match(rules,/resource\.data\.ownerUid == request\.auth\.uid/);
+  assert.match(rules,/request\.resource\.data\.options\[0\]/);
+  assert.match(portal,/where\("ownerUid","==",uid\)/);
+  assert.match(admin,/loadSuggestions/);
+  assert.doesNotMatch(portal+admin,/\.innerHTML\s*=/);
+});
+test("bootstrap rejeita conta de serviço de outro projeto",()=>{
+  const script=read("scripts/bootstrap-admin.cjs");
+  assert.match(script,/service\.project_id!==expected/);
+  assert.match(script,/service\.type!=="service_account"/);
+  assert.match(script,/BEGIN PRIVATE KEY/);
+});
