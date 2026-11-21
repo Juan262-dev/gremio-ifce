@@ -804,8 +804,8 @@ function carregarAvisos() {
 
 /* ---------- Enquetes ---------- */
 function carregarEnquetes() {
-  lista('lista-enquetes-aluno', db.collection('enquetes').orderBy('criadoEm', 'desc'), 'Nenhuma enquete por enquanto. Quando houver uma votação, ela aparece aqui.', (e, id) => {
-    const jaVotou = (e.votosAlunos || []).some(v => (typeof v === 'string' ? v : v && v.email) === usuarioAtual.email);
+  lista('lista-enquetes-aluno', db.collection('enquetes').where('privacidadeVersao','==',2), 'Nenhuma enquete por enquanto. Quando houver uma votação, ela aparece aqui.', (e, id) => {
+    const jaVotou = false; // a validação definitiva ocorre na transação privada por UID
     const msg = !e.ativa ? '<p class="text-muted small mb-2">Esta enquete já foi encerrada.</p>'
       : jaVotou ? '<div class="alert alert-info py-2 mb-2 small fw-bold text-center">✅ Você já votou nesta enquete!</div>'
       : '<p class="text-muted small mb-2">Escolha uma opção para votar:</p>';
@@ -829,22 +829,27 @@ document.getElementById('lista-enquetes-aluno').addEventListener('click', e => {
 });
 
 function votar(enqueteId, opcaoId) {
-  const email = usuarioAtual.email;
+  const uid = auth.currentUser && auth.currentUser.uid;
+  if (!uid) return;
   const ref = db.collection('enquetes').doc(enqueteId);
+  const voteRef = ref.collection('votos').doc(uid);
   db.runTransaction(async t => {
-    const doc = await t.get(ref);
-    if (!doc.exists) throw "Enquete não encontrada!";
-    const e = doc.data();
-    if (!e.ativa) throw "Esta enquete já foi encerrada!";
-    const votos = e.votosAlunos || [];
-    if (votos.some(v => (typeof v === 'string' ? v : v && v.email) === email)) throw "Você já votou nesta enquete!";
-    votos.push({ email, opcaoId });
-    t.update(ref, {
-      votosAlunos: votos,
-      opcoes: e.opcoes.map(op => op.id === opcaoId ? { ...op, votos: (op.votos || 0) + 1 } : op)
+    const [snap,vote] = await Promise.all([t.get(ref),t.get(voteRef)]);
+    if (!snap.exists || snap.data().privacidadeVersao !== 2) throw 'Enquete não liberada.';
+    const data = snap.data();
+    if (!data.ativa) throw 'A votação está encerrada.';
+    if (vote.exists) throw 'Você já votou nesta enquete.';
+    const index = (data.opcoes || []).findIndex(op => op.id === opcaoId);
+    if (index !== opcaoId || index < 0) throw 'Opção inválida.';
+    t.update(ref, {opcoes:data.opcoes.map((op,i) =>
+      i === index ? {...op,votos:(Number(op.votos)||0)+1} : op)});
+    t.set(voteRef,{opcaoId,criadoEm:TS()});
+  }).then(() => {
+    document.querySelectorAll('.btn-voto').forEach(b => {
+      if (b.dataset.enquete === enqueteId) b.disabled = true;
     });
-  }).then(() => aviso("Voto registrado com sucesso!", 'success'))
-    .catch(err => aviso(typeof err === 'string' ? err : "Erro ao computar voto.", 'danger'));
+    aviso('Voto privado registrado!', 'success');
+  }).catch(e => aviso(typeof e === 'string' ? e : 'Não foi possível votar. Confira a conexão ou seu voto anterior.','warning'));
 }
 
 /* ---------- Reivindicações ---------- */
@@ -924,7 +929,7 @@ function solicitarMaterial(id, nome) {
     .catch(err => aviso(typeof err === 'string' ? err : "Erro ao solicitar material.", 'danger'));
 }
 function carregarEventos() {
-  ouvir(db.collection('eventos').orderBy('criadoEm', 'desc'), snap => {
+  ouvir(db.collection('eventos').where('privacidadeVersao','==',2), snap => {
     const todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     novidades.eventos = todos; renderNotificacoes();
     const c = document.getElementById('lista-eventos-aluno');
@@ -934,7 +939,7 @@ function carregarEventos() {
     const semData = todos.filter(e => !e.dataISO);
     const passados = todos.filter(e => e.dataISO && e.dataISO < hoje).sort((a, b) => b.dataISO.localeCompare(a.dataISO));
     c.innerHTML = '<div class="list-group">' + [...proximos, ...semData, ...passados].map(ev => {
-      const ja = (ev.inscritos || []).includes(usuarioAtual.email);
+      const ja = false; // inscrições privadas não fazem parte do documento público
       const passou = ev.dataISO && ev.dataISO < hoje;
       return `
       <div class="list-group-item" ${passou ? 'style="opacity:.6"' : ''}>
@@ -1061,79 +1066,23 @@ function carregarJogos() {
   });
 }
 function inscreverEvento(id) {
-  if (!confirm('Confirmar sua inscrição? Se as vagas estiverem cheias, você entra na lista de espera.')) return;
-  const evento = (novidades.eventos || []).find(e => e.id === id);
-  if (evento && evento.dataISO && evento.dataISO < hojeISO()) {
-    aviso('As inscrições deste evento já terminaram.', 'warning');
-    return;
-  }
-  const ref = db.collection('eventos').doc(id);
-  db.runTransaction(async t => {
-    const doc = await t.get(ref);
-    if (!doc.exists) return 'sumiu';
-    const d = doc.data();
-    const ins = d.inscritos || [];
-    const esp = d.espera || [];
-    const eu = usuarioAtual.email;
-    if (ins.includes(eu)) return 'ja';
-    if (esp.includes(eu)) return 'espera-ja';
-    const vagas = Number(d.vagas) || 0;
-    if (vagas && ins.length >= vagas) { t.update(ref, { espera: [...esp, eu] }); return 'espera'; }
-    t.update(ref, { inscritos: [...ins, eu] });
-    return 'ok';
-  }).then(r => {
-    if (r === 'ok') aviso("Inscrição realizada com sucesso!", 'success');
-    else if (r === 'ja') aviso("Você já está inscrito neste evento!", 'info');
-    else if (r === 'espera') aviso("Vagas esgotadas. Você entrou na lista de espera e será avisado se abrir uma vaga.", 'info');
-    else if (r === 'espera-ja') aviso("Você já está na lista de espera.", 'info');
-  }).catch(() => aviso("Erro ao realizar inscrição.", 'danger'));
+  aviso('Inscrições indisponíveis até a homologação do controle privado de vagas e fila.', 'warning');
 }
 
-/* ---------- eventos: vagas, lista de espera, cancelamento, avaliação e convite ---------- */
+/* ---------- eventos: inscrição e fila privada pendentes de homologação ---------- */
 function acoesEvento(ev, ja, passou) {
   const vagas = Number(ev.vagas) || 0;
-  const ins = ev.inscritos || [];
-  const esp = ev.espera || [];
-  const naFila = esp.indexOf(usuarioAtual.email);
-  const id = esc(ev.id);
-  let botao;
-  if (passou) botao = '<button disabled class="btn btn-sm btn-secondary fw-bold">Encerrado</button>';
-  else if (ja) botao = `<button data-id="${id}" onclick="cancelarInscricaoEvento(this.dataset.id)" class="btn btn-sm btn-outline-danger fw-bold">Cancelar inscrição</button>`;
-  else if (naFila >= 0) botao = `<span class="badge bg-warning text-dark me-1">Lista de espera: posição ${naFila + 1}</span><button data-id="${id}" onclick="cancelarInscricaoEvento(this.dataset.id)" class="btn btn-sm btn-outline-secondary fw-bold">Sair da espera</button>`;
-  else if (vagas && ins.length >= vagas) botao = `<span class="badge bg-danger me-1">Vagas esgotadas</span><button data-id="${id}" onclick="inscreverEvento(this.dataset.id)" class="btn btn-sm btn-ifce fw-bold">Entrar na lista de espera</button>`;
-  else botao = `<button data-id="${id}" onclick="inscreverEvento(this.dataset.id)" class="btn btn-sm btn-ifce fw-bold">Fazer Inscrição</button>`;
-  const vagasTxt = vagas ? `<small class="text-muted d-block mb-1">${ins.length} de ${vagas} vagas ocupadas${esp.length ? ' • ' + esp.length + ' na espera' : ''}</small>` : '';
-  const convite = '';
-  const avaliar = passou && ja ? `<div class="mt-2"><button onclick="document.getElementById('av-${id}').classList.toggle('d-none')" class="btn btn-sm btn-outline-light fw-bold">Avaliar evento</button>
-      <div id="av-${id}" class="d-none border rounded p-2 mt-2">
-        <select id="av-nota-${id}" class="form-select form-select-sm mb-2"><option value="5">5 - Excelente</option><option value="4">4 - Bom</option><option value="3">3 - Regular</option><option value="2">2 - Fraco</option><option value="1">1 - Ruim</option></select>
-        <textarea id="av-com-${id}" class="form-control form-control-sm mb-2" rows="2" maxlength="300" placeholder="Comentário (opcional)"></textarea>
-        <button data-id="${id}" onclick="avaliarEvento(this.dataset.id)" class="btn btn-sm btn-ifce fw-bold">Enviar avaliação</button></div></div>` : '';
-  return vagasTxt + botao + convite + avaliar;
+  const inscritos = Number(ev.inscritosCount) || 0;
+  const aguardando = Number(ev.esperaCount) || 0;
+  const resumo = vagas ? '<small class="text-muted d-block mb-1">' +
+    inscritos + ' de ' + vagas + ' vagas ocupadas' +
+    (aguardando ? ' • ' + aguardando + ' em espera' : '') + '</small>' : '';
+  return resumo + (passou
+    ? '<span class="badge bg-secondary">Encerrado</span>'
+    : '<span class="badge bg-warning text-dark">Inscrições aguardam homologação.</span>');
 }
 function cancelarInscricaoEvento(id) {
-  if (!confirm('Cancelar sua participação neste evento?')) return;
-  const ref = db.collection('eventos').doc(id);
-  db.runTransaction(async t => {
-    const doc = await t.get(ref);
-    if (!doc.exists) return 'sumiu';
-    const d = doc.data();
-    let ins = d.inscritos || [];
-    let esp = d.espera || [];
-    const eu = usuarioAtual.email;
-    if (ins.includes(eu)) {
-      ins = ins.filter(e => e !== eu);
-      const vagas = Number(d.vagas) || 0;
-      if (esp.length && (!vagas || ins.length < vagas)) { ins = [...ins, esp[0]]; esp = esp.slice(1); }
-      t.update(ref, { inscritos: ins, espera: esp });
-      return 'cancelou';
-    }
-    if (esp.includes(eu)) { t.update(ref, { espera: esp.filter(e => e !== eu) }); return 'saiu'; }
-    return 'nada';
-  }).then(r => {
-    if (r === 'cancelou') aviso('Inscrição cancelada. A vaga foi oferecida à próxima pessoa da lista de espera, se houver.', 'info');
-    else if (r === 'saiu') aviso('Você saiu da lista de espera.', 'info');
-  }).catch(() => aviso('Não foi possível cancelar agora. Tente de novo.', 'danger'));
+  aviso('Cancelamentos estão suspensos durante a revisão das inscrições privadas.', 'warning');
 }
 function avaliarEvento(id) {
   const nota = Number(document.getElementById('av-nota-' + id).value);
@@ -2610,7 +2559,7 @@ PortalNavegacao.preparar();
 <script>
 /* ---- O que o grêmio já fez ---- */
 function carregarRealizacoes() {
-  ouvir(db.collection('eventos'), snap => {
+  ouvir(db.collection('eventos').where('privacidadeVersao','==',2), snap => {
     const c = document.getElementById('lista-realizacoes');
     if (!c) return;
     const hoje = hojeISO();
@@ -2626,7 +2575,7 @@ function carregarRealizacoes() {
               <span class="badge bg-light text-muted border" style="white-space:nowrap">${esc(e.data || dataBR(e.dataISO))}</span>
             </div>
             ${e.descricao ? `<p class="small mb-1" style="white-space:pre-wrap">${esc(e.descricao)}</p>` : ''}
-            <small class="text-muted">${(e.inscritos || []).length} participante(s) inscrito(s)</small>
+            <small class="text-muted">${(Number(e.inscritosCount)||0)} participante(s) inscrito(s)</small>
           </div>`).join('') + '</div>'
       : '<p class="text-muted small mb-0">Ainda não há atividades concluídas para mostrar.</p>';
   });

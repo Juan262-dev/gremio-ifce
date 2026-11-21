@@ -67,7 +67,7 @@
             if (!titulo || opcoes.length < 2) { toast("Preencha o título e pelo menos 2 opções de voto!", 'warning'); return; }
 
             db.collection('enquetes').add({
-                titulo, opcoes, ativa: true, votosAlunos: [], criadoEm: TS()
+                titulo, opcoes, ativa: true, privacidadeVersao: 2, criadoEm: TS()
             }).then(() => {
                 mostrarAlertaSucesso("Enquete criada com sucesso!");
                 registrarAcao('Enquete criada', titulo);
