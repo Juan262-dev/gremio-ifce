@@ -5,6 +5,11 @@ pequenos, testados e sem publicação/merge sem autorização.
 
 ## Implementação técnica em andamento — não distribuível
 
+- [x] Assistente de terminal com cinco etapas e modo ensaio para gerar a
+  configuração pública exclusiva da escola, sem conectar ou publicar.
+- [ ] Evoluir o assistente para experiência visual completa e revisada
+  com verificação de autenticação, domínio, regras e publicação manual.
+
 - [x] **Primeira base mínima** separada em `template-escolas/`, com Portal,
   Painel, configuração Firebase independente e falha segura para instância
   ausente ou inválida.
