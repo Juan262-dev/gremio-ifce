@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "instanceId": "escola-exemplo",
+  "siteOrigin": "https://escola.example.invalid",
+  "school": {
+    "name": "Escola Modelo (EXEMPLO)",
+    "gremio": "Grêmio Estudantil Exemplo",
+    "contact": "gremio@escola.example.invalid",
+    "color": "#246a49"
+  },
+  "firebase": {
+    "apiKey": "EXEMPLO_NAO_CONECTAR",
+    "authDomain": "demo-escola-exemplo.firebaseapp.com",
+    "projectId": "demo-escola-exemplo",
+    "appId": "EXEMPLO_NAO_CONECTAR",
+    "messagingSenderId": "EXEMPLO_NAO_CONECTAR"
+  }
+}

@@ -1,0 +1,145 @@
+// TEMPLATE PARA OUTRAS ESCOLAS — regras próprias da instalação, NÃO as regras do IFCE.
+// Dados de votos e inscrições ficam em subcoleções privadas por UID,
+// nunca em arrays de e-mails de documentos consultáveis por estudantes.
+// Antes de qualquer deploy real: revisar política, licença e testes com a escola.
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signed() {
+      return request.auth != null;
+    }
+    function verified() {
+      return signed() && request.auth.token.email_verified == true;
+    }
+    function self(uid) {
+      return signed() && request.auth.uid == uid;
+    }
+    function admin() {
+      return verified()
+        && exists(/databases/$(database)/documents/roles/$(request.auth.uid))
+        && get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.get('role', '') == 'admin'
+        && get(/databases/$(database)/documents/roles/$(request.auth.uid)).data.get('active', false) == true;
+    }
+    function approved() {
+      return verified()
+        && exists(/databases/$(database)/documents/members/$(request.auth.uid))
+        && get(/databases/$(database)/documents/members/$(request.auth.uid)).data.get('status', '') == 'approved';
+    }
+    function participant() {
+      return admin() || approved();
+    }
+    function validText(v, max) {
+      return v is string && v.size() >= 1 && v.size() <= max;
+    }
+    function validPost() {
+      return request.resource.data.keys().hasAll(['title', 'body', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['title', 'body', 'createdAt'])
+        && validText(request.resource.data.title, 100)
+        && validText(request.resource.data.body, 1500)
+        && request.resource.data.createdAt is timestamp;
+    }
+    function validEvent() {
+      return request.resource.data.keys().hasAll(['title', 'details', 'when', 'location', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['title', 'details', 'when', 'location', 'createdAt'])
+        && validText(request.resource.data.title, 100)
+        && validText(request.resource.data.details, 1000)
+        && validText(request.resource.data.when, 100)
+        && validText(request.resource.data.location, 120)
+        && request.resource.data.createdAt is timestamp;
+    }
+    function validPoll() {
+      return request.resource.data.keys().hasAll(['question', 'options', 'active', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['question', 'options', 'active', 'createdAt'])
+        && validText(request.resource.data.question, 200)
+        && request.resource.data.options is list
+        && request.resource.data.options.size() >= 2
+        && request.resource.data.options.size() <= 4
+        && request.resource.data.active == true
+        && request.resource.data.createdAt is timestamp;
+    }
+
+    // A pessoa cria somente a própria solicitação pendente.
+    // Aprovação não é feita pelo navegador do estudante.
+    match /members/{uid} {
+      allow get: if self(uid) || admin();
+      allow list: if admin();
+      allow create: if verified() && self(uid)
+        && request.resource.data.keys().hasAll(['displayName', 'status', 'createdAt'])
+        && request.resource.data.keys().hasOnly(['displayName', 'status', 'createdAt'])
+        && validText(request.resource.data.displayName, 80)
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time;
+      allow update: if admin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status'])
+        && request.resource.data.status in ['approved', 'blocked'];
+      allow delete: if false;
+    }
+
+    // Provisionamento privilegiado via Admin SDK (fora do site).
+    // Nem o administrador da interface pode criar o próprio cargo.
+    match /roles/{uid} {
+      allow get: if self(uid) || admin();
+      allow list: if admin();
+      allow write: if false;
+    }
+    match /system/{id} {
+      allow read, write: if false;
+    }
+
+    match /notices/{id} {
+      allow get, list: if participant();
+      allow create, update: if admin() && validPost();
+      allow delete: if admin();
+    }
+    match /events/{eventId} {
+      allow get, list: if participant();
+      allow create, update: if admin() && validEvent();
+      allow delete: if admin();
+
+      // Sem lista de participantes no documento /events/{eventId}.
+      match /registrations/{uid} {
+        allow get: if (self(uid) && verified()) || admin();
+        allow list: if admin();
+        allow create: if approved() && self(uid)
+          && exists(/databases/$(database)/documents/events/$(eventId))
+          && request.resource.data.keys().hasAll(['uid', 'createdAt'])
+          && request.resource.data.keys().hasOnly(['uid', 'createdAt'])
+          && request.resource.data.uid == uid
+          && request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if (self(uid) && verified()) || admin();
+      }
+    }
+    match /polls/{pollId} {
+      allow get, list: if participant();
+      allow create: if admin() && validPoll();
+      allow update: if admin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['active'])
+        && request.resource.data.active == false;
+      allow delete: if admin();
+
+      // Um voto imutável por UID. Não há e-mail no voto nem no resumo da enquete.
+      match /votes/{uid} {
+        allow get: if (self(uid) && verified()) || admin();
+        allow list: if admin();
+        allow create: if approved() && self(uid)
+          && exists(/databases/$(database)/documents/polls/$(pollId))
+          && get(/databases/$(database)/documents/polls/$(pollId)).data.active == true
+          && request.resource.data.keys().hasAll(['uid', 'optionId', 'createdAt'])
+          && request.resource.data.keys().hasOnly(['uid', 'optionId', 'createdAt'])
+          && request.resource.data.uid == uid
+          && request.resource.data.optionId is int
+          && request.resource.data.optionId >= 0
+          && request.resource.data.optionId < get(/databases/$(database)/documents/polls/$(pollId)).data.options.size()
+          && request.resource.data.createdAt == request.time;
+        allow update, delete: if false;
+      }
+    }
+
+    // Fechamento explícito para todas as coleções que não fazem parte
+    // do contrato de dados desta versão do template.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
