@@ -47,3 +47,11 @@ bloqueios são explicados no guia de implantação e no planejamento.
 
 Documentação: ../../docs/modelo-reutilizavel/GUIA-PARA-ESCOLAS.md
 e ../../docs/modelo-reutilizavel/SETE-MELHORIAS.md.
+
+## Explorar o Portal e o Painel
+
+A Central inclui um link para o
+[Modo Demonstração dos dois aplicativos](../modo-demonstracao/index.html):
+fluxos ilustrativos de estudante e gestão, com dados de duas escolas
+inventadas, sem acesso ao Firebase real. O modo não concede permissões,
+não cria cadastros e não faz deploy.

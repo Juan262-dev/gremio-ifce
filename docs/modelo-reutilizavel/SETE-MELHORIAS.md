@@ -221,6 +221,21 @@ continuam pendentes o template independente, regras, licenciamento,
 autenticação privilegiada, auditoria, homologação e publicação controlada.
 Os critérios de aceite abaixo permanecem obrigatórios.
 
+## Modo Demonstração interativo — protótipo dos aplicativos
+
+A [prévia interativa do Portal e do Painel](../../demo/modo-demonstracao/README.md)
+já permite testar com **dados totalmente fictícios**, sem login real,
+Firebase, publicação ou persistência. É possível alternar entre duas
+escolas de exemplo, acompanhar avisos, eventos, inscrições, enquetes,
+sugestões, carteirinha ilustrativa e gestão simulada de conteúdos, além
+de reiniciar as duas instâncias de exemplo.
+
+Isso **não significa que o template para escolas esteja pronto**: os
+fluxos do protótipo são ilustrativos e não implementam autenticação,
+regras reais, financeiro, laboratório, eleições ou integração com a
+instalação do IFCE. O checklist de isolamento e de licenciamento
+continua bloqueante para qualquer implantação real.
+
 ## Sequência de trabalho recomendada
 
 1. **Resolver bloqueios P0:** privacidade, regras, contas privilegiadas,
