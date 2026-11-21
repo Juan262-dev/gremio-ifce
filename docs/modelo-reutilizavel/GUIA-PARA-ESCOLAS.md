@@ -228,6 +228,21 @@ deve avaliar as condições do plano escolhido e criar alertas de orçamento.
 | PWA mostra nome antigo | Manifestos e cache específicos daquela instalação, sem afetar outras escolas |
 | Custo acima do previsto | Uso de serviços, limites e alertas do projeto da própria escola |
 
+## Melhorias planejadas para simplificar a adoção
+
+O projeto também propõe sete recursos: **Central de Implantação**,
+**Modo Demonstração**, **Troca de Gestão do Grêmio**,
+**Verificador de Segurança**, **Atualizações sem perder personalizações**,
+**Central de Ajuda** e **Backup e Recuperação**. Essas funções ainda
+não são utilizáveis. O objetivo é fazer uma instalação guiada e segura,
+com manutenção possível mesmo quando mudar a diretoria.
+
+Veja [a especificação e a ordem de prioridades](SETE-MELHORIAS.md).
+A escola pode preparar sua identidade com a
+[Ficha da Escola](FICHA-DA-ESCOLA.md), mas não deve publicar os aplicativos
+enquanto os bloqueios de segurança, licenciamento e testes não forem
+resolvidos.
+
 ## Perguntas frequentes
 
 **Precisamos saber programar?** Para personalizar textos, logo e cores,

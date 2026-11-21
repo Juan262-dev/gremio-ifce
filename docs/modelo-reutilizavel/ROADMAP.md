@@ -89,6 +89,33 @@ Referências para a experiência escolar:
 [Ficha da Escola](FICHA-DA-ESCOLA.md).
 Essas melhorias são **propostas**, não funcionalidades existentes.
 
+## Priorização das sete melhorias da plataforma
+
+A [especificação detalhada das sete melhorias](SETE-MELHORIAS.md) define
+escopo, regras de segurança, critérios de aceite e ordem de entrega.
+**São propostas ainda não implementadas.**
+
+**P0 (pré-requisitos obrigatórios):** resolver privacidade, autorização
+para redistribuir, Firestore Rules, bootstrap de administrador por escola
+e isolamento de Firebase — não há lançamento real antes disso.
+
+**P1 (primeiro piloto fictício):**
+- [ ] Central de Implantação com progresso verificável e publicação bloqueada
+  até homologação
+- [ ] Modo Demonstração sem Firebase real, contas ou estudantes verdadeiros
+- [ ] Verificador de Segurança com evidências do emulador e checklist humano
+- [ ] Backup técnico seguro, retenção e restauração ensaiada com dados fictícios
+
+**P2 (uso contínuo após o piloto):**
+- [ ] Troca de Gestão do Grêmio com autorização independente e auditoria
+- [ ] Atualizações versionadas sem perder personalizações nem misturar dados
+- [ ] Central de Ajuda contextual nos dois aplicativos
+- [ ] Interface institucional de acompanhamento de backups e recuperação
+
+**Aceite geral:** isolamento confirmado para duas escolas fictícias,
+créditos de origem fora do painel, recursos acessíveis, autorização de uso
+e aprovação manual antes de disponibilizar a escolas reais.
+
 ## Fase 4 — distribuição e piloto seguro
 
 - [ ] Gerar pacote/instalador reproduzível sem dados do IFCE.
