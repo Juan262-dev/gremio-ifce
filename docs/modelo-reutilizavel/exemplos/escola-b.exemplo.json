@@ -1,0 +1,54 @@
+{
+  "_aviso": "EXEMPLO FICTICIO: ainda nao e lido pelos aplicativos e NAO pode ser publicado.",
+  "versaoContrato": 1,
+  "instalacao": {
+    "modo": "exemplo-nao-publicavel",
+    "id": "gremio-escola-b",
+    "urlPublica": "https://escola-b.example.invalid/portal/",
+    "firebase": {
+      "projectId": "demo-gremio-escola-b",
+      "apiKey": "EXEMPLO_NAO_CONECTAR",
+      "authDomain": "demo-gremio-escola-b.firebaseapp.com",
+      "storageBucket": "demo-gremio-escola-b.firebasestorage.app",
+      "messagingSenderId": "EXEMPLO_NAO_CONECTAR",
+      "appId": "EXEMPLO_NAO_CONECTAR"
+    },
+    "autenticacao": {
+      "dominiosInstitucionais": [
+        "estudante.escola-b.example.invalid"
+      ],
+      "exigirEmailVerificado": true,
+      "cadastroAprovadoPelaGestao": true
+    }
+  },
+  "escola": {
+    "nome": "Escola Exemplo B",
+    "campus": "Unidade B",
+    "cidade": "Outra Cidade Ficticia",
+    "estado": "EX"
+  },
+  "gremio": {
+    "nome": "Gremio da Escola B",
+    "descricao": "Organizacao de estudantes da escola B",
+    "contatoPublico": "contato@escola-b.example.invalid"
+  },
+  "identidadeVisual": {
+    "corPrincipal": "#155c81",
+    "logo": "imagens/logo-escola-b.svg",
+    "tituloPortal": "Portal do Estudante - Gremio B",
+    "tituloAdmin": "Gestao do Gremio - Escola B"
+  },
+  "modulosVisiveis": {
+    "avisos": true,
+    "eventos": true,
+    "carteirinha": true,
+    "estudos": true,
+    "laboratorioVirtual": true,
+    "enquetes": true,
+    "eleicoes": true
+  },
+  "privacidade": {
+    "urlPolitica": "https://escola-b.example.invalid/privacidade",
+    "urlTermos": "https://escola-b.example.invalid/termos"
+  }
+}
