@@ -404,13 +404,14 @@
                     if ((x.autorEmail || '').toLowerCase() === email) { up.autorEmail = ''; up.autor = 'Aluno removido'; }
                     if (Object.keys(up).length) { batch.update(d.ref, up); n++; }
                 });
-                eve.docs.forEach(d => { if ((d.data().inscritos || []).includes(email)) { batch.update(d.ref, { inscritos: FV.arrayRemove(email) }); n++; } });
-                enq.docs.forEach(d => {
-                    const v = d.data().votosAlunos || [], quem = e => (typeof e === 'string' ? e : e && e.email);
-                    if (v.some(e => quem(e) === email)) {
-                        batch.update(d.ref, { votosAlunos: v.map(e => (quem(e) === email ? (typeof e === 'string' ? 'removido' : { ...e, email: 'removido' }) : e)) }); n++;
-                    }
-                });
+                // Inscrições privadas por UID exigem processo de exclusão
+                // institucional separado; nunca adulterar o evento público.
+                if (eve.docs.some(d => d.data().privacidadeVersao === 2))
+                    throw new Error('Exclusão total exige revisão das inscrições privadas pela TI.');
+                // Votos são cédulas privadas não editáveis no cliente.
+                // A gestão deve seguir o procedimento de exclusão legal.
+                if (enq.docs.some(d => d.data().privacidadeVersao === 2))
+                    throw new Error('Exclusão total exige tratamento privado dos votos pela TI.');
                 mat.docs.forEach(d => { if ((d.data().emprestadoPara || '').toLowerCase().includes(email)) { batch.update(d.ref, { emprestadoPara: '(aluno removido)' }); n++; } });
                 if (n > 480) throw new Error('muitos registros');
                 await batch.commit();
@@ -547,7 +548,7 @@
                 const ativos = al.filter(a => a.ativo).length, entraram = ac.filter(a => a.ultimoAcesso).length;
                 linha(`Alunos ativos: ${ativos} | Já acessaram o portal: ${entraram}`);
                 titulo('Eventos');
-                linha(`Eventos criados: ${ev.length} | Inscrições totais: ${ev.reduce((t, e) => t + (e.inscritos || []).length, 0)}`);
+                linha(`Eventos criados: ${ev.length} | Inscrições totais: ${ev.reduce((t, e) => t + (Number(e.inscritosCount) || 0), 0)}`);
                 titulo('Pautas dos alunos');
                 const st = s => pa.filter(p => (p.status || 'Em análise') === s).length;
                 linha(`Total: ${pa.length} | Em análise: ${st('Em análise')} | Encaminhadas: ${st('Encaminhada')} | Resolvidas: ${st('Resolvida')}`);
@@ -555,7 +556,7 @@
                 titulo('Sugestões');
                 linha(`Recebidas: ${su.length} | Respondidas: ${su.filter(x => x.resposta).length}`);
                 titulo('Enquetes e jogos');
-                linha(`Enquetes: ${en.length} (votos: ${en.reduce((t, e) => t + (e.votosAlunos || []).length, 0)}) | Jogos registrados: ${jo.length}`);
+                linha(`Enquetes: ${en.length} (votos: ${en.reduce((t, e) => t + (e.opcoes || []).reduce((n,op)=>n+(Number(op.votos)||0),0), 0)}) | Jogos registrados: ${jo.length}`);
                 titulo('Organização interna');
                 linha(`Tarefas: ${ta.length} (concluídas: ${ta.filter(t => t.status === 'Concluída').length}) | Atas: ${at.length} | Vídeos: ${vi.length}`);
                 pdfFinalizar(doc, `balanco_gremio_${hojeISO()}.pdf`);

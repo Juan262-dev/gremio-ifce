@@ -276,7 +276,8 @@
             if (!titulo || !data) { toast("Preencha título e data do evento!", 'warning'); return; }
 
             db.collection('eventos').add({
-                titulo, data, descricao, dataISO: document.getElementById('evento-dataiso').value || '', inscritos: [], espera: [], vagas: Number(document.getElementById('evento-vagas').value) || 0, criadoEm: TS()
+                titulo, data, descricao, dataISO: document.getElementById('evento-dataiso').value || '',
+                privacidadeVersao: 2, inscritosCount: 0, esperaCount: 0, proximaOrdem: 0, vagas: Number(document.getElementById('evento-vagas').value) || 0, criadoEm: TS()
             }).then(() => {
                 mostrarAlertaSucesso("Evento publicado com sucesso!");
                 registrarAcao('Evento criado', titulo);
@@ -293,13 +294,13 @@
                 snapshot.forEach(doc => {
                     const ev = doc.data();
                     cacheEventos[doc.id] = ev;
-                    const insc = ev.inscritos || [];
+                    const count = Number(ev.inscritosCount) || 0;
                     html += `
                         <div class="list-group-item d-flex justify-content-between align-items-start">
                             <div>
                                 <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${esc(ev.titulo)} <span class="badge bg-info text-dark">📅 ${esc(ev.data)}</span></h6>
                                 <p class="mb-1 small text-white">${esc(ev.descricao)}</p>
-                                <small class="text-muted-custom fw-bold">Inscritos (${insc.length}): ${esc(insc.join(', ')) || 'Nenhum inscrito ainda'}</small>
+                                <small class="text-muted-custom fw-bold">Inscritos (${count}): lista individual privada, disponível apenas à gestão autorizada</small>
                             </div>
                             <div class="d-flex flex-column gap-1 ms-2">
                                 <button data-acao="exportarInscritos" data-id="${esc(doc.id)}" class="btn btn-outline-light btn-sm py-0" style="font-size: 11px;">⬇️ CSV</button>
@@ -447,11 +448,16 @@
                 baixarCSV('pautas.csv', [['Título', 'Descrição', 'Autor', 'Apoios', 'Status']]
                     .concat(cachePautas.map(p => [p.titulo, p.descricao, p.autor || '', (p.apoios || []).length, p.status || STATUS_PAUTA[0]])));
             },
-            exportarInscritos: id => {
+            exportarInscritos: async id => {
                 const ev = cacheEventos[id];
-                if (!ev) return;
-                baixarCSV(`inscritos_${(ev.titulo || 'evento').toLowerCase().replace(/\s+/g, '_')}.csv`,
-                    [['Evento', 'Data', 'E-mail do inscrito']].concat((ev.inscritos || []).map(e => [ev.titulo, ev.data, e])));
+                if (!ev || ev.privacidadeVersao !== 2) { toast('Evento antigo precisa de migração.', 'warning'); return; }
+                try {
+                    const snap = await db.collection('eventos').doc(id).collection('inscricoes')
+                        .where('status','==','registered').get();
+                    const rows = snap.docs.map(d => [ev.titulo, ev.data, d.data().email || '']);
+                    baixarCSV('inscritos_' + (ev.titulo || 'evento').toLowerCase().replace(/\s+/g,'_')+'.csv',
+                        [['Evento','Data','E-mail do inscrito'], ...rows]);
+                } catch (e) { erroDB(e,'exportarInscritos'); }
             }
         };
 

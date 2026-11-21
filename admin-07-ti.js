@@ -50,7 +50,10 @@
                 const semData = ev.docs.filter(d => !d.data().dataISO);
                 if (semData.length) add('info', `${semData.length} evento(s) sem "Dia no calendário" (não ordenam nem encerram sozinhos).`);
 
-                const votosRuins = en.docs.filter(d => { const x = d.data(); return (x.opcoes || []).reduce((t, o) => t + (o.votos || 0), 0) !== (x.votosAlunos || []).length; });
+                const votosRuins = en.docs.filter(d => { const x = d.data();
+                    return x.privacidadeVersao !== 2
+                      && (x.opcoes || []).reduce((t,o)=>t+(o.votos || 0),0) !== (x.votosAlunos || []).length;
+                });
                 if (votosRuins.length) add('warn', `${votosRuins.length} enquete(s) com contagem de votos que não bate com a lista de votantes: ${votosRuins.map(d => d.data().titulo).join(', ')}.`);
 
                 const jogosSemPlacar = jo.docs.filter(d => d.data().status === 'Encerrado' && d.data().placarA === undefined);

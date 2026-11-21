@@ -568,6 +568,7 @@ body{background-color:#f4f6f9}
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="laboratorio-quimica.js"></script>
 <script src="laboratorio-avancado.js"></script>
@@ -804,24 +805,58 @@ function carregarAvisos() {
 
 /* ---------- Enquetes ---------- */
 function carregarEnquetes() {
-  lista('lista-enquetes-aluno', db.collection('enquetes').orderBy('criadoEm', 'desc'), 'Nenhuma enquete por enquanto. Quando houver uma votação, ela aparece aqui.', (e, id) => {
-    const jaVotou = (e.votosAlunos || []).some(v => (typeof v === 'string' ? v : v && v.email) === usuarioAtual.email);
-    const msg = !e.ativa ? '<p class="text-muted small mb-2">Esta enquete já foi encerrada.</p>'
-      : jaVotou ? '<div class="alert alert-info py-2 mb-2 small fw-bold text-center">✅ Você já votou nesta enquete!</div>'
-      : '<p class="text-muted small mb-2">Escolha uma opção para votar:</p>';
-    const ops = (e.opcoes || []).map(op => `
-      <button type="button" data-enquete="${esc(id)}" data-opcao="${esc(op.id)}" ${(!e.ativa || jaVotou) ? 'disabled' : ''} class="list-group-item list-group-item-action d-flex justify-content-between align-items-center small btn-voto">
-        <span>🔘 ${esc(op.texto)}</span>
-        ${jaVotou || !e.ativa ? `<span class="badge bg-secondary">${op.votos || 0} votos</span>` : ''}
-      </button>`).join('');
-    return `
-    <div class="border rounded p-3 mb-3 bg-white">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="fw-bold m-0">${esc(e.titulo)}</h6>
-        <span class="badge ${e.ativa ? 'bg-success' : 'bg-secondary'}">${e.ativa ? 'Ativa' : 'Encerrada'}</span>
-      </div>${msg}<div class="list-group mb-2">${ops}</div>
-    </div>`;
-  }, '');
+  // Consulta somente cédulas privadas do próprio UID; falha fechada.
+  ouvir(db.collection('enquetes').where('privacidadeVersao','==',2), async snap => {
+    const uid=auth.currentUser && auth.currentUser.uid;
+    if (!uid || !usuarioAtual) return;
+    const container=document.getElementById('lista-enquetes-aluno');
+    const docs=snap.docs.map(d=>({id:d.id,...d.data()}));
+    novidades.enquetes=docs;renderNotificacoes();
+    if(!docs.length){
+      container.textContent='Nenhuma enquete liberada para estudantes.';
+      return;
+    }
+    const votou=await Promise.all(snap.docs.map(d=>d.ref.collection('votos')
+      .doc(uid).get({source:'server'})
+      .then(s=>({voted:s.exists,error:false}))
+      .catch(()=>({voted:false,error:true}))));
+    if(!auth.currentUser||auth.currentUser.uid!==uid)return;
+    const nodes=docs.map((e,i)=>{
+      const box=document.createElement('article');
+      box.className='border rounded p-3 mb-3 bg-white';
+      const heading=document.createElement('h6');
+      heading.className='fw-bold mb-2';
+      heading.textContent=e.titulo||'Enquete';
+      box.appendChild(heading);
+      const message=document.createElement('p');
+      message.className='text-muted small mb-2';
+      message.textContent=!e.ativa?'Esta enquete já foi encerrada.'
+        :votou[i].error?'Não foi possível verificar seu voto. Tente mais tarde.'
+        :votou[i].voted?'Você já votou nesta enquete!':'Escolha uma opção para votar:';
+      box.appendChild(message);
+      const options=document.createElement('div');
+      options.className='list-group mb-2';
+      (e.opcoes||[]).forEach(op=>{
+        const b=document.createElement('button');
+        b.type='button';
+        b.className='list-group-item list-group-item-action d-flex justify-content-between align-items-center small btn-voto';
+        b.dataset.enquete=e.id;b.dataset.opcao=String(op.id);
+        b.disabled=!e.ativa||votou[i].voted||votou[i].error;
+        const title=document.createElement('span');
+        title.textContent='🔘 '+String(op.texto||'Opção');
+        b.appendChild(title);
+        if(votou[i].voted||!e.ativa){
+          const count=document.createElement('span');
+          count.className='badge bg-secondary';
+          count.textContent=String(Number(op.votos)||0)+' votos';
+          b.appendChild(count);
+        }
+        options.appendChild(b);
+      });
+      box.appendChild(options);return box;
+    });
+    container.replaceChildren(...nodes);
+  });
 }
 document.getElementById('lista-enquetes-aluno').addEventListener('click', e => {
   const b = e.target.closest('.btn-voto');
@@ -829,22 +864,27 @@ document.getElementById('lista-enquetes-aluno').addEventListener('click', e => {
 });
 
 function votar(enqueteId, opcaoId) {
-  const email = usuarioAtual.email;
+  const uid = auth.currentUser && auth.currentUser.uid;
+  if (!uid) return;
   const ref = db.collection('enquetes').doc(enqueteId);
+  const voteRef = ref.collection('votos').doc(uid);
   db.runTransaction(async t => {
-    const doc = await t.get(ref);
-    if (!doc.exists) throw "Enquete não encontrada!";
-    const e = doc.data();
-    if (!e.ativa) throw "Esta enquete já foi encerrada!";
-    const votos = e.votosAlunos || [];
-    if (votos.some(v => (typeof v === 'string' ? v : v && v.email) === email)) throw "Você já votou nesta enquete!";
-    votos.push({ email, opcaoId });
-    t.update(ref, {
-      votosAlunos: votos,
-      opcoes: e.opcoes.map(op => op.id === opcaoId ? { ...op, votos: (op.votos || 0) + 1 } : op)
+    const [snap,vote] = await Promise.all([t.get(ref),t.get(voteRef)]);
+    if (!snap.exists || snap.data().privacidadeVersao !== 2) throw 'Enquete não liberada.';
+    const data = snap.data();
+    if (!data.ativa) throw 'A votação está encerrada.';
+    if (vote.exists) throw 'Você já votou nesta enquete.';
+    const index = (data.opcoes || []).findIndex(op => op.id === opcaoId);
+    if (index !== opcaoId || index < 0) throw 'Opção inválida.';
+    t.update(ref, {opcoes:data.opcoes.map((op,i) =>
+      i === index ? {...op,votos:(Number(op.votos)||0)+1} : op)});
+    t.set(voteRef,{opcaoId,criadoEm:TS()});
+  }).then(() => {
+    document.querySelectorAll('.btn-voto').forEach(b => {
+      if (b.dataset.enquete === enqueteId) b.disabled = true;
     });
-  }).then(() => aviso("Voto registrado com sucesso!", 'success'))
-    .catch(err => aviso(typeof err === 'string' ? err : "Erro ao computar voto.", 'danger'));
+    aviso('Voto privado registrado!', 'success');
+  }).catch(e => aviso(typeof e === 'string' ? e : 'Não foi possível votar. Confira a conexão ou seu voto anterior.','warning'));
 }
 
 /* ---------- Reivindicações ---------- */
@@ -924,8 +964,15 @@ function solicitarMaterial(id, nome) {
     .catch(err => aviso(typeof err === 'string' ? err : "Erro ao solicitar material.", 'danger'));
 }
 function carregarEventos() {
-  ouvir(db.collection('eventos').orderBy('criadoEm', 'desc'), snap => {
+  ouvir(db.collection('eventos').where('privacidadeVersao','==',2), async snap => {
+    const uid = auth.currentUser && auth.currentUser.uid;
+    if (!uid) return;
     const todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const estados = await Promise.all(snap.docs.map(d =>
+      d.ref.collection('inscricoes').doc(uid).get({source:'server'})
+        .then(s => s.exists ? s.data() : null).catch(() => ({status:'unavailable'}))));
+    if (!auth.currentUser || auth.currentUser.uid !== uid) return;
+    todos.forEach((e,i) => { e.minhaInscricao = estados[i]; });
     novidades.eventos = todos; renderNotificacoes();
     const c = document.getElementById('lista-eventos-aluno');
     if (!todos.length) { c.innerHTML = '<p class="text-muted small mb-0">Nenhum evento programado por enquanto. Eles aparecem aqui quando forem publicados.</p>'; return; }
@@ -934,7 +981,7 @@ function carregarEventos() {
     const semData = todos.filter(e => !e.dataISO);
     const passados = todos.filter(e => e.dataISO && e.dataISO < hoje).sort((a, b) => b.dataISO.localeCompare(a.dataISO));
     c.innerHTML = '<div class="list-group">' + [...proximos, ...semData, ...passados].map(ev => {
-      const ja = (ev.inscritos || []).includes(usuarioAtual.email);
+      const ja = !!(ev.minhaInscricao && ev.minhaInscricao.status === 'registered');
       const passou = ev.dataISO && ev.dataISO < hoje;
       return `
       <div class="list-group-item" ${passou ? 'style="opacity:.6"' : ''}>
@@ -1061,79 +1108,37 @@ function carregarJogos() {
   });
 }
 function inscreverEvento(id) {
-  if (!confirm('Confirmar sua inscrição? Se as vagas estiverem cheias, você entra na lista de espera.')) return;
-  const evento = (novidades.eventos || []).find(e => e.id === id);
-  if (evento && evento.dataISO && evento.dataISO < hojeISO()) {
-    aviso('As inscrições deste evento já terminaram.', 'warning');
-    return;
-  }
-  const ref = db.collection('eventos').doc(id);
-  db.runTransaction(async t => {
-    const doc = await t.get(ref);
-    if (!doc.exists) return 'sumiu';
-    const d = doc.data();
-    const ins = d.inscritos || [];
-    const esp = d.espera || [];
-    const eu = usuarioAtual.email;
-    if (ins.includes(eu)) return 'ja';
-    if (esp.includes(eu)) return 'espera-ja';
-    const vagas = Number(d.vagas) || 0;
-    if (vagas && ins.length >= vagas) { t.update(ref, { espera: [...esp, eu] }); return 'espera'; }
-    t.update(ref, { inscritos: [...ins, eu] });
-    return 'ok';
-  }).then(r => {
-    if (r === 'ok') aviso("Inscrição realizada com sucesso!", 'success');
-    else if (r === 'ja') aviso("Você já está inscrito neste evento!", 'info');
-    else if (r === 'espera') aviso("Vagas esgotadas. Você entrou na lista de espera e será avisado se abrir uma vaga.", 'info');
-    else if (r === 'espera-ja') aviso("Você já está na lista de espera.", 'info');
-  }).catch(() => aviso("Erro ao realizar inscrição.", 'danger'));
+  if (!auth.currentUser) return;
+  firebase.app().functions('southamerica-east1').httpsCallable('inscreverEventoSeguro')({eventoId:id})
+    .then(r => aviso(r.data.status === 'waitlisted'
+      ? 'Você entrou na lista de espera privada.' : 'Inscrição confirmada!', 'success'))
+    .catch(() => aviso('Não foi possível confirmar a inscrição. Verifique a conexão e o cadastro.', 'warning'));
 }
 
-/* ---------- eventos: vagas, lista de espera, cancelamento, avaliação e convite ---------- */
+/* ---------- eventos: inscrição e fila privada pendentes de homologação ---------- */
 function acoesEvento(ev, ja, passou) {
-  const vagas = Number(ev.vagas) || 0;
-  const ins = ev.inscritos || [];
-  const esp = ev.espera || [];
-  const naFila = esp.indexOf(usuarioAtual.email);
-  const id = esc(ev.id);
-  let botao;
-  if (passou) botao = '<button disabled class="btn btn-sm btn-secondary fw-bold">Encerrado</button>';
-  else if (ja) botao = `<button data-id="${id}" onclick="cancelarInscricaoEvento(this.dataset.id)" class="btn btn-sm btn-outline-danger fw-bold">Cancelar inscrição</button>`;
-  else if (naFila >= 0) botao = `<span class="badge bg-warning text-dark me-1">Lista de espera: posição ${naFila + 1}</span><button data-id="${id}" onclick="cancelarInscricaoEvento(this.dataset.id)" class="btn btn-sm btn-outline-secondary fw-bold">Sair da espera</button>`;
-  else if (vagas && ins.length >= vagas) botao = `<span class="badge bg-danger me-1">Vagas esgotadas</span><button data-id="${id}" onclick="inscreverEvento(this.dataset.id)" class="btn btn-sm btn-ifce fw-bold">Entrar na lista de espera</button>`;
-  else botao = `<button data-id="${id}" onclick="inscreverEvento(this.dataset.id)" class="btn btn-sm btn-ifce fw-bold">Fazer Inscrição</button>`;
-  const vagasTxt = vagas ? `<small class="text-muted d-block mb-1">${ins.length} de ${vagas} vagas ocupadas${esp.length ? ' • ' + esp.length + ' na espera' : ''}</small>` : '';
-  const convite = '';
-  const avaliar = passou && ja ? `<div class="mt-2"><button onclick="document.getElementById('av-${id}').classList.toggle('d-none')" class="btn btn-sm btn-outline-light fw-bold">Avaliar evento</button>
-      <div id="av-${id}" class="d-none border rounded p-2 mt-2">
-        <select id="av-nota-${id}" class="form-select form-select-sm mb-2"><option value="5">5 - Excelente</option><option value="4">4 - Bom</option><option value="3">3 - Regular</option><option value="2">2 - Fraco</option><option value="1">1 - Ruim</option></select>
-        <textarea id="av-com-${id}" class="form-control form-control-sm mb-2" rows="2" maxlength="300" placeholder="Comentário (opcional)"></textarea>
-        <button data-id="${id}" onclick="avaliarEvento(this.dataset.id)" class="btn btn-sm btn-ifce fw-bold">Enviar avaliação</button></div></div>` : '';
-  return vagasTxt + botao + convite + avaliar;
+  const vagas=Number(ev.vagas)||0,inscritos=Number(ev.inscritosCount)||0;
+  const aguardando=Number(ev.esperaCount)||0;
+  const privateReg=ev.minhaInscricao;
+  const id=esc(ev.id);
+  const resumo=vagas ? '<small class="text-muted d-block mb-1">'+inscritos+' de '+vagas+
+    ' vagas ocupadas'+(aguardando?' • '+aguardando+' em espera':'')+'</small>' : '';
+  if(passou)return resumo+'<span class="badge bg-secondary">Encerrado</span>';
+  if(privateReg&&privateReg.status==='unavailable')
+    return resumo+'<span class="badge bg-warning text-dark">Não foi possível verificar a inscrição.</span>';
+  if(privateReg&&privateReg.status==='waitlisted')
+    return resumo+'<span class="badge bg-warning text-dark">Na lista de espera</span> '+
+      '<button data-id="'+id+'" onclick="cancelarInscricaoEvento(this.dataset.id)" class="btn btn-sm btn-outline-secondary">Sair da espera</button>';
+  if(privateReg&&privateReg.status==='registered')
+    return resumo+'<button data-id="'+id+'" onclick="cancelarInscricaoEvento(this.dataset.id)" class="btn btn-sm btn-outline-danger">Cancelar inscrição</button>';
+  return resumo+'<button data-id="'+id+'" onclick="inscreverEvento(this.dataset.id)" class="btn btn-sm btn-ifce">'+
+    (vagas&&inscritos>=vagas?'Entrar na lista de espera':'Fazer inscrição')+'</button>';
 }
 function cancelarInscricaoEvento(id) {
-  if (!confirm('Cancelar sua participação neste evento?')) return;
-  const ref = db.collection('eventos').doc(id);
-  db.runTransaction(async t => {
-    const doc = await t.get(ref);
-    if (!doc.exists) return 'sumiu';
-    const d = doc.data();
-    let ins = d.inscritos || [];
-    let esp = d.espera || [];
-    const eu = usuarioAtual.email;
-    if (ins.includes(eu)) {
-      ins = ins.filter(e => e !== eu);
-      const vagas = Number(d.vagas) || 0;
-      if (esp.length && (!vagas || ins.length < vagas)) { ins = [...ins, esp[0]]; esp = esp.slice(1); }
-      t.update(ref, { inscritos: ins, espera: esp });
-      return 'cancelou';
-    }
-    if (esp.includes(eu)) { t.update(ref, { espera: esp.filter(e => e !== eu) }); return 'saiu'; }
-    return 'nada';
-  }).then(r => {
-    if (r === 'cancelou') aviso('Inscrição cancelada. A vaga foi oferecida à próxima pessoa da lista de espera, se houver.', 'info');
-    else if (r === 'saiu') aviso('Você saiu da lista de espera.', 'info');
-  }).catch(() => aviso('Não foi possível cancelar agora. Tente de novo.', 'danger'));
+  if (!auth.currentUser || !confirm('Cancelar sua participação neste evento?')) return;
+  firebase.app().functions('southamerica-east1').httpsCallable('cancelarEventoSeguro')({eventoId:id})
+    .then(() => aviso('Participação cancelada. A primeira pessoa da fila é promovida automaticamente.', 'info'))
+    .catch(() => aviso('Não foi possível cancelar agora. Procure a gestão.', 'warning'));
 }
 function avaliarEvento(id) {
   const nota = Number(document.getElementById('av-nota-' + id).value);
@@ -2610,7 +2615,7 @@ PortalNavegacao.preparar();
 <script>
 /* ---- O que o grêmio já fez ---- */
 function carregarRealizacoes() {
-  ouvir(db.collection('eventos'), snap => {
+  ouvir(db.collection('eventos').where('privacidadeVersao','==',2), snap => {
     const c = document.getElementById('lista-realizacoes');
     if (!c) return;
     const hoje = hojeISO();
@@ -2626,7 +2631,7 @@ function carregarRealizacoes() {
               <span class="badge bg-light text-muted border" style="white-space:nowrap">${esc(e.data || dataBR(e.dataISO))}</span>
             </div>
             ${e.descricao ? `<p class="small mb-1" style="white-space:pre-wrap">${esc(e.descricao)}</p>` : ''}
-            <small class="text-muted">${(e.inscritos || []).length} participante(s) inscrito(s)</small>
+            <small class="text-muted">${(Number(e.inscritosCount)||0)} participante(s) inscrito(s)</small>
           </div>`).join('') + '</div>'
       : '<p class="text-muted small mb-0">Ainda não há atividades concluídas para mostrar.</p>';
   });
@@ -2843,15 +2848,19 @@ function carregarCarteira() {
   const ano = String(new Date().getFullYear());
   const eu = usuarioAtual.email;
   Promise.all([
-    db.collection('eventos').get(),
+    db.collection('eventos').where('privacidadeVersao','==',2).get(),
     db.collection('reivindicacoes').where('apoios', 'array-contains', eu).get(),
-    db.collection('enquetes').get(),
+    db.collection('enquetes').where('privacidadeVersao','==',2).get(),
     db.collection('sugestoes').where('email', '==', eu).get(),
     db.collection('chamados').where('autorEmail', '==', eu).get()
-  ]).then(([ev, pautas, enq, sug, cham]) => {
-    const eventos = ev.docs.map(d => d.data()).filter(e => (e.dataISO || '').startsWith(ano) && (e.inscritos || []).includes(eu)).length;
+  ]).then(async ([ev, pautas, enq, sug, cham]) => {
+    const uid = auth.currentUser.uid;
+    const inscricoes = await Promise.all(ev.docs.filter(d => (d.data().dataISO || '').startsWith(ano))
+      .map(d => d.ref.collection('inscricoes').doc(uid).get()));
+    const eventos = inscricoes.filter(d => d.exists && d.data().status === 'registered').length;
     const apoios = pautas.docs.map(d => d.data()).filter(x => anoDe(x.criadoEm) === ano).length;
-    const votos = enq.docs.map(d => d.data()).filter(x => (x.votosAlunos || []).some(v => v && v.email === eu)).length;
+    const meusVotos = await Promise.all(enq.docs.map(d => d.ref.collection('votos').doc(uid).get()));
+    const votos = meusVotos.filter(d => d.exists).length;
     const sugestoes = sug.docs.map(d => d.data()).filter(x => anoDe(x.criadoEm) === ano).length;
     const pedidos = cham.docs.map(d => d.data()).filter(x => anoDe(x.criadoEm) === ano).length;
     const linha = (t, n) => `<li class="d-flex justify-content-between small py-1"><span>${t}</span><strong>${n}</strong></li>`;
@@ -2932,8 +2941,22 @@ async function baixarMeusDados() {
     const [al, pf, an, sg, ch, pa, en, ev, pe] = await Promise.all([
       db.collection('alunos').doc(eu).get(), db.collection('perfis').doc(eu).get(), db.collection('aniversarios').doc(eu).get(),
       db.collection('sugestoes').where('email', '==', eu).get(), db.collection('chamados').where('autorEmail', '==', eu).get(),
-      db.collection('reivindicacoes').where('apoios', 'array-contains', eu).get(), db.collection('enquetes').get(),
-      db.collection('eventos').get(), db.collection('pedidos_exclusao').where('email', '==', eu).get()
+      db.collection('reivindicacoes').where('apoios', 'array-contains', eu).get(),
+      db.collection('enquetes').where('privacidadeVersao','==',2).get(),
+      db.collection('eventos').where('privacidadeVersao','==',2).get(),
+      db.collection('pedidos_exclusao').where('email', '==', eu).get()
+    ]);
+    const uidPrivado = auth.currentUser.uid;
+    const [votosPrivados, eventosPrivados] = await Promise.all([
+      Promise.all(en.docs.map(async d => {
+        const voto = await d.ref.collection('votos').doc(uidPrivado).get();
+        return voto.exists ? {titulo:d.data().titulo} : null;
+      })),
+      Promise.all(ev.docs.map(async d => {
+        const inscricao = await d.ref.collection('inscricoes').doc(uidPrivado).get();
+        return inscricao.exists && inscricao.data().status === 'registered'
+          ? {titulo:d.data().titulo,data:d.data().data || d.data().dataISO} : null;
+      }))
     ]);
     const dados = {
       gerado_em: new Date().toISOString(), conta: eu,
@@ -2943,8 +2966,8 @@ async function baixarMeusDados() {
       sugestoes: sg.docs.map(d => limparParaJSON(d.data())),
       pedidos_de_ajuda: ch.docs.map(d => limparParaJSON(d.data())),
       pautas_apoiadas: pa.docs.map(d => ({ titulo: d.data().titulo })),
-      enquetes_votadas: en.docs.filter(d => (d.data().votosAlunos || []).some(v => v && v.email === eu)).map(d => ({ titulo: d.data().titulo })),
-      eventos_inscritos: ev.docs.filter(d => (d.data().inscritos || []).includes(eu)).map(d => ({ titulo: d.data().titulo, data: d.data().data || d.data().dataISO })),
+      enquetes_votadas: votosPrivados.filter(Boolean),
+      eventos_inscritos: eventosPrivados.filter(Boolean),
       pedidos_de_exclusao: pe.docs.map(d => limparParaJSON(d.data()))
     };
     const blob = new Blob([JSON.stringify(dados, null, 2)], { type: 'application/json' });
