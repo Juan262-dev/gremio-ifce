@@ -79,6 +79,25 @@ Há referências ao formato legado no \`index.html\`, \`admin.html\`,
 
 Por isso, atualizar somente uma das partes **não protege a privacidade**.
 
+## Auditoria read-only preparada para a TI do IFCE
+
+O script `scripts/privacy/audit-ifce-readonly.cjs` pode inspecionar
+**somente os campos legados** de `enquetes` e `eventos` de maneira
+agregada, sem escrever, migrar ou registrar informações pessoais.
+Por segurança, **nenhuma leitura real foi executada neste PR**.
+
+Antes de qualquer uso, a TI do IFCE precisa confirmar autorização,
+projeto `gremioifce-92540` e credencial de serviço armazenada fora
+do Git. Em terminal institucional, definir `IFCE_AUDIT_APPROVED` com
+valor `AUTORIZO_AUDITORIA_IFCE_SOMENTE_LEITURA`,
+`IFCE_AUDIT_PROJECT_ID`, `IFCE_AUDIT_REFERENCE` (ata sem PII)
+e `GOOGLE_APPLICATION_CREDENTIALS` externo; executar manualmente
+`node scripts/privacy/audit-ifce-readonly.cjs`.
+
+O relatório **só contém totais**, e retorna código de erro quando
+encontra o formato antigo. Resultado vazio não prova, por si só,
+que interfaces, regras e permissões foram corrigidas.
+
 ## Migração FUTURA do IFCE (em PR e aprovação separados)
 
 1. **Preparar:** mapear coleções e consumidores de
