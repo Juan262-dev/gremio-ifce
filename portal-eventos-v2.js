@@ -16,7 +16,7 @@
     if (registro && registro.status === 'registered')
       return 'Inscrição registrada · alterações temporariamente suspensas';
     if (registro && registro.status === 'waitlisted')
-      return 'Na lista de espera · alterações temporariamente suspensas';
+      return 'Aguardando vaga · alterações temporariamente suspensas';
     return 'Inscrições em preparação pelo Grêmio';
   }
   function mensagemFalha(erro) {
@@ -37,7 +37,7 @@
   }
   function mensagemCancelamento(status) {
     if (status === 'missing') return 'Não foi encontrada uma inscrição ativa para cancelar.';
-    if (status === 'cancelled-waiting') return 'Você saiu da lista de espera.';
+    if (status === 'cancelled-waiting') return 'Você saiu da fila de participantes aguardando vaga.';
     if (status === 'cancelled-promoted')
       return 'Inscrição cancelada. A primeira pessoa da fila recebeu a vaga.';
     return 'Inscrição cancelada.';

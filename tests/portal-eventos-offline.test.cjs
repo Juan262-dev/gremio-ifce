@@ -18,13 +18,13 @@ test('inscrições exigem todos os sinalizadores de liberação explícitos',()=
 });
 test('mensagens refletem estado real, sem afirmar promoção em qualquer cancelamento',()=>{
  assert.match(portal.estadoPausado({status:'registered'}),/Inscrição registrada/);
- assert.match(portal.estadoPausado({status:'waitlisted'}),/lista de espera/);
+ assert.match(portal.estadoPausado({status:'waitlisted'}),/Aguardando vaga/);
  assert.match(portal.estadoPausado(null),/preparação/);
  assert.match(portal.mensagemFalha({code:'functions/failed-precondition'}),/temporariamente/);
  assert.match(portal.mensagemFalha({code:'functions/not-found'}),/ainda não foi instalado/);
  assert.match(portal.mensagemFalha({code:'functions/permission-denied'}),/cadastro/);
  assert.match(portal.mensagemCancelamento('missing'),/Não foi encontrada/);
- assert.match(portal.mensagemCancelamento('cancelled-waiting'),/saiu da lista/);
+ assert.match(portal.mensagemCancelamento('cancelled-waiting'),/saiu da fila/);
  assert.match(portal.mensagemCancelamento('cancelled-promoted'),/recebeu a vaga/);
  assert.equal(portal.mensagemCancelamento('cancelled'),'Inscrição cancelada.');
 });
