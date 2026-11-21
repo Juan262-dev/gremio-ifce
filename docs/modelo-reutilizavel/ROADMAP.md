@@ -3,6 +3,23 @@
 **Somente planejamento.** Uma futura implementação deve ser entregue em PRs
 pequenos, testados e sem publicação/merge sem autorização.
 
+## Implementação técnica em andamento — não distribuível
+
+- [x] **Primeira base mínima** separada em `template-escolas/`, com Portal,
+  Painel, configuração Firebase independente e falha segura para instância
+  ausente ou inválida.
+- [x] Regras novas de registros privados para votos e inscrições por UID,
+  e testes no emulador para negar acesso cruzado de estudantes.
+- [x] Bootstrap técnico manual e único para o primeiro administrador,
+  sem permissão de criação de cargos pelo navegador.
+- [ ] Completar os recursos dos dois aplicativos, migração controlada,
+  política de privacidade, licença, direitos de conteúdo, backup,
+  testes manuais e homologação antes de liberar para escolas reais.
+- [ ] Corrigir o modelo legível de votos/inscrições **do IFCE** em outro PR,
+  incluindo mudanças coordenadas nos dois clientes, regras e dados.
+
+Este marco é **experimental e não realiza deploy nem migração**.
+
 ## Fase 0 — direitos, privacidade e decisão editorial (bloqueante)
 
 - [ ] Confirmar titularidade e nome de exibição do criador original.

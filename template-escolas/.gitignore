@@ -1,0 +1,3 @@
+public/config/installation.json
+**/*service-account*.json
+**/*private-key*.json

@@ -6,11 +6,14 @@
   "scripts": {
     "test:rules": "firebase emulators:exec --project demo-gremio-ifce --only firestore \"node --test tests/firestore.test.cjs\"",
     "test:lab": "node --test tests/laboratorio.test.cjs tests/laboratorio-avancado.test.cjs",
-    "test:ui": "node --test tests/navegacao.test.cjs tests/primeira-experiencia.test.cjs tests/central-implantacao.test.cjs tests/modo-demonstracao.test.cjs tests/verificador-seguranca.test.cjs"
+    "test:ui": "node --test tests/navegacao.test.cjs tests/primeira-experiencia.test.cjs tests/central-implantacao.test.cjs tests/modo-demonstracao.test.cjs tests/verificador-seguranca.test.cjs",
+    "test:template:config": "node --test tests/template-escolas.test.cjs",
+    "test:template:rules": "firebase emulators:exec --config template-escolas/firebase.json --project demo-gremio-escola-teste --only firestore \"node --test tests/template-escolas.rules.test.cjs\""
   },
   "devDependencies": {
     "@firebase/rules-unit-testing": "^4.0.1",
     "firebase": "^11.9.0",
-    "firebase-tools": "^14.0.0"
+    "firebase-tools": "^14.0.0",
+    "firebase-admin": "^13.0.0"
   }
 }

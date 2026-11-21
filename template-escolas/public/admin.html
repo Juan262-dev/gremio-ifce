@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://www.gstatic.com; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com wss://*.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="color-scheme" content="light">
+  <title>Painel Administrativo · Instalação escolar independente</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js" defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js" defer></script>
+  <script src="./js/instance.js" defer></script>
+  <script src="./js/admin.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><div class="wordmark"><span class="mark" aria-hidden="true">G</span><div><strong id="school-name">Escola não configurada</strong><small id="gremio-name">Painel Administrativo</small></div></div><a href="./index.html">Portal do Aluno</a></header>
+  <main class="container">
+    <div class="headline"><p class="eyebrow">PAINEL ADMINISTRATIVO</p><h1>Gestão da escola</h1><p>Área restrita a gestores autorizados desta instalação.</p></div>
+    <div id="status" class="notice" role="status" aria-live="polite">Verificando configuração da instalação…</div>
+    <section id="access" class="panel" hidden><h2>Acesso administrativo</h2><p>O primeiro administrador deve ser autorizado fora do navegador por um responsável técnico. Criar uma conta comum não concede privilégios.</p><form id="login-form" class="fields"><label>E-mail<input name="email" type="email" maxlength="120" autocomplete="username" required></label><label>Senha<input name="password" type="password" autocomplete="current-password" required></label><button type="submit">Entrar</button></form></section>
+    <section id="admin" hidden>
+      <div class="workspace-head"><h2>Gerenciamento do Grêmio</h2><button id="signout" class="secondary" type="button">Sair</button></div>
+      <div class="columns">
+        <section class="panel"><h3>Solicitações de estudantes</h3><div id="member-list" class="stack"></div></section>
+        <section class="panel"><h3>Novo aviso</h3><form id="notice-form" class="fields"><label>Título<input name="title" maxlength="100" required></label><label>Mensagem<textarea name="body" maxlength="1500" required></textarea></label><button type="submit">Publicar aviso</button></form></section>
+        <section class="panel"><h3>Novo evento</h3><form id="event-form" class="fields"><label>Título<input name="title" maxlength="100" required></label><label>Descrição<textarea name="details" maxlength="1000" required></textarea></label><label>Quando<input name="when" maxlength="100" required></label><label>Local<input name="location" maxlength="120" required></label><button type="submit">Criar evento</button></form></section>
+        <section class="panel"><h3>Nova enquete</h3><form id="poll-form" class="fields"><label>Pergunta<input name="question" maxlength="200" required></label><label>Opção 1<input name="option1" maxlength="80" required></label><label>Opção 2<input name="option2" maxlength="80" required></label><button type="submit">Criar enquete</button></form></section>
+      </div>
+    </section>
+  </main>
+  <footer>Origem do sistema: Grêmio IFCE Campus Crateús · <a href="https://github.com/Juan262-dev/gremio-ifce">Projeto original</a> · Atribuição definitiva sujeita à licença.</footer>
+</body>
+</html>
