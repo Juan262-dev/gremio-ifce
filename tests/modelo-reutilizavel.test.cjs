@@ -70,16 +70,16 @@ test('plano registra os acoplamentos e a necessidade de corrigir privacidade',()
   assert.match(arq,/enquetes e eventos ainda mantêm listas de e-mails/i);
   assert.match(arq,/não distribuir a plataforma para uso real/i);
   assert.match(arq,/Não copiar dados existentes do IFCE/i);
-  assert.match(arq,/não inicializar Firebase/i);
+  assert.match(arq,/não\s+inicializar Firebase/i);
 });
 
 test('guia inclui segurança, provisionamento e revisão antes de publicação',()=>{
   assert.match(inst,/provisionamento único/i);
-  assert.match(inst,/não devem ser incluídos no site/i);
+  assert.match(inst,/nunca\s+devem ser incluídos no site/i);
   assert.match(inst,/contas e dados fictícios/i);
   assert.match(inst,/privacidade/i);
   assert.match(inst,/duas escolas fictícias/i);
-  assert.match(inst,/não conecta/i.test(inst)?/não conecta/i:/não conectar/i);
+  assert.match(inst,/não conectar ao Firebase do IFCE/i);
 });
 
 test('roadmap separa entrega de planejamento da implementação real',()=>{
