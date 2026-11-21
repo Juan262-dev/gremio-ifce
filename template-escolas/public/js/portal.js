@@ -37,6 +37,7 @@
     }
     show("portal");setStatus("Acesso autorizado à instalação desta escola.");
     await loadContent(user.uid);
+    await loadSuggestions(user.uid);
   }
   async function loadContent(uid){
     clear("notice-list");clear("event-list");clear("poll-list");
@@ -72,6 +73,17 @@
       $("poll-list").append(w);
     }
   }
+  async function loadSuggestions(uid){
+    clear("suggestion-list");
+    // Firestore Rules autorizam listagem apenas com filtro de proprietário.
+    const snapshot=await db.collection("suggestions")
+      .where("ownerUid","==",uid).limit(20).get();
+    if(snapshot.empty)$("suggestion-list").append(node("p","Você ainda não enviou sugestões."));
+    snapshot.forEach(doc=>{
+      const s=doc.data();
+      $("suggestion-list").append(item(s.status==="pending"?"Em análise":s.status==="approved"?"Aprovada":"Arquivada",s.body));
+    });
+  }
   try{
     config=await InstalacaoEscolar.load();
     document.documentElement.style.setProperty("--green",config.school.color);
@@ -103,6 +115,22 @@
       await db.collection("members").doc(auth.currentUser.uid).set({displayName:name,status:"pending",createdAt:timestamp()});
       await access(auth.currentUser);
     }catch(e){setStatus("A solicitação não foi aceita. Consulte a gestão.",true);}
+  });
+  $("suggestion-form").addEventListener("submit",async ev=>{
+    ev.preventDefault();
+    const btn=ev.currentTarget.querySelector('button[type="submit"]');
+    const body=String(new FormData(ev.currentTarget).get("body")||"").trim();
+    if(body.length<1||body.length>500){setStatus("A sugestão deve ter entre 1 e 500 caracteres.",true);return;}
+    btn.disabled=true;
+    try{
+      await db.collection("suggestions").add({
+        ownerUid:auth.currentUser.uid,body,status:"pending",createdAt:timestamp()
+      });
+      ev.currentTarget.reset();
+      await loadSuggestions(auth.currentUser.uid);
+      setStatus("Sugestão enviada à gestão da escola.");
+    }catch(e){setStatus("Sugestão não enviada. Verifique o cadastro e as permissões.",true);}
+    finally{btn.disabled=false;}
   });
   $("refresh-access").addEventListener("click",()=>{if(auth.currentUser)access(auth.currentUser).catch(()=>setStatus("Não foi possível atualizar.",true));});
   for(const id of ["signout","signout-pending"])$(id).addEventListener("click",()=>auth.signOut());

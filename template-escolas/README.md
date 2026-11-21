@@ -18,6 +18,10 @@
   usa \`escola-admin\`, isolando suas sessões no navegador.
 - E-mail verificado e **aprovação administrativa** são obrigatórios
   para o aluno ler avisos, eventos e enquetes.
+- **Sugestões privadas:** estudantes aprovados enviam e consultam apenas
+  suas próprias ideias; a gestão pode aprovar ou arquivar sugestões.
+- Enquetes exigem alternativas textuais distintas com tamanho limitado,
+  impedindo registros estruturados indevidos nos campos públicos.
 - Criação de aviso, evento, enquete e aprovação de cadastro no Painel
   exige \`roles/{uid}\` ativo, registrado por administrador técnico
   **fora** da interface. O estudante não se promove.
@@ -115,6 +119,8 @@ Este roteiro explica o procedimento previsto para um ambiente aprovado.
   externo) e
   \`INITIAL_ADMIN_APPROVED=CONFIRMO_AUTORIZACAO_ESCOLA\`.
   Executar manualmente \`node template-escolas/scripts/bootstrap-admin.cjs\`.
+- A conta de serviço externa deve ser do **mesmo projectId** da escola;
+  o script rejeita credenciais de outro projeto antes de iniciar o SDK.
 - O script valida o projeto e a conta verificada e, em transação,
   cria \`system/bootstrap\` e \`roles/{uid}\` **uma única vez**.
   A interface Web não tem permissão para criar cargos.
@@ -141,7 +147,11 @@ Testa contas fictícias e nega, entre outros casos:
 - leitura por aluno pendente/não verificado;
 - e-mails embutidos em eventos/avisos/enquetes;
 - leitura de inscrições e votos de terceiros;
-- segundo voto e alterações de cédulas;
+- segundo voto, alternativas malformadas e alterações de cédulas;
+- sugestões particulares do aluno, moderação administrativa e bloqueio de
+  leitura de sugestões de terceiros;
+- duas instâncias fictícias no emulador: mesma conta/UID não herda
+  aprovações, conteúdos ou cargo entre Firebase A e Firebase B;
 - criação de coleções não previstas pelo template.
 
 **Atenção:** a validação de dois ambientes reais e de regras publicadas

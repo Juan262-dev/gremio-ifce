@@ -3,7 +3,7 @@ const {before,after,beforeEach,test}=require("node:test");
 const assert=require("node:assert/strict");
 const {readFileSync}=require("node:fs");
 const {initializeTestEnvironment,assertSucceeds,assertFails}=require("@firebase/rules-unit-testing");
-const {doc,setDoc,updateDoc,getDoc,getDocs,collection,deleteDoc,serverTimestamp,Timestamp}=require("firebase/firestore");
+const {doc,setDoc,updateDoc,getDoc,getDocs,collection,query,where,limit,deleteDoc,serverTimestamp,Timestamp}=require("firebase/firestore");
 let env;
 const adminUid="diretora-demo",one="estudante-demo-a",other="estudante-demo-b";
 const ctx=(uid,verified=true)=>env.authenticatedContext(uid,{email:uid+"@example.invalid",email_verified:verified}).firestore();
@@ -92,4 +92,71 @@ test("coleções não previstas e bootstrap ficam bloqueados para qualquer conta
   await assertFails(setDoc(doc(ctx(adminUid),"system/bootstrap"),{uid:adminUid}));
   await assertFails(setDoc(doc(ctx(adminUid),"caixa/registro"),{valor:1}));
   await assertFails(getDoc(doc(ctx(one),"caixa/registro")));
+});
+
+test("enquetes rejeitam opções com dados estruturados, duplicadas ou excessivas",async()=>{
+  await seed([adminRole]);
+  const ref=doc(ctx(adminUid),"polls/invalid");
+  const basic={question:"Qual atividade deseja?",active:true,createdAt:serverTimestamp()};
+  await assertFails(setDoc(ref,{...basic,options:["Arte",{email:"aluno@example.invalid"}]}));
+  await assertFails(setDoc(ref,{...basic,options:["Mesmo","Mesmo"]}));
+  await assertFails(setDoc(ref,{...basic,options:["Arte","x".repeat(81)]}));
+  await assertSucceeds(setDoc(ref,{...basic,options:["Arte","Leitura","Música"]}));
+});
+
+test("sugestões: aluno somente cria e lê as próprias; não se autoaprova",async()=>{
+  await seed([adminRole,member(one),member(other)]);
+  const student=ctx(one),another=ctx(other),manager=ctx(adminUid);
+  const mine=doc(student,"suggestions/s1");
+  await assertSucceeds(setDoc(mine,{ownerUid:one,body:"Criar uma feira cultural de exemplo.",status:"pending",createdAt:serverTimestamp()}));
+  await assertFails(getDoc(doc(another,"suggestions/s1")));
+  await assertFails(getDocs(collection(another,"suggestions")));
+  await assertSucceeds(getDocs(
+    query(collection(student,"suggestions"),where("ownerUid","==",one),limit(20))
+  ));
+  await assertFails(updateDoc(mine,{status:"approved"}));
+  await assertFails(setDoc(doc(another,"suggestions/forged"),{
+    ownerUid:one,body:"Sugestão forjada",status:"pending",createdAt:serverTimestamp()
+  }));
+  await assertFails(setDoc(doc(ctx("pendente"),"suggestions/pending"),{
+    ownerUid:"pendente",body:"Sem aprovação",status:"pending",createdAt:serverTimestamp()
+  }));
+  await assertSucceeds(updateDoc(doc(manager,"suggestions/s1"),{status:"approved"}));
+  await assertFails(updateDoc(doc(manager,"suggestions/s1"),{body:"Texto adulterado"}));
+  await assertFails(deleteDoc(doc(manager,"suggestions/s1")));
+});
+
+test("dois projetos do emulador: mesmo UID não transfere cargo ou cadastro entre escolas",async()=>{
+  // Mesmo endpoint local, bancos/projetos distintos, sem dados reais.
+  const projectB=await initializeTestEnvironment({
+    projectId:"demo-colegio-independente-b",
+    firestore:{host:"127.0.0.1",port:8081,rules:readFileSync("template-escolas/firestore.rules","utf8")}
+  });
+  try{
+    await seed([adminRole,member(one),notice]);
+    await projectB.clearFirestore();
+    const bAdmin=projectB.authenticatedContext(adminUid,{
+      email:adminUid+"@example.invalid",email_verified:true
+    }).firestore();
+    const bStudent=projectB.authenticatedContext(one,{
+      email:one+"@example.invalid",email_verified:true
+    }).firestore();
+    await assertFails(getDoc(doc(bAdmin,"notices/aviso-1")));
+    await assertFails(getDocs(collection(bStudent,"notices")));
+    await assertFails(setDoc(doc(bAdmin,"notices/new"),{
+      title:"Tentativa",body:"Acesso cruzado bloqueado",createdAt:serverTimestamp()
+    }));
+    await projectB.withSecurityRulesDisabled(async c=>{
+      const db=c.firestore();
+      await setDoc(doc(db,"members",one),{
+        displayName:"Cadastro só da escola B",status:"approved",createdAt:Timestamp.now()
+      });
+      await setDoc(doc(db,"notices","aviso-b"),{
+        title:"Somente escola B",body:"Conteúdo isolado",createdAt:Timestamp.now()
+      });
+    });
+    await assertSucceeds(getDoc(doc(bStudent,"notices/aviso-b")));
+    await assertFails(getDoc(doc(ctx(one),"notices/aviso-b")));
+    await assertFails(getDoc(doc(bAdmin,"notices/aviso-b")));
+  }finally{await projectB.cleanup();}
 });
