@@ -437,19 +437,21 @@ service cloud.firestore {
       allow delete: if isAdmin() || (signedIn() && mail() == email);
     }
 
-    // Presença em eventos: a carteirinha só ajuda na conferência presencial.
-    // Apenas Presidência/TI podem registrar uma presença; precisa existir
-    // uma inscrição para o evento, e os dados são privados.
+    // Presença só é registrada para inscrição PRIVADA por UID, sem
+    // ler listas de e-mails em documentos públicos de eventos.
     match /presencas_eventos/{eventoId}/alunos/{email} {
       allow read: if isAdmin();
       allow create: if isAdmin()
-        && request.resource.data.keys().hasOnly(['email', 'conferidoPor', 'conferidoEm'])
-        && request.resource.data.keys().hasAll(['email', 'conferidoPor', 'conferidoEm'])
+        && request.resource.data.keys().hasOnly(['email', 'uid', 'conferidoPor', 'conferidoEm'])
+        && request.resource.data.keys().hasAll(['email', 'uid', 'conferidoPor', 'conferidoEm'])
         && request.resource.data.email == email
+        && request.resource.data.uid is string
+        && request.resource.data.uid.size() >= 6
         && request.resource.data.conferidoPor == mail()
         && request.resource.data.conferidoEm == request.time
-        && exists(/databases/$(database)/documents/eventos/$(eventoId))
-        && get(/databases/$(database)/documents/eventos/$(eventoId)).data.get('inscritos', []).hasAny([email])
+        && exists(/databases/$(database)/documents/eventos/$(eventoId)/inscricoes/$(request.resource.data.uid))
+        && get(/databases/$(database)/documents/eventos/$(eventoId)/inscricoes/$(request.resource.data.uid)).data.email == email
+        && get(/databases/$(database)/documents/eventos/$(eventoId)/inscricoes/$(request.resource.data.uid)).data.status == 'registered'
         && get(/databases/$(database)/documents/alunos/$(email)).data.ativo == true;
       allow update: if false;
       allow delete: if isAdmin();

@@ -147,10 +147,14 @@ async function verificarInscricaoCarteirinha() {
       status.textContent = 'QR Code revogado. Confira uma nova carteirinha.';
       return;
     }
-    if (!evento.exists || !(evento.data().inscritos || []).includes(verificada.email)) {
+    const inscricoes = await db.collection('eventos').doc(eventoId).collection('inscricoes')
+      .where('email','==',verificada.email).limit(2).get({source:'server'});
+    if (!evento.exists || evento.data().privacidadeVersao !== 2 || inscricoes.size !== 1
+        || inscricoes.docs[0].data().status !== 'registered') {
       status.textContent = 'Aluno não inscrito neste evento. Não é possível confirmar presença.';
       return;
     }
+    carteirinhaConferida.uid = inscricoes.docs[0].id;
     if (presenca.exists) {
       status.textContent = 'Presença já confirmada anteriormente neste evento.';
       return;
@@ -179,12 +183,15 @@ async function registrarPresencaCarteirinha() {
     const carteiraRef = db.collection('carteirinhas').doc(verificada.email);
     const presencaRef = db.collection('presencas_eventos').doc(eventoId)
       .collection('alunos').doc(verificada.email);
+    const inscricaoRef = eventoRef.collection('inscricoes').doc(verificada.uid || 'invalid');
     await db.runTransaction(async t => {
-      const [evento, aluno, carteira, presenca] = await Promise.all([
-        t.get(eventoRef), t.get(alunoRef), t.get(carteiraRef), t.get(presencaRef)
+      const [evento, aluno, carteira, presenca, inscricao] = await Promise.all([
+        t.get(eventoRef), t.get(alunoRef), t.get(carteiraRef), t.get(presencaRef), t.get(inscricaoRef)
       ]);
-      if (!evento.exists || !(evento.data().inscritos || []).includes(verificada.email)) {
-        throw new Error('O aluno não está inscrito neste evento.');
+      if (!evento.exists || evento.data().privacidadeVersao !== 2
+          || !inscricao.exists || inscricao.data().status !== 'registered'
+          || inscricao.data().email !== verificada.email) {
+        throw new Error('O aluno não possui uma inscrição privada ativa neste evento.');
       }
       if (!aluno.exists || !aluno.data().ativo || aluno.data().status === 'excluido') {
         throw new Error('O cadastro do aluno não está ativo.');
@@ -193,7 +200,7 @@ async function registrarPresencaCarteirinha() {
         throw new Error('A carteirinha foi substituída ou revogada.');
       }
       if (presenca.exists) throw new Error('A presença já foi registrada.');
-      t.set(presencaRef, { email: verificada.email, conferidoPor: emailLogado, conferidoEm: TS() });
+      t.set(presencaRef, { email: verificada.email, uid: verificada.uid, conferidoPor: emailLogado, conferidoEm: TS() });
     });
     status.textContent = 'Presença confirmada com sucesso no Firebase.';
     registrarAcao('Presença por carteirinha', 'Evento ' + eventoId);

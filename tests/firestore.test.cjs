@@ -207,16 +207,18 @@ test('Presença: só Presidência registra pessoa realmente inscrita, uma vez', 
   await gravarInicial([
     cadastro(aluno, 'Aluno Exemplo'), cadastro(outro, 'Outro Aluno'),
     ['cargos/' + presidente, { nome: 'Presidente', nivel: 'admin' }],
-    ['eventos/eventoCarteira', { titulo: 'Oficina', inscritos: [aluno], espera: [outro], vagas: 1 }]
+    ['eventos/eventoCarteira', { titulo: 'Oficina', privacidadeVersao: 2, inscritosCount: 1, esperaCount: 1, vagas: 1 }],
+    ['eventos/eventoCarteira/inscricoes/' + aluno, {uid:aluno,email:aluno,status:'registered',order:null}],
+    ['eventos/eventoCarteira/inscricoes/' + outro, {uid:outro,email:outro,status:'waitlisted',order:1}]
   ]);
   const dbAdmin = usuario(presidente);
   const dbAluno = usuario(aluno);
   const presenca = doc(dbAdmin, 'presencas_eventos', 'eventoCarteira', 'alunos', aluno);
   const outroNaEspera = doc(dbAdmin, 'presencas_eventos', 'eventoCarteira', 'alunos', outro);
-  const dados = { email: aluno, conferidoPor: presidente, conferidoEm: serverTimestamp() };
+  const dados = { email: aluno, uid: aluno, conferidoPor: presidente, conferidoEm: serverTimestamp() };
   await assertFails(setDoc(doc(dbAluno, 'presencas_eventos', 'eventoCarteira', 'alunos', aluno), dados));
-  await assertFails(setDoc(outroNaEspera, { email: outro, conferidoPor: presidente, conferidoEm: serverTimestamp() }));
-  await assertFails(setDoc(presenca, { email: outro, conferidoPor: presidente, conferidoEm: serverTimestamp() }));
+  await assertFails(setDoc(outroNaEspera, { email: outro, uid: outro, conferidoPor: presidente, conferidoEm: serverTimestamp() }));
+  await assertFails(setDoc(presenca, { email: outro, uid: outro, conferidoPor: presidente, conferidoEm: serverTimestamp() }));
   await assertSucceeds(setDoc(presenca, dados));
   await assertSucceeds(getDoc(presenca));
   await assertFails(setDoc(presenca, dados));
