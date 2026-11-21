@@ -17,9 +17,10 @@
 // 13. Presidência administra cadastros conforme os botões do painel
 // 14. solicitação de material precisa identificar a própria conta
 // 15. opções de enquete não podem trocar de ID durante um voto
-// ATENÇÃO: enquetes e eventos ainda guardam listas com e-mails em
-// documentos legíveis pelos alunos. A correção da privacidade exige
-// migração da estrutura de dados e do código dos dois aplicativos.
+// REVISÃO DE PRÉ-LANÇAMENTO: somente documentos privacidadeVersao == 2
+// são consultáveis por estudantes. As listas legadas ficam em quarentena
+// até a migração controlada no Firebase, que NÃO é executada por este PR.
+// A publicação das regras deve ser sincronizada com os clientes.
 // =====================================================================
 rules_version = '2';
 service cloud.firestore {
@@ -154,6 +155,17 @@ service cloud.firestore {
         && opsOk(o.opcoes, n.opcoes, ult.opcaoId);
     }
 
+    // Atualização vinculada a uma cédula criada na mesma transação.
+    function votoPrivadoValido(id) {
+      let caminho = /databases/$(database)/documents/enquetes/$(id)/votos/$(request.auth.uid);
+      return resource.data.get('ativa', false) == true
+        && !exists(caminho)
+        && existsAfter(caminho)
+        && getAfter(caminho).data.opcaoId is int
+        && opsOk(resource.data.opcoes, request.resource.data.opcoes,
+          getAfter(caminho).data.opcaoId);
+    }
+
     // ---------- validação de apoio a pauta ----------
     function apoioValido() {
       let o = resource.data.get('apoios', []);
@@ -251,11 +263,48 @@ service cloud.firestore {
       allow write: if isMkt();
     }
 
+    // Documentos legados com votosAlunos NUNCA podem ser consultados por
+    // estudantes após as regras v2. Consultas devem filtrar privacidadeVersao==2.
     match /enquetes/{id} {
-      allow read: if ativo();
-      allow create: if isDiretoria() && request.resource.data.opcoes.size() >= 2 && request.resource.data.opcoes.size() <= 8;
+      allow get: if isDiretoria() || (ativo()
+        && resource.data.get('privacidadeVersao', 0) == 2
+        && !resource.data.keys().hasAny(['votosAlunos']));
+      allow list: if isDiretoria() || (ativo()
+        && resource.data.get('privacidadeVersao', 0) == 2);
+      allow create: if isDiretoria()
+        && request.resource.data.get('privacidadeVersao', 0) == 2
+        && !request.resource.data.keys().hasAny(['votosAlunos'])
+        && request.resource.data.opcoes.size() >= 2
+        && request.resource.data.opcoes.size() <= 8;
       allow delete: if isDiretoria();
-      allow update: if (ativo() && onlyKeys(['votosAlunos', 'opcoes']) && votoEnqueteValido()) || isDiretoria();
+      allow update: if (isDiretoria()
+        && !request.resource.data.keys().hasAny(['votosAlunos']))
+        || (ativo() && resource.data.get('privacidadeVersao', 0) == 2
+          && !resource.data.keys().hasAny(['votosAlunos'])
+          && request.resource.data.get('privacidadeVersao', 0) == 2
+          && !request.resource.data.keys().hasAny(['votosAlunos'])
+          && onlyKeys(['opcoes']) && votoPrivadoValido(id));
+
+      // Um voto por UID, sem e-mail em documentos compartilhados.
+      // A votação exige transação atômica: cria cédula e incrementa contagem.
+      match /votos/{uid} {
+        allow get: if ativo() && request.auth.uid == uid;
+        allow list: if false;
+        allow create: if ativo() && request.auth.uid == uid
+          && request.resource.data.keys().hasOnly(['opcaoId', 'criadoEm'])
+          && request.resource.data.keys().hasAll(['opcaoId', 'criadoEm'])
+          && request.resource.data.opcaoId is int
+          && request.resource.data.opcaoId >= 0
+          && request.resource.data.criadoEm == request.time
+          && exists(/databases/$(database)/documents/enquetes/$(id))
+          && get(/databases/$(database)/documents/enquetes/$(id)).data.get('privacidadeVersao', 0) == 2
+          && get(/databases/$(database)/documents/enquetes/$(id)).data.get('ativa', false) == true
+          && request.resource.data.opcaoId < get(/databases/$(database)/documents/enquetes/$(id)).data.opcoes.size()
+          && existsAfter(/databases/$(database)/documents/enquetes/$(id))
+          && getAfter(/databases/$(database)/documents/enquetes/$(id)).data.opcoes[request.resource.data.opcaoId].votos
+             == get(/databases/$(database)/documents/enquetes/$(id)).data.opcoes[request.resource.data.opcaoId].votos + 1;
+        allow update, delete: if false;
+      }
     }
 
     match /reivindicacoes/{id} {
@@ -279,12 +328,32 @@ service cloud.firestore {
           get(/databases/$(database)/documents/alunos/$(mail())).data.nome + ' (' + mail() + ')') || isGestor();
     }
 
+    // Eventos legados em quarentena: apenas a gestão lê até a remoção
+    // comprovada dos campos inscritos/espera e a migração dos registros.
     match /eventos/{id} {
-      allow read: if ativo();
-      allow create: if isGestor() || ((isCultura() || isRacial()) && request.resource.data.get('criadoPorEmail', '') == mail());
-      allow delete: if isGestor() || ((isCultura() || isRacial()) && resource.data.get('criadoPorEmail', '') == mail());
-      allow update: if (ativo() && onlyKeys(['inscritos', 'espera']) && inscricaoValida()) || isGestor()
-        || ((isCultura() || isRacial()) && resource.data.get('criadoPorEmail', '') == mail() && request.resource.data.get('criadoPorEmail', '') == mail());
+      allow get: if isDiretoria() || (ativo()
+        && resource.data.get('privacidadeVersao', 0) == 2
+        && !resource.data.keys().hasAny(['inscritos', 'espera']));
+      allow list: if isDiretoria() || (ativo()
+        && resource.data.get('privacidadeVersao', 0) == 2);
+      allow create: if (isGestor() || ((isCultura() || isRacial())
+          && request.resource.data.get('criadoPorEmail', '') == mail()))
+        && request.resource.data.get('privacidadeVersao', 0) == 2
+        && !request.resource.data.keys().hasAny(['inscritos', 'espera']);
+      allow delete: if isGestor() || ((isCultura() || isRacial())
+        && resource.data.get('criadoPorEmail', '') == mail());
+      allow update: if (isGestor() || ((isCultura() || isRacial())
+        && resource.data.get('criadoPorEmail', '') == mail()
+        && request.resource.data.get('criadoPorEmail', '') == mail()))
+        && !request.resource.data.keys().hasAny(['inscritos', 'espera']);
+
+      // Os registros são privados; inscrições novas ficam bloqueadas
+      // até a homologação do controlador de vagas/fila de espera.
+      match /inscricoes/{uid} {
+        allow get: if (ativo() && request.auth.uid == uid) || isGestor();
+        allow list: if isGestor();
+        allow create, update, delete: if false;
+      }
     }
 
     match /jogos/{id} {

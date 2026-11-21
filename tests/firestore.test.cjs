@@ -69,48 +69,51 @@ test('Solicitação de material exige nome e e-mail do próprio aluno', async ()
   }));
 });
 
-test('Inscrição preserva vagas e posição da lista de espera', async () => {
+test('Evento v2: publicações sem PII, inscrições privadas e sem escrita direta', async () => {
   await gravarInicial([
     cadastro(aluno, 'Aluno Exemplo'), cadastro(outro, 'Outro Aluno'),
-    ['eventos/e1', { titulo: 'Evento de Teste', inscritos: [], espera: [], vagas: 1 }]
+    ['cargos/' + presidente, { nome: 'Presidente', nivel: 'admin' }],
+    ['eventos/e1', { titulo: 'Evento de Teste', privacidadeVersao: 2,
+      inscritosCount: 1, esperaCount: 0, vagas: 2 }],
+    ['eventos/e1/inscricoes/' + aluno, {status:'registered',order:0}]
   ]);
-  const dbAluno = usuario(aluno);
-  const evento = doc(dbAluno, 'eventos/e1');
-  await assertSucceeds(runTransaction(dbAluno, async t => {
-    const d = await t.get(evento);
-    t.update(evento, { inscritos: [...d.data().inscritos, aluno] });
-  }));
-  const db2 = usuario(outro);
-  const evento2 = doc(db2, 'eventos/e1');
-  await assertSucceeds(runTransaction(db2, async t => {
-    const d = await t.get(evento2);
-    t.update(evento2, { espera: [...d.data().espera, outro] });
-  }));
-  await assertFails(updateDoc(evento2, { inscritos: [outro], espera: [] }));
-  await assertSucceeds(runTransaction(dbAluno, async t => {
-    const d = await t.get(evento);
-    t.update(evento, {
-      inscritos: d.data().inscritos.filter(e => e !== aluno).concat([d.data().espera[0]]),
-      espera: d.data().espera.slice(1)
-    });
-  }));
+  const dbAluno=usuario(aluno),dbOutro=usuario(outro),dbAdmin=usuario(presidente);
+  await assertSucceeds(getDoc(doc(dbAluno,'eventos/e1')));
+  await assertSucceeds(getDocs(query(collection(dbAluno,'eventos'),where('privacidadeVersao','==',2))));
+  await assertSucceeds(getDoc(doc(dbAluno,'eventos/e1/inscricoes/'+aluno)));
+  await assertFails(getDoc(doc(dbOutro,'eventos/e1/inscricoes/'+aluno)));
+  await assertFails(getDocs(collection(dbAluno,'eventos/e1/inscricoes')));
+  await assertSucceeds(getDocs(collection(dbAdmin,'eventos/e1/inscricoes')));
+  await assertFails(setDoc(doc(dbAluno,'eventos/e1/inscricoes/'+outro),{status:'registered'}));
+  await assertFails(updateDoc(doc(dbAluno,'eventos/e1'),{inscritos:[aluno]}));
 });
 
-test('Enquete permite um voto válido e rejeita alteração do ID da opção', async () => {
+test('Enquete v2: voto privado e contagem atômica, sem expor e-mails', async () => {
   const base = {
-    titulo: 'Enquete de Teste', ativa: true, votosAlunos: [], criadoEm: Timestamp.now(),
+    titulo: 'Enquete de Teste', ativa: true, privacidadeVersao: 2, criadoEm: Timestamp.now(),
     opcoes: [{ id: 0, texto: 'A', votos: 0 }, { id: 1, texto: 'B', votos: 0 }]
   };
   await gravarInicial([cadastro(aluno, 'Aluno Exemplo'), cadastro(outro, 'Outro Aluno'), ['enquetes/en1', base]]);
-  const enq = doc(usuario(aluno), 'enquetes/en1');
-  await assertSucceeds(updateDoc(enq, {
-    votosAlunos: [{ email: aluno, opcaoId: 1 }],
-    opcoes: [{ id: 0, texto: 'A', votos: 0 }, { id: 1, texto: 'B', votos: 1 }]
+  const dbAluno = usuario(aluno), enquete = doc(dbAluno,'enquetes/en1');
+  const voto = doc(dbAluno,'enquetes/en1/votos/'+aluno);
+  await assertSucceeds(getDoc(enquete));
+  await assertFails(setDoc(voto, { opcaoId: 1, criadoEm: serverTimestamp() }));
+  await assertSucceeds(runTransaction(dbAluno, async t => {
+    const e = await t.get(enquete);
+    t.update(enquete, {
+      opcoes: e.data().opcoes.map(op => op.id === 1 ? { ...op, votos: op.votos + 1 } : op)
+    });
+    t.set(voto, { opcaoId: 1, criadoEm: serverTimestamp() });
   }));
-  await assertFails(updateDoc(doc(usuario(outro), 'enquetes/en1'), {
-    votosAlunos: [{ email: aluno, opcaoId: 1 }, { email: outro, opcaoId: 0 }],
-    opcoes: [{ id: 99, texto: 'A', votos: 1 }, { id: 1, texto: 'B', votos: 1 }]
+  await assertSucceeds(getDoc(voto));
+  await assertFails(getDoc(doc(usuario(outro),'enquetes/en1/votos/'+aluno)));
+  await assertFails(getDocs(collection(dbAluno,'enquetes/en1/votos')));
+  await assertFails(updateDoc(enquete, {
+    opcoes: [{ id: 0, texto: 'A', votos: 7 }, { id: 1, texto: 'B', votos: 1 }]
   }));
+  await assertFails(setDoc(voto, { opcaoId: 0, criadoEm: serverTimestamp() }));
+  const queryV2 = query(collection(dbAluno,'enquetes'),where('privacidadeVersao','==',2));
+  await assertSucceeds(getDocs(queryV2));
 });
 
 test('Voto exige cédula da eleição válida e transação atômica', async () => {
@@ -319,4 +322,21 @@ test("Laboratório: conta inativa não acessa progresso", async () => {
   const db=usuario(aluno),ref=doc(db,"laboratorio_progresso",aluno);
   await assertFails(setDoc(ref,{concluidas:["elementos"],atualizadoEm:serverTimestamp()}));
   await assertFails(getDoc(ref));
+});
+
+test('Dados antigos de eventos e enquetes ficam indisponíveis aos estudantes', async () => {
+  await gravarInicial([
+    cadastro(aluno,'Aluno Exemplo'), ['cargos/'+presidente,{nivel:'admin'}],
+    ['enquetes/antiga',{titulo:'Legado',ativa:true,votosAlunos:[{email:aluno,opcaoId:0}],opcoes:[{id:0,texto:'A',votos:1}]}],
+    ['eventos/antigo',{titulo:'Evento antigo',vagas:1,inscritos:[aluno],espera:[outro]}]
+  ]);
+  const student=usuario(aluno),director=usuario(presidente);
+  await assertFails(getDoc(doc(student,'enquetes/antiga')));
+  await assertFails(getDoc(doc(student,'eventos/antigo')));
+  await assertFails(getDocs(collection(student,'enquetes')));
+  await assertFails(getDocs(collection(student,'eventos')));
+  await assertSucceeds(getDoc(doc(director,'enquetes/antiga')));
+  await assertSucceeds(getDoc(doc(director,'eventos/antigo')));
+  await assertFails(updateDoc(doc(student,'enquetes/antiga'),{votosAlunos:[aluno]}));
+  await assertFails(updateDoc(doc(student,'eventos/antigo'),{inscritos:[aluno]}));
 });
