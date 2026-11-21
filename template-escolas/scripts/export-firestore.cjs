@@ -38,7 +38,7 @@ function execute(plan,env=process.env){
   const bucket=JSON.parse(gcloud(["storage","buckets","describe","gs://"+plan.bucket,"--format=json"]));
   const check=verifyBucket(bucket,project,plan);
   if(!check.ok)deny(check.errors.join("; "));
-  gcloud(["firestore","export",plan.uri,"--project="+plan.projectId,"--database=(default)","--quiet"]);
+  gcloud(["firestore","export",plan.uri,"--project="+plan.projectId,"--database=(default)","--async","--quiet"]);
   return {submitted:true,projectId:plan.projectId};
 }
 function main(){

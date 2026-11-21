@@ -2,7 +2,7 @@
 "use strict";
 // Gate de EVIDÊNCIAS, não é uma aprovação institucional nem uma ferramenta de deploy.
 const fs=require("node:fs"),crypto=require("node:crypto"),path=require("node:path");
-const REQUIRED=["direitos_licenca","privacidade_alunos","legado_ifce","regras_firestorm","isolamento_firebase","backup_restauracao","paridade_funcional","aprovacao_direcao"];
+const REQUIRED=["direitos_licenca","privacidade_alunos","legado_ifce","regras_firestore","isolamento_firebase","backup_restauracao","paridade_funcional","aprovacao_direcao"];
 function evaluate(m,project,now=Date.now()){
   if(!m||typeof m!=="object"||Array.isArray(m))return {ok:false,missing:["manifesto inválido"]};
   const missing=[];
