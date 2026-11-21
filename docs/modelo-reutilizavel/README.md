@@ -4,6 +4,14 @@
 > Este PR não altera `index.html`, `admin.html`, scripts de execução, permissões,
 > bancos de dados, nem configurações da versão atualmente publicada do IFCE.
 
+## Comece aqui — guia para escolas
+
+Se a instituição quer conhecer ou futuramente adotar o sistema, use primeiro
+o [Tutorial para escolas](GUIA-PARA-ESCOLAS.md) e a
+[Ficha da Escola](FICHA-DA-ESCOLA.md). Esses documentos separam o que já
+pode ser preparado do que depende da futura implementação do template.
+Nenhum deles é um instalador executável.
+
 ## 1. Objetivo e escolha da arquitetura
 
 Oferecer o Portal do Aluno e o Painel Administrativo como **uma instalação
@@ -171,6 +179,8 @@ Critérios para aprovar a futura implementação:
 
 ## 7. Próximas leituras
 
+- [Tutorial para escolas (passo a passo, ainda não instalável)](GUIA-PARA-ESCOLAS.md)
+- [Ficha de preparação da escola](FICHA-DA-ESCOLA.md)
 - [Assistente de Configuração Inicial (especificação)](ASSISTENTE-CONFIGURACAO.md)
 - [Instalação piloto](INSTALACAO-PILOTO.md)
 - [Etapas e critérios de aceite](ROADMAP.md)

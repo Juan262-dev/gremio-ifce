@@ -64,6 +64,31 @@ pequenos, testados e sem publicação/merge sem autorização.
 - **Aceite:** teste de atualização de identidade sem afetar permissões,
   ferramentas, cadastro ou atribuição original.
 
+## Experiência de implantação guiada — melhorias para futuras fases
+
+Além do assistente básico, o template deverá oferecer:
+
+- [ ] **Verificação prévia ("pré-voo")**: diagnóstico de configuração vazia,
+  Firebase duplicado ou do IFCE, domínios incompatíveis, regras não testadas,
+  direitos de uso e privacidade pendentes; resultado claro "bloqueado/pronto".
+- [ ] **Tutorial dentro do assistente**, com linguagem acessível,
+  exemplos fictícios, links para ajuda e indicador de progresso por etapa.
+- [ ] **Modo de demonstração** com dados fictícios, sem leitura ou escrita
+  em projetos Firebase reais, e prévias de Portal e Admin.
+- [ ] **Resumo de homologação para a escola**, sem segredos: o que foi
+  configurado, testes realizados, pendências e responsável pela aprovação.
+- [ ] **Erros e recuperação**: explicar o motivo de bloqueio sem sugerir
+  reduzir permissões do Firestore ou compartilhar credenciais.
+- [ ] **Ciclo de manutenção**: instruções de backup, troca de diretoria,
+  atualização de versão, revogação de acessos e encerramento seguro.
+- [ ] **Materiais de divulgação**: guia e ficha revisados em cada release,
+  com exemplos simples, leitura em celular e recursos acessíveis.
+
+Referências para a experiência escolar:
+[Tutorial para escolas](GUIA-PARA-ESCOLAS.md) e
+[Ficha da Escola](FICHA-DA-ESCOLA.md).
+Essas melhorias são **propostas**, não funcionalidades existentes.
+
 ## Fase 4 — distribuição e piloto seguro
 
 - [ ] Gerar pacote/instalador reproduzível sem dados do IFCE.
@@ -95,6 +120,8 @@ pequenos, testados e sem publicação/merge sem autorização.
 - [x] Levantamento dos acoplamentos da versão IFCE.
 - [x] Plano de instalações totalmente separadas.
 - [x] Contrato ilustrativo de personalização e créditos.
+- [x] Tutorial voltado às escolas e ficha não sensível de preparação,
+  com etapas futuras, pré-requisitos, testes e FAQ.
 - [x] Especificação do Assistente de Configuração Inicial, estados,
   cinco etapas, bloqueios e testes futuros.
 - [x] Critérios de segurança, privacidade, licenciamento e aceite.
