@@ -53,3 +53,12 @@ test("operações destrutivas de documentos pais ficam bloqueadas até limpeza p
  assert.match(actions,/Exclusão bloqueada para proteger votos privados/);
  assert.match(actions,/inscrições privadas exigem tratamento/);
 });
+
+test("painel não mostra presença fictícia e relatório consulta apenas subcoleção privada",()=>{
+ const activity=read("admin-05-financeiro-diretorias.js");
+ assert.doesNotMatch(activity,/0 \/\* presença em subcoleção restrita \*\//);
+ assert.match(activity,/Presenças confirmadas:/);
+ assert.match(activity,/collection\('presencas_eventos'\)/);
+ assert.match(activity,/get\(\{ source: 'server' \}\)/);
+ assert.match(activity,/não disponíveis para esta conta/);
+});

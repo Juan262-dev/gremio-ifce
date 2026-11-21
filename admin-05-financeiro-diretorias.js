@@ -138,14 +138,14 @@
                 if (!docs.length) { c.innerHTML = '<p class="text-muted-custom small mb-0">Nenhuma atividade publicada ainda. Publique a primeira acima.</p>'; return; }
                 c.innerHTML = '<div class="list-group">' + docs.map(x => {
                     const semRegistro = x.dataISO && x.dataISO < hoje && !x.registroLink;
-                    const presentes = 0 /* presença em subcoleção restrita */;
+                    // Presença exige conferência de QR pela gestão autorizada.
                     return `
                     <div class="list-group-item">
                         <div class="d-flex justify-content-between align-items-start gap-2">
                             <div>
                                 <strong class="text-white">${esc(x.titulo)}</strong>
                                 ${semRegistro ? ' <span class="badge bg-warning text-dark">sem registro</span>' : ''}<br>
-                                <small class="text-muted-custom">${esc(x.data || '')} • ${(Number(x.inscritosCount) || 0)} inscrito(s) • ${presentes} presente(s)</small>
+                                <small class="text-muted-custom">${esc(x.data || '')} • ${(Number(x.inscritosCount) || 0)} inscrito(s) • presenças em registros privados</small>
                             </div>
                             <div class="d-flex gap-1 flex-wrap justify-content-end">
                                 <button data-acao="abrirPresenca" data-id="${esc(x.id)}" class="btn btn-outline-info btn-sm py-0" style="font-size: 11px;">✔ Presença</button>
@@ -170,9 +170,13 @@
             toast('Registro de presença por lista pública desativado. Use a conferência de carteirinha.', 'warning');
         }
 
-        function gerarRelatorioAtividade(id) {
+        async function gerarRelatorioAtividade(id) {
             const x = Object.values(cacheAtividades).flat().find(a => a.id === id);
             if (!x) return;
+            // Não inventar contagem: a leitura depende de cargo autorizado.
+            const presencasConfirmadas = await db.collection('presencas_eventos')
+                .doc(id).collection('alunos').get({ source: 'server' })
+                .then(s => s.size).catch(() => null);
             const { jsPDF } = window.jspdf; const doc = new jsPDF(); let y = 20;
             const linha = t => doc.splitTextToSize(String(t), 170).forEach(p => { if (y > 280) { doc.addPage(); y = 20; } doc.text(p, 20, y); y += 6; });
             doc.setFont('Helvetica', 'bold'); doc.setFontSize(15); doc.text('Grêmio Estudantil - IFCE Crateús', 20, y); y += 9;
@@ -181,6 +185,8 @@
             linha('Eixo: ' + (x.eixo || '-'));
             linha('Data: ' + (x.data || '-'));
             linha('Inscritos: ' + (Number(x.inscritosCount) || 0));
+            linha('Presenças confirmadas: ' +
+                (presencasConfirmadas === null ? 'não disponíveis para esta conta' : String(presencasConfirmadas)));
             y += 3; linha(x.descricao || '(sem descrição)');
             if (x.registroLink) { y += 3; linha('Registros (fotos e materiais): ' + x.registroLink); }
             y += 6; linha('Responsável: ' + (x.criadoPor || '-'));

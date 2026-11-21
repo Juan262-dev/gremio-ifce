@@ -58,6 +58,15 @@ Ainda há leitores legados em partes do Painel e das regras para
 compatibilidade e quarentena, que exigem substituição antes de uma
 homologação completa.
 
+## Relatórios de atividades sem contagens fictícias
+
+O Painel não apresenta mais **zero presenças** como resultado inventado.
+O relatório consulta os registros da subcoleção privada de presenças
+apenas com permissão administrativa; caso a consulta seja negada, mostra
+"não disponíveis para esta conta" em vez de divulgar dados ou afirmar
+uma contagem incorreta. As interfaces não recebem listas de e-mails
+de estudantes para produzir esse total.
+
 ## Proteção contra documentos órfãos
 
 O Firestore **não apaga subcoleções automaticamente** quando o documento
