@@ -14,6 +14,10 @@ pequenos, testados e sem publicação/merge sem autorização.
   e testes no emulador para negar acesso cruzado de estudantes.
 - [x] Bootstrap técnico manual e único para o primeiro administrador,
   sem permissão de criação de cargos pelo navegador.
+- [x] Cabeçalhos anti-enquadramento do template, checagem de
+  `appId`/Sender ID e roteiro transacional de troca de diretoria.
+- [ ] Homologar em ambiente institucional a troca de diretoria,
+  recuperar acessos de emergência e validar auditoria com dados fictícios.
 - [ ] Completar os recursos dos dois aplicativos, migração controlada,
   política de privacidade, licença, direitos de conteúdo, backup,
   testes manuais e homologação antes de liberar para escolas reais.

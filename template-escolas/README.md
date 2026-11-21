@@ -130,6 +130,45 @@ revisado pela instituição antes de uso em produção. Erros devem interromper
 o provisionamento, nunca conceder cargos automaticamente por e-mail.
 O autor do projeto-base não recebe acesso à instalação escolar.
 
+## Troca segura da diretoria (operação manual, futura)
+
+Quando um mandato terminar, a escola poderá planejar a troca **sem
+perder conteúdos**. O script
+[\`scripts/transfer-admin.cjs\`](scripts/transfer-admin.cjs)
+prevê uma operação técnica com **aprovação da direção**, exclusivamente
+no Firebase da própria escola.
+
+Para uso **somente após homologação institucional**: a pessoa técnica
+confere e-mails/contas e aprovação da direção, executa o script em máquina
+confiável, com credenciais externas ao repositório e configura:
+\`FIREBASE_PROJECT_ID\`, \`FORMER_ADMIN_UID\`, \`NEW_ADMIN_UID\`,
+\`GOOGLE_APPLICATION_CREDENTIALS\` e
+\`TRANSFER_APPROVED=CONFIRMO_DIRECAO\`.
+
+O script recusa IDs iguais, Firebase divergente, novo gestor sem e-mail
+verificado/ativo, conta de serviço de outra escola e troca duplicada.
+A transação promove a nova conta e revoga o antigo gestor ao mesmo tempo,
+registrando uma auditoria técnica privada em \`system_transfers\`.
+Os registros não são visíveis pelo navegador. **A variável de
+confirmação não comprova, por si só, autorização institucional**:
+a direção deve documentá-la previamente.
+
+A operação não é executada por nenhum teste ou PR e não concede acesso
+ao autor do código. Não é uma ferramenta de autoelevação para alunos.
+
+## Proteções de hospedagem
+
+O \`firebase.json\` **exclusivo do template** agora define cabeçalhos
+\`X-Frame-Options: DENY\`, política de enquadramento
+\`frame-ancestors 'none'\`, \`nosniff\`, política de referências e bloqueio
+de câmera/microfone/localização. Eles só valerão em uma hospedagem
+real após implantação autorizada, **não foram publicados neste PR**.
+
+O validador também verifica que o número de remetente do \`appId\` e
+\`messagingSenderId\` pertence ao mesmo aplicativo Firebase.
+Essa consistência **não** substitui a verificação das configurações
+no Console oficial.
+
 ## Testes e verificação
 
 Os testes **não apontam para produção**:
