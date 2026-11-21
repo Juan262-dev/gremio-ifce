@@ -1,7 +1,7 @@
 # Plano técnico: modelo reutilizável para Grêmios Estudantis
 
 > **Status: planejamento e exemplos de configuração, NÃO uma instalação pronta.**
-> Este PR não altera \`index.html\`, \`admin.html\`, scripts de execução, permissões,
+> Este PR não altera `index.html`, `admin.html`, scripts de execução, permissões,
 > bancos de dados, nem configurações da versão atualmente publicada do IFCE.
 
 ## 1. Objetivo e escolha da arquitetura
@@ -23,7 +23,7 @@ Cada escola participante terá:
 Firebase simplifica o isolamento e permite que cada escola administre seus
 próprios custos, domínios autorizados, privacidade e encerramento de uso.
 
-\`\`\`text
+```text
                  Código-base com versões verificadas
                                 |
                   +-------------+-------------+
@@ -36,7 +36,7 @@ próprios custos, domínios autorizados, privacidade e encerramento de uso.
           Gestores / Alunos A         Gestores / Alunos B
                   |                           |
                   +----- Nenhum dado comum ---+
-\`\`\`
+```
 
 Dentro de **uma mesma escola**, Portal e Admin continuam conectados ao **mesmo
 projeto Firebase daquela escola**. A sessão nomeada do Admin deve continuar
@@ -46,16 +46,16 @@ separada da sessão do aluno no mesmo navegador, como no código atual.
 
 | Local existente | Acoplamento identificado | Ação na futura implementação |
 | --- | --- | --- |
-| \`index.html\` | Configuração Firebase do IFCE embutida no HTML, textos e e-mail institucional específicos | Centralizar configuração; separar texto institucional |
-| \`admin-01-base-login.js\` | Outra cópia da configuração Firebase, e-mail raiz e \`cargosIniciais\` fixos | Carregar configuração da instalação; inicializar o primeiro gestor por processo seguro |
-| \`firestore.rules\` | \`rootEmail()\` aponta para conta fixa do IFCE | Criar bootstrap/identidade privilegiada por escola; testar regras antes de qualquer deploy |
-| \`admin.html\` e demais \`admin-*.js\` | Nomes, textos, relatórios e operações relacionados ao IFCE | Classificar cada referência como texto personalizável, regra de negócio ou recurso opcional |
-| \`manifest.webmanifest\` e \`manifest-admin.webmanifest\` | Nome, descrição, ícones e URLs são da instalação IFCE | Gerar manifestos específicos para cada escola |
-| \`sw.js\` | Cache e fallback próprios do site atual | Usar versão e escopo por instalação; testar arquivos e dados offline |
-| \`tests/firestore.test.cjs\` | Contas e domínios fictícios relacionados ao IFCE | Parametrizar testes por configuração fictícia sem tocar produção |
-| \`imagens/\`, \`icon-*.png\` | Arquivos da instalação atual | Auditar autoria e autorização de redistribuição antes de empacotar |
+| `index.html` | Configuração Firebase do IFCE embutida no HTML, textos e e-mail institucional específicos | Centralizar configuração; separar texto institucional |
+| `admin-01-base-login.js` | Outra cópia da configuração Firebase, e-mail raiz e `cargosIniciais` fixos | Carregar configuração da instalação; inicializar o primeiro gestor por processo seguro |
+| `firestore.rules` | `rootEmail()` aponta para conta fixa do IFCE | Criar bootstrap/identidade privilegiada por escola; testar regras antes de qualquer deploy |
+| `admin.html` e demais `admin-*.js` | Nomes, textos, relatórios e operações relacionados ao IFCE | Classificar cada referência como texto personalizável, regra de negócio ou recurso opcional |
+| `manifest.webmanifest` e `manifest-admin.webmanifest` | Nome, descrição, ícones e URLs são da instalação IFCE | Gerar manifestos específicos para cada escola |
+| `sw.js` | Cache e fallback próprios do site atual | Usar versão e escopo por instalação; testar arquivos e dados offline |
+| `tests/firestore.test.cjs` | Contas e domínios fictícios relacionados ao IFCE | Parametrizar testes por configuração fictícia sem tocar produção |
+| `imagens/`, `icon-*.png` | Arquivos da instalação atual | Auditar autoria e autorização de redistribuição antes de empacotar |
 
-**Bloqueio de privacidade existente:** o próprio \`firestore.rules\` informa
+**Bloqueio de privacidade existente:** o próprio `firestore.rules` informa
 que enquetes e eventos ainda mantêm listas de e-mails dentro de documentos
 legíveis por estudantes. **Não distribuir a plataforma para uso real em
 outras escolas antes de corrigir e testar o modelo desses dados.**
@@ -67,7 +67,7 @@ cliente não são segredos por si só, mas não podem apontar para o projeto IFC
 ## 3. Contrato de configuração proposto
 
 Nesta fase o contrato é **documentado**, ainda não lido pelos aplicativos.
-Os arquivos em \`exemplos/\` são fictícios e inválidos para produção.
+Os arquivos em `exemplos/` são fictícios e inválidos para produção.
 
 | Camada | Exemplos de campos | Quem altera |
 | --- | --- | --- |
@@ -115,7 +115,7 @@ Objetivo: manter um registro público de **onde o software começou** e
 
 Localização proposta:
 - Tela "Sobre o sistema" e rodapé dos dois aplicativos;
-- Documento \`NOTICE\`/créditos na distribuição;
+- Documento `NOTICE`/créditos na distribuição;
 - Documentação do projeto original e referência ao repositório.
 
 A atribuição de origem deve ser código/metadados de distribuição **separados
