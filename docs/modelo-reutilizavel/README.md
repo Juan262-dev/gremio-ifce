@@ -12,6 +12,15 @@ o [Tutorial para escolas](GUIA-PARA-ESCOLAS.md) e a
 pode ser preparado do que depende da futura implementação do template.
 Nenhum deles é um instalador executável.
 
+## Primeira base técnica de template (experimental)
+
+Começou uma implementação **isolada** em [`template-escolas/`](../../template-escolas/README.md)
+com configurações por escola, páginas mínimas Portal/Admin e novas regras de
+privacidade para votos/inscrições. **Não é uma migração nem uma instalação
+pronta:** o IFCE permanece intocado e o template ainda precisa de licença,
+autorização e testes completos. Veja o
+[plano de migração dos dados antigos](../../template-escolas/MIGRACAO-PRIVACIDADE.md).
+
 ## 1. Objetivo e escolha da arquitetura
 
 Oferecer o Portal do Aluno e o Painel Administrativo como **uma instalação

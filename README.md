@@ -19,3 +19,13 @@ Documentos técnicos:
 [roadmap e bloqueios de segurança](docs/modelo-reutilizavel/ROADMAP.md).
 
 O Portal e o Painel atuais **não** são alterados por esta documentação.
+
+## Base técnica independente (experimental)
+
+O diretório [`template-escolas/`](template-escolas/README.md) contém uma
+**primeira base mínima** de Portal e Painel conectáveis a um Firebase exclusivo
+por escola, com regras separadas e votos/inscrições privados por UID.
+**Ainda não está liberado para uso por outras escolas**: faltam licença,
+segurança operacional, recursos completos e homologação. A instalação IFCE,
+seu banco e o visual original continuam preservados.
+
