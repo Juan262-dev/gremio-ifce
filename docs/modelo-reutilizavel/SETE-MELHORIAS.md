@@ -208,6 +208,19 @@ indisponibilidade possui procedimento de retorno e responsáveis.
 - [ ] **Publicação:** aprovação humana expressa; **sem merge ou publicação
   automática** e nenhum deploy disparado por esta documentação.
 
+## Protótipo isolado da Central de Implantação (primeira entrega de P1)
+
+A primeira **prévia funcional**, ainda apenas para demonstração, está em
+[demo/central-implantacao](../../demo/central-implantacao/README.md).
+Ela permite navegar nas cinco etapas, conferir progresso fictício,
+alterar identidade visual, testar um logo local e ver as prévias ilustrativas.
+O rascunho não guarda segredos, não acessa Firebase e **não publica nada**.
+
+Isso **não conclui** a tarefa P1 de Central de Implantação para escolas reais:
+continuam pendentes o template independente, regras, licenciamento,
+autenticação privilegiada, auditoria, homologação e publicação controlada.
+Os critérios de aceite abaixo permanecem obrigatórios.
+
 ## Sequência de trabalho recomendada
 
 1. **Resolver bloqueios P0:** privacidade, regras, contas privilegiadas,
