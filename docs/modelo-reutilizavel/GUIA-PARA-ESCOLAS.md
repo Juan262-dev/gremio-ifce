@@ -263,6 +263,18 @@ não aprova contas e não autoriza publicação. As verificações técnicas
 com emulador, licenças, privacidade e autorização institucional só podem
 ser concluídas posteriormente por responsáveis qualificados.
 
+## Ferramenta técnica para preparar a escola (ainda experimental)
+
+O responsável técnico pode usar o
+[assistente local](../../template-escolas/README.md) para preencher
+nome, cor, contato, domínio e a configuração Web do Firebase da escola,
+sem editar o arquivo JSON manualmente. Ele oferece **modo ensaio**
+sem gravar arquivos e impede sobrescrever uma instalação já preparada.
+
+**Atenção:** o assistente não publica os aplicativos e **não
+substitui** os testes das regras, a revisão de privacidade, os direitos
+de uso e a autorização institucional.
+
 ## Perguntas frequentes
 
 **Precisamos saber programar?** Para personalizar textos, logo e cores,

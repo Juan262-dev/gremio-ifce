@@ -70,6 +70,29 @@ template-escolas/
     bootstrap-admin.cjs      # cria primeiro gestor (somente operação manual)
 \`\`\`
 
+## Assistente técnico de configuração (primeira versão)
+
+Para evitar editar JSON manualmente, o responsável técnico poderá executar
+**localmente** (em um terminal, com dados institucionais e Firebase Web
+exclusivo da escola):
+
+\`\`\`sh
+node template-escolas/scripts/setup-school.cjs --dry-run
+\`\`\`
+
+O modo ensaio **não grava arquivos nem envia dados**. Depois de conferir
+identidade, configuração de Firebase Web e direitos da escola, executar
+sem \`--dry-run\` para gerar **somente** o
+\`public/config/installation.json\` da sua cópia, ignorado pelo Git.
+O comando **não sobrescreve** uma configuração existente; exige
+confirmação \`GRAVAR-EXEMPLO\` e nunca solicita senha ou chave de serviço.
+
+É um assistente de **preparação técnica**, não um instalador completo:
+não cria o projeto Firebase, não aplica regras, não provisiona usuário
+e não realiza deploy. Mesmo que o arquivo esteja validado, **não
+publique** antes de revisar licença, privacidade, segurança,
+domínios, backups, restauração e homologação com duas escolas fictícias.
+
 ## Preparação (somente responsável técnico autorizado)
 
 1. **Antes de qualquer piloto real:** resolver licença, autoria, direitos
