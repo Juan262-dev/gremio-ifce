@@ -54,6 +54,7 @@ body{background-color:#f4f6f9}
 .dots-container-chem{display:flex;gap:8px;margin-bottom:10px}
 .dot-chem{width:10px;height:10px;background:#283a2e;border-radius:50%;cursor:pointer;transition:all .3s}
 .dot-chem.active{width:25px;background:var(--ifce-accent-green);border-radius:10px;box-shadow:0 0 10px rgba(0,230,118,.8)}
+.dot-chem:focus-visible{outline:3px solid #fff;outline-offset:4px}
 
 /* Laboratório Virtual: tabela clicável responsiva e foco acessível */
 #sec-laboratorio [hidden]{display:none!important}
@@ -119,30 +120,30 @@ body{background-color:#f4f6f9}
 <body>
 
 <div id="screen-onboarding">
-  <div class="top-logo-chem">🧪 IFCE | QUÍMICA</div>
+  <div class="top-logo-chem">🏫 GRÊMIO IFCE</div>
   <div class="slides-wrapper-chem" id="slidesWrapperChem">
     <div class="slide-chem">
-      <div class="chem-icon-box">🔬</div>
-      <h1 class="highlight-title-chem">REAGINDO AO <span>FUTURO</span></h1>
-      <p class="subtitle-chem">Sua central de apoio ao estudante de Química do IFCE.</p>
+      <div class="chem-icon-box">🤝</div>
+      <h1 class="highlight-title-chem">O GRÊMIO É <span>SEU</span></h1>
+      <p class="subtitle-chem">Um espaço para estudantes de todos os cursos do IFCE Crateús ficarem informados e participarem.</p>
     </div>
     <div class="slide-chem">
-      <div class="chem-icon-box">⚗️</div>
-      <h1 class="highlight-title-chem">CONEXÃO <span>ACADÊMICA</span></h1>
-      <p class="subtitle-chem">Mural de avisos, enquetes, reivindicações e materiais a uma reação de distância.</p>
+      <div class="chem-icon-box">📣</div>
+      <h1 class="highlight-title-chem">TUDO EM <span>UM LUGAR</span></h1>
+      <p class="subtitle-chem">Acompanhe avisos e eventos, use a carteirinha, encontre materiais de estudo e envie sugestões ao Grêmio.</p>
     </div>
     <div class="slide-chem">
       <div class="login-card-chem">
-        <h2>Área do Aluno</h2>
-        <p>Entre com sua conta do portal <br><strong style="color:var(--ifce-accent-green)">Grêmio Estudantil IFCE</strong></p>
+        <h2>Entre no Portal</h2>
+        <p>Use seu e-mail institucional para entrar no portal do <strong style="color:var(--ifce-accent-green)">Grêmio Estudantil IFCE</strong>.</p>
         <div id="login-erro-aluno" class="alert alert-danger d-none p-2 small text-center mb-3"></div>
-        <div class="input-group-chem"><label>E-mail Institucional</label><input type="email" id="aluno-email-input" placeholder="aluno@aluno.ifce.edu.br" autocomplete="username"></div>
-        <div class="input-group-chem"><label>Senha</label><input type="password" id="aluno-senha-input" placeholder="******" autocomplete="current-password"></div>
+        <div class="input-group-chem"><label for="aluno-email-input">E-mail institucional</label><input type="email" id="aluno-email-input" placeholder="aluno@aluno.ifce.edu.br" autocomplete="username"></div>
+        <div class="input-group-chem"><label for="aluno-senha-input">Senha</label><input type="password" id="aluno-senha-input" placeholder="******" autocomplete="current-password"></div>
         <button id="btn-login-aluno" onclick="fazerLoginAluno()" class="btn-green-chem">Acessar Portal</button>
-                    <button onclick="document.getElementById('cad-aluno').classList.remove('d-none')" class="btn btn-link w-100 small" style="color:#a0b3a6">Não tenho cadastro: criar conta</button>
+                    <button onclick="document.getElementById('cad-aluno').classList.remove('d-none')" class="btn btn-link w-100 small" style="color:#a0b3a6">Primeiro acesso? Solicitar cadastro</button>
                     <p class="small text-center mt-2 mb-0" style="color:#a0b3a6;font-size:11px">Ao entrar ou criar conta, você concorda com a política de privacidade e os termos de uso (na seção Privacidade do portal). O portal guarda dados no seu aparelho para funcionar offline.</p>
                     <div id="cad-aluno" class="d-none mt-2">
-                      <p class="small text-center mb-2" style="color:#a0b3a6">Use seu e-mail institucional (@aluno.ifce.edu.br). O grêmio aprova o cadastro antes de liberar o acesso.</p>
+                      <p class="small text-center mb-2" style="color:#a0b3a6">Use seu e-mail institucional (@aluno.ifce.edu.br). Após o envio, a gestão do Grêmio analisará o cadastro antes de liberar o acesso.</p>
                       <input type="text" id="cad-nome" class="form-control form-control-sm mb-2" maxlength="80" placeholder="Nome completo">
                       <input type="email" id="cad-email" class="form-control form-control-sm mb-2" maxlength="120" placeholder="seuemail@aluno.ifce.edu.br">
                       <input type="password" id="cad-senha" class="form-control form-control-sm mb-2" maxlength="60" placeholder="Senha (mínimo 6 caracteres)">
@@ -155,9 +156,9 @@ body{background-color:#f4f6f9}
     </div>
   </div>
   <div class="dots-container-chem">
-    <div class="dot-chem active" onclick="irParaSlide(0)"></div>
-    <div class="dot-chem" onclick="irParaSlide(1)"></div>
-    <div class="dot-chem" onclick="irParaSlide(2)"></div>
+    <div class="dot-chem active" onclick="irParaSlide(0)" role="button" tabindex="0" aria-label="Etapa 1: conheça o Grêmio" aria-pressed="true"></div>
+    <div class="dot-chem" onclick="irParaSlide(1)" role="button" tabindex="0" aria-label="Etapa 2: descubra as funções" aria-pressed="false"></div>
+    <div class="dot-chem" onclick="irParaSlide(2)" role="button" tabindex="0" aria-label="Etapa 3: entre ou solicite cadastro" aria-pressed="false"></div>
   </div>
 </div>
 
@@ -179,7 +180,7 @@ body{background-color:#f4f6f9}
     <h5 id="perf-titulo" class="fw-bold mb-2" style="color:var(--ifce-green)">Antes de começar</h5>
     <p class="text-muted small mb-3">Três perguntas rápidas para o portal mostrar o que é mais útil para você. Você pode mudar depois.</p>
     <label class="form-label small text-muted-custom mb-1">1. Qual é a sua turma?</label>
-    <input type="text" id="perf-turma" class="form-control mb-3" maxlength="40" placeholder="Ex.: 1º ano – Química">
+    <input type="text" id="perf-turma" class="form-control mb-3" maxlength="40" placeholder="Ex.: 1º ano A">
     <label class="form-label small text-muted-custom mb-1">2. Quais matérias você quer estudar?</label>
     <div id="perf-materias" class="mb-3"></div>
     <div class="form-check mb-3">
@@ -622,8 +623,19 @@ let slideAtual = 0;
 function irParaSlide(i) {
   slideAtual = i;
   document.getElementById('slidesWrapperChem').style.transform = `translateX(-${i * 100}%)`;
-  document.querySelectorAll('.dot-chem').forEach((d, n) => d.classList.toggle('active', n === i));
+  document.querySelectorAll('.dot-chem').forEach((d, n) => {
+    const ativo = n === i;
+    d.classList.toggle('active', ativo);
+    d.setAttribute('aria-pressed', String(ativo));
+  });
 }
+document.querySelector('.dots-container-chem').addEventListener('keydown', e => {
+  const dot = e.target.closest('.dot-chem');
+  if (!dot || (e.key !== 'Enter' && e.key !== ' ')) return;
+  e.preventDefault();
+  const indice = [...document.querySelectorAll('.dot-chem')].indexOf(dot);
+  if (indice >= 0) irParaSlide(indice);
+});
 let startX = 0;
 const ob = document.getElementById('screen-onboarding');
 ob.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
