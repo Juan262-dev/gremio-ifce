@@ -74,3 +74,6 @@ test("ensaios são puros e sem Firebase Admin, rede ou credenciais",()=>{
   assert.doesNotMatch(text,/firebase-admin|initializeApp\s*\(|fetch\s*\(|https\.request|execSync|firestore\.collection/);
  }
 });
+
+// Verificações de auditoria real somente em código, sem credenciais ou rede.
+require("./privacidade-ifce-auditoria.test.cjs");
