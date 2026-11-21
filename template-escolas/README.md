@@ -18,6 +18,9 @@
   usa \`escola-admin\`, isolando suas sessões no navegador.
 - E-mail verificado e **aprovação administrativa** são obrigatórios
   para o aluno ler avisos, eventos e enquetes.
+- **Materiais de estudo textuais:** gestão autorizada publica e remove
+  conteúdos sem anexos ou e-mails, alunos aprovados leem apenas os materiais
+  desta instalação; área de Ajuda contextual no Portal e Painel.
 - **Sugestões privadas:** estudantes aprovados enviam e consultam apenas
   suas próprias ideias; a gestão pode aprovar ou arquivar sugestões.
 - Enquetes exigem alternativas textuais distintas com tamanho limitado,

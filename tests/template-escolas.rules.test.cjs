@@ -163,3 +163,15 @@ test("dois projetos do emulador: mesmo UID não transfere cargo ou cadastro entr
     await assertFails(getDoc(doc(bAdmin,"notices/aviso-b")));
   }finally{await projectB.cleanup();}
 });
+
+test("materiais textuais: leitura apenas de participantes e escrita só de administradores",async()=>{
+  await seed([adminRole,member(one)]);
+  const material={title:"Estudo fictício",content:"Resumo textual criado pela escola de teste.",createdAt:serverTimestamp()};
+  await assertSucceeds(setDoc(doc(ctx(adminUid),"studyMaterials/material-a"),material));
+  await assertSucceeds(getDoc(doc(ctx(one),"studyMaterials/material-a")));
+  await assertFails(getDoc(doc(ctx(other),"studyMaterials/material-a")));
+  await assertFails(setDoc(doc(ctx(one),"studyMaterials/forjado"),material));
+  await assertFails(setDoc(doc(ctx(adminUid),"studyMaterials/vazamento"),{...material,studentEmails:["aluno@example.invalid"]}));
+  await assertFails(setDoc(doc(ctx(adminUid),"studyMaterials/invalid"),{...material,content:"x".repeat(2001)}));
+  await assertSucceeds(deleteDoc(doc(ctx(adminUid),"studyMaterials/material-a")));
+});

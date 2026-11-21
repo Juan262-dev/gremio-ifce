@@ -5,6 +5,11 @@ pequenos, testados e sem publicação/merge sem autorização.
 
 ## Implementação técnica em andamento — não distribuível
 
+- [x] Primeiro módulo adicional de paridade: materiais de estudo textuais
+  e Central de Ajuda nos dois apps do template, com regras e testes.
+- [ ] Eleições, financeiro, carteirinha, Laboratório Virtual, PWA e demais
+  recursos exigem desenho por escola, privacidade, licença e testes próprios.
+
 - [x] Script de exportação **real sob controle exclusivo da TI**, com
   bloqueios de projeto, bucket, CMEK, retenção e autorização; não executado.
 - [x] Inventário inicial de direitos, roteiro de aceite institucional
