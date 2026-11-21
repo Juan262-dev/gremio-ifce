@@ -34,6 +34,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Testar interface e navegação dos dois apps
         run: npm run test:ui
+      - name: Validar planejamento e exemplos seguros para outras escolas
+        run: node --test tests/modelo-reutilizavel.test.cjs
       - name: Testar cálculos e Tabela Periódica (sem Firebase)
         run: npm run test:lab
       - name: Testar com dados fictícios no Firebase Emulator
