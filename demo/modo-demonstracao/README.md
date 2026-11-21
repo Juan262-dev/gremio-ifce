@@ -2,7 +2,7 @@
 
 **Protótipo interativo com informações fictícias**, separado dos aplicativos
 reais do Grêmio IFCE. Não é um clone funcional completo nem uma instalação
-pronta para outra escola.
+pronta para outra escola. Esta simulação não acessa Firebase real.
 
 ## Como abrir
 
