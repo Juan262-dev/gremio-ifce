@@ -21,5 +21,7 @@ test("auditoria não realiza escrita, mutação, migração ou acesso no CI",()=
  assert.match(source,/require\.main===module/);
  assert.match(source,/\.select\(\.\.\.keys\)\.stream\(\)/);
  assert.match(source,/IFCE_AUDIT_APPROVED/);
- assert.doesNotMatch(source,/\.set\(|\.update\(|\.delete\(|\.add\(|\.create\(|runTransaction|batch\(|writeFileSync/);
+ // app.delete() encerra a instância Admin SDK, não é escrita no Firestore.
+ assert.doesNotMatch(source,/\.set\(|\.update\(|\b(?:doc|ref|tx|db|batch)\.delete\(|\.add\(|\.create\(|runTransaction|batch\(|writeFileSync/);
+ assert.match(source,/await app\.delete\(\)/);
 });
