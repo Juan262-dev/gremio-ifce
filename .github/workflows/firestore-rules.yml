@@ -5,6 +5,8 @@ on:
       - 'index.html'
       - 'admin.html'
       - 'portal-navegacao.js'
+      - 'portal-eventos-v2.js'
+      - 'sw.js'
       - 'admin-01-base-login.js'
       - 'admin-carteirinhas.js'
       - 'admin-08-resumo-abas.js'

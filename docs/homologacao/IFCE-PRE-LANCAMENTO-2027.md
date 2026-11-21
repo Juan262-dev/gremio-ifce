@@ -46,6 +46,22 @@ Sem calendário ISO válido no evento, a função também recusa inscrições,
 impedindo acesso a eventos com datas incorretas. Esta é uma proteção
 de servidor: não depende de a interface esconder botões.
 
+## Portal de eventos e cache offline mais seguros
+
+Esta rodada **não altera** `firestore.rules` nem publica nada no Firebase.
+O Portal consulta `config/sistema` e somente mostra botões de inscrição
+quando `eventosV2Habilitados: true` e os três bloqueios de manutenção
+estiverem explicitamente desativados. Caso contrário, mostra o estado
+atual e informa que operações permanecem em preparação.
+
+O Portal evita cliques duplicados, mostra resultado correto de cancelamento
+e recarrega somente a inscrição privada do aluno após uma ação concluída.
+O cache offline aceita apenas recursos públicos da interface, não guarda
+páginas administrativas, parâmetros de URL ou respostas HTTP de erro.
+
+As mudanças não garantem que as Cloud Functions estejam implantadas,
+não substituem uma auditoria real do Firebase nem liberam dados antigos.
+
 ## Auditoria de regressão mais rigorosa
 
 Os testes de privacidade foram ajustados ao estado atual deste PR:
