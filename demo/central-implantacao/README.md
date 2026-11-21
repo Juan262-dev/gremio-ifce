@@ -55,3 +55,13 @@ A Central inclui um link para o
 fluxos ilustrativos de estudante e gestão, com dados de duas escolas
 inventadas, sem acesso ao Firebase real. O modo não concede permissões,
 não cria cadastros e não faz deploy.
+
+
+## Verificador de Segurança (demonstração)
+
+A Central também contém link para o
+[Verificador de Segurança fictício](../verificador-seguranca/index.html).
+Ele confere somente IDs e URLs de exemplo, detecta projeto compartilhado
+entre escolas, divergência Portal/Admin e conexão não fictícia.
+As verificações técnicas reais e a aprovação para publicar **continuam
+pendentes**. Não consulta Firebase, não altera regras e não faz deploy.

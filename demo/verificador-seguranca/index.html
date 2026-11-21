@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="color-scheme" content="light">
+  <title>Verificador de Segurança · Demonstração do Grêmio Digital</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./model.js" defer></script>
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <a href="#conteudo" class="skip">Ir para os resultados</a>
+  <header class="masthead">
+    <div class="identity"><span class="mark" aria-hidden="true">G</span><div><strong>Grêmio Digital</strong><small>Ferramentas de implantação</small></div></div>
+    <nav class="links" aria-label="Navegação de demonstração">
+      <a href="../central-implantacao/index.html">Central de Implantação</a>
+      <a href="../modo-demonstracao/index.html">Portal e Painel fictícios</a>
+    </nav>
+  </header>
+  <main id="conteudo" class="page">
+    <div class="eyebrow">FERRAMENTA DE DEMONSTRAÇÃO · SEM FIREBASE</div>
+    <div class="intro"><div><h1>Verificador de Segurança</h1><p>Compare duas escolas fictícias e descubra configurações que precisam ser corrigidas antes de uma implantação. Nenhuma verificação consulta um projeto real.</p></div><span class="not-ready">Publicação real bloqueada</span></div>
+    <div class="warning"><strong>Somente testes locais de exemplo.</strong> Este verificador não acessa Firebase, não verifica regras reais, não faz auditoria de segurança e não aprova publicação. Nunca informe senhas, chaves privadas ou dados de estudantes.</div>
+    <div class="workspace">
+      <section class="entry">
+        <div class="section-header"><div><p class="step-label">01 · CONFIGURAÇÃO FICTÍCIA</p><h2>Experimente cenários</h2><p>Escolha um exemplo ou modifique os IDs demonstrativos. Não digite informações reais.</p></div></div>
+        <label class="field" for="scenario">Cenário de demonstração
+          <select id="scenario">
+            <option value="normal">Exemplo coerente</option>
+            <option value="shared">Duas escolas compartilham um Firebase (erro)</option>
+            <option value="mixed">Portal e Painel diferentes (erro)</option>
+            <option value="origin">Projeto de origem do IFCE (erro)</option>
+            <option value="url">Hospedagem insegura (erro)</option>
+          </select>
+        </label>
+        <div class="schools">
+          <fieldset><legend>Escola A · Fictícia</legend>
+            <label class="field" for="a-portal">Projeto do Portal<input id="a-portal" data-school="a" data-field="portal" maxlength="160" spellcheck="false" autocomplete="off"></label>
+            <label class="field" for="a-admin">Projeto do Painel<input id="a-admin" data-school="a" data-field="admin" maxlength="160" spellcheck="false" autocomplete="off"></label>
+            <label class="field" for="a-url">URL fictícia da escola<input id="a-url" data-school="a" data-field="url" maxlength="160" spellcheck="false" autocomplete="off"></label>
+          </fieldset>
+          <fieldset><legend>Escola B · Fictícia</legend>
+            <label class="field" for="b-portal">Projeto do Portal<input id="b-portal" data-school="b" data-field="portal" maxlength="160" spellcheck="false" autocomplete="off"></label>
+            <label class="field" for="b-admin">Projeto do Painel<input id="b-admin" data-school="b" data-field="admin" maxlength="160" spellcheck="false" autocomplete="off"></label>
+            <label class="field" for="b-url">URL fictícia da escola<input id="b-url" data-school="b" data-field="url" maxlength="160" spellcheck="false" autocomplete="off"></label>
+          </fieldset>
+        </div>
+        <div class="actions"><button type="button" id="check" class="primary">Analisar cenário</button><button type="button" id="reset" class="secondary">Reiniciar exemplos</button></div>
+        <p class="footnote">IDs aceitos nesta análise têm prefixo <code>demo-</code>; URLs aceitas terminam em <code>.example.invalid</code>. Esses identificadores não são conectados a nenhum serviço.</p>
+      </section>
+      <section class="report" aria-labelledby="result-title">
+        <p class="step-label">02 · RESULTADO DA SIMULAÇÃO</p>
+        <div class="result-head"><div><h2 id="result-title">Relatório de pré-voo</h2><p id="result-message" aria-live="polite">Análise limitada a dados fictícios.</p></div><span class="status pending" id="overall-status" aria-live="polite">PENDENTE</span></div>
+        <div class="numbers"><div><strong id="count-good">0/5</strong><span>Checagens locais coerentes</span></div><div><strong id="count-blocked">0</strong><span>Incompatibilidades nos exemplos</span></div><div><strong id="count-pending">7</strong><span>Revisões reais pendentes</span></div></div>
+        <h3>Checagens automáticas do exemplo</h3>
+        <p class="subcopy">Este resultado valida apenas o formato e a consistência dos campos fictícios, não a segurança dos aplicativos.</p>
+        <ul id="automatic-results" class="result-list"></ul>
+        <h3>Exigências antes de uma instalação de verdade</h3>
+        <p class="subcopy">Estas etapas não podem ser aprovadas por este protótipo. Exigem implementação, testes técnicos e autorização humana.</p>
+        <ul id="manual-results" class="result-list"></ul>
+        <div class="production-gate">
+          <strong>Quando poderá ficar pronto para valer?</strong>
+          <p>Somente depois que o template independente existir, as regras e a privacidade forem corrigidas e testadas, as duas escolas forem homologadas com Firebase próprios, as autorizações/licença estiverem definidas e a direção aprovar a publicação. <strong>Este protótipo nunca libera produção.</strong></p>
+          <span id="release-gate">Instalação real indisponível · Sem deploy</span>
+        </div>
+      </section>
+    </div>
+    <footer>Origem do projeto: Grêmio IFCE · Exemplo estático sem conexão e sem dados pessoais de alunos.</footer>
+  </main>
+</body>
+</html>
