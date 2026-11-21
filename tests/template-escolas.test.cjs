@@ -97,3 +97,11 @@ test("bootstrap rejeita conta de serviço de outro projeto",()=>{
   assert.match(script,/service\.type!=="service_account"/);
   assert.match(script,/BEGIN PRIVATE KEY/);
 });
+
+test("Sender ID e appId de instalações diferentes são rejeitados",()=>{
+  const a=school("escola-horizonte");
+  a.firebase.appId="1:999999999:web:abcdef1234";
+  assert.throws(()=>I.validate(a),/aplicativos Web diferentes/);
+  a.firebase.appId="1:123456789:web:abcdef1234";
+  assert.equal(I.validate(a).firebase.appId,a.firebase.appId);
+});

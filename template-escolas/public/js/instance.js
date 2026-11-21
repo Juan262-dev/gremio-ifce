@@ -45,6 +45,9 @@
       throw Error("appId da aplicação Web inválido.");
     if(!/^[0-9]+$/.test(data.firebase.messagingSenderId))
       throw Error("Sender ID inválido.");
+    const senderInAppId=data.firebase.appId.split(":")[1];
+    if(senderInAppId!==data.firebase.messagingSenderId)
+      throw Error("appId e messagingSenderId pertencem a aplicativos Web diferentes.");
     if(!/^AIza[A-Za-z0-9_-]{20,}$/.test(data.firebase.apiKey))
       throw Error("Chave pública Web não parece válida.");
     return {
