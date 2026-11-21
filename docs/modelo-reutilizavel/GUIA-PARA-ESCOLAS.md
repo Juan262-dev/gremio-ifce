@@ -253,6 +253,16 @@ Firebase**, não dá acesso à gestão real e **não substitui um sistema
 instalável**. Os recursos mostrados são apenas fluxos representativos,
 e não todas as funções disponíveis no IFCE.
 
+## Verificador de Segurança — simulação educativa
+
+O [Verificador de Segurança de demonstração](../../demo/verificador-seguranca/index.html)
+mostra exemplos de erros a evitar: Firebase igual entre escolas, Portal e
+Painel usando projetos diferentes, configuração apontando para o IFCE ou
+URL insegura. Ele **não consulta Firebase real**, não verifica as regras,
+não aprova contas e não autoriza publicação. As verificações técnicas
+com emulador, licenças, privacidade e autorização institucional só podem
+ser concluídas posteriormente por responsáveis qualificados.
+
 ## Perguntas frequentes
 
 **Precisamos saber programar?** Para personalizar textos, logo e cores,

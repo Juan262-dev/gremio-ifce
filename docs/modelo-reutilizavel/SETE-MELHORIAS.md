@@ -236,6 +236,20 @@ regras reais, financeiro, laboratório, eleições ou integração com a
 instalação do IFCE. O checklist de isolamento e de licenciamento
 continua bloqueante para qualquer implantação real.
 
+## Verificador de Segurança — primeira versão interativa de demonstração
+
+A [simulação de pré-voo](../../demo/verificador-seguranca/README.md)
+agora permite comparar duas escolas fictícias, alternar cenários de erro
+e visualizar checagens automáticas de **formato e consistência**.
+
+**Não** é verificador de Firebase real. Regras Firestore, privacidade,
+licença, administrador inicial, backup, isolamento real A/B e aprovação
+institucional permanecem como **PENDENTES**. Mesmo sem inconsistência
+nos exemplos, a publicação é **sempre bloqueada**.
+
+Essa entrega avança a experiência P1, mas não completa o aceite de
+segurança do template ou de uma escola real.
+
 ## Sequência de trabalho recomendada
 
 1. **Resolver bloqueios P0:** privacidade, regras, contas privilegiadas,
