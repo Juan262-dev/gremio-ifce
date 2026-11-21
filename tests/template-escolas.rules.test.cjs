@@ -155,8 +155,11 @@ test("dois projetos do emulador: mesmo UID não transfere cargo ou cadastro entr
         title:"Somente escola B",body:"Conteúdo isolado",createdAt:Timestamp.now()
       });
     });
-    await assertSucceeds(getDoc(doc(bStudent,"notices/aviso-b")));
-    await assertFails(getDoc(doc(ctx(one),"notices/aviso-b")));
+    const existsInB=await assertSucceeds(getDoc(doc(bStudent,"notices/aviso-b")));
+    assert.equal(existsInB.exists(),true);
+    // A consulta a um ID inexistente é permitida, mas NÃO retorna dados de B.
+    const absentFromA=await assertSucceeds(getDoc(doc(ctx(one),"notices/aviso-b")));
+    assert.equal(absentFromA.exists(),false,"Documento da escola B não existe no projeto A");
     await assertFails(getDoc(doc(bAdmin,"notices/aviso-b")));
   }finally{await projectB.cleanup();}
 });
