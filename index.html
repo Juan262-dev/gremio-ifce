@@ -567,7 +567,8 @@ body{background-color:#f4f6f9}
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js">
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-functions-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="laboratorio-quimica.js"></script>
 <script src="laboratorio-avancado.js"></script>
@@ -929,8 +930,15 @@ function solicitarMaterial(id, nome) {
     .catch(err => aviso(typeof err === 'string' ? err : "Erro ao solicitar material.", 'danger'));
 }
 function carregarEventos() {
-  ouvir(db.collection('eventos').where('privacidadeVersao','==',2), snap => {
+  ouvir(db.collection('eventos').where('privacidadeVersao','==',2), async snap => {
+    const uid = auth.currentUser && auth.currentUser.uid;
+    if (!uid) return;
     const todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    const estados = await Promise.all(snap.docs.map(d =>
+      d.ref.collection('inscricoes').doc(uid).get({source:'server'})
+        .then(s => s.exists ? s.data() : null).catch(() => ({status:'unavailable'}))));
+    if (!auth.currentUser || auth.currentUser.uid !== uid) return;
+    todos.forEach((e,i) => { e.minhaInscricao = estados[i]; });
     novidades.eventos = todos; renderNotificacoes();
     const c = document.getElementById('lista-eventos-aluno');
     if (!todos.length) { c.innerHTML = '<p class="text-muted small mb-0">Nenhum evento programado por enquanto. Eles aparecem aqui quando forem publicados.</p>'; return; }
@@ -939,7 +947,7 @@ function carregarEventos() {
     const semData = todos.filter(e => !e.dataISO);
     const passados = todos.filter(e => e.dataISO && e.dataISO < hoje).sort((a, b) => b.dataISO.localeCompare(a.dataISO));
     c.innerHTML = '<div class="list-group">' + [...proximos, ...semData, ...passados].map(ev => {
-      const ja = false; // inscrições privadas não fazem parte do documento público
+      const ja = !!(ev.minhaInscricao && ev.minhaInscricao.status === 'registered');
       const passou = ev.dataISO && ev.dataISO < hoje;
       return `
       <div class="list-group-item" ${passou ? 'style="opacity:.6"' : ''}>
@@ -1066,23 +1074,37 @@ function carregarJogos() {
   });
 }
 function inscreverEvento(id) {
-  aviso('Inscrições indisponíveis até a homologação do controle privado de vagas e fila.', 'warning');
+  if (!auth.currentUser) return;
+  firebase.app().functions('southamerica-east1').httpsCallable('inscreverEventoSeguro')({eventoId:id})
+    .then(r => aviso(r.data.status === 'waitlisted'
+      ? 'Você entrou na lista de espera privada.' : 'Inscrição confirmada!', 'success'))
+    .catch(() => aviso('Não foi possível confirmar a inscrição. Verifique a conexão e o cadastro.', 'warning'));
 }
 
 /* ---------- eventos: inscrição e fila privada pendentes de homologação ---------- */
 function acoesEvento(ev, ja, passou) {
-  const vagas = Number(ev.vagas) || 0;
-  const inscritos = Number(ev.inscritosCount) || 0;
-  const aguardando = Number(ev.esperaCount) || 0;
-  const resumo = vagas ? '<small class="text-muted d-block mb-1">' +
-    inscritos + ' de ' + vagas + ' vagas ocupadas' +
-    (aguardando ? ' • ' + aguardando + ' em espera' : '') + '</small>' : '';
-  return resumo + (passou
-    ? '<span class="badge bg-secondary">Encerrado</span>'
-    : '<span class="badge bg-warning text-dark">Inscrições aguardam homologação.</span>');
+  const vagas=Number(ev.vagas)||0,inscritos=Number(ev.inscritosCount)||0;
+  const aguardando=Number(ev.esperaCount)||0;
+  const privateReg=ev.minhaInscricao;
+  const id=esc(ev.id);
+  const resumo=vagas ? '<small class="text-muted d-block mb-1">'+inscritos+' de '+vagas+
+    ' vagas ocupadas'+(aguardando?' • '+aguardando+' em espera':'')+'</small>' : '';
+  if(passou)return resumo+'<span class="badge bg-secondary">Encerrado</span>';
+  if(privateReg&&privateReg.status==='unavailable')
+    return resumo+'<span class="badge bg-warning text-dark">Não foi possível verificar a inscrição.</span>';
+  if(privateReg&&privateReg.status==='waitlisted')
+    return resumo+'<span class="badge bg-warning text-dark">Na lista de espera</span> '+
+      '<button data-id="'+id+'" onclick="cancelarInscricaoEvento(this.dataset.id)" class="btn btn-sm btn-outline-secondary">Sair da espera</button>';
+  if(privateReg&&privateReg.status==='registered')
+    return resumo+'<button data-id="'+id+'" onclick="cancelarInscricaoEvento(this.dataset.id)" class="btn btn-sm btn-outline-danger">Cancelar inscrição</button>';
+  return resumo+'<button data-id="'+id+'" onclick="inscreverEvento(this.dataset.id)" class="btn btn-sm btn-ifce">'+
+    (vagas&&inscritos>=vagas?'Entrar na lista de espera':'Fazer inscrição')+'</button>';
 }
 function cancelarInscricaoEvento(id) {
-  aviso('Cancelamentos estão suspensos durante a revisão das inscrições privadas.', 'warning');
+  if (!auth.currentUser || !confirm('Cancelar sua participação neste evento?')) return;
+  firebase.app().functions('southamerica-east1').httpsCallable('cancelarEventoSeguro')({eventoId:id})
+    .then(() => aviso('Participação cancelada. A primeira pessoa da fila é promovida automaticamente.', 'info'))
+    .catch(() => aviso('Não foi possível cancelar agora. Procure a gestão.', 'warning'));
 }
 function avaliarEvento(id) {
   const nota = Number(document.getElementById('av-nota-' + id).value);

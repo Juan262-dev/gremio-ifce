@@ -401,7 +401,8 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly(['evento', 'nota', 'comentario', 'criadoEm'])
         && request.resource.data.nota is int && request.resource.data.nota >= 1 && request.resource.data.nota <= 5
         && request.resource.data.comentario is string && request.resource.data.comentario.size() <= 300
-        && get(/databases/$(database)/documents/eventos/$(request.resource.data.evento)).data.get('inscritos', []).hasAny([mail()]);
+        && exists(/databases/$(database)/documents/eventos/$(request.resource.data.evento)/inscricoes/$(request.auth.uid))
+        && get(/databases/$(database)/documents/eventos/$(request.resource.data.evento)/inscricoes/$(request.auth.uid)).data.get('status','') == 'registered';
       allow update, delete: if false;
     }
 

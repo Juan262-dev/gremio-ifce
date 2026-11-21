@@ -68,7 +68,8 @@ function build(kind,id,data,mapping){
     return {
       skip:false,kind,id,
       counts:{inscritosCount:converted.publicEvent.numeroInscritos,
-        esperaCount:converted.publicEvent.numeroEmEspera},
+        esperaCount:converted.publicEvent.numeroEmEspera,
+        proximaOrdem:converted.publicEvent.numeroEmEspera},
       documents:converted.registrations.map(r=>({
         path:r.path.replace("/registrations/","/inscricoes/"),
         data:{
