@@ -1,0 +1,22 @@
+{
+  "_aviso": "MODELO DE ATRIBUICAO PARA O TEMPLATE FUTURO. Preencher somente apos confirmar o nome publico do autor e a licenca. Hoje nao ha bloqueio tecnico implementado.",
+  "versaoContrato": 1,
+  "origem": {
+    "projeto": "Portal do Aluno e Painel Administrativo do Gremio IFCE",
+    "instituicao": "IFCE Campus Crateus",
+    "local": "Crateus, Ceara, Brasil",
+    "autorOriginalNomePublico": "CONFIRMAR_COM_O_AUTOR_ORIGINAL",
+    "repositorioOriginal": "https://github.com/Juan262-dev/gremio-ifce"
+  },
+  "licenciamento": {
+    "identificador": "AINDA_NAO_DEFINIDO",
+    "observacao": "Verificar titularidade, direitos de terceiros e condicoes de redistribuicao antes de disponibilizar."
+  },
+  "atribuicao": {
+    "exibirNoPortal": true,
+    "exibirNoPainel": true,
+    "exibirEmSobre": true,
+    "editavelNoPainelDaEscola": false,
+    "responsavelPelaDefinicao": "mantenedores-do-projeto-base"
+  }
+}
