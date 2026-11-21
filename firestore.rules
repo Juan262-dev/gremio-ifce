@@ -126,6 +126,10 @@ service cloud.firestore {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(keys);
     }
 
+    // Campos legados são proibidos em documentos públicos v2.
+    function enquetePublicaSegura(d) { return !d.keys().hasAny(['votosAlunos']); }
+    function eventoPublicoSeguro(d) { return !d.keys().hasAny(['inscritos', 'espera']); }
+
     // ---------- validações de enquete ----------
     // Valida a opção escolhida sem avaliar todas as oito opções uma por uma.
     // Opções não escolhidas, IDs, textos e demais campos ficam inalterados.
@@ -136,25 +140,6 @@ service cloud.firestore {
         && n[oid].get('votos', 0) == o[oid].get('votos', 0) + 1
         && n.removeAll([n[oid]]) == o.removeAll([o[oid]]);
     }
-    function votoDe(e) {
-      return [e,
-        {'email': e, 'opcaoId': 0}, {'email': e, 'opcaoId': 1}, {'email': e, 'opcaoId': 2}, {'email': e, 'opcaoId': 3},
-        {'email': e, 'opcaoId': 4}, {'email': e, 'opcaoId': 5}, {'email': e, 'opcaoId': 6}, {'email': e, 'opcaoId': 7}];
-    }
-    function votoEnqueteValido() {
-      let o = resource.data;
-      let n = request.resource.data;
-      let ov = o.get('votosAlunos', []);
-      let nv = n.votosAlunos;
-      let ult = nv[nv.size() - 1];
-      return o.get('ativa', false) == true
-        && nv.size() == ov.size() + 1
-        && nv == ov.concat([ult])
-        && ult.email == mail()
-        && !ov.hasAny(votoDe(mail()))
-        && opsOk(o.opcoes, n.opcoes, ult.opcaoId);
-    }
-
     // Atualização vinculada a uma cédula criada na mesma transação.
     function votoPrivadoValido(id) {
       let caminho = /databases/$(database)/documents/enquetes/$(id)/votos/$(request.auth.uid);
@@ -176,39 +161,6 @@ service cloud.firestore {
     }
 
     // ---------- validação de inscrição em evento ----------
-    function inscricaoValida() {
-      // Reproduz as cinco operações usadas pelo portal do aluno.
-      // Não permite reordenar filas, inserir terceiros ou duplicar e-mails.
-      // Usa 5 variáveis locais (limite do Firebase: 10 por função).
-      let oi = resource.data.get('inscritos', []);
-      let ni = request.resource.data.get('inscritos', []);
-      let oe = resource.data.get('espera', []);
-      let ne = request.resource.data.get('espera', []);
-      let eu = mail();
-      return oi is list && ni is list && oe is list && ne is list
-        && ni.toSet().size() == ni.size()
-        && ne.toSet().size() == ne.size()
-        && (
-          // Inscrever-se: entra somente ao fim da lista de inscritos.
-          (ni == oi.concat([eu]) && ne == oe
-            && !oi.hasAny([eu]) && !oe.hasAny([eu])
-            && (resource.data.get('vagas', 0) == 0 || oi.size() < resource.data.get('vagas', 0)))
-          // Entrar na fila: acrescenta-se somente no final.
-          || (ni == oi && ne == oe.concat([eu])
-            && !oi.hasAny([eu]) && !oe.hasAny([eu])
-            && resource.data.get('vagas', 0) > 0 && oi.size() >= resource.data.get('vagas', 0))
-          // Sair da fila sem alterar a posição de outros inscritos.
-          || (ni == oi && oe.hasAny([eu]) && ne == oe.removeAll([eu]))
-          // Cancelar a própria inscrição sem fila para promover.
-          || (oi.hasAny([eu]) && oe.size() == 0
-            && ni == oi.removeAll([eu]) && ne == oe)
-          // Cancelar e promover exclusivamente o primeiro da fila.
-          || (oi.hasAny([eu]) && oe.size() > 0
-            && ni == oi.removeAll([eu]).concat([oe[0]])
-            && ne == oe.removeAll([oe[0]]))
-        );
-    }
-
     // ---------- eleição ----------
     function eleicaoAberta(id) {
       let e = get(/databases/$(database)/documents/eleicoes/$(id));
@@ -268,21 +220,21 @@ service cloud.firestore {
     match /enquetes/{id} {
       allow get: if isDiretoria() || (ativo()
         && resource.data.get('privacidadeVersao', 0) == 2
-        && !resource.data.keys().hasAny(['votosAlunos']));
+        && enquetePublicaSegura(resource.data));
       allow list: if isDiretoria() || (ativo()
         && resource.data.get('privacidadeVersao', 0) == 2);
       allow create: if isDiretoria()
         && request.resource.data.get('privacidadeVersao', 0) == 2
-        && !request.resource.data.keys().hasAny(['votosAlunos'])
+        && enquetePublicaSegura(request.resource.data)
         && request.resource.data.opcoes.size() >= 2
         && request.resource.data.opcoes.size() <= 8;
       allow delete: if isDiretoria();
       allow update: if (isDiretoria()
-        && !request.resource.data.keys().hasAny(['votosAlunos']))
+        && enquetePublicaSegura(request.resource.data))
         || (ativo() && resource.data.get('privacidadeVersao', 0) == 2
-          && !resource.data.keys().hasAny(['votosAlunos'])
+          && enquetePublicaSegura(resource.data)
           && request.resource.data.get('privacidadeVersao', 0) == 2
-          && !request.resource.data.keys().hasAny(['votosAlunos'])
+          && enquetePublicaSegura(request.resource.data)
           && onlyKeys(['opcoes']) && votoPrivadoValido(id));
 
       // Um voto por UID, sem e-mail em documentos compartilhados.
@@ -333,19 +285,19 @@ service cloud.firestore {
     match /eventos/{id} {
       allow get: if isDiretoria() || (ativo()
         && resource.data.get('privacidadeVersao', 0) == 2
-        && !resource.data.keys().hasAny(['inscritos', 'espera']));
+        && eventoPublicoSeguro(resource.data));
       allow list: if isDiretoria() || (ativo()
         && resource.data.get('privacidadeVersao', 0) == 2);
       allow create: if (isGestor() || ((isCultura() || isRacial())
           && request.resource.data.get('criadoPorEmail', '') == mail()))
         && request.resource.data.get('privacidadeVersao', 0) == 2
-        && !request.resource.data.keys().hasAny(['inscritos', 'espera']);
+        && eventoPublicoSeguro(request.resource.data);
       allow delete: if isGestor() || ((isCultura() || isRacial())
         && resource.data.get('criadoPorEmail', '') == mail());
       allow update: if (isGestor() || ((isCultura() || isRacial())
         && resource.data.get('criadoPorEmail', '') == mail()
         && request.resource.data.get('criadoPorEmail', '') == mail()))
-        && !request.resource.data.keys().hasAny(['inscritos', 'espera']);
+        && eventoPublicoSeguro(request.resource.data);
 
       // Os registros são privados; inscrições novas ficam bloqueadas
       // até a homologação do controlador de vagas/fila de espera.
