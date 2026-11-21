@@ -342,3 +342,23 @@ test('Dados antigos de eventos e enquetes ficam indisponíveis aos estudantes', 
   await assertFails(updateDoc(doc(student,'enquetes/antiga'),{votosAlunos:[aluno]}));
   await assertFails(updateDoc(doc(student,'eventos/antigo'),{inscritos:[aluno]}));
 });
+
+test('Gestores não apagam documentos pais deixando votos ou inscrições privados órfãos', async () => {
+  await gravarInicial([
+    ['cargos/' + presidente, { nome: 'Presidente', nivel: 'admin' }],
+    ['enquetes/enq-com-voto', {privacidadeVersao:2,titulo:'Enquete fictícia',ativa:false,
+      opcoes:[{id:0,texto:'A',votos:1},{id:1,texto:'B',votos:0}]}],
+    ['enquetes/enq-vazia', {privacidadeVersao:2,titulo:'Enquete vazia',ativa:false,
+      opcoes:[{id:0,texto:'A',votos:0},{id:1,texto:'B',votos:0}]}],
+    ['eventos/ev-com-inscrito', {privacidadeVersao:2,titulo:'Evento',inscritosCount:1,
+      esperaCount:0,vagas:2}],
+    ['eventos/ev-vazio', {privacidadeVersao:2,titulo:'Evento vazio',inscritosCount:0,
+      esperaCount:0,vagas:2}]
+  ]);
+  const manager=usuario(presidente);
+  for(const caminho of ['enquetes/enq-com-voto','enquetes/enq-vazia','eventos/ev-com-inscrito','eventos/ev-vazio']){
+    await assertFails(deleteDoc(doc(manager,caminho)));
+    const existing=await assertSucceeds(getDoc(doc(manager,caminho)));
+    assert.equal(existing.exists(),true);
+  }
+});

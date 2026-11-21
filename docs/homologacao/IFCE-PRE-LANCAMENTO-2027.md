@@ -46,6 +46,18 @@ Sem calendário ISO válido no evento, a função também recusa inscrições,
 impedindo acesso a eventos com datas incorretas. Esta é uma proteção
 de servidor: não depende de a interface esconder botões.
 
+## Proteção contra documentos órfãos
+
+O Firestore **não apaga subcoleções automaticamente** quando o documento
+pai é excluído. As regras desta fase bloqueiam exclusão direta de enquetes e
+eventos, e o Painel explica a restrição. Isso preserva vínculos de votos e
+inscrições privadas e evita deixar registros pessoais sem o evento de origem.
+
+Para reativar a exclusão definitivamente, a TI deverá implementar fluxo
+controlado de retenção/expurgo, com autorização, exclusão transacional ou
+processamento paginado das subcoleções, auditoria e testes de restauração.
+Nenhuma exclusão foi feita em dados reais.
+
 ## Sequência de lançamento — sem atalhos
 
 1. Confirmar que o projeto Firebase de produção ainda não está em uso,

@@ -26,9 +26,9 @@ test("segurança do backend de eventos requer validação Auth e transação",()
  const server=read("functions/index.js"),service=read("functions/event-service.cjs");
  assert.match(server,/request\.auth\?\.uid/);
  assert.match(server,/email_verified!==true/);
- assert.match(server,/privacidadeMigracaoBloqueada/);
- assert.match(service,/runTransaction/);
  const release=read("functions/release-gate.cjs");
+ assert.match(release,/privacidadeMigracaoBloqueada/);
+ assert.match(service,/runTransaction/);
  assert.match(release,/eventosV2Habilitados/);
  assert.match(server,/assertEventsReleased\(system\)/);
  assert.match(service,/orderBy\("order","asc"\)/);
@@ -42,4 +42,14 @@ test("pré-homologação não marca aprovação fictícia nem instala em produç
  assert.match(checklist,/não é homologação institucional/);
  const workflow=read(".github/workflows/firestore-rules.yml");
  assert.doesNotMatch(workflow, /firebase deploy|gcloud firestore export/);
+});
+
+test("operações destrutivas de documentos pais ficam bloqueadas até limpeza privada",()=>{
+ const rules=read("firestore.rules"),actions=read("admin-06-eleicao-eventos.js");
+ const poll=rules.slice(rules.indexOf("match /enquetes/{id}"),rules.indexOf("match /reivindicacoes/{id}"));
+ const event=rules.slice(rules.indexOf("match /eventos/{id}"),rules.indexOf("match /jogos/{id}"));
+ assert.match(poll,/allow delete: if false/);
+ assert.match(event,/allow delete: if false/);
+ assert.match(actions,/Exclusão bloqueada para proteger votos privados/);
+ assert.match(actions,/inscrições privadas exigem tratamento/);
 });

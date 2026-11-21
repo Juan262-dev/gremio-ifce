@@ -325,7 +325,9 @@
 
         const acoes = {
             excluirAviso: async (id, el) => { if (await confirmar("Excluir este aviso?")) db.collection('mural').doc(id).delete().then(() => registrarAcao('Aviso excluído', el.dataset.titulo)).catch(e => erroDB(e, 'excluirAviso')); },
-            excluirEnquete: async (id, el) => { if (await confirmar("Excluir esta enquete?")) db.collection('enquetes').doc(id).delete().then(() => registrarAcao('Enquete excluída', el.dataset.titulo)).catch(e => erroDB(e, 'excluirEnquete')); },
+            excluirEnquete: async () => {
+                toast('Exclusão bloqueada para proteger votos privados. Encerre a enquete; remoção definitiva exige procedimento seguro da TI.', 'warning');
+            },
             alternarEnquete: (id, el) => db.collection('enquetes').doc(id).update({ ativa: el.dataset.valor === 'true' }).catch(e => erroDB(e, 'alternarEnquete')),
             alternarAluno: (id, el) => { const bloq = el.dataset.valor === 'false'; db.collection('alunos').doc(id).update({ ativo: !bloq }).then(() => registrarAcao(bloq ? 'Aluno bloqueado' : 'Aluno desbloqueado', id)).catch(e => erroDB(e, 'alternarAluno')); },
             excluirAluno: async id => { if (await confirmar(`Excluir o aluno ${id}?`)) db.collection('alunos').doc(id).delete().then(() => registrarAcao('Aluno excluído', id)).catch(e => erroDB(e, 'excluirAluno')); },
@@ -432,7 +434,9 @@
                 if (link && !/^https:\/\//i.test(link)) { toast('O link precisa começar com https://', 'warning'); return; }
                 db.collection('eventos').doc(id).update({ registroLink: link }).then(() => toast('Link salvo.')).catch(e => erroDB(e, 'salvarRegistro'));
             },
-            excluirAtividade: async id => { if (await confirmar('Excluir esta atividade? Os inscritos perdem a inscrição.')) db.collection('eventos').doc(id).delete().then(() => registrarAcao('Atividade excluída', id)).catch(e => erroDB(e, 'excluirAtividade')); },
+            excluirAtividade: async () => {
+                toast('Atividade protegida: exclusão exige limpeza segura das inscrições e presenças pela TI.', 'warning');
+            },
             relatorioAtividade: id => gerarRelatorioAtividade(id),
             excluirOrcamento: async id => { if (await confirmar('Excluir este orçamento? Os lançamentos continuam, mas perdem o vínculo.')) db.collection('orcamentos').doc(id).delete().catch(e => erroDB(e, 'excluirOrcamento')); },
             pagarConta: id => db.collection('contas').doc(id).update({ pago: true, pagoEm: TS() }).then(() => registrarAcao('Conta marcada como paga', id)).catch(e => erroDB(e, 'pagarConta')),
@@ -450,7 +454,9 @@
             removerPunicao: async id => { if (await confirmar(`Remover a punição de ${id} e liberar o acesso?`)) db.collection('membros_punidos').doc(id).delete().then(() => { mostrarAlertaSucesso(`Punição de ${id} removida!`); registrarAcao('Punição removida', id); }).catch(e => erroDB(e, 'removerPunicao')); },
             devolverMaterial: (id, el) => db.collection('materiais').doc(id).update({ status: 'Disponível', emprestadoPara: '', devolverAte: '' }).then(() => registrarAcao('Material devolvido', el.dataset.titulo)).catch(e => erroDB(e, 'devolverMaterial')),
             excluirMaterial: async (id, el) => { if (await confirmar("Excluir este material?")) db.collection('materiais').doc(id).delete().then(() => registrarAcao('Material excluído', el.dataset.titulo)).catch(e => erroDB(e, 'excluirMaterial')); },
-            excluirEvento: async (id, el) => { if (await confirmar("Excluir este evento?")) db.collection('eventos').doc(id).delete().then(() => registrarAcao('Evento excluído', el.dataset.titulo)).catch(e => erroDB(e, 'excluirEvento')); },
+            excluirEvento: async () => {
+                toast('Exclusão protegida: inscrições privadas exigem tratamento e retenção autorizados.', 'warning');
+            },
             exportarPautas: () => {
                 if (!cachePautas.length) { toast("Não há pautas para exportar.", 'warning'); return; }
                 baixarCSV('pautas.csv', [['Título', 'Descrição', 'Autor', 'Apoios', 'Status']]

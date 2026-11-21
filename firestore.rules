@@ -228,7 +228,9 @@ service cloud.firestore {
         && enquetePublicaSegura(request.resource.data)
         && request.resource.data.opcoes.size() >= 2
         && request.resource.data.opcoes.size() <= 8;
-      allow delete: if isDiretoria();
+      // Nunca apagar somente o documento pai: votos privados sobreviveriam
+      // na subcoleção, tornando-se dados órfãos. Exige limpeza de servidor.
+      allow delete: if false;
       allow update: if (isDiretoria()
         && enquetePublicaSegura(request.resource.data))
         || (ativo() && resource.data.get('privacidadeVersao', 0) == 2
@@ -292,8 +294,9 @@ service cloud.firestore {
           && request.resource.data.get('criadoPorEmail', '') == mail()))
         && request.resource.data.get('privacidadeVersao', 0) == 2
         && eventoPublicoSeguro(request.resource.data);
-      allow delete: if isGestor() || ((isCultura() || isRacial())
-        && resource.data.get('criadoPorEmail', '') == mail());
+      // Bloqueia perda de referência e resíduos privados em inscricoes/{uid}.
+      // A exclusão precisa de um processo de retenção e limpeza auditado.
+      allow delete: if false;
       allow update: if (isGestor() || ((isCultura() || isRacial())
         && resource.data.get('criadoPorEmail', '') == mail()
         && request.resource.data.get('criadoPorEmail', '') == mail()))
