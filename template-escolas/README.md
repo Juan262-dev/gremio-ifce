@@ -192,6 +192,25 @@ O validador também verifica que o número de remetente do \`appId\` e
 Essa consistência **não** substitui a verificação das configurações
 no Console oficial.
 
+## Ensaio de backup e recuperação (não equivale a backup real)
+
+O \`scripts/backup-drill.cjs\` executa um ensaio **somente em memória**
+com um conjunto de documentos completamente inventados. O teste confirma
+que uma cópia fictícia da escola A **não pode** ser restaurada em B,
+detecta adulterações e impede a restauração simulada de cargos de
+administrador ou dados que pareçam pessoais.
+
+O resultado é um relatório com \`dryRun: true\`,
+\`writesPerformed: 0\` e \`rolesRestored: false\`. Nenhum arquivo é
+gravado, nenhuma chamada ao Firebase é feita e o teste **não cria,
+criptografa ou restaura backups reais**.
+
+Essa verificação **não é suficiente para liberação**. Uma escola real
+precisa de política de retenção, backup de Firestore/Auth conforme
+autorização e suporte técnico, criptografia, acesso mínimo, teste
+separado de restauração, revisão de permissões e aprovação expressa
+antes de publicar.
+
 ## Testes e verificação
 
 Os testes **não apontam para produção**:

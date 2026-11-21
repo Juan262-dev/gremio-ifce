@@ -5,6 +5,11 @@ pequenos, testados e sem publicação/merge sem autorização.
 
 ## Implementação técnica em andamento — não distribuível
 
+- [x] Ensaio offline de backup/restauração de **dados totalmente fictícios**:
+  detecta corrupção, rejeita importação entre escolas e não restaura cargos.
+- [ ] Implementar política, retenção, criptografia e restauração **reais**,
+  com aprovação de cada escola e teste em ambiente de homologação.
+
 - [x] Auditoria regressiva do formato legado IFCE e ensaios **offline**
   de migração de listas de e-mails para documentos privados, com testes
   de consistência e sem conexão a dados reais.

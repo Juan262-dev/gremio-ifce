@@ -275,6 +275,18 @@ sem gravar arquivos e impede sobrescrever uma instalação já preparada.
 substitui** os testes das regras, a revisão de privacidade, os direitos
 de uso e a autorização institucional.
 
+## Backup e recuperação
+
+Já existe um **ensaio técnico com dados fictícios** para testar a
+separação entre escolas e detectar cópias incompatíveis. Ele não
+gera backup real, não acessa Firebase e não recupera documentos.
+
+Antes de uma implantação real, a direção e o responsável técnico
+devem aprovar uma política de retenção, acesso aos backups,
+armazenamento protegido, ensaios de restauração e recuperação de
+contas administrativas. Consulte
+[o manual técnico](../../template-escolas/README.md).
+
 ## Perguntas frequentes
 
 **Precisamos saber programar?** Para personalizar textos, logo e cores,
