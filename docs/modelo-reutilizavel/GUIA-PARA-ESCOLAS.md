@@ -243,6 +243,16 @@ A escola pode preparar sua identidade com a
 enquanto os bloqueios de segurança, licenciamento e testes não forem
 resolvidos.
 
+## Conhecer os aplicativos com dados fictícios
+
+Já existe um [Modo Demonstração do Portal do Aluno e do Painel Administrativo](../../demo/modo-demonstracao/index.html).
+A escola pode explorar avisos, eventos, inscrições, enquetes, sugestões e
+comunicados ilustrativos, alternando entre duas escolas fictícias e
+reiniciando as informações quando quiser. A demonstração **não conecta
+Firebase**, não dá acesso à gestão real e **não substitui um sistema
+instalável**. Os recursos mostrados são apenas fluxos representativos,
+e não todas as funções disponíveis no IFCE.
+
 ## Perguntas frequentes
 
 **Precisamos saber programar?** Para personalizar textos, logo e cores,

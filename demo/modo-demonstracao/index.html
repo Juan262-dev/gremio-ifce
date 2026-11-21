@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'none'; font-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="color-scheme" content="light">
+  <title>Modo Demonstração · Portal e Gestão do Grêmio</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script defer src="./model.js"></script>
+  <script defer src="./app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#app-content">Ir para o conteúdo</a>
+  <div class="demo-strip" role="note">
+    <span class="strip-tag">DEMONSTRAÇÃO — DADOS FICTÍCIOS</span>
+    <span>Este ambiente não usa Firebase, não cria contas e não publica informações.</span>
+  </div>
+  <header class="main-header">
+    <div class="brand"><div class="brand-icon" aria-hidden="true">G</div><div><strong>Grêmio Digital</strong><small>Experiência para outras escolas</small></div></div>
+    <div class="header-controls">
+      <label class="school-picker" for="school-select">Escola de exemplo
+        <select id="school-select">
+          <option value="escola-a">Escola Horizonte (fictícia)</option>
+          <option value="escola-b">Colégio Aurora (fictício)</option>
+        </select>
+      </label>
+      <a class="header-link" href="../central-implantacao/index.html">Central de Implantação</a>
+      <button type="button" id="reset-demo" class="reset-btn">Reiniciar tudo</button>
+    </div>
+  </header>
+  <main class="main-area">
+    <div class="intro">
+      <div><p class="eyebrow">AMBIENTE DE TESTES · SEM CADASTRO</p><h1>Conheça os dois aplicativos.</h1><p>Navegue como estudante e como gestão. Crie avisos, participe de eventos e teste enquetes com informações inventadas.</p></div>
+      <span class="no-real">Experiência ilustrativa, não sistema instalado</span>
+    </div>
+    <div class="app-shell">
+      <aside class="app-sidebar">
+        <div class="role-switch" aria-label="Escolher aplicativo">
+          <button type="button" id="role-student" class="role-btn selected" aria-pressed="true">Portal do Aluno</button>
+          <button type="button" id="role-admin" class="role-btn" aria-pressed="false">Painel Administrativo</button>
+        </div>
+        <div class="school-info">
+          <span class="label">INSTALAÇÃO FICTÍCIA</span>
+          <div class="school-avatar" id="school-avatar" aria-hidden="true">G</div>
+          <strong id="sidebar-school">Escola Horizonte (fictícia)</strong>
+          <small id="sidebar-gremio">Grêmio Movimento</small>
+        </div>
+        <p class="menu-heading" id="menu-heading">ÁREAS DO PORTAL</p>
+        <nav id="side-nav" aria-label="Navegação do aplicativo fictício"></nav>
+        <div class="sidebar-end"><strong>Simulação sem acesso real</strong><p>Trocar de aplicativo não concede permissões. Não há login nem dados de estudantes.</p><button type="button" id="reset-school" class="small-reset">Reiniciar esta escola</button></div>
+      </aside>
+      <section class="app-panel" aria-label="Conteúdo do aplicativo fictício">
+        <div class="app-panel-top"><div><p class="eyebrow" id="role-label">VISÃO DO ESTUDANTE</p><h2 id="page-title">Início</h2><p id="page-description">Conheça os recursos fictícios do portal.</p></div><span class="app-tag" id="school-tag">Demonstração A</span></div>
+        <div id="feedback" role="status" aria-live="polite"></div>
+        <div id="app-content" tabindex="-1"></div>
+        <footer class="panel-footer">
+          <span>Grêmio IFCE · origem do projeto</span>
+          <span>Protótipo local · sem Firebase e sem publicação</span>
+        </footer>
+      </section>
+    </div>
+    <p class="bottom-note">Exemplos criados para avaliar os principais fluxos. Não são uma cópia completa das funções do Portal e do Painel de produção. Nenhuma alteração é feita nos aplicativos do IFCE.</p>
+  </main>
+</body>
+</html>
