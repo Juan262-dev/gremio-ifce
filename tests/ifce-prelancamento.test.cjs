@@ -10,8 +10,10 @@ test("Portal IFCE não escreve e-mails nas enquetes nem em eventos compartilhado
  assert.match(portal,/\.collection\('votos'\)\.doc\(uid\)/);
  assert.match(admEnq,/privacidadeVersao: 2/);
  assert.match(admEv,/inscritosCount: 0, esperaCount: 0/);
- assert.match(portal,/httpsCallable\('inscreverEventoSeguro'\)/);
- assert.match(portal,/httpsCallable\('cancelarEventoSeguro'\)/);
+ assert.match(portal,/operacao === 'cancelar' \? 'cancelarEventoSeguro' : 'inscreverEventoSeguro'/);
+ assert.match(portal,/\.httpsCallable\(funcao\)/);
+ assert.match(portal,/operacoesEventoPendentes\.has\(id\)/);
+ assert.match(portal,/PortalEventosV2\.liberados\(d\)/);
 });
 test("regras v2 impedem consulta de listas legadas e exclusão de cédulas",()=>{
  const rules=read("firestore.rules");
