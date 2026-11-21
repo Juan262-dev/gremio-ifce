@@ -98,6 +98,38 @@ O relatório **só contém totais**, e retorna código de erro quando
 encontra o formato antigo. Resultado vazio não prova, por si só,
 que interfaces, regras e permissões foram corrigidas.
 
+## Pré-lançamento: correção efetiva preparada no código (ainda não aplicada no banco)
+
+O PR de privacidade v2 altera as regras do **app original IFCE** para
+quarentenar os documentos antigos de `enquetes` e `eventos`:
+estudantes **não podem ler** documentos sem
+`privacidadeVersao: 2`; as novas escritas não permitem listas de
+e-mails nesses documentos. O emulador testa leitura negada dos registros
+legados e permite apenas registros privados por UID.
+
+O Portal passa a usar voto privado (subcoleção `votos/{uid}`) em
+transação atômica, sem e-mails dentro da enquete. O Painel cria enquetes
+v2. Os eventos do Portal ficam **sem inscrição/cancelamento durante
+a homologação**: a fila de espera precisa de controlador confiável
+e testes de vagas concorrentes antes de ser reativada.
+
+O script `scripts/privacy/migrate-ifce-v2.cjs` permite **execução real
+apenas pela TI autorizada**, com credenciais do projeto IFCE fora do Git,
+manutenção (`manutencao`, `painelCongelado` e
+`privacidadeMigracaoBloqueada`) e confirmação de backup e restauração
+prévia. Por padrão executa **somente leitura/dry-run**, verifica
+e-mails contra UIDs em Firebase Auth, impede duplicações, valores
+inconsistentes ou mais de 350 participantes no mesmo documento.
+Cada transação cria documentos privados e remove as listas legadas
+do documento público **atomicamente**. Não grava e-mails de votos
+em documentos públicos ou logs.
+
+**Nenhuma operação foi feita no Firestore real neste PR.**
+A sua autorização para desenvolvimento não comprova que o backup existe,
+que todos os dados são fictícios nem substitui a aprovação da TI.
+Ainda faltam atualizar presença, relatórios, listas de gestão, carteirinha,
+cancelamentos e a fila privada antes de desativar a manutenção.
+
 ## Migração FUTURA do IFCE (em PR e aprovação separados)
 
 1. **Preparar:** mapear coleções e consumidores de
