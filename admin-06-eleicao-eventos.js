@@ -483,9 +483,12 @@
                 if (!out) return;
                 out.textContent = 'Conferindo presenças no servidor...';
                 try {
+                    // Consulta agregada no servidor: não baixa cadastros individuais.
                     const snap = await db.collection('presencas_eventos').doc(id)
-                        .collection('alunos').get({ source: 'server' });
-                    out.textContent = 'Presenças registradas: ' + snap.size + ' (contagem privada)';
+                        .collection('alunos').count().get();
+                    const total = snap.data().count;
+                    if (!Number.isSafeInteger(total) || total < 0) throw new Error('Contagem inválida');
+                    out.textContent = 'Presenças registradas: ' + total + ' (contagem privada, sem baixar cadastros)';
                 } catch (e) {
                     out.textContent = 'Presenças não disponíveis para esta conta. Não é zero.';
                 }
