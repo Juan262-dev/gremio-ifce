@@ -554,6 +554,7 @@
                 <h5 class="card-title-chem mb-2">Pedidos de exclusão de dados (somente você)</h5>
                 <p class="text-muted-custom small mb-2">Pedidos de alunos. A conferência é somente leitura: não marca o pedido como concluído nem remove dados. Registros privados, Authentication e backups exigem processo de exclusão autorizado pela escola.</p>
                 <div id="lista-exclusoes"><p class="text-muted-custom small mb-0">Carregando...</p></div>
+                <div id="ti-exclusao-inventario" role="status" aria-live="polite" class="small text-muted-custom mt-2"></div>
             </div>
 
             <div id="secao-documentos" data-niveis="admin,secretaria" class="card card-custom p-4 mb-4">
@@ -1350,7 +1351,7 @@
                 <h6 class="fw-bold text-white">2. Lista de alunos</h6>
                 <div class="d-flex gap-2 flex-wrap">
                     <button onclick="baixarCSVAlunos()" class="btn btn-outline-light btn-sm">⬇️ Baixar CSV de alunos</button>
-                    <button onclick="excluirAlunosBloqueados()" class="btn btn-outline-danger btn-sm">Excluir alunos bloqueados</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled title="Necessário processo autorizado de exclusão">Exclusão em massa indisponível</button>
                 </div>
 
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">

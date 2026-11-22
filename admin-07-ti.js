@@ -195,27 +195,30 @@
                     const x = d.data();
                     return `<div class="list-group-item d-flex justify-content-between align-items-center gap-2">
                         <div><strong class="text-white">${esc(x.nome || x.email)}</strong><br><small class="text-muted-custom">${esc(x.email)}</small></div>
-                        <button data-ti-acao="concluirExclusao" data-pedido="${esc(d.id)}" data-email="${esc(x.email)}" class="btn btn-danger btn-sm py-0" style="font-size:12px">Concluir</button>
+                        <button data-ti-acao="concluirExclusao" data-pedido="${esc(d.id)}" data-email="${esc(x.email)}" class="btn btn-outline-warning btn-sm py-0" style="font-size:12px">Revisar</button>
                     </div>`;
                 }).join('') + '</div>';
             });
         }
         async function concluirExclusaoTI(pedidoId, email) {
-            if (!(await confirmar(`Concluir a exclusão dos dados de ${email}? Isso apaga o perfil, aniversário e carteirinha, e desativa o cadastro.`))) return;
+            if (!soRaiz()) return;
+            const out = document.getElementById('ti-exclusao-inventario');
+            if (!out) return;
+            out.textContent = 'Conferindo o pedido no servidor...';
             try {
-                await db.collection('perfis').doc(email).delete().catch(() => {});
-                await db.collection('aniversarios').doc(email).delete().catch(() => {});
-                // Revoga o QR Code no processo de exclusão do aluno.
-                await db.collection('carteirinhas').doc(email).delete();
-                await db.collection('alunos').doc(email).update({ ativo: false, status: 'excluido', nome: 'Dados excluídos' });
-                await db.collection('pedidos_exclusao').doc(pedidoId).update({ status: 'Concluído', concluidoEm: TS() });
-                registrarAcao('Exclusão de dados concluída', email);
-                toast('Pedido concluído. Apague também a conta de login no console do Firebase.');
-            } catch (e) { falhaSec(e, 'concluirExclusaoTI'); }
+                const pedido = await db.collection('pedidos_exclusao').doc(pedidoId)
+                    .get({ source: 'server' });
+                if (!pedido.exists || pedido.data().status !== 'Aberto' ||
+                    String(pedido.data().email || '').trim().toLowerCase() !== email.toLowerCase()) {
+                    out.textContent = 'Pedido ausente ou divergente. Nenhuma ação realizada.';
+                    return;
+                }
+                await conferirInventarioExclusao(email, out);
+            } catch (e) {
+                out.textContent = 'Não foi possível verificar o pedido. Nenhum dado foi removido.';
+            }
         }
 
-        
-/* ================= FONTE SUBSTITUTA (somente o root) ================= */
         function carregarFontesTI() {
             ouvir(db.collection('cargos').where('nivel', '==', 'desenvolvedor'), snap => {
                 const c = document.getElementById('lista-fontes');
@@ -262,6 +265,36 @@
 
         
 /* ================= FERRAMENTAS DE TI (só o e-mail raiz) ================= */
+
+/* Diagnóstico informativo: não lê regras publicadas via SDK e não executa deploy. */
+async function verificarImplantacaoIFCE() {
+    if (!soRaiz()) return;
+    const box = document.getElementById('ti-implantacao-v2');
+    if (!box) return;
+    box.textContent = 'Consultando configuração no servidor...';
+    const projeto = firebase.app().options.projectId || '';
+    const linhas = [];
+    const estadoInicial = AdminPreparacao2027.estadoImplantacao(projeto, null);
+    if (projeto !== AdminPreparacao2027.PROJETO) {
+        box.textContent = estadoInicial.texto;
+        return;
+    }
+    try {
+        const snap = await db.collection('config').doc('sistema').get({ source: 'server' });
+        const situacao = AdminPreparacao2027.estadoImplantacao(projeto, snap.exists ? snap.data() : null);
+        linhas.push('Projeto: IFCE (ID conferido no cliente).', 'Configuração: ' + situacao.texto);
+    } catch (e) {
+        linhas.push('Projeto: IFCE (ID conferido no cliente).',
+            'Configuração: não foi possível consultar o servidor. Estado de liberação desconhecido.');
+    }
+    linhas.push('Regras publicadas: CONFERÊNCIA MANUAL no Firebase Console.',
+        'Índice da fila: CONFERÊNCIA MANUAL no Firebase Console.',
+        'Cloud Functions: IMPLANTAÇÃO E TESTE MANUAIS obrigatórios.',
+        'Dados antigos, Auth, backup/restauração: AUDITORIA INSTITUCIONAL pendente.',
+        'Este relatório não certifica segurança, migração nem homologação.');
+    box.textContent = linhas.join('\n');
+    box.style.whiteSpace = 'pre-line';
+}
 
         async function rodarDiagnostico() {
             if (!soRaiz()) return;

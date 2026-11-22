@@ -302,16 +302,19 @@
                 snapshot.forEach(doc => {
                     const ev = doc.data();
                     cacheEventos[doc.id] = ev;
-                    const count = Number(ev.inscritosCount) || 0;
+                    const resumo = AdminPreparacao2027.resumoEvento(ev);
                     html += `
                         <div class="list-group-item d-flex justify-content-between align-items-start">
                             <div>
                                 <h6 class="fw-bold mb-1" style="color: var(--ifce-accent-green);">${esc(ev.titulo)} <span class="badge bg-info text-dark">📅 ${esc(ev.data)}</span></h6>
                                 <p class="mb-1 small text-white">${esc(ev.descricao)}</p>
-                                <small class="text-muted-custom fw-bold">Inscritos (${count}): lista individual privada, disponível apenas à gestão autorizada</small>
+                                <small class="text-muted-custom fw-bold">${esc(resumo.texto)}</small>
+                                <div class="small text-muted-custom" data-presencas-valor>Presenças: consultar registro privado com autorização.</div>
                             </div>
                             <div class="d-flex flex-column gap-1 ms-2">
-                                <button data-acao="exportarInscritos" data-id="${esc(doc.id)}" class="btn btn-outline-light btn-sm py-0" style="font-size: 11px;">⬇️ CSV</button>
+                                <button data-acao="exportarResumoEvento" data-id="${esc(doc.id)}" class="btn btn-outline-light btn-sm py-0" style="font-size: 11px;">Resumo CSV</button>
+                                ${soRaiz() && resumo.valido ? `<button data-acao="exportarInscritos" data-id="${esc(doc.id)}" class="btn btn-outline-warning btn-sm py-0" style="font-size: 11px;">Lista privada CSV</button>
+                                <button data-acao="contarPresencasEvento" data-id="${esc(doc.id)}" class="btn btn-outline-info btn-sm py-0" style="font-size: 11px;">Conferir presença</button>` : ''}
                                 <button data-acao="excluirEvento" data-id="${esc(doc.id)}" data-titulo="${esc(ev.titulo)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
                             </div>
                         </div>`;
@@ -330,7 +333,9 @@
             },
             alternarEnquete: (id, el) => db.collection('enquetes').doc(id).update({ ativa: el.dataset.valor === 'true' }).catch(e => erroDB(e, 'alternarEnquete')),
             alternarAluno: (id, el) => { const bloq = el.dataset.valor === 'false'; db.collection('alunos').doc(id).update({ ativo: !bloq }).then(() => registrarAcao(bloq ? 'Aluno bloqueado' : 'Aluno desbloqueado', id)).catch(e => erroDB(e, 'alternarAluno')); },
-            excluirAluno: async id => { if (await confirmar(`Excluir o aluno ${id}?`)) db.collection('alunos').doc(id).delete().then(() => registrarAcao('Aluno excluído', id)).catch(e => erroDB(e, 'excluirAluno')); },
+            excluirAluno: async () => {
+                toast('Exclusão direta bloqueada: use a conferência de privacidade na área de TI.', 'warning');
+            },
             responderSugestao: id => {
                 const inp = document.querySelector(`[data-resp="${CSS.escape(id)}"]`);
                 const texto = inp ? inp.value.trim() : '';
@@ -462,7 +467,32 @@
                 baixarCSV('pautas.csv', [['Título', 'Descrição', 'Autor', 'Apoios', 'Status']]
                     .concat(cachePautas.map(p => [p.titulo, p.descricao, p.autor || '', (p.apoios || []).length, p.status || STATUS_PAUTA[0]])));
             },
+            exportarResumoEvento: id => {
+                const ev = cacheEventos[id];
+                const r = AdminPreparacao2027.resumoEvento(ev);
+                if (!r.valido) { toast('Contagens não verificadas. Revise o evento antes de exportar.', 'warning'); return; }
+                baixarCSV('resumo_evento_' + id.replace(/[^a-zA-Z0-9_-]/g, '_') + '.csv', [
+                    ['Evento','Data','Confirmados','Aguardando vaga','Limite de vagas','Vagas livres'],
+                    [ev.titulo || '', ev.dataISO || '', r.confirmados, r.aguardando,
+                        r.livres === null ? 'sem limite' : ev.vagas, r.livres === null ? 'sem limite' : r.livres]
+                ]);
+            },
+            contarPresencasEvento: async (id, el) => {
+                if (!soRaiz()) return;
+                const out = el.closest('.list-group-item')?.querySelector('[data-presencas-valor]');
+                if (!out) return;
+                out.textContent = 'Conferindo presenças no servidor...';
+                try {
+                    const snap = await db.collection('presencas_eventos').doc(id)
+                        .collection('alunos').get({ source: 'server' });
+                    out.textContent = 'Presenças registradas: ' + snap.size + ' (contagem privada)';
+                } catch (e) {
+                    out.textContent = 'Presenças não disponíveis para esta conta. Não é zero.';
+                }
+            },
             exportarInscritos: async id => {
+                if (!soRaiz()) { toast('Lista individual restrita à TI autorizada.', 'warning'); return; }
+                if (!(await confirmar('A lista contém e-mails de estudantes. Baixar apenas em dispositivo autorizado e não compartilhar publicamente?'))) return;
                 const ev = cacheEventos[id];
                 if (!ev || ev.privacidadeVersao !== 2) { toast('Evento antigo precisa de migração.', 'warning'); return; }
                 try {
