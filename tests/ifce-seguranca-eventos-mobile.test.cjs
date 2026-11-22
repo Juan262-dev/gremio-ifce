@@ -70,6 +70,11 @@ test('Gestão de eventos apresenta contagem validada, relatório sem identidade 
  assert.match(adm6,/exportarResumoEvento/);
  assert.match(adm6,/contarPresencasEvento/);
  assert.match(adm6,/presencas_eventos/);
+ const trechoPresencas = adm6.slice(adm6.indexOf('contarPresencasEvento: async'),
+   adm6.indexOf('exportarInscritos: async'));
+ assert.match(trechoPresencas,/\.collection\('alunos'\)\.count\(\)\.get\(\)/);
+ assert.match(trechoPresencas,/Number\.isSafeInteger\(total\)/);
+ assert.doesNotMatch(trechoPresencas,/\.collection\('alunos'\)\.get\(/);
  assert.match(adm6,/if \(!soRaiz\(\)\)/);
  assert.match(adm6,/confirmar\('A lista contém e-mails/);
 });
