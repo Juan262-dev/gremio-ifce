@@ -46,6 +46,31 @@ Sem calendário ISO válido no evento, a função também recusa inscrições,
 impedindo acesso a eventos com datas incorretas. Esta é uma proteção
 de servidor: não depende de a interface esconder botões.
 
+## Avanços no Painel e no Portal — PR de preparação
+
+- **Diagnóstico da implantação no Painel TI**: lê apenas o ID do projeto
+  configurado e `config/sistema` do servidor. Regras realmente publicadas,
+  índices, Cloud Functions e dados antigos permanecem **a verificar
+  manualmente**; o botão não escreve no Firebase nem declara homologação.
+- **Eventos**: resumo de inscrições e vagas exige contagens válidas e
+  modelo v2; relatório de totais sem e-mails, consulta de presenças privadas
+  somente pelo administrador habilitado e exportação individual restrita à TI
+  com confirmação sobre a sensibilidade do arquivo.
+- **Exclusão de dados**: foram bloqueados fluxos de exclusão direta,
+  exclusão em massa e marcação prematura de pedidos como concluídos.
+  Novo inventário de documentos principais é **somente leitura** e admite
+  explicitamente que votos, inscrições, presenças, Auth, vínculos indiretos
+  e backups requerem processo institucional. Não é ainda um mecanismo
+  de apagamento completo nem autorização para ignorar pedidos de titulares.
+- **Celular e conexão lenta**: aviso de modo offline, mensagens acessíveis,
+  alertas de falhas de leitura sem repetição excessiva e botões de
+  tamanho adequado no celular; a identidade visual existente é preservada.
+
+**Nada é publicado automaticamente** neste PR. A TI deve definir
+procedimento operacional e prazo para atender pedidos de titulares antes
+do uso regular. Uma futura operação destrutiva precisa de backend
+autorizado, política de retenção e backup comprovado.
+
 ## Portal de eventos e cache offline mais seguros
 
 Esta rodada **não altera** `firestore.rules` nem publica nada no Firebase.

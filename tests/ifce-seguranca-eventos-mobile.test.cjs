@@ -36,3 +36,40 @@ test('HTML preserva identidade e fornece painéis acessíveis',()=>{
  assert.match(html,/id="lista-eventos-admin" aria-live="polite"/);
  assert.match(html,/card-title-chem/);
 });
+
+test('Portal informa conexão offline e erros de consultas com alertas acessíveis',()=>{
+ const portal=r('index.html');
+ assert.match(portal,/id="estado-conexao-portal"[^>]*role="status"[^>]*aria-live="polite"/);
+ assert.match(portal,/function atualizarEstadoConexaoPortal\(\)/);
+ assert.match(portal,/window\.addEventListener\('offline', atualizarEstadoConexaoPortal\)/);
+ assert.match(portal,/navigator\.onLine === false/);
+ assert.match(portal,/function ouvir\(query, cb, onError\)/);
+ assert.match(portal,/ultimoAvisoConsulta > 12000/);
+ assert.match(portal,/Enquetes indisponíveis agora/);
+ assert.match(portal,/Eventos indisponíveis agora/);
+ assert.match(portal,/@media\(prefers-reduced-motion:reduce\)/);
+ assert.match(portal,/min-height:44px/);
+});
+test('TI impede exclusão parcial, pedidos falsamente concluídos e exclusão em massa',()=>{
+ const ti=r('admin-07-ti.js'), adm4=r('admin-04-gestao-diretoria.js'),
+   adm3=r('admin-03-alunos-punicoes.js'), adm6=r('admin-06-eleicao-eventos.js');
+ const section=ti.slice(ti.indexOf('async function concluirExclusaoTI'),
+   ti.indexOf('function carregarFontesTI'));
+ assert.match(section,/conferirInventarioExclusao/);
+ assert.doesNotMatch(section,/\.update\(|\.delete\(|\.set\(/);
+ const inventory=adm4.slice(adm4.indexOf('async function conferirInventarioExclusao'),
+   adm4.indexOf('function gerarRegrasNovoRaiz'));
+ assert.match(inventory,/get\(\{ source: 'server' \}\)/);
+ assert.doesNotMatch(inventory,/batch\.commit|\.delete\(|\.update\(/);
+ assert.doesNotMatch(adm3.slice(adm3.indexOf('async function excluirAlunosBloqueados'),adm3.indexOf('function carregarPortalConfig')),/apagarEmLotes/);
+ assert.match(adm6,/Exclusão direta bloqueada/);
+});
+test('Gestão de eventos apresenta contagem validada, relatório sem identidade e presença privada',()=>{
+ const adm6=r('admin-06-eleicao-eventos.js');
+ assert.match(adm6,/AdminPreparacao2027\.resumoEvento\(ev\)/);
+ assert.match(adm6,/exportarResumoEvento/);
+ assert.match(adm6,/contarPresencasEvento/);
+ assert.match(adm6,/presencas_eventos/);
+ assert.match(adm6,/if \(!soRaiz\(\)\)/);
+ assert.match(adm6,/confirmar\('A lista contém e-mails/);
+});

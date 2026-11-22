@@ -14,6 +14,7 @@ on:
       - 'firestore.indexes.json'
       - 'functions/**'
       - 'admin-*.js'
+      - 'admin-preparacao-2027.js'
       - 'laboratorio-quimica.js'
       - 'laboratorio-avancado.js'
       - 'admin-laboratorio.js'
