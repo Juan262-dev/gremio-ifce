@@ -87,5 +87,5 @@ begin
      join public.school_members m on m.user_id=v.user_id)<>1
  then raise exception 'Relações entre dados restaurados divergiram'; end if;
 end $verify$;
-select 'ENS AIO DE RESTAURAÇÃO LÓGICA OK (dados serão revertidos)' as resultado;
+select 'ENSAIO DE RESTAURAÇÃO LÓGICA OK (dados serão revertidos)' as resultado;
 rollback;
