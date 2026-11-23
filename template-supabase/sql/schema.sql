@@ -10,7 +10,7 @@ grant usage on schema school_private to authenticated;
 -- Validação no servidor: alternativas não vazias, únicas, e sempre unidimensionais.
 create function school_private.valid_poll_options(items text[]) returns boolean
 language sql immutable set search_path = ''
-as $
+as $valid_options$
   select case
     when items is null or array_ndims(items) <> 1 or cardinality(items) not between 2 and 8 then false
     else (select count(*) = cardinality(items)
@@ -19,7 +19,7 @@ as $
       and count(distinct lower(btrim(value))) = cardinality(items)
       from unnest(items) as choice(value))
   end;
-$;
+$valid_options$;
 revoke all on function school_private.valid_poll_options(text[]) from public, anon;
 grant execute on function school_private.valid_poll_options(text[]) to authenticated;
 
