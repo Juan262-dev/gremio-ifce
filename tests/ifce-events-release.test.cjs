@@ -35,3 +35,19 @@ test("contadores nunca aceitam fila em evento ilimitado ou vagas livres",()=>{
  assert.deepEqual(counts({vagas:2,inscritosCount:2,esperaCount:1,proximaOrdem:3}),
   {vagas:2,inscritos:2,espera:1,seq:3});
 });
+
+test("contadores do servidor exigem quatro inteiros explícitos, sem coerção silenciosa",()=>{
+ const correto={vagas:2,inscritosCount:1,esperaCount:0,proximaOrdem:1};
+ assert.deepEqual(counts(correto),{vagas:2,inscritos:1,espera:0,seq:1});
+ for(const campo of Object.keys(correto)){
+   const ausente={...correto};delete ausente[campo];
+   assert.throws(()=>counts(ausente),/Contagens ou vagas/,campo+" ausente");
+   for(const invalido of [null,false,"0",NaN]){
+     assert.throws(()=>counts({...correto,[campo]:invalido}),/Contagens ou vagas/,
+       campo+" não-numérico");
+   }
+ }
+ assert.deepEqual(counts({vagas:0,inscritosCount:0,esperaCount:0,proximaOrdem:0}),
+   {vagas:0,inscritos:0,espera:0,seq:0});
+});
+

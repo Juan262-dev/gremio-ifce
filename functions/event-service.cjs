@@ -21,10 +21,10 @@ function invalid(message,code="failed-precondition"){
   const e=new Error(message);e.code=code;throw e;
 }
 const counts=e=>{
-  const vagas=e.vagas===undefined?0:Number(e.vagas);
-  const inscritos=Number(e.inscritosCount||0);
-  const espera=Number(e.esperaCount||0);
-  const seq=Number(e.proximaOrdem||0);
+  // Dados incompletos nunca significam zero: vagas=0 só é permitido
+  // quando o campo existe explicitamente (evento sem limite de vagas).
+  // Também recusa strings, null e booleanos para evitar coerção silenciosa.
+  const {vagas,inscritosCount:inscritos,esperaCount:espera,proximaOrdem:seq}=e||{};
   if(![vagas,inscritos,espera,seq].every(n=>Number.isSafeInteger(n)&&n>=0)
     ||vagas>MAX_REGISTERED||inscritos>MAX_REGISTERED||espera>MAX_WAITING
     ||(vagas>0&&inscritos>vagas)

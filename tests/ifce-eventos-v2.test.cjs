@@ -89,3 +89,18 @@ test("rejeita fila inconsistente, duplicação adulterada e não realiza gravaç
  const record=await db.doc("eventos/evento-inscricao-adulterada").get();
  assert.equal(record.data().inscritosCount,0);
 });
+
+test("não cria inscrição quando evento v2 tem contador ausente ou texto no lugar de número",async()=>{
+ const ref=db.doc("eventos/evento-incompleto");
+ await ref.set({titulo:"Evento fictício",dataISO:"2099-01-01",
+   privacidadeVersao:2,vagas:1,inscritosCount:0,esperaCount:0});
+ await assert.rejects(()=>enroll(db,FieldValue,uidA,emailA,"evento-incompleto"),
+   /Contagens ou vagas/);
+ await ref.update({proximaOrdem:0,esperaCount:"0"});
+ await assert.rejects(()=>enroll(db,FieldValue,uidA,emailA,"evento-incompleto"),
+   /Contagens ou vagas/);
+ assert.equal((await ref.collection("inscricoes").doc(uidA).get()).exists,false);
+ const snap=await ref.get();
+ assert.equal(snap.data().inscritosCount,0);
+});
+

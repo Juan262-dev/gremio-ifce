@@ -164,3 +164,20 @@ Passar nos testes acima **não é homologação institucional** e
 A publicação, a migração real e a habilitação de novos módulos devem
 ficar bloqueadas até a finalização da lista, verificação de backups e
 aceite documentado por quem responde pela escola.
+
+## Validação reforçada de datas e contadores (preparação)
+
+O servidor só aceita eventos v2 cujos campos `vagas`, `inscritosCount`,
+`esperaCount` e `proximaOrdem` existam como **números inteiros válidos**.
+Campo ausente, texto ou valor incoerente impede inscrição/cancelamento em vez
+de ser convertido silenciosamente em zero. O valor explícito `vagas: 0`
+continua representando um evento sem limite de vagas.
+
+No Painel, resumos com `vagas` ausente mostram inconsistência, e o
+calendário impede criar eventos com datas impossíveis ou anteriores ao dia
+atual de **America/Fortaleza**. A checagem de servidor continua obrigatória.
+
+Essas verificações usam dados fictícios nos testes e **não corrigem registros
+reais automaticamente**. Não houve migração, alteração de regras publicadas,
+homologação, deploy nem liberação de inscrições por essa mudança.
+
