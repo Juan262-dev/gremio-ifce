@@ -104,3 +104,29 @@ test("cliente não pode definir IDs ou datas geradas pelo servidor",()=>{
  assert.match(sql,/count\(distinct lower\(btrim\(value\)\)\)/);
  assert.match(sql,/array_ndims\(items\) <> 1/);
 });
+
+test("todas as chaves estrangeiras críticas possuem índices e migração isolada",()=>{
+ const schema=read("sql/schema.sql");
+ const followup=read("sql/indexes-existing-install.sql");
+ const names=[
+  "school_notices_author_idx",
+  "school_study_materials_author_idx",
+  "school_events_author_idx",
+  "school_registrations_user_idx",
+  "school_polls_author_idx",
+  "school_votes_user_idx"
+ ];
+ for(const name of names){
+  assert.ok(schema.includes("create index "+name+" on public.school_"),name);
+  assert.ok(followup.includes("create index "+name+" on public.school_"),name);
+ }
+});
+test("testes SQL de permissões nunca persistem contas de ensaio",()=>{
+ const script=read("sql/verify-rls-tests.sql");
+ assert.match(script,/begin;/);
+ assert.match(script,/rollback;\s*$/);
+ assert.match(script,/Projeto não está vazio/);
+ assert.match(script,/set local role authenticated/);
+ assert.match(script,/if not duplicate_blocked/);
+ assert.match(script,/if not foreign_vote_blocked/);
+});
