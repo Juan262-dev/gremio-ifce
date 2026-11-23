@@ -2,6 +2,21 @@
 
 Portal do Aluno e Painel Administrativo do Grêmio IFCE.
 
+## Plataforma para outras escolas — Firebase prioritário
+
+**Decisão técnica atual:** a evolução da versão universal acontece em
+[`template-escolas/`](template-escolas/README.md), com **um Firebase e
+uma hospedagem por escola**. O modelo Supabase de
+[`template-supabase/`](template-supabase/README.md) foi mantido apenas
+como experimento anterior e **não é requisito** para instalar a versão
+Firebase. Nenhum banco Supabase é migrado ou apagado automaticamente.
+
+Comece pelo [roteiro de retomada Firebase](template-escolas/RETOMADA-FIREBASE.md)
+e pelo [verificador local de instalação](template-escolas/scripts/preflight-school.cjs).
+**Não há conexão Firebase para validação de produção nesta etapa.**
+A versão universal continua em homologação e não está liberada para
+estudantes reais.
+
 ## Para outras escolas
 
 Quer usar a ideia na sua escola? Comece pelo
