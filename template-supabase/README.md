@@ -113,7 +113,7 @@ backup/restauração nem revisão institucional.
 
 ## Verificação no projeto exclusivo de ensaio (23/11/2026)
 - O esquema SQL revisado foi aplicado por migração rastreada `create_school_template_rls_v1`.
-- **9 tabelas** foram criadas com **9 políticas de RLS habilitadas** (uma RLS por tabela; cada tabela possui múltiplas policies).
+- **9 tabelas** foram criadas com **RLS ativada em todas elas**; cada tabela possui políticas de acesso próprias.
 - Supabase Security Advisor: **nenhum alerta detectado** após a aplicação.
 - Consultas reais ao Postgres confirmaram que `anon` não possui SELECT nas nove tabelas;
   `authenticated` não possui permissão para inserir cargos nem sobrescrever `created_at`.
