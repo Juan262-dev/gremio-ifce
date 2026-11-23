@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="color-scheme" content="light">
+  <title>Portal do Aluno · Instalação escolar Supabase experimental</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" defer></script>
+  <script src="./js/instance.js" defer></script>
+  <script src="./js/portal.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><div class="wordmark"><span class="mark" aria-hidden="true">G</span><div><strong id="school-name">Escola não configurada</strong><small id="gremio-name">Portal do Aluno</small></div></div><a href="./admin.html">Área administrativa</a></header>
+  <main class="container">
+    <div class="headline"><p class="eyebrow">PORTAL DO ALUNO</p><h1>Espaço do Grêmio Estudantil</h1><p>Avisos, eventos e participação da sua escola.</p></div>
+    <p class="notice">Protótipo Supabase: não cadastrar estudantes reais antes da homologação.</p>
+    <div id="status" class="notice" role="status" aria-live="polite">Verificando configuração da instalação…</div>
+    <section id="access" class="panel" hidden>
+      <h2>Entrar ou solicitar acesso</h2>
+      <p>Somente estudantes com e-mail verificado e cadastro aprovado podem ver o conteúdo.</p>
+      <form id="login-form" class="fields"><label>E-mail<input name="email" type="email" maxlength="120" required autocomplete="username"></label><label>Senha<input name="password" type="password" required autocomplete="current-password"></label><button type="submit">Entrar</button></form>
+      <details><summary>Primeiro acesso: criar uma conta</summary>
+        <p>Depois de criar a conta, confirme o e-mail e solicite aprovação da gestão.</p>
+        <form id="signup-form" class="fields"><label>E-mail<input name="email" type="email" maxlength="120" required autocomplete="email"></label><label>Senha (mínimo 8 caracteres)<input name="password" type="password" minlength="8" required autocomplete="new-password"></label><button type="submit">Criar conta e enviar verificação</button></form>
+      </details>
+    </section>
+    <section id="pending" class="panel" hidden><h2>Acesso pendente</h2><p id="pending-text"></p><label>Seu nome para solicitação<input id="display-name" maxlength="80" autocomplete="name"></label><div class="button-row"><button id="request-access" type="button">Solicitar cadastro</button><button id="refresh-access" type="button" class="secondary">Atualizar verificação e aprovação</button><button id="signout-pending" type="button" class="secondary">Sair</button></div></section>
+    <section id="portal" hidden>
+      <div class="workspace-head"><h2>Olá! Participe do Grêmio.</h2><button id="signout" class="secondary" type="button">Sair</button></div>
+      <div class="columns">
+        <section class="panel"><h3>Materiais de estudo</h3><p>Conteúdos educativos textuais publicados pela gestão desta escola. Não inclua dados pessoais.</p><div id="study-list" class="stack"></div></section>
+        <section class="panel"><h3>Avisos</h3><div id="notice-list" class="stack"></div></section>
+        <section class="panel"><h3>Eventos</h3><p>Inscrições individuais: outros estudantes não conseguem ver a lista de participantes.</p><div id="event-list" class="stack"></div></section>
+        <section class="panel"><h3>Enquetes</h3><p>O seu voto fica em um registro privado por conta.</p><div id="poll-list" class="stack"></div></section>
+        <section class="panel"><h3>Sugestões</h3><p>Suas ideias só podem ser consultadas por você e pela gestão autorizada.</p><form id="suggestion-form" class="fields"><label>Ideia para o Grêmio<textarea name="body" maxlength="500" required></textarea></label><button type="submit">Enviar sugestão</button></form><div id="suggestion-list" class="stack"></div></section>
+      </div>
+    </section>
+  </main>
+  <section class="container">
+    <details class="panel"><summary>Central de Ajuda: Portal do Aluno</summary>
+      <p>Para acessar os materiais, confirme seu e-mail e aguarde a aprovação do cadastro.</p>
+      <p>Na aba Eventos é possível inscrever-se; sua inscrição individual não aparece para outros estudantes. Nas Enquetes, cada conta pode votar uma vez.</p>
+      <p>Se houver problema de acesso ou privacidade, procure o contato institucional informado na instalação da própria escola. Não envie senhas em mensagens.</p>
+    </details>
+  </section>
+  <footer>Origem do sistema: Grêmio IFCE Campus Crateús · <a href="https://github.com/Juan262-dev/gremio-ifce">Projeto original</a> · Atribuição definitiva sujeita à licença.</footer>
+</body>
+</html>

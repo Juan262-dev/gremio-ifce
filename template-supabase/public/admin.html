@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self'; img-src 'self' data:; connect-src 'self' https://*.supabase.co wss://*.supabase.co; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <meta name="color-scheme" content="light">
+  <title>Painel Administrativo · Instalação escolar Supabase experimental</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.2/dist/umd/supabase.js" defer></script>
+  <script src="./js/instance.js" defer></script>
+  <script src="./js/admin.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><div class="wordmark"><span class="mark" aria-hidden="true">G</span><div><strong id="school-name">Escola não configurada</strong><small id="gremio-name">Painel Administrativo</small></div></div><a href="./index.html">Portal do Aluno</a></header>
+  <main class="container">
+    <div class="headline"><p class="eyebrow">PAINEL ADMINISTRATIVO</p><h1>Gestão da escola</h1><p>Área restrita a gestores autorizados desta instalação.</p></div>
+    <p class="notice">Protótipo Supabase: não cadastrar estudantes reais antes da homologação.</p>
+    <div id="status" class="notice" role="status" aria-live="polite">Verificando configuração da instalação…</div>
+    <section id="access" class="panel" hidden><h2>Acesso administrativo</h2><p>O primeiro administrador deve ser autorizado fora do navegador por um responsável técnico. Criar uma conta comum não concede privilégios.</p><form id="login-form" class="fields"><label>E-mail<input name="email" type="email" maxlength="120" autocomplete="username" required></label><label>Senha<input name="password" type="password" autocomplete="current-password" required></label><button type="submit">Entrar</button></form></section>
+    <section id="admin" hidden>
+      <div class="workspace-head"><h2>Gerenciamento do Grêmio</h2><button id="signout" class="secondary" type="button">Sair</button></div>
+      <div class="columns">
+        <section class="panel"><h3>Solicitações de estudantes</h3><div id="member-list" class="stack"></div></section>
+        <section class="panel"><h3>Sugestões dos estudantes</h3><p>Apenas administradores autorizados podem analisar as sugestões privadas.</p><div id="suggestion-list" class="stack"></div></section>
+        <section class="panel"><h3>Publicar material de estudo</h3><p>Apenas texto autorizado pela escola, sem arquivos de terceiros ou dados pessoais.</p><form id="study-form" class="fields"><label>Título<input name="title" maxlength="100" required></label><label>Conteúdo<textarea name="content" maxlength="2000" required></textarea></label><button type="submit">Publicar material</button></form><div id="study-admin-list" class="stack"></div></section>
+        <section class="panel"><h3>Novo aviso</h3><form id="notice-form" class="fields"><label>Título<input name="title" maxlength="100" required></label><label>Mensagem<textarea name="body" maxlength="1500" required></textarea></label><button type="submit">Publicar aviso</button></form></section>
+        <section class="panel"><h3>Novo evento</h3><form id="event-form" class="fields"><label>Título<input name="title" maxlength="100" required></label><label>Descrição<textarea name="details" maxlength="1000" required></textarea></label><label>Quando<input name="when" maxlength="100" required></label><label>Local<input name="location" maxlength="120" required></label><button type="submit">Criar evento</button></form></section>
+        <section class="panel"><h3>Nova enquete</h3><form id="poll-form" class="fields"><label>Pergunta<input name="question" maxlength="200" required></label><label>Opção 1<input name="option1" maxlength="80" required></label><label>Opção 2<input name="option2" maxlength="80" required></label><button type="submit">Criar enquete</button></form></section>
+      </div>
+    </section>
+  </main>
+  <section class="container"><details class="panel">
+    <summary>Central de Ajuda: Gestão Escolar</summary>
+    <p>A gestão pode aprovar cadastros, administrar avisos, eventos, enquetes e publicar materiais de estudo textuais.</p>
+    <p>Para dar ou transferir cargos administrativos, solicite o procedimento técnico autorizado. Nunca compartilhe senhas ou informações pessoais em materiais.</p>
+    <p>O acesso à gestão não autoriza usar contas do IFCE ou dados de outra escola.</p>
+  </details></section>
+  <footer>Origem do sistema: Grêmio IFCE Campus Crateús · <a href="https://github.com/Juan262-dev/gremio-ifce">Projeto original</a> · Atribuição definitiva sujeita à licença.</footer>
+</body>
+</html>

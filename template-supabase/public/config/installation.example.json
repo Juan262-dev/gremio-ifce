@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "backend": "supabase",
+  "instanceId": "escola-exemplo",
+  "siteOrigin": "https://escola.example.invalid",
+  "school": {
+    "name": "Escola Modelo (EXEMPLO)",
+    "gremio": "Grêmio Estudantil Exemplo",
+    "contact": "gremio@escola.example.invalid",
+    "color": "#246a49"
+  },
+  "supabase": {
+    "url": "https://SUBSTITUIR.supabase.co",
+    "publishableKey": "PREENCHER_CHAVE_PUBLICA_DA_ESCOLA"
+  }
+}

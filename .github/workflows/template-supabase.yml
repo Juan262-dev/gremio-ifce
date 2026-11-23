@@ -1,0 +1,27 @@
+name: Validar template escolar Supabase
+on:
+  pull_request:
+    paths:
+      - 'template-supabase/**'
+      - 'tests/template-supabase*.test.cjs'
+      - '.github/workflows/template-supabase.yml'
+  push:
+    paths:
+      - 'template-supabase/**'
+      - 'tests/template-supabase*.test.cjs'
+      - '.github/workflows/template-supabase.yml'
+jobs:
+  template:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validar sintaxe do Portal, Painel e configuração
+        run: |
+          node --check template-supabase/public/js/instance.js
+          node --check template-supabase/public/js/portal.js
+          node --check template-supabase/public/js/admin.js
+      - name: Conferir isolamento, RLS e configuração
+        run: node --test tests/template-supabase.test.cjs tests/template-supabase.auth-ui.test.cjs
