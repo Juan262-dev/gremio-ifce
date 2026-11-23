@@ -84,7 +84,10 @@
    $("gremio-name").textContent=config.school.gremio;
    api=InstalacaoSupabase.start(config);
    api.auth.onAuthStateChange((_event,session)=>setTimeout(()=>authCheck(session?.user||null),0));
-   const initial=result(await api.auth.getUser());await authCheck(initial.user);
+   // A tela de login deve abrir também quando não existe sessão.
+   // Para autorizar a gestão, authCheck sempre consulta getUser() e a RLS.
+   const initial=result(await api.auth.getSession());
+   await authCheck(initial.session?.user||null);
  }catch(e){$("access").hidden=true;show(false);$("access").hidden=true;status("Instalação indisponível: "+e.message,true);return;}
  $("login-form").addEventListener("submit",async ev=>{
    ev.preventDefault();const d=new FormData(ev.currentTarget);
