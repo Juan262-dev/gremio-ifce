@@ -22,6 +22,7 @@ ou todos os módulos da versão original do IFCE.
 - `public/js/instance.js`: valida uma configuração **por escola** antes da conexão.
 - `public/config/installation.example.json`: exemplo propositalmente inválido.
 - `sql/schema.sql`: esquema e RLS para **um projeto novo, exclusivo da escola**.
+- `sql/verify-rls-tests.sql`: cenários SQL com contas fictícias dentro de transação revertida; aborta em projeto com contas reais.
 - `tests/template-supabase.test.cjs`: verificações offline de isolamento e segurança.
 
 Não há configuração, conexão, login ou chaves de Supabase compartilhadas com
@@ -109,3 +110,22 @@ node --test tests/template-supabase.test.cjs
 ```
 Os testes offline não substituem execução real do SQL/RLS, testes manuais,
 backup/restauração nem revisão institucional.
+
+## Verificação no projeto exclusivo de ensaio (23/11/2026)
+- O esquema SQL revisado foi aplicado por migração rastreada `create_school_template_rls_v1`.
+- **9 tabelas** foram criadas com **9 políticas de RLS habilitadas** (uma RLS por tabela; cada tabela possui múltiplas policies).
+- Supabase Security Advisor: **nenhum alerta detectado** após a aplicação.
+- Consultas reais ao Postgres confirmaram que `anon` não possui SELECT nas nove tabelas;
+  `authenticated` não possui permissão para inserir cargos nem sobrescrever `created_at`.
+- A função de alternativas da enquete rejeitou alternativas repetidas ou vazias.
+- Os cenários SQL com usuários fictícios validaram leitura individual de sugestões,
+  acesso da gestão aos pedidos, restrição de cadastros pendentes, voto único e
+  sigilo das cédulas. **Todos os cenários foram revertidos com ROLLBACK.**
+- Após os testes: **zero usuários no Auth e zero registros nas nove tabelas**.
+- O Performance Advisor assinalou índices de chaves estrangeiras ausentes e índices
+  ainda não utilizados: pendências de otimização, não alertas críticos de segurança.
+
+**Ainda não homologado para uso real:** faltam testes de API autenticada
+no navegador, proteção contra abuso, duas escolas em projetos independentes,
+backups, recuperação, política de retenção/exclusão, revisão institucional
+e consentimentos aplicáveis. Não publicar nem cadastrar estudantes reais.
