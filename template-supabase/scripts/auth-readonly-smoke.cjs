@@ -14,9 +14,9 @@ async function main(){
   const expected=process.env.EXPECTED_MEMBER_STATUS||"";
   if(!/^https:\/\/[a-z0-9]{20}\.supabase\.co\/?$/.test(url)
     ||!/^sb_publishable_[A-Za-z0-9_-]{10,}$/.test(key)
-    ||!email.endsWith(".invalid") // conta inteiramente fictícia
+    ||!/^\S+@\S+\.\S+$/.test(email) || process.env.TEST_ACCOUNT_FICTITIOUS!=="YES" // caixa de testes autorizada, nunca conta de aluno
     ||!password||!["approved","pending","blocked"].includes(expected)){
-    throw Error("Configuração inválida. Somente e-mail fictício .invalid, chave publishable e status esperado são aceitos.");
+    throw Error("Configuração inválida. Use e-mail de teste autorizado, TEST_ACCOUNT_FICTITIOUS=YES, chave publishable e status esperado.");
   }
   const origin=new URL(url).origin;
   const headers={apikey:key,"Content-Type":"application/json"};
