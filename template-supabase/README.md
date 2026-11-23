@@ -1,3 +1,10 @@
+> **STATUS: caminho experimental pausado.** A plataforma universal voltou
+> a priorizar o [template Firebase](../template-escolas/README.md).
+> Este código permanece apenas para consulta e possível recuperação futura.
+> Não usar o Supabase como requisito de instalação, nem migrar/apagar
+> projetos ou dados sem autorização explícita. Nenhuma publicação foi
+> realizada por esta alteração.
+
 # Modelo universal do Grêmio — protótipo Supabase
 
 **Estado: PR de desenvolvimento. NÃO liberado para cadastro de estudantes reais.**

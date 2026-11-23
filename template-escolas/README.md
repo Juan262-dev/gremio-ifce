@@ -1,4 +1,33 @@
-# Template escolar independente — primeira base técnica
+# Template escolar independente — Firebase (caminho prioritário)
+
+> **Retomada Firebase:** este é o diretório de desenvolvimento principal para
+> a versão universal dos dois aplicativos. O protótipo Supabase permanece
+> arquivado como referência, sem ser usado por esta instalação. Leia
+> [RETOMADA-FIREBASE.md](RETOMADA-FIREBASE.md) para o plano atualizado.
+
+## Pré-verificação local (sem conectar ao Firebase real)
+
+Depois de gerar o `installation.json` exclusivo da escola, e **antes**
+de pensar em instalar, abra um terminal na raiz do repositório:
+
+```sh
+node template-escolas/scripts/preflight-school.cjs template-escolas/public/config/installation.json
+```
+
+Para comparar configurações de duas escolas diferentes (em arquivos separados):
+
+```sh
+node template-escolas/scripts/preflight-school.cjs CAMINHO_A/installation.json CAMINHO_B/installation.json
+```
+
+Este teste **só valida a configuração local e a presença das regras do
+template**, sem credenciais administrativas, internet ou publicação.
+O teste com duas escolas e votos privados continua disponível no
+emulador: `npm run test:template:rules`. Os projetos de emulação
+são fictícios e independentes; o teste não confirma o isolamento de
+projetos Firebase reais.
+
+## Base técnica
 
 > **CANDIDATO TÉCNICO EM DESENVOLVIMENTO, NÃO LIBERADO PARA USO COM
 > ESTUDANTES REAIS.** Esta pasta contém uma primeira implementação
