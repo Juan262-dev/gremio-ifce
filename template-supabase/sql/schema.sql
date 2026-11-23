@@ -89,6 +89,13 @@ create table public.school_suggestions (
 create index school_suggestions_owner_idx on public.school_suggestions(user_id,created_at desc);
 create index school_notices_date_idx on public.school_notices(created_at desc);
 create index school_events_date_idx on public.school_events(created_at desc);
+-- Índices das chaves estrangeiras usados por exclusão e filtros pessoais.
+create index school_notices_author_idx on public.school_notices(created_by);
+create index school_study_materials_author_idx on public.school_study_materials(created_by);
+create index school_events_author_idx on public.school_events(created_by);
+create index school_registrations_user_idx on public.school_registrations(user_id);
+create index school_polls_author_idx on public.school_polls(created_by);
+create index school_votes_user_idx on public.school_votes(user_id);
 
 -- Helpers internos com contexto restrito: não expor school_private na Data API.
 create function school_private.is_admin() returns boolean
