@@ -276,8 +276,8 @@
             const dataISO = document.getElementById('evento-dataiso').value;
             const vagas = Number(document.getElementById('evento-vagas').value || 0);
             if (!titulo || !data) { toast("Preencha título e data do evento!", 'warning'); return; }
-            if (!/^\d{4}-\d{2}-\d{2}$/.test(dataISO)) {
-                toast('Informe também a data completa no calendário antes de publicar.', 'warning'); return;
+            if (!AdminPreparacao2027.dataEventoValida(dataISO)) {
+                toast('Escolha uma data válida, de hoje em diante, no calendário antes de publicar.', 'warning'); return;
             }
             if (!Number.isSafeInteger(vagas) || vagas < 0 || vagas > 100000) {
                 toast('A quantidade de vagas precisa ser um número válido.', 'warning'); return;

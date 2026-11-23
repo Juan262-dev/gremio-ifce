@@ -78,3 +78,20 @@ test('Gestão de eventos apresenta contagem validada, relatório sem identidade 
  assert.match(adm6,/if \(!soRaiz\(\)\)/);
  assert.match(adm6,/confirmar\('A lista contém e-mails/);
 });
+
+test('Painel sinaliza dados incompletos e valida datas reais pelo calendário de Fortaleza',()=>{
+ const ev={privacidadeVersao:2,vagas:1,inscritosCount:0,esperaCount:0,proximaOrdem:0};
+ assert.equal(model.resumoEvento(ev).valido,true);
+ const semVagas={...ev};delete semVagas.vagas;
+ assert.equal(model.resumoEvento(semVagas).valido,false);
+ assert.equal(model.resumoEvento({...ev,vagas:"0"}).valido,false);
+ const viradaUTC=new Date('2026-11-30T02:30:00Z'); // 29/11 no Ceará
+ assert.equal(model.dataEventoValida('2026-11-29',viradaUTC),true);
+ assert.equal(model.dataEventoValida('2026-11-28',viradaUTC),false);
+ assert.equal(model.dataEventoValida('2028-02-29',viradaUTC),true);
+ assert.equal(model.dataEventoValida('2026-02-29',viradaUTC),false);
+ assert.equal(model.dataEventoValida('2026-13-01',viradaUTC),false);
+ assert.equal(model.dataEventoValida('',viradaUTC),false);
+ assert.match(r('admin-06-eleicao-eventos.js'),/AdminPreparacao2027\.dataEventoValida\(dataISO\)/);
+});
+

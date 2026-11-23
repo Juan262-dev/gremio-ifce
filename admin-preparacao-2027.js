@@ -15,10 +15,22 @@
       ? {nivel:'atencao',texto:'As chaves permitem operar eventos, mas isso NÃO comprova regras, índices, funções ou migração.'}
       : {nivel:'pendente',texto:'Inscrições v2 bloqueadas pelas chaves de liberação. Nenhuma alteração foi feita.'};
   }
+  function dataEventoValida(dataISO,agora=new Date()) {
+    if(typeof dataISO!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(dataISO))return false;
+    const data=new Date(dataISO+'T12:00:00Z');
+    if(!Number.isFinite(data.getTime())||data.toISOString().slice(0,10)!==dataISO)
+      return false;
+    // A escola usa a data de Fortaleza, inclusive na virada do dia em UTC.
+    const partes=Object.fromEntries(new Intl.DateTimeFormat('en-US',{
+      timeZone:'America/Fortaleza',year:'numeric',month:'2-digit',day:'2-digit'
+    }).formatToParts(agora).map(p=>[p.type,p.value]));
+    const hoje=partes.year+'-'+partes.month+'-'+partes.day;
+    return dataISO>=hoje;
+  }
   function resumoEvento(ev) {
     if(!ev||ev.privacidadeVersao!==2)
       return {valido:false,texto:'Evento antigo: precisa de migração verificada.',confirmados:null,aguardando:null,livres:null};
-    const cap=ev.vagas===undefined?0:ev.vagas,ok=ev.inscritosCount,fila=ev.esperaCount,ord=ev.proximaOrdem;
+    const cap=ev.vagas,ok=ev.inscritosCount,fila=ev.esperaCount,ord=ev.proximaOrdem;
     const numeros=[cap,ok,fila,ord];
     if(!numeros.every(n=>Number.isSafeInteger(n)&&n>=0)
       ||cap>100000||ok>100000||fila>100000
@@ -38,5 +50,5 @@
         : 'Inventário preliminar. Registros privados, histórico, Authentication e backups exigem processo autorizado; nenhum dado foi apagado.'
     };
   }
-  return Object.freeze({PROJETO,estadoImplantacao,resumoEvento,resumoExclusao});
+  return Object.freeze({PROJETO,estadoImplantacao,resumoEvento,resumoExclusao,dataEventoValida});
 });
