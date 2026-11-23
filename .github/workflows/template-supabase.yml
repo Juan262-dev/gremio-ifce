@@ -8,7 +8,7 @@ on:
   push:
     paths:
       - 'template-supabase/**'
-      - 'tests/template-supabase.test.cjs'
+      - 'tests/template-supabase*.test.cjs'
       - '.github/workflows/template-supabase.yml'
 jobs:
   template:
