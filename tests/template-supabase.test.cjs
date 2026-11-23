@@ -83,3 +83,24 @@ test("portal e painel usam somente Supabase e preservam crédito original",()=>{
  assert.match(admin,/role\.role!=="admin"/);
  assert.doesNotMatch(admin,/insert\(\{\s*user_id:.*role:/s);
 });
+
+test("cliente não pode definir IDs ou datas geradas pelo servidor",()=>{
+ const sql=read("sql/schema.sql");
+ const columns={
+  school_members:"user_id, display_name, status",
+  school_notices:"title, body, created_by",
+  school_study_materials:"title, content, created_by",
+  school_events:"title, details, when_text, location, created_by",
+  school_registrations:"event_id, user_id",
+  school_polls:"question, options, active, created_by",
+  school_votes:"poll_id, user_id, option_index",
+  school_suggestions:"user_id, body, status"
+ };
+ for(const [name,allowed] of Object.entries(columns)){
+   assert.ok(sql.includes("grant insert ("+allowed+") on public."+name+" to authenticated;"));
+ }
+ assert.doesNotMatch(sql,/grant\s+select,\s*insert\s+on\s+public\.school_/i);
+ assert.match(sql,/school_private\.valid_poll_options\(options\)/);
+ assert.match(sql,/count\(distinct lower\(btrim\(value\)\)\)/);
+ assert.match(sql,/array_ndims\(items\) <> 1/);
+});
