@@ -114,8 +114,10 @@
      // Consultas fora do callback de Auth evitam bloqueio interno de sessão.
      setTimeout(()=>access(session?.user||null),0);
    });
-   const initial=await api.auth.getUser();
-   check(initial);await access(initial.data.user);
+   // Sessão local serve apenas para decidir qual tela mostrar.
+   // Permissões reais seguem verificadas pelo getUser() e pelas regras RLS.
+   const initial=check(await api.auth.getSession());
+   await access(initial.session?.user||null);
  }catch(e){visible(null);note("Instalação indisponível: "+e.message,true);return;}
  $("login-form").addEventListener("submit",async ev=>{
    ev.preventDefault();
