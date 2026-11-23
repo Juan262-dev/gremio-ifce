@@ -54,7 +54,7 @@
                         <div class="d-flex align-items-center gap-2">
                             <span class="badge ${a.ativo ? 'bg-success' : 'bg-danger'}">${a.ativo ? 'Ativo' : 'Bloqueado'}</span>
                             <button data-acao="alternarAluno" data-id="${esc(a.email)}" data-valor="${!a.ativo}" class="btn btn-outline-warning btn-sm py-0" style="font-size: 11px;">${a.ativo ? 'Bloquear' : 'Desbloquear'}</button>
-                            <button data-acao="excluirAluno" data-id="${esc(a.email)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Excluir</button>
+                            <button data-acao="excluirAluno" data-id="${esc(a.email)}" class="btn btn-outline-danger btn-sm py-0" style="font-size: 11px;">Revisão necessária</button>
                         </div>
                     </li>`;
             });
@@ -321,14 +321,7 @@
         }
         async function excluirAlunosBloqueados() {
             if (!soRaiz()) return;
-            try {
-                const snap = await db.collection('alunos').where('ativo', '==', false).get();
-                if (snap.empty) { toast('Não há alunos bloqueados.', 'warning'); return; }
-                if (!(await confirmar(`Excluir ${snap.size} aluno(s) bloqueado(s)? Eles perdem o acesso de vez (a conta de login continua no Authentication).`))) return;
-                await apagarEmLotes(snap.docs.map(d => d.ref));
-                registrarAcao('Alunos bloqueados excluídos', snap.size + ' alunos');
-                mostrarAlertaSucesso(snap.size + ' aluno(s) excluído(s).');
-            } catch (e) { erroDB(e, 'excluirBloqueados'); }
+            toast('Exclusão em massa bloqueada. Cada cadastro exige revisão de registros privados e autorização da TI.', 'warning');
         }
 
         function carregarPortalConfig() {

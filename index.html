@@ -115,6 +115,18 @@ body{background-color:#f4f6f9}
 .portal-app-vazio{font-size:.9rem;color:#5e7965;margin:12px 0 0}
 @media(min-width:760px){.portal-app-dashboard-grade{grid-template-columns:repeat(4,minmax(0,1fr))}.portal-app-painel{padding:27px}}
 @media(max-width:350px){.portal-app-atalho{flex-direction:column;align-items:flex-start;font-size:.76rem;padding:11px}}
+/* Melhorias discretas para celular e leitores de tela — sem redesign. */
+#estado-conexao-portal[hidden]{display:none!important}
+#lista-eventos-aluno .list-group-item,
+#lista-enquetes-aluno article{overflow-wrap:anywhere}
+@media(max-width:575px){
+  #lista-eventos-aluno button,
+  #lista-enquetes-aluno button{min-height:44px;white-space:normal}
+  #toast-area{max-width:100%;padding-bottom:env(safe-area-inset-bottom)}
+}
+@media(prefers-reduced-motion:reduce){
+  .slides-wrapper-chem,.chem-icon-box{transition:none!important;animation:none!important}
+}
 </style>
 </head>
 <body>
@@ -170,6 +182,7 @@ body{background-color:#f4f6f9}
 </nav>
 
 <div class="container pb-5" id="portal-aluno" style="max-width:800px">
+  <div id="estado-conexao-portal" class="alert alert-warning small mb-3" role="status" aria-live="polite" hidden></div>
   <div id="banner-portal" class="alert alert-warning text-center fw-bold mb-3 py-2" style="display:none"></div>
   <div class="card card-custom p-3 mb-4 bg-success-subtle border-0">
     <h5 class="fw-bold mb-1" style="color:var(--ifce-green)">Olá, <span id="nome-aluno-display">Aluno</span>! 👋</h5>
@@ -563,7 +576,7 @@ body{background-color:#f4f6f9}
 
 <div id="rodape-portal" class="text-center text-muted small pb-5 mb-5">Grêmio Estudantil IFCE Crateús · versão 2026.10.26-a</div>
 
-<div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" style="z-index:100005;width:100%;max-width:420px;margin-bottom:72px"></div>
+<div id="toast-area" class="position-fixed bottom-0 start-50 translate-middle-x p-3" role="status" aria-live="polite" aria-atomic="false" style="z-index:100005;width:100%;max-width:420px;margin-bottom:72px"></div>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -604,7 +617,29 @@ function aviso(msg, tipo = 'dark') {
   document.getElementById('toast-area').appendChild(el);
   setTimeout(() => el.remove(), 4000);
 }
-function ouvir(query, cb) { unsubs.push(query.onSnapshot(cb, err => console.error(err))); }
+let ultimoAvisoConsulta = 0;
+function atualizarEstadoConexaoPortal() {
+  const box = document.getElementById('estado-conexao-portal');
+  if (!box) return;
+  const offline = navigator.onLine === false;
+  box.hidden = !offline;
+  box.textContent = offline
+    ? 'Você está sem conexão. Algumas informações podem estar desatualizadas e ações online ficarão indisponíveis.'
+    : '';
+}
+window.addEventListener('online', atualizarEstadoConexaoPortal);
+window.addEventListener('offline', atualizarEstadoConexaoPortal);
+function ouvir(query, cb, onError) {
+  unsubs.push(query.onSnapshot(cb, err => {
+    console.warn('Consulta do portal indisponível', err && err.code || 'sem código');
+    if (typeof onError === 'function') onError(err);
+    atualizarEstadoConexaoPortal();
+    if (Date.now() - ultimoAvisoConsulta > 12000) {
+      ultimoAvisoConsulta = Date.now();
+      aviso('Alguns dados não puderam ser carregados. Verifique a conexão ou procure a gestão.', 'warning');
+    }
+  }));
+}
 function limparListeners() { unsubs.forEach(u => u()); unsubs = []; }
 function dataHoraBR(ts) {
   if (!ts) return '';
@@ -617,7 +652,7 @@ function lista(id, query, vazio, itemFn, wrapper = 'list-group') {
     if (ganchosNovidades[id]) { novidades[ganchosNovidades[id]] = snap.docs.map(d => ({ id: d.id, ...d.data() })); renderNotificacoes(); }
     if (snap.empty) { c.innerHTML = `<p class="text-muted small mb-0">${vazio}</p>`; return; }
     c.innerHTML = `<div class="${wrapper}">` + snap.docs.map(d => itemFn(d.data(), d.id)).join('') + '</div>';
-  });
+  }, () => { document.getElementById(id).textContent = 'Não foi possível carregar estes dados agora. Tente novamente quando houver conexão.'; });
 }
 
 /* ---------- Onboarding ---------- */
@@ -766,6 +801,7 @@ function iniciarSessaoAluno() {
   aceiteVersao = undefined;
   registrarAcesso();
   Object.keys(novidades).forEach(k => novidades[k] = []);
+  atualizarEstadoConexaoPortal();
   ouvir(db.collection('config').doc('sistema'), doc => {
     const d = doc.exists ? doc.data() : {};
     document.getElementById('manutencao-msg').textContent = d.mensagem || 'Voltamos em breve.';
@@ -866,7 +902,8 @@ function carregarEnquetes() {
       box.appendChild(options);return box;
     });
     container.replaceChildren(...nodes);
-  });
+  }, () => { document.getElementById('lista-enquetes-aluno').textContent =
+    'Enquetes indisponíveis agora. Verifique a conexão ou consulte a gestão.'; });
 }
 document.getElementById('lista-enquetes-aluno').addEventListener('click', e => {
   const b = e.target.closest('.btn-voto');
@@ -1015,7 +1052,8 @@ function carregarEventos() {
     todos.forEach((e,i) => { e.minhaInscricao = estados[i]; });
     eventosPrivadosCache = todos;
     renderEventosPrivados();
-  });
+  }, () => { document.getElementById('lista-eventos-aluno').textContent =
+    'Eventos indisponíveis agora. Verifique a conexão ou consulte a gestão.'; });
 }
 /* ---------- aba de estudos ---------- */
 let estudosCache = [];
@@ -1141,6 +1179,10 @@ async function atualizarInscricaoEvento(id, uid) {
 }
 async function operarEvento(id, operacao) {
   if (!auth.currentUser) return;
+  if (navigator.onLine === false) {
+    aviso('Sem conexão: não é possível alterar inscrições agora.', 'warning');
+    return;
+  }
   if (!eventosV2Liberados) {
     aviso('Inscrições temporariamente indisponíveis até a liberação do Grêmio.', 'warning');
     return;

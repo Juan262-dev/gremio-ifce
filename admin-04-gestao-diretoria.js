@@ -382,43 +382,39 @@
                 <div class="text-muted-custom mt-1" style="font-size: 11px;">Limites diários gratuitos do Firestore: 50 mil leituras e 20 mil gravações. Tamanho estimado pelo conteúdo dos documentos.</div>`;
         }
 
+        /* Consulta restrita, sem modificações. Não é exclusão integral. */
+        async function conferirInventarioExclusao(email, out) {
+            if (!soRaiz() || !out) return;
+            if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || email.length > 180) {
+                out.textContent = 'Informe um e-mail válido.'; return;
+            }
+            out.textContent = 'Consultando somente os documentos principais...';
+            const colecoes = ['alunos','perfis','aniversarios','carteirinhas','acessos','aceites'];
+            const resultados = await Promise.all(colecoes.map(async col => {
+                try {
+                    const snap = await db.collection(col).doc(email).get({ source: 'server' });
+                    return [col, snap.exists ? 'presente' : 'ausente'];
+                } catch (e) {
+                    return [col, 'indisponivel'];
+                }
+            }));
+            const inventario = Object.fromEntries(resultados);
+            const resumo = AdminPreparacao2027.resumoExclusao(inventario);
+            const linhas = resultados.map(([col,estado]) => col + ': ' +
+                (estado === 'presente' ? 'documento localizado' :
+                 estado === 'ausente' ? 'não localizado' : 'consulta não autorizada/indisponível'));
+            linhas.push('', resumo.texto,
+                'Não foram examinadas subcoleções privadas (votos, inscrições e presenças),',
+                'nem vínculos indiretos, armazenamento, Authentication ou backups.',
+                'O pedido permanece aberto para tratamento autorizado da TI e da escola.');
+            out.textContent = linhas.join('\n');
+            out.style.whiteSpace = 'pre-line';
+        }
         async function apagarDadosAluno() {
             if (!soRaiz()) return;
             const email = document.getElementById('ti-lgpd-email').value.trim().toLowerCase();
             const out = document.getElementById('ti-lgpd-out');
-            if (!email.includes('@')) { toast('Digite o e-mail do aluno.', 'warning'); return; }
-            if (!(await confirmar(`Apagar TODOS os dados de ${email}? Isso não pode ser desfeito.`))) return;
-            out.textContent = 'Apagando...';
-            try {
-                const FV = firebase.firestore.FieldValue;
-                const [sug, rei, eve, enq, mat] = await Promise.all([
-                    db.collection('sugestoes').where('email', '==', email).get(), db.collection('reivindicacoes').get(),
-                    db.collection('eventos').get(), db.collection('enquetes').get(), db.collection('materiais').get()
-                ]);
-                const batch = db.batch(); let n = 0;
-                ['alunos', 'acessos', 'aceites'].forEach(c => { batch.delete(db.collection(c).doc(email)); n++; });
-                sug.docs.forEach(d => { batch.delete(d.ref); n++; });
-                rei.docs.forEach(d => {
-                    const x = d.data(), up = {};
-                    if ((x.apoios || []).includes(email)) up.apoios = FV.arrayRemove(email);
-                    if ((x.autorEmail || '').toLowerCase() === email) { up.autorEmail = ''; up.autor = 'Aluno removido'; }
-                    if (Object.keys(up).length) { batch.update(d.ref, up); n++; }
-                });
-                // Inscrições privadas por UID exigem processo de exclusão
-                // institucional separado; nunca adulterar o evento público.
-                if (eve.docs.some(d => d.data().privacidadeVersao === 2))
-                    throw new Error('Exclusão total exige revisão das inscrições privadas pela TI.');
-                // Votos são cédulas privadas não editáveis no cliente.
-                // A gestão deve seguir o procedimento de exclusão legal.
-                if (enq.docs.some(d => d.data().privacidadeVersao === 2))
-                    throw new Error('Exclusão total exige tratamento privado dos votos pela TI.');
-                mat.docs.forEach(d => { if ((d.data().emprestadoPara || '').toLowerCase().includes(email)) { batch.update(d.ref, { emprestadoPara: '(aluno removido)' }); n++; } });
-                if (n > 480) throw new Error('muitos registros');
-                await batch.commit();
-                registrarAcao('Dados de aluno apagados (LGPD)', n + ' registros');
-                document.getElementById('ti-lgpd-email').value = '';
-                out.innerHTML = `✅ ${n} registro(s) alterado(s). <strong>Falta apagar a conta de login</strong> em Firebase > Authentication > Usuários (o painel não consegue fazer isso).`;
-            } catch (e) { out.textContent = ''; erroDB(e, 'lgpd'); }
+            await conferirInventarioExclusao(email, out);
         }
 
         function gerarRegrasNovoRaiz() {

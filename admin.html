@@ -552,8 +552,9 @@
 
             <div id="secao-exclusoes" class="card card-custom p-4 mb-4 card-root" style="border-color:#dc3545;">
                 <h5 class="card-title-chem mb-2">Pedidos de exclusão de dados (somente você)</h5>
-                <p class="text-muted-custom small mb-2">Pedidos enviados pelos alunos. Ao concluir, o portal apaga o perfil e o aniversário e desativa o cadastro. A conta de login precisa ser apagada no console do Firebase (Authentication).</p>
+                <p class="text-muted-custom small mb-2">Pedidos de alunos. A conferência é somente leitura: não marca o pedido como concluído nem remove dados. Registros privados, Authentication e backups exigem processo de exclusão autorizado pela escola.</p>
                 <div id="lista-exclusoes"><p class="text-muted-custom small mb-0">Carregando...</p></div>
+                <div id="ti-exclusao-inventario" role="status" aria-live="polite" class="small text-muted-custom mt-2"></div>
             </div>
 
             <div id="secao-documentos" data-niveis="admin,secretaria" class="card card-custom p-4 mb-4">
@@ -1054,11 +1055,11 @@
                 <div id="ti-inventario-medir" class="mt-3 small"></div>
 
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
-                <h6 class="fw-bold text-white">3. Apagar os dados de um aluno</h6>
-                <p class="text-muted-custom small mb-2">Para quando o aluno (ou o responsável) pedir a exclusão. Remove cadastro, sugestões, acessos e aceite do termo, e tira o nome das inscrições, apoios e votos (os votos ficam anônimos para a contagem não mudar). Depois apague também a conta no Firebase > Authentication.</p>
+                <h6 class="fw-bold text-white">3. Preparar exclusão de dados</h6>
+                <p class="text-muted-custom small mb-2">Conferência preliminar, somente leitura. Não apaga nem anonimiza registros. Votos privados, inscrições, presenças, Authentication e backups exigem procedimento administrativo autorizado e testado antes da conclusão.</p>
                 <div class="input-group">
                     <input type="email" id="ti-lgpd-email" class="form-control" placeholder="aluno@aluno.ifce.edu.br">
-                    <button onclick="apagarDadosAluno()" class="btn btn-outline-danger">Excluir dados</button>
+                    <button onclick="apagarDadosAluno()" class="btn btn-outline-warning">Verificar pendências</button>
                 </div>
                 <div id="ti-lgpd-out" class="mt-2 small"></div>
 
@@ -1266,6 +1267,12 @@
                 <button onclick="rodarDiagnostico()" class="btn btn-outline-info btn-sm fw-bold">▶ Rodar diagnóstico</button>
                 <button onclick="copiarDiagnostico()" class="btn btn-outline-light btn-sm">📋 Copiar relatório</button>
                 <div id="ti-diag" class="mt-3 small"></div>
+                <div class="border rounded p-3 mt-3" style="border-color:var(--ifce-card-border)!important">
+                    <h6 class="text-white fw-bold">Pré-verificação da implantação v2</h6>
+                    <p class="text-muted-custom small mb-2">Consulta apenas a configuração acessível ao administrador. Regras, índices e Functions devem ser conferidos separadamente no console. Não ativa recursos.</p>
+                    <button type="button" onclick="verificarImplantacaoIFCE()" class="btn btn-outline-info btn-sm">Verificar sem alterar</button>
+                    <div id="ti-implantacao-v2" class="mt-2 small" role="status" aria-live="polite">Ainda não verificado.</div>
+                </div>
 
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <h6 class="fw-bold text-white">2. Redefinir senha de alguém</h6>
@@ -1344,7 +1351,7 @@
                 <h6 class="fw-bold text-white">2. Lista de alunos</h6>
                 <div class="d-flex gap-2 flex-wrap">
                     <button onclick="baixarCSVAlunos()" class="btn btn-outline-light btn-sm">⬇️ Baixar CSV de alunos</button>
-                    <button onclick="excluirAlunosBloqueados()" class="btn btn-outline-danger btn-sm">Excluir alunos bloqueados</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm" disabled title="Necessário processo autorizado de exclusão">Exclusão em massa indisponível</button>
                 </div>
 
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
@@ -1477,9 +1484,9 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label fw-bold">Data / Hora</label>
-                        <input type="text" id="evento-data" class="form-control" placeholder="Ex: 15/10 - 14h"></div><div class="col-12 mt-2"><label class="form-label fw-bold">Dia no calendário (opcional)</label><input type="date" id="evento-dataiso" class="form-control">
+                        <input type="text" id="evento-data" class="form-control" placeholder="Ex: 15/10 - 14h"></div><div class="col-12 mt-2"><label class="form-label fw-bold">Dia no calendário (obrigatório)</label><input type="date" id="evento-dataiso" class="form-control">
                     </div>
-                    <div class="col-md-4 mt-2" data-niveis="mulheres"><input type="number" id="evento-vagas" class="form-control" min="1" placeholder="Vagas (vazio = sem limite)"></div>
+                    <div class="col-md-4 mt-2"><label for="evento-vagas" class="form-label fw-bold">Limite de vagas</label><input type="number" id="evento-vagas" class="form-control" min="0" max="100000" placeholder="Vazio = sem limite"></div>
                     <div class="col-12 mt-2">
                         <label class="form-label fw-bold">Descrição</label>
                         <textarea id="evento-descricao" class="form-control" rows="2" placeholder="Descrição e regras do evento..."></textarea>
@@ -1488,7 +1495,8 @@
                 <button onclick="criarEvento()" class="btn btn-ifce">Publicar Evento</button>
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
                 <h6 class="fw-bold mb-3 text-white">Eventos Programados</h6>
-                <div id="lista-eventos-admin"><p class="text-muted-custom small">Nenhum evento ainda. Crie um evento ou torneio e os alunos poderão se inscrever pelo portal.</p></div>
+                <p class="small text-muted-custom">Os totais abaixo vêm de contadores do evento. Relatórios individuais e presença exigem acesso administrativo; não são dados públicos.</p>
+                <div id="lista-eventos-admin" aria-live="polite"><p class="text-muted-custom small">Carregando eventos...</p></div>
             </div>
 
             <div id="secao-jogos" data-niveis="membro" class="card card-custom p-4 mb-4 card-admin-nao-marketing">
@@ -1591,6 +1599,7 @@
 <script src="admin-03-alunos-punicoes.js"></script>
 <script src="admin-04-gestao-diretoria.js"></script>
 <script src="admin-05-financeiro-diretorias.js"></script>
+<script src="admin-preparacao-2027.js"></script>
 <script src="admin-06-eleicao-eventos.js"></script>
 <script src="admin-07-ti.js"></script>
 <script src="admin-08-resumo-abas.js"></script>
