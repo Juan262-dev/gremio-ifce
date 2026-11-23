@@ -142,3 +142,16 @@ e consentimentos aplicáveis. Não publicar nem cadastrar estudantes reais.
 - Complementar funções ainda ausentes no template (eleições, finanças, carteirinhas, laboratório, etc.) antes de anunciar equivalência ao sistema IFCE.
 
 **Integração no GitHub não equivale a publicação ou homologação.** Mesmo após merge, a instalação de exemplo permanece propositalmente inválida, sem contas e sem credenciais reais no repositório.
+
+## Pacote de pré-homologação (sem autorização de uso real)
+- [Proposta de licenciamento e autoria](docs/LICENCIAMENTO-E-AUTORIA.md) — não concede licença.
+- [Modelo de privacidade e decisão institucional](docs/PRIVACIDADE-MODELO-ESCOLA.md) — não aprovado.
+- [Backup e restauração](docs/BACKUP-RESTAURACAO.md) — apenas ensaio lógico transacional concluído.
+- [Duas escolas independentes](docs/PLANO-HOMOLOGACAO-DUAS-ESCOLAS.md) — teste real bloqueado pelo limite de projetos grátis, não simular resultado.
+- `sql/verify-backup-restore-rollback.sql` — usa dados fictícios e desfaz tudo com ROLLBACK.
+- `scripts/verify-school-pair.cjs` — valida que duas instalações possuem origens, projetos e chaves distintos (verificação estática, não prova isolamento de Auth).
+- `scripts/auth-readonly-smoke.cjs` — verificador **somente leitura** para ser executado futuramente por técnico com caixa de e-mail fictícia confirmada e credenciais efêmeras; por padrão não executa. Senhas e chaves nunca devem entrar no Git ou no chat.
+
+O ensaio SQL de recuperação foi executado em projeto de homologação vazio, restaurando registros fictícios sem persistência. A confirmação de backup off-site e restauração num **segundo projeto independente** continua obrigatória.
+
+Após avaliação institucional, definir licença compatível, validar e-mails, configurar hospedagem HTTPS, publicar aviso de privacidade e registrar a aprovação formal **antes** de admitir estudantes reais.
