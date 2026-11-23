@@ -7,6 +7,22 @@ create schema if not exists school_private;
 revoke all on schema school_private from public, anon, authenticated;
 grant usage on schema school_private to authenticated;
 
+-- Validação no servidor: alternativas não vazias, únicas, e sempre unidimensionais.
+create function school_private.valid_poll_options(items text[]) returns boolean
+language sql immutable set search_path = ''
+as $
+  select case
+    when items is null or array_ndims(items) <> 1 or cardinality(items) not between 2 and 8 then false
+    else (select count(*) = cardinality(items)
+      and count(*) = count(value)
+      and bool_and(char_length(btrim(value)) between 1 and 80)
+      and count(distinct lower(btrim(value))) = cardinality(items)
+      from unnest(items) as choice(value))
+  end;
+$;
+revoke all on function school_private.valid_poll_options(text[]) from public, anon;
+grant execute on function school_private.valid_poll_options(text[]) to authenticated;
+
 create table public.school_members (
   user_id uuid primary key references auth.users(id) on delete cascade,
   display_name text not null check (char_length(btrim(display_name)) between 3 and 80),
@@ -51,7 +67,7 @@ create table public.school_registrations (
 create table public.school_polls (
   id uuid primary key default gen_random_uuid(),
   question text not null check (char_length(btrim(question)) between 1 and 200),
-  options text[] not null check (array_length(options,1) between 2 and 8),
+  options text[] not null check (school_private.valid_poll_options(options)),
   active boolean not null default true,
   created_by uuid not null references auth.users(id),
   created_at timestamptz not null default now()
@@ -120,16 +136,25 @@ revoke all on public.school_members, public.school_roles, public.school_notices,
  public.school_study_materials, public.school_events, public.school_registrations,
  public.school_polls, public.school_votes, public.school_suggestions from anon, authenticated;
 
-grant select, insert on public.school_members to authenticated;
+-- Privilégios por coluna: o cliente não define IDs nem datas de auditoria.
+grant select on public.school_members to authenticated;
+grant insert (user_id, display_name, status) on public.school_members to authenticated;
 grant update(status) on public.school_members to authenticated;
 grant select on public.school_roles to authenticated;
-grant select, insert, delete on public.school_notices to authenticated;
-grant select, insert, delete on public.school_study_materials to authenticated;
-grant select, insert on public.school_events to authenticated;
-grant select, insert, delete on public.school_registrations to authenticated;
-grant select, insert on public.school_polls to authenticated;
-grant select, insert on public.school_votes to authenticated;
-grant select, insert on public.school_suggestions to authenticated;
+grant select, delete on public.school_notices to authenticated;
+grant insert (title, body, created_by) on public.school_notices to authenticated;
+grant select, delete on public.school_study_materials to authenticated;
+grant insert (title, content, created_by) on public.school_study_materials to authenticated;
+grant select on public.school_events to authenticated;
+grant insert (title, details, when_text, location, created_by) on public.school_events to authenticated;
+grant select, delete on public.school_registrations to authenticated;
+grant insert (event_id, user_id) on public.school_registrations to authenticated;
+grant select on public.school_polls to authenticated;
+grant insert (question, options, active, created_by) on public.school_polls to authenticated;
+grant select on public.school_votes to authenticated;
+grant insert (poll_id, user_id, option_index) on public.school_votes to authenticated;
+grant select on public.school_suggestions to authenticated;
+grant insert (user_id, body, status) on public.school_suggestions to authenticated;
 grant update(status) on public.school_suggestions to authenticated;
 
 create policy member_read on public.school_members for select to authenticated
