@@ -23,7 +23,9 @@ ou todos os módulos da versão original do IFCE.
 - `public/config/installation.example.json`: exemplo propositalmente inválido.
 - `sql/schema.sql`: esquema e RLS para **um projeto novo, exclusivo da escola**.
 - `sql/verify-rls-tests.sql`: cenários SQL com contas fictícias dentro de transação revertida; aborta em projeto com contas reais.
+- `sql/indexes-existing-install.sql`: índices extras para a instalação já migrada; para bancos novos eles estão incluídos em `schema.sql`.
 - `tests/template-supabase.test.cjs`: verificações offline de isolamento e segurança.
+- `tests/template-supabase.auth-ui.test.cjs`: smoke tests do Portal e Painel sem sessão, acesso pendente/aprovado e cargos em ambiente DOM simulado.
 
 Não há configuração, conexão, login ou chaves de Supabase compartilhadas com
 o IFCE ou com aplicativos pessoais de quem desenvolveu o template.
@@ -106,7 +108,7 @@ Na raiz do repositório:
 node --check template-supabase/public/js/instance.js
 node --check template-supabase/public/js/portal.js
 node --check template-supabase/public/js/admin.js
-node --test tests/template-supabase.test.cjs
+node --test tests/template-supabase.test.cjs tests/template-supabase.auth-ui.test.cjs
 ```
 Os testes offline não substituem execução real do SQL/RLS, testes manuais,
 backup/restauração nem revisão institucional.
@@ -129,3 +131,14 @@ backup/restauração nem revisão institucional.
 no navegador, proteção contra abuso, duas escolas em projetos independentes,
 backups, recuperação, política de retenção/exclusão, revisão institucional
 e consentimentos aplicáveis. Não publicar nem cadastrar estudantes reais.
+
+## Condições pendentes antes de uso com estudantes reais
+- Definir e aprovar **licença e direitos de autoria das duas aplicações**, inclusive mídias de terceiros e crédito original. Este repositório não inclui licença pública e o rodapé sozinho não concede permissão legal de redistribuição.
+- Homologar Auth e verificação por e-mail com contas de teste através de navegador em origem HTTPS específica da escola, incluindo recuperação de conta, restrição de domínios e abuso de cadastro.
+- Validar de ponta a ponta **duas instalações em projetos Supabase distintos** sem reuso de URL, chaves, usuários, banco ou hospedagem.
+- Formalizar aviso de privacidade, minimização, retenção/exclusão de dados, responsabilidades da escola, autorização institucional e tratamento de dados de menores.
+- Definir **backup, restauração e transferência de diretoria** com ensaio de recuperação. O plano Free não deve ser tratado como substituto de cópias próprias verificadas.
+- Revisar custos e limitações do plano Free, domínio HTTPS, suporte e processos de incidentes.
+- Complementar funções ainda ausentes no template (eleições, finanças, carteirinhas, laboratório, etc.) antes de anunciar equivalência ao sistema IFCE.
+
+**Integração no GitHub não equivale a publicação ou homologação.** Mesmo após merge, a instalação de exemplo permanece propositalmente inválida, sem contas e sem credenciais reais no repositório.
