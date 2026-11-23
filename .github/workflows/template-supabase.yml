@@ -23,5 +23,7 @@ jobs:
           node --check template-supabase/public/js/instance.js
           node --check template-supabase/public/js/portal.js
           node --check template-supabase/public/js/admin.js
+          node --check template-supabase/scripts/auth-readonly-smoke.cjs
+          node --check template-supabase/scripts/verify-school-pair.cjs
       - name: Conferir isolamento, RLS e configuração
-        run: node --test tests/template-supabase.test.cjs tests/template-supabase.auth-ui.test.cjs
+        run: node --test tests/template-supabase.test.cjs tests/template-supabase.auth-ui.test.cjs tests/template-supabase.release-gates.test.cjs
