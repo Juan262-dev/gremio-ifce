@@ -833,20 +833,60 @@ function iniciarSessaoAluno() {
 }
 
 /* ---------- Mural ---------- */
+// Consulta paginada: só os 30 avisos mais recentes ficam em tempo real.
+const TAMANHO_PAGINA_AVISOS = 30;
+let avisosAtuais = [], avisosAnteriores = [], ultimoAvisoDoc = null;
+let fimAvisos = true, buscandoAvisos = false;
+function renderAvisosPaginados() {
+  const ids = new Set();
+  const todos = [...avisosAtuais, ...avisosAnteriores].filter(d => {
+    if (ids.has(d.id)) return false;
+    ids.add(d.id); return true;
+  }).map(d => ({ id: d.id, ...d.data() }));
+  novidades.avisos = todos; renderNotificacoes();
+  const c = document.getElementById('lista-avisos-aluno');
+  if (!c) return;
+  if (!todos.length) {
+    c.innerHTML = '<p class="text-muted small mb-0">Nenhum aviso por enquanto. Quando o grêmio publicar um recado, ele aparece aqui.</p>';
+    return;
+  }
+  const ordenados = [...todos.filter(a => a.fixado), ...todos.filter(a => !a.fixado)];
+  c.innerHTML = '<div class="list-group">' + ordenados.map(a => 
+    '<div class="list-group-item"' + (a.fixado ? ' style="border-left:4px solid #ffc107"' : '') + '>' +
+    '<h6 class="fw-bold mb-1 text-success">' + (a.fixado ? '📌 ' : '') + esc(a.titulo) + '</h6>' +
+    '<p class="mb-1 small text-dark" style="white-space:pre-wrap">' + esc(a.mensagem) + '</p>' +
+    (a.criadoEm ? '<span class="badge bg-light text-muted border">' + esc(dataHoraBR(a.criadoEm)) + '</span>' : '') +
+    '</div>').join('') + '</div>' +
+    (!fimAvisos ? '<button type="button" onclick="carregarMaisAvisos()" class="btn btn-outline-success btn-sm mt-2"' +
+    (buscandoAvisos ? ' disabled' : '') + '>Carregar avisos anteriores</button>' : '');
+}
 function carregarAvisos() {
-  ouvir(db.collection('mural').orderBy('criadoEm', 'desc'), snap => {
-    const todos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    novidades.avisos = todos; renderNotificacoes();
-    const c = document.getElementById('lista-avisos-aluno');
-    if (!todos.length) { c.innerHTML = '<p class="text-muted small mb-0">Nenhum aviso por enquanto. Quando o grêmio publicar um recado, ele aparece aqui.</p>'; return; }
-    const ordenados = [...todos.filter(a => a.fixado), ...todos.filter(a => !a.fixado)];
-    c.innerHTML = '<div class="list-group">' + ordenados.map(a => `
-      <div class="list-group-item" ${a.fixado ? 'style="border-left:4px solid #ffc107"' : ''}>
-        <h6 class="fw-bold mb-1 text-success">${a.fixado ? '📌 ' : ''}${esc(a.titulo)}</h6>
-        <p class="mb-1 small text-dark" style="white-space:pre-wrap">${esc(a.mensagem)}</p>
-        ${a.criadoEm ? `<span class="badge bg-light text-muted border">${esc(dataHoraBR(a.criadoEm))}</span>` : ''}
-      </div>`).join('') + '</div>';
+  ouvir(db.collection('mural').orderBy('criadoEm', 'desc').limit(TAMANHO_PAGINA_AVISOS), snap => {
+    avisosAtuais = snap.docs;
+    // Se o topo mudou, recomeça a paginação para não misturar cursores antigos.
+    avisosAnteriores = [];
+    ultimoAvisoDoc = snap.docs[snap.docs.length - 1] || null;
+    fimAvisos = snap.size < TAMANHO_PAGINA_AVISOS;
+    buscandoAvisos = false;
+    renderAvisosPaginados();
   });
+}
+async function carregarMaisAvisos() {
+  if (buscandoAvisos || fimAvisos || !ultimoAvisoDoc || !auth.currentUser) return;
+  buscandoAvisos = true;
+  renderAvisosPaginados();
+  try {
+    const snap = await db.collection('mural').orderBy('criadoEm', 'desc')
+      .startAfter(ultimoAvisoDoc).limit(TAMANHO_PAGINA_AVISOS).get();
+    avisosAnteriores.push(...snap.docs);
+    if (snap.docs.length) ultimoAvisoDoc = snap.docs[snap.docs.length - 1];
+    fimAvisos = snap.size < TAMANHO_PAGINA_AVISOS;
+  } catch (e) {
+    aviso('Avisos anteriores indisponíveis. Verifique a conexão e tente novamente.', 'warning');
+  } finally {
+    buscandoAvisos = false;
+    renderAvisosPaginados();
+  }
 }
 
 /* ---------- Enquetes ---------- */

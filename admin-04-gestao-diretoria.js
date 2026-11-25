@@ -64,7 +64,7 @@
             const nomes = ['cargos', 'alunos', 'reivindicacoes', 'eventos', 'sugestoes', 'materiais', 'jogos', 'enquetes', 'mural', 'membros_punidos', 'acoes_admin', 'caixa', 'orcamentos', 'contas', 'atas', 'tarefas', 'estudos', 'provas', 'questoes', 'flashcards', 'documentos', 'reunioes', 'listas_presenca', 'encaminhamentos', 'divulgacoes', 'artes', 'videos', 'atividades_diversidade', 'materiais_diversidade'];
             toast('Gerando backup...');
             try {
-                const out = { geradoEm: new Date().toISOString(), geradoPor: emailLogado };
+                const out = { geradoEm: new Date().toISOString(), geradoPor: emailLogado, origemProjetoId: firebase.app().options.projectId };
                 for (const n of nomes) {
                     const snap = await db.collection(n).get();
                     out[n] = snap.docs.map(d => { const x = { id: d.id, ...paraJSON(d.data()) }; delete x.senha; return x; });
