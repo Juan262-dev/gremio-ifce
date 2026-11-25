@@ -40,6 +40,14 @@ function writeOnce(filename,config){
   return filename;
 }
 
+function proximosPassos(){
+  return [
+    "Execute a pré-verificação local do Portal/Painel, das regras e dos créditos originais.",
+    "Configure projeto Firebase, domínio, regras, índices e permissões exclusivos da escola.",
+    "Confirme contas e acesso de gestão usando o Firebase Emulator e projeto de ensaio.",
+    "Teste backup/restauração e formalize a autorização institucional antes do uso real."
+  ];
+}
 function details(config){
   const valid=I.validate(config);
   return {
@@ -91,6 +99,8 @@ async function main(){
     process.stdout.write("5/5 Revisão da configuração pública\n");
     const summary=details(config);
     process.stdout.write(JSON.stringify(summary,null,2)+"\n");
+    process.stdout.write("Próximos passos (nenhum é executado por este assistente):\n");
+    process.stdout.write(proximosPassos().map((s,i)=>(i+1)+". "+s).join("\n")+"\n");
     process.stdout.write("Verificações reais de segurança, domínio, Auth e regras ainda estão pendentes.\n");
     if(dryRun){
       process.stdout.write("ENSAIO: nenhum arquivo foi gravado ou publicado.\n");
@@ -105,7 +115,7 @@ async function main(){
     rl.close();
   }
 }
-module.exports={assemble,writeOnce,details};
+module.exports={assemble,writeOnce,details,proximosPassos};
 if(require.main===module){
   main().catch(error=>{
     process.stderr.write("Preparação interrompida: "+error.message+"\n");
