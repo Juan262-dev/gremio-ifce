@@ -44,3 +44,15 @@ por escola, com regras separadas e votos/inscrições privados por UID.
 segurança operacional, recursos completos e homologação. A instalação IFCE,
 seu banco e o visual original continuam preservados.
 
+
+## Revisão operacional adicional (sem alterar o visual)
+
+O Painel IFCE agora apresenta pendências de homologação 2027 e
+revisão local de arquivos de backup; logs administrativos novos
+recebem ocultação preventiva de dados pessoais. O inventário de
+coleções utiliza contagens agregadas e o Portal oferece avisos
+paginados. O instalador experimental de outras escolas mantém
+créditos originais verificados localmente.
+
+**Nenhuma dessas verificações aprova a produção por conta própria.**
+Consulte `docs/homologacao/IFCE-PRE-LANCAMENTO-2027.md`.

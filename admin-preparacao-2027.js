@@ -15,6 +15,34 @@
       ? {nivel:'atencao',texto:'As chaves permitem operar eventos, mas isso NÃO comprova regras, índices, funções ou migração.'}
       : {nivel:'pendente',texto:'Inscrições v2 bloqueadas pelas chaves de liberação. Nenhuma alteração foi feita.'};
   }
+  // Um diagnóstico de cliente jamais comprova as regras/índices publicados.
+  // Todos os itens exigem evidência externa; NÃO existe aprovação automática.
+  function checklistLancamento(projeto,config){
+    const estado=estadoImplantacao(projeto,config);
+    const bloqueios=[
+      ['regras','Regras Firestore publicadas e testadas em projeto de homologação'],
+      ['indices','Índices e funções de eventos implantados e verificados'],
+      ['privacidade','Migração e isolamento de votos/inscrições comprovados'],
+      ['backup','Backup institucional protegido com verificação de conclusão'],
+      ['restauracao','Restauração ensaiada em projeto separado'],
+      ['acessos','Acesso e permissões conferidos com contas fictícias'],
+      ['auditoria','Tratamento de dados pessoais e histórico revisado'],
+      ['aprovacao','Aprovação documentada da direção e da TI']
+    ];
+    return Object.freeze({
+      aptoParaPublicar:false,comprovadosAutomaticamente:0,
+      itens:Object.freeze([
+        {id:'projeto',nome:'Projeto Firebase IFCE',
+          status:estado.nivel==='erro'?'erro':'informativo',
+          detalhe:projeto===PROJETO?'ID verificado no cliente; backend real não comprovado.':estado.texto},
+        {id:'config',nome:'Configuração operacional',
+          status:estado.nivel==='erro'?'erro':estado.nivel==='atencao'?'atencao':'pendente',
+          detalhe:estado.texto},
+        ...bloqueios.map(([id,nome])=>({id,nome,status:'pendente',
+          detalhe:'Exige conferência e evidência institucional fora do navegador.'}))
+      ])
+    });
+  }
   function dataEventoValida(dataISO,agora=new Date()) {
     if(typeof dataISO!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(dataISO))return false;
     const data=new Date(dataISO+'T12:00:00Z');
@@ -50,5 +78,5 @@
         : 'Inventário preliminar. Registros privados, histórico, Authentication e backups exigem processo autorizado; nenhum dado foi apagado.'
     };
   }
-  return Object.freeze({PROJETO,estadoImplantacao,resumoEvento,resumoExclusao,dataEventoValida});
+  return Object.freeze({PROJETO,estadoImplantacao,resumoEvento,resumoExclusao,dataEventoValida,checklistLancamento});
 });

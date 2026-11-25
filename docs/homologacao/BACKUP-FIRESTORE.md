@@ -57,3 +57,21 @@ conclusão da operação e a possibilidade de restauração separadamente.
   e https://cloud.google.com/sdk/gcloud/reference/firestore/export
 
 **Não executar em projetos reais sem a direção e a TI da escola.**
+
+## Revisão local de arquivos baixados pelo Painel IFCE
+
+No Painel de TI do IFCE, a opção **Verificar arquivo sem restaurar** analisa
+localmente (no navegador) o JSON do backup já baixado, sem transmitir o
+arquivo ao Firebase. Ela confere o formato, IDs duplicados, volume de
+registros e a identificação do projeto de origem **quando presente**.
+
+Novos arquivos recebem `origemProjetoId` para impedir restauração
+acidental entre projetos diferentes. Backups antigos não têm essa
+identificação: o fluxo legado exige confirmação adicional e não deve
+ser usado como prova de origem. O restaurador do Painel é **parcial**:
+não restaura Authentication, várias coleções suplementares nem todas as
+subcoleções. Antes de qualquer restauração real, faça ensaio em projeto
+isolado, backup completo gerenciado e autorização institucional.
+
+O botão de revisão não executa `gcloud`, não verifica backup de nuvem,
+não recupera dados, não limpa o banco e não homologa o sistema.

@@ -274,6 +274,7 @@ async function verificarImplantacaoIFCE() {
     box.textContent = 'Consultando configuração no servidor...';
     const projeto = firebase.app().options.projectId || '';
     const linhas = [];
+    let dadosConfiguracao = null;
     const estadoInicial = AdminPreparacao2027.estadoImplantacao(projeto, null);
     if (projeto !== AdminPreparacao2027.PROJETO) {
         box.textContent = estadoInicial.texto;
@@ -281,7 +282,8 @@ async function verificarImplantacaoIFCE() {
     }
     try {
         const snap = await db.collection('config').doc('sistema').get({ source: 'server' });
-        const situacao = AdminPreparacao2027.estadoImplantacao(projeto, snap.exists ? snap.data() : null);
+        dadosConfiguracao = snap.exists ? snap.data() : null;
+        const situacao = AdminPreparacao2027.estadoImplantacao(projeto, dadosConfiguracao);
         linhas.push('Projeto: IFCE (ID conferido no cliente).', 'Configuração: ' + situacao.texto);
     } catch (e) {
         linhas.push('Projeto: IFCE (ID conferido no cliente).',
@@ -294,6 +296,15 @@ async function verificarImplantacaoIFCE() {
         'Este relatório não certifica segurança, migração nem homologação.');
     box.textContent = linhas.join('\n');
     box.style.whiteSpace = 'pre-line';
+    const lancamento = document.getElementById('ti-lancamento-2027');
+    if (lancamento) {
+        const lista = AdminPreparacao2027.checklistLancamento(projeto, dadosConfiguracao);
+        lancamento.textContent = 'Checklist pré-lançamento 2027 (não homologado):\n' +
+            lista.itens.map(i => '• [' + i.status.toUpperCase() + '] ' +
+              i.nome + ' — ' + i.detalhe).join('\n') +
+            '\nLiberação automática: BLOQUEADA. Exige evidências externas e aceite institucional.';
+        lancamento.style.whiteSpace = 'pre-line';
+    }
 }
 
         async function rodarDiagnostico() {
@@ -366,15 +377,41 @@ async function verificarImplantacaoIFCE() {
             CAMPOS_DATA.forEach(k => { if (typeof r[k] === 'string' && !isNaN(Date.parse(r[k]))) r[k] = firebase.firestore.Timestamp.fromDate(new Date(r[k])); });
             return r;
         }
+        async function revisarArquivoBackup() {
+            if (!soRaiz()) return;
+            const saida = document.getElementById('ti-backup-revisao');
+            const arquivo = document.getElementById('ti-arquivo').files[0];
+            if (!saida) return;
+            if (!arquivo) { saida.textContent = 'Selecione um arquivo JSON para revisar localmente.'; return; }
+            if (arquivo.size > 50 * 1024 * 1024) {
+                saida.textContent = 'Arquivo acima de 50 MB; revisão no navegador recusada.';
+                return;
+            }
+            try {
+                const dados = JSON.parse(await arquivo.text());
+                const resultado = BackupRevisao.analisar(dados, firebase.app().options.projectId);
+                saida.textContent = 'Revisão somente local: ' + resultado.total +
+                    ' registro(s) em ' + resultado.colecoes.length + ' coleção(ões) principais.\n' +
+                    resultado.avisos.join('\n') +
+                    '\nNENHUMA restauração ou verificação de produção foi realizada.';
+            } catch (erro) { saida.textContent = 'Revisão recusada: ' + erro.message; }
+            saida.style.whiteSpace = 'pre-line';
+        }
         async function restaurarBackup() {
             if (!soRaiz()) return;
             const arq = document.getElementById('ti-arquivo').files[0];
             if (!arq) { toast('Escolha o arquivo de backup (.json).', 'warning'); return; }
-            let dados;
-            try { dados = JSON.parse(await arq.text()); } catch (e) { toast('Arquivo inválido.', 'danger'); return; }
-            const nomes = ['cargos', 'alunos', 'reivindicacoes', 'eventos', 'sugestoes', 'materiais', 'jogos', 'enquetes', 'mural', 'membros_punidos', 'caixa', 'orcamentos', 'contas', 'atas', 'tarefas', 'estudos', 'provas', 'questoes', 'flashcards', 'documentos', 'reunioes', 'listas_presenca', 'encaminhamentos', 'divulgacoes', 'artes', 'videos', 'atividades_diversidade', 'materiais_diversidade'];
-            const total = nomes.reduce((t, n) => t + (Array.isArray(dados[n]) ? dados[n].length : 0), 0);
-            if (!total) { toast('Esse arquivo não tem dados para restaurar.', 'warning'); return; }
+            if (arq.size > 50 * 1024 * 1024) { toast('Arquivo maior que 50 MB: operação recusada.', 'danger'); return; }
+            let dados, revisao;
+            try {
+                dados = JSON.parse(await arq.text());
+                revisao = BackupRevisao.analisar(dados, firebase.app().options.projectId);
+            } catch (e) { toast('Backup recusado: ' + e.message, 'danger'); return; }
+            const nomes = BackupRevisao.COLECOES;
+            const total = revisao.total;
+            if (!revisao.origemConfirmada &&
+                !(await confirmar('Este backup antigo NÃO identifica o Firebase de origem. Confirmou manualmente que foi gerado neste projeto?'))) return;
+            if (!(await confirmar('Esta restauração é PARCIAL: não inclui Authentication, subcoleções privadas ou coleções suplementares. Há backup completo e restauração de ensaio comprovados?'))) return;
             if (!(await confirmar(`Restaurar ${total} registro(s) do backup de ${String(dados.geradoEm || '').slice(0, 10)}? Eles substituem os atuais com o mesmo ID.`))) return;
             try {
                 for (const n of nomes) {
@@ -489,10 +526,11 @@ async function verificarImplantacaoIFCE() {
                 let html = '<ul class="list-group">';
                 snapshot.forEach(doc => {
                     const a = doc.data();
+                    const seguro = AuditoriaPrivacidade.resumir(a.acao, a.detalhes);
                     html += `
                         <li class="list-group-item small">
-                            <strong style="color: var(--ifce-accent-green);">${esc(a.acao)}</strong>
-                            <span class="text-white"> — ${esc(a.detalhes)}</span><br>
+                            <strong style="color: var(--ifce-accent-green);">${esc(seguro.acao)}</strong>
+                            <span class="text-white"> — ${esc(seguro.detalhes)}</span><br>
                             <small class="text-muted-custom" style="font-size: 11px;">${esc(a.autor)} • ${esc(fmtData(a.em))}</small>
                         </li>`;
                 });

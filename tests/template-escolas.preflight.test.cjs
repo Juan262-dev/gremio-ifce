@@ -7,7 +7,9 @@ const {validatePreflight}=require("../template-escolas/scripts/preflight-school.
 const base=path.resolve(__dirname,"../template-escolas");
 const settings={
   firebaseJson:JSON.parse(fs.readFileSync(path.join(base,"firebase.json"),"utf8")),
-  rules:fs.readFileSync(path.join(base,"firestore.rules"),"utf8")
+  rules:fs.readFileSync(path.join(base,"firestore.rules"),"utf8"),
+  portalHtml:fs.readFileSync(path.join(base,"public/index.html"),"utf8"),
+  adminHtml:fs.readFileSync(path.join(base,"public/admin.html"),"utf8")
 };
 const installation=(school,project,sender)=>({
   schemaVersion:1,
@@ -62,4 +64,13 @@ test("CLI nunca conecta ou publica Firebase e falha sem arquivo escolar",()=>{
   });
   assert.equal(run.status,1);
   assert.match(run.stderr,/REPROVADA/);
+});
+
+test("preflight recusa retirar créditos originais das duas páginas escolares",()=>{
+ const {verificarCreditos,proximosPassos}=require("../template-escolas/scripts/preflight-school.cjs");
+ assert.equal(verificarCreditos(settings.portalHtml,settings.adminHtml),true);
+ assert.equal(validatePreflight(a(),undefined,settings).creditosConferidosLocalmente,true);
+ assert.throws(()=>validatePreflight(a(),undefined,{...settings,adminHtml:"<footer>Créditos removidos</footer>"}),/Créditos/);
+ assert.throws(()=>validatePreflight(a(),undefined,{...settings,portalHtml:"<footer>Créditos removidos</footer>"}),/Créditos/);
+ assert.ok(proximosPassos(validatePreflight(a(),undefined,settings)).length>=4);
 });

@@ -302,3 +302,21 @@ editar o crédito. A proteção jurídica e o nome público correto do autor
 ainda precisam ser confirmados.
 
 **Status: base técnica experimental. Sem merge ou publicação automática.**
+
+## Instalação guiada com verificação dos créditos originais
+
+O assistente local `node template-escolas/scripts/setup-school.cjs --dry-run`
+mostra passos de preparação sem gravar configuração, conectar ao Firebase
+nem criar usuários. Na execução manual normal, o operador confirma antes
+de escrever `installation.json` apenas nesta cópia local.
+
+O `preflight-school.cjs` agora verifica também se **Portal e Painel**
+mantêm a identificação de origem do Grêmio IFCE Campus Crateús e o link
+para o repositório original. Isso detecta alterações acidentais no template,
+mas **não constitui proteção jurídica contra cópias modificadas** nem
+define uma licença. A personalização da escola permanece permitida apenas
+nos campos públicos próprios da instalação.
+
+Depois do preflight, é obrigatório validar Auth, Firestore Rules, índices,
+isolamento de projetos, backup/restauração em ensaio, direitos de uso e
+aprovação institucional. O template continua experimental.

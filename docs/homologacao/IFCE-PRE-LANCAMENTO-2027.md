@@ -181,3 +181,30 @@ Essas verificações usam dados fictícios nos testes e **não corrigem registro
 reais automaticamente**. Não houve migração, alteração de regras publicadas,
 homologação, deploy nem liberação de inscrições por essa mudança.
 
+
+## Rodada complementar — seis melhorias sem publicação automática
+
+1. **Segurança Firebase:** painel TI mostra uma lista explícita de
+   pendências (regras, índices, funções, migração, direitos, acessos,
+   aprovação), sem transformar chaves de cliente em homologação.
+2. **Backup/recuperação:** revisão local de JSON, identificação opcional
+   do projeto de origem para novos arquivos, bloqueio de origem divergente,
+   detecção de IDs repetidos e avisos sobre restauração parcial.
+   Restauração real em projeto de ensaio continua pendente.
+3. **Desempenho:** inventário administrativo usa agregação `count()`
+   sem transferir até 1.000 documentos por coleção; avisos do Portal
+   carregam 30 por vez e oferecem histórico sob demanda.
+4. **Auditoria:** novos detalhes de logs ocultam padrões de e-mail,
+   documento e credenciais; o histórico é ocultado na visualização quando
+   possível, sem apagar registros de auditoria existentes.
+5. **Outras escolas:** preparação guiada e preflight local checam os
+   créditos de origem em ambas as páginas, isolamento por projeto e
+   passos para homologação, sem instalar Firebase ou definir licença.
+6. **Lançamento 2027:** checklist do Painel exige conferência externa
+   e autorização institucional; não possui botão que altere estados
+   de homologação no Firebase.
+
+**Estado permanece NÃO HOMOLOGADO.** Testes de CI e preflight são
+evidência de código, não de implantação de produção. Não houve
+publicação de regras, Functions, migração, restauração ou liberação de
+uso estudantil por esta rodada.

@@ -1272,6 +1272,7 @@
                     <p class="text-muted-custom small mb-2">Consulta apenas a configuração acessível ao administrador. Regras, índices e Functions devem ser conferidos separadamente no console. Não ativa recursos.</p>
                     <button type="button" onclick="verificarImplantacaoIFCE()" class="btn btn-outline-info btn-sm">Verificar sem alterar</button>
                     <div id="ti-implantacao-v2" class="mt-2 small" role="status" aria-live="polite">Ainda não verificado.</div>
+                    <div id="ti-lancamento-2027" class="mt-2 small text-muted-custom" role="status" aria-live="polite">Checklist de pré-lançamento 2027: aguardando verificação.</div>
                 </div>
 
                 <hr style="border-color: var(--ifce-card-border);" class="my-4">
@@ -1292,6 +1293,8 @@
                 <h6 class="fw-bold text-white">4. Restaurar backup</h6>
                 <p class="text-muted-custom small mb-2">Escolha um arquivo gerado em "Baixar backup". Os dados são regravados por cima dos atuais (nada é apagado). O log de ações não é restaurado e as contas de login dos alunos não são recriadas.</p>
                 <input type="file" id="ti-arquivo" accept=".json,application/json" class="form-control mb-2">
+                <button type="button" onclick="revisarArquivoBackup()" class="btn btn-outline-light btn-sm mb-2">Verificar arquivo sem restaurar</button>
+                <div id="ti-backup-revisao" class="small text-muted-custom mb-2" role="status" aria-live="polite">A revisão é local e não envia o arquivo ao Firebase.</div>
                 <button onclick="restaurarBackup()" class="btn btn-outline-danger btn-sm fw-bold">Restaurar</button>
             </div>
 
@@ -1582,7 +1585,7 @@
 
             <div id="secao-auditoria" data-niveis="ninguem" class="card card-custom p-4 mb-4 card-admin-geral">
                 <h5 class="card-title-chem mb-3">Log de Auditoria</h5>
-                <p class="text-muted-custom small mb-3">Últimas 30 ações administrativas (inclui histórico de punições).</p>
+                <p class="text-muted-custom small mb-3">Últimas 30 ações administrativas (inclui histórico de punições). Dados antigos são ocultados na visualização quando possível.</p>
                 <div id="lista-auditoria-admin"><p class="text-muted-custom small">Nenhuma ação registrada ainda.</p></div>
             </div>
 
@@ -1594,6 +1597,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
+    <script src="admin-auditoria-privacidade.js"></script>
+    <script src="admin-backup-revisao.js"></script>
     <script src="admin-01-base-login.js"></script>
 <script src="admin-02-comunicacao-estudos.js"></script>
 <script src="admin-03-alunos-punicoes.js"></script>

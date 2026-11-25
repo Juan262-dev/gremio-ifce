@@ -164,9 +164,10 @@
 
         function registrarAcao(acao, detalhes) {
             const u = auth.currentUser;
+            const seguro = AuditoriaPrivacidade.resumir(acao, detalhes);
             db.collection('acoes_admin').add({
-                acao: acao,
-                detalhes: detalhes || '',
+                acao: seguro.acao,
+                detalhes: seguro.detalhes,
                 autor: u ? u.email : 'desconhecido',
                 em: TS()
             }).catch(() => {});
@@ -581,9 +582,9 @@
             if (!soRaiz()) return;
             const out = document.getElementById('ti-inventario'); out.textContent = 'Contando...';
             const nomes = ['alunos', 'cargos', 'mural', 'enquetes', 'reivindicacoes', 'sugestoes', 'materiais', 'eventos', 'jogos', 'videos', 'tarefas', 'atas', 'divulgacoes', 'artes', 'chamados', 'acessos', 'aceites', 'erros_app', 'acoes_admin', 'membros_punidos'];
-            const res = await Promise.all(nomes.map(n => db.collection(n).limit(1000).get().then(s => [n, s.size]).catch(() => [n, null])));
-            out.innerHTML = '<table class="table table-sm table-dark mb-1"><tbody>' + res.map(([n, c]) => `<tr><td>${n}</td><td class="text-end">${c === null ? '—' : (c >= 1000 ? '1000+' : c)}</td></tr>`).join('') + '</tbody></table>' +
-                '<div class="text-muted-custom" style="font-size: 11px;">Plano gratuito: 1 GiB guardados, 50 mil leituras e 20 mil gravações por dia.</div>';
+            const res = await Promise.all(nomes.map(n => db.collection(n).count().get().then(s => [n, s.data().count]).catch(() => [n, null])));
+            out.innerHTML = '<table class="table table-sm table-dark mb-1"><tbody>' + res.map(([n, c]) => `<tr><td>${n}</td><td class="text-end">${c === null ? '—' : c}</td></tr>`).join('') + '</tbody></table>' +
+                '<div class="text-muted-custom" style="font-size: 11px;">Contagem agregada, sem transferir documentos de estudantes. — indica consulta indisponível; os limites do plano devem ser conferidos no Firebase Console.</div>';
         }
 
         let pendTI = [];
